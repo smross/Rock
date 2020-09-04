@@ -27,6 +27,7 @@ using Quartz;
 using Rock.Attribute;
 using Rock.Communication;
 using Rock.Data;
+using Rock.Lava;
 using Rock.Model;
 
 namespace Rock.Jobs
@@ -337,7 +338,7 @@ namespace Rock.Jobs
     /// <summary>
     /// Group Missing Requirements
     /// </summary>
-    [DotLiquid.LiquidType( "Id", "Name", "GroupMembersMissingRequirements", "AncestorPathName", "GroupTypeId", "GroupTypeName", "Leaders" )]
+    [LavaType( "Id", "Name", "GroupMembersMissingRequirements", "AncestorPathName", "GroupTypeId", "GroupTypeName", "Leaders" )]
     public class GroupsMissingRequirements
     {
         /// <summary>
@@ -400,7 +401,7 @@ namespace Rock.Jobs
     /// <summary>
     /// Group Member Missing Requirements
     /// </summary>
-    [DotLiquid.LiquidType( "Id", "PersonId", "FullName", "GroupMemberRole", "MissingRequirements" )]
+    [LavaType( "Id", "PersonId", "FullName", "GroupMemberRole", "MissingRequirements" )]
     public class GroupMembersMissingRequirements : GroupMemberResult
     {
         /// <summary>
@@ -415,7 +416,7 @@ namespace Rock.Jobs
     /// <summary>
     /// Missing Requirement
     /// </summary>
-    [DotLiquid.LiquidType( "Id", "Name", "Status", "Message", "OccurrenceDate" )]
+    [LavaType( "Id", "Name", "Status", "Message", "OccurrenceDate" )]
     public class MissingRequirement
     {
         /// <summary>
@@ -462,7 +463,7 @@ namespace Rock.Jobs
     /// <summary>
     /// Group Member Result
     /// </summary>
-    [DotLiquid.LiquidType( "Id", "PersonId", "FullName", "GroupMemberRole" )]
+    [LavaType( "Id", "PersonId", "FullName", "GroupMemberRole" )]
     public class GroupMemberResult
     {
         /// <summary>

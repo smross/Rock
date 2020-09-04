@@ -96,7 +96,7 @@ namespace Rock.Lava
                 foreach ( var contextEntityType in rockPage.GetContextEntityTypes() )
                 {
                     var contextEntity = rockPage.GetCurrentContext( contextEntityType );
-                    if ( contextEntity != null && contextEntity is DotLiquid.ILiquidizable )
+                    if ( contextEntity != null && contextEntity is ILavaDataObject )
                     {
                         var type = Type.GetType( contextEntityType.AssemblyName ?? contextEntityType.Name );
                         if ( type != null )
@@ -247,7 +247,7 @@ namespace Rock.Lava
         /// <param name="context">The context.</param>
         /// <returns>The current person or null if not found.</returns>
         /// <exception cref="ArgumentNullException">context</exception>
-        public static Person GetCurrentPerson( DotLiquid.Context context )
+        public static Person GetCurrentPerson( ILavaContext context )
         {
             if ( context == null )
             {
@@ -314,7 +314,7 @@ namespace Rock.Lava
         /// you can always choose to not use this helper method and instead roll your own implementation.
         /// </para>
         /// </param>
-        public static void ParseCommandMarkup( string markup, DotLiquid.Context context, Dictionary<string, string> parms )
+        public static void ParseCommandMarkup( string markup, ILavaContext context, Dictionary<string, string> parms )
         {
             if ( markup.IsNull() )
             {
@@ -331,25 +331,7 @@ namespace Rock.Lava
                 throw new ArgumentNullException( nameof( parms ) );
             }
 
-            var mergeFields = new Dictionary<string, object>();
-
-            // Get variables defined in the lava context.
-            foreach ( var scope in context.Scopes )
-            {
-                foreach ( var item in scope )
-                {
-                    mergeFields.AddOrReplace( item.Key, item.Value );
-                }
-            }
-
-            // Get merge fields loaded by the block or container.
-            foreach ( var environment in context.Environments )
-            {
-                foreach ( var item in environment )
-                {
-                    mergeFields.AddOrReplace( item.Key, item.Value );
-                }
-            }
+            var mergeFields = context.GetMergeFieldsForLocalScope();
 
             // Resolve merge fields.
             var resolvedMarkup = markup.ResolveMergeFields( mergeFields );
@@ -390,19 +372,9 @@ namespace Rock.Lava
         /// <returns>
         ///   <c>true</c> if the specified command is authorized; otherwise, <c>false</c>.
         /// </returns>
-        public static bool IsAuthorized( DotLiquid.Context context, string command )
+        public static bool IsAuthorized( ILavaContext context, string command )
         {
-            if ( context?.Registers?.ContainsKey( "EnabledCommands" ) == true && command.IsNotNullOrWhiteSpace() )
-            {
-                var enabledCommands = context.Registers["EnabledCommands"].ToString().Split( ',' ).ToList();
-
-                if ( enabledCommands.Contains( "All" ) || enabledCommands.Contains( command ) )
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return LavaSecurityHelper.IsAuthorized( context, command );
         }
 
         #region Lava Comments
