@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -24,6 +25,7 @@ using System.Text.RegularExpressions;
 using DotLiquid;
 
 using Rock.UniversalSearch;
+using Rock.Utility;
 using Rock.Web.Cache;
 
 namespace Rock.Lava.Blocks
@@ -231,7 +233,7 @@ namespace Rock.Lava.Blocks
         /// <summary>
         ///
         /// </summary>
-        private class DataRowDrop : DotLiquid.Drop
+        private class DataRowDrop : RockDynamic
         {
             private readonly DataRow _dataRow;
 
@@ -240,14 +242,16 @@ namespace Rock.Lava.Blocks
                 _dataRow = dataRow;
             }
 
-            public override object BeforeMethod( string method )
+            public override bool TryGetMember( GetMemberBinder binder, out object result )
             {
-                if ( _dataRow.Table.Columns.Contains( method ) )
+                if ( _dataRow.Table.Columns.Contains( binder.Name ) )
                 {
-                    return _dataRow[method];
+                    result = _dataRow[binder.Name];
+                    return true;
                 }
 
-                return null;
+                result = null;
+                return false;
             }
         }
     }

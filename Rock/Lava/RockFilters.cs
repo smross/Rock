@@ -5995,8 +5995,7 @@ namespace Rock.Lava
         /// <summary>
         /// POCO to translate an HTTP cookie in to a Liquidizable form
         /// </summary>
-        /// <seealso cref="DotLiquid.Drop" />
-        public class HttpCookieDrop : Drop
+        public class HttpCookieDrop : RockDynamic
         {
             private readonly HttpCookie _cookie;
 
