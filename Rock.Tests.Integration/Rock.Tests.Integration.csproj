@@ -149,6 +149,7 @@
     <Compile Include="Lava\CalendarEventsCommandTests.cs" />
     <Compile Include="Lava\LavaCommentsTests.cs" />
     <Compile Include="Lava\Filters\DateFilterTests.cs" />
+    <Compile Include="Lava\Filters\NumericFilterTests.cs" />
     <Compile Include="Lava\LavaTestHelper.cs" />
     <Compile Include="Lava\SqlTests.cs" />
     <Compile Include="Jobs\StepsAutomationJobTests.cs" />
