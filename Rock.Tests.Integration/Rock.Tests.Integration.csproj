@@ -151,6 +151,7 @@
     <Compile Include="Lava\Filters\DateFilterTests.cs" />
     <Compile Include="Lava\Filters\NumericFilterTests.cs" />
     <Compile Include="Lava\LavaTestHelper.cs" />
+    <Compile Include="Lava\Shortcodes\ShortcodeTests.cs" />
     <Compile Include="Lava\SqlTests.cs" />
     <Compile Include="Jobs\StepsAutomationJobTests.cs" />
     <Compile Include="Jobs\TestJobDetail.cs" />
