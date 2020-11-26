@@ -14,16 +14,27 @@
 // limitations under the License.
 // </copyright>
 //
-
 namespace Rock.Lava
 {
-    public interface ILavaFileSystem
+    /// <summary>
+    /// The default file system for the Lava Engine.
+    /// This file system throws an Exception if any external file references are encountered in a Lava template.
+    /// </summary>
+    public class LavaNullFileSystem : ILavaFileSystem
     {
         /// <summary>
-        /// Called by Lava to retrieve a template file.
+        /// Returns a flag indicating if the specified file exists.
         /// </summary>
-        /// <param name="templatePath"></param>
+        /// <param name="filePath">A relative file path.</param>
         /// <returns></returns>
-        string ReadTemplateFile( ILavaContext context, string templateName );
+        public bool FileExists( string filePath )
+        {
+            return false;
+        }
+
+        public string ReadTemplateFile( ILavaContext context, string templateName )
+        {
+            throw new LavaException( "Lava File System error. No file system is configured for the current Lava Engine." );
+        }
     }
 }

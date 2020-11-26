@@ -595,7 +595,7 @@ namespace Rock.WebStartup
             var liquidEngineTypeValue = System.Configuration.ConfigurationManager.AppSettings["LavaEngineType"];
 
             LavaEngineTypeSpecifier engineType;
-            bool isValid = false;
+            bool isValid;
 
             if ( string.IsNullOrWhiteSpace( liquidEngineTypeValue ) )
             {
@@ -608,25 +608,16 @@ namespace Rock.WebStartup
                 isValid = Enum.TryParse( liquidEngineTypeValue, true, out engineType );
             }
 
-            if ( engineType == LavaEngineTypeSpecifier.DotLiquid )
-            {
-                LavaEngine.InitializeDotLiquidFramework( new LavaFileSystem(), new List<Type> { typeof( Rock.Lava.RockFilters ) } );
-            }
-            else
-            {
-                // Specified engine is not implemented.
-                isValid = false;
-            }
-
             if ( !isValid )
             {
                 throw new RockStartupException( string.Format( "Invalid Lava Engine Type. The LavaEngineType configuration parameter \"{0}\" is not valid.", liquidEngineTypeValue ) );
             }
 
+            LavaEngine.Initialize( engineType, new WebsiteLavaFileSystem(), new List<Type> { typeof( Rock.Lava.RockFilters ) } );
+
             var engine = LavaEngine.Instance;
 
             InitializeLavaShortcodes( engine );
-
             InitializeLavaBlocks( engine );
         }
 

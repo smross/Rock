@@ -14,16 +14,24 @@
 // limitations under the License.
 // </copyright>
 //
+using Fluid;
+using Irony.Parsing;
 
-namespace Rock.Lava
+namespace Rock.Lava.Fluid
 {
-    public interface ILavaFileSystem
+    /// <summary>
+    /// A wrapper for a Lava Block that can be rendered by the Fluid templating engine.
+    /// </summary>
+    /// <remarks>
+
+
+    public class LavaGrammar : FluidGrammar
     {
-        /// <summary>
-        /// Called by Lava to retrieve a template file.
-        /// </summary>
-        /// <param name="templatePath"></param>
-        /// <returns></returns>
-        string ReadTemplateFile( ILavaContext context, string templateName );
+        public override void OnGrammarDataConstructed( LanguageData language )
+        {
+            base.OnGrammarDataConstructed( language );
+
+            FilterArguments.Rule |= MakeListRule( FilterArguments, ToTerm(" "), FilterArgument );
+        }
     }
 }

@@ -15,7 +15,6 @@
 // </copyright>
 //
 using Rock.Lava;
-using Rock.Utility;
 
 namespace Rock.Tests.UnitTests.Lava
 {

@@ -15,6 +15,8 @@
 // </copyright>
 //
 
+using Fluid;
+
 namespace Rock.Lava.Fluid
 {
     //public class LavaFluidParser : DefaultFluidParser
@@ -26,16 +28,21 @@ namespace Rock.Lava.Fluid
     //    }
     //}
 
-    public class LavaFluidTemplate : BaseFluidTemplateEx<LavaFluidTemplate, LavaFluidParserFactory>
+    public class LavaFluidTemplate : BaseFluidTemplate<LavaFluidTemplate>
     {
+        /// <summary>
+        /// The text of the Lava source template.
+        /// </summary>
+        public string SourceDocument { get; set; }
+
         static LavaFluidTemplate()
         {
+            //Factory.RegisterTag<QuoteTag>( "quote" );
+            //Factory.RegisterBlock<RepeatBlock>( "repeat" );
             //var parserFactory = new LavaFluidParserFactory();
 
             //parserFactory.
             //SetParserFactory( parserFactory );
-
-
         }
     }
 

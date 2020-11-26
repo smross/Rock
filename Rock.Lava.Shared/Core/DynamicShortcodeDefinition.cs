@@ -20,7 +20,7 @@ using System.Collections.Generic;
 namespace Rock.Lava
 {
     /// <summary>
-    /// Defines the properties of a Dynamic Shortcode.
+    /// Defines the properties of a Lava Dynamic Shortcode.
     /// A dynamic shortcode creates an element in a Lava document from a parameterized template that is defined at runtime.
     /// </summary>
     public class DynamicShortcodeDefinition
@@ -31,11 +31,15 @@ namespace Rock.Lava
             this.EnabledLavaCommands = new List<string>();
         }
 
+        /// <summary>
+        /// The name of the shortcode.
+        /// </summary>
         public string Name { get; set; }
 
+        /// <summary>
+        /// The markup that contains the template that will be substituted when this shortcode is rendered.
+        /// </summary>
         public string TemplateMarkup { get; set; }
-
-        //public List<string> Tokens { get; set; }
 
         /// <summary>
         /// The set of parameter names and values that are injected into the shortcode template.
@@ -47,6 +51,9 @@ namespace Rock.Lava
         /// </summary>
         public List<string> EnabledLavaCommands { get; set; }
 
+        /// <summary>
+        /// The type of Lava document element that this shortcode is substited for, either an inline tag or a block element.
+        /// </summary>
         public LavaShortcodeTypeSpecifier ElementType { get; set; }
     }
 }

@@ -401,8 +401,6 @@ namespace Rock.Lava.DotLiquid
         /// <returns></returns>
         public override void Stack( Action callback )
         {
-            //Stack( new LavaDictionary(), callback );
-
             // Push a new scope onto the stack.
             if ( _context.Scopes.Count > 80 )
             {
@@ -424,14 +422,7 @@ namespace Rock.Lava.DotLiquid
                     throw new ContextException();
                 }
 
-                //var result = LavaDictionary.FromDictionary( _context.Scopes[0] );
-
                 _context.Scopes.RemoveAt( 0 );
-
-                //return result;
-
-
-                //                Pop();
             }
 
         }
@@ -504,6 +495,16 @@ namespace Rock.Lava.DotLiquid
             }
 
             return internalMergeFields;
+        }
+
+        public override object GetInternalValue( string key )
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void SetInternalValue( string key, object value )
+        {
+            throw new NotImplementedException();
         }
 
         #endregion

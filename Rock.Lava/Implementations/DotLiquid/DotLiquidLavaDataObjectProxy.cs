@@ -16,37 +16,63 @@
 //
 using System;
 using System.Collections.Generic;
-using System.IO;
 using DotLiquid;
-using Rock.Lava.Blocks;
 
 namespace Rock.Lava.DotLiquid
 {
     /// <summary>
-    /// Represents an implementation of a Lava Data Object that can be used by the DotLiquid Templating Framework.
+    /// An implementation of a Lava Data Object that can be used by the DotLiquid Templating Framework.
     /// </summary>
-    internal class DotLiquidLavaDataObjectProxy : ILiquidizable, IIndexable, ILavaDataObject //, IDictionary<string, object>
+    internal class DotLiquidLavaDataObjectProxy : ILiquidizable, IIndexable, ILavaDataObject
     {
         private ILavaDataObject _dataObject = null;
+
+        #region Constructors
 
         public DotLiquidLavaDataObjectProxy( ILavaDataObject dataObject )
         {
             _dataObject = dataObject;
         }
 
+        #endregion
+
+        #region IIndexable implementation
+
+        /// <summary>
+        /// Returns the data value associated with the specified key.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public object this[object key]
         {
             get
             {
-                if ( _dataObject == null )
-                {
-                    return null;
-                }
-
-                return _dataObject.GetValue( key );
+                return GetValue( key );
             }
         }
 
+        #region ILavaDataObject implementation
+
+        /// <summary>
+        /// Returns a flag indicating if this data object contains a value associated with the specified key.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public bool ContainsKey( object key )
+        {
+            if ( _dataObject == null )
+            {
+                return false;
+            }
+
+            return _dataObject.ContainsKey( key );
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Gets a list of the keys defined by this data object.
+        /// </summary>
         public List<string> AvailableKeys
         {
             get
@@ -60,16 +86,11 @@ namespace Rock.Lava.DotLiquid
             }
         }
 
-        public bool ContainsKey( object key )
-        {
-            if ( _dataObject == null )
-            {
-                return false;
-            }
-
-            return _dataObject.ContainsKey( key );
-        }
-
+        /// <summary>
+        /// Returns the data value associated with the specified key.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public object GetValue( object key )
         {
             if ( _dataObject == null )
@@ -80,10 +101,20 @@ namespace Rock.Lava.DotLiquid
             return _dataObject.GetValue( key );
         }
 
+        #endregion
+
+        #region ILiquidizable implementation
+
+        /// <summary>
+        /// Returns a representation of this object that can be safely used by the Liquid templating language.
+        /// </summary>
+        /// <returns></returns>
         public object ToLiquid()
         {
             return this;
         }
+
+        #endregion
 
         /// <summary>
         /// Return a string representation of the object.

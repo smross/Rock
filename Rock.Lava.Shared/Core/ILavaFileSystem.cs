@@ -14,32 +14,26 @@
 // limitations under the License.
 // </copyright>
 //
-using System.Collections.Generic;
-
 namespace Rock.Lava
 {
     /// <summary>
-    /// Specifies that this object can be made accessible in a Lava template.
+    /// A Lava file system provides a means of accessing external files from a template.
+    /// A file system implementation is required for the Liquid "{% include %}" command to load partial templates during the rendering process.
     /// </summary>
-    public interface ILavaDataObject
+    public interface ILavaFileSystem
     {
         /// <summary>
-        /// Returns the data value associated with the specified key.
+        /// Returns a flag indicating if the specified file exists.
         /// </summary>
-        /// <param name="key"></param>
+        /// <param name="filePath">A relative file path.</param>
         /// <returns></returns>
-        object GetValue( object key );
+        bool FileExists( string filePath );
 
         /// <summary>
-        /// Returns a flag indicating if this data object contains a value associated with the specified key.
+        /// Called by the Lava Engine to read the contents of a template file.
         /// </summary>
-        /// <param name="key"></param>
+        /// <param name="templatePath"></param>
         /// <returns></returns>
-        bool ContainsKey( object key );
-
-        /// <summary>
-        /// Gets a list of the keys defined by this data object.
-        /// </summary>
-        List<string> AvailableKeys { get; }
+        string ReadTemplateFile( ILavaContext context, string templateName );
     }
 }

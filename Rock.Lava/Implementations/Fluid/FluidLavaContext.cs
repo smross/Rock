@@ -356,9 +356,10 @@ namespace Rock.Lava.Fluid
 
             if ( scopeReference == "root" )
             {
-                var scope = GetRootScope( _context.LocalScope );
+                //var scope = GetRootScope( _context.LocalScope );
+                //scope.SetValue( key, value );
 
-                scope.SetValue( key, value );
+                _context.SetValue( key, value );
             }
             //else if ( scopeReference == "parent" )
             //{
@@ -401,107 +402,64 @@ namespace Rock.Lava.Fluid
         //    throw new NotImplementedException();
         //}
 
+        /// <summary>
+        /// Sets a named value that is for internal use only. Internal values are not available to be resolved in the Lava Template.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        public override void SetInternalValue( string key, object value )
+        {
+            // In the Fluid framework, internal values are stored in the AmbientValues collection.
+            _context.AmbientValues[key] = value;
+        }
+
+        /// <summary>
+        /// Gets a named value that is for internal use only. Internal values are not available to be resolved in the Lava Template.
+        /// </summary>
+        /// <param name="key"></param>
+        public override object GetInternalValue( string key )
+        {
+            // In the Fluid framework, internal values are stored in the AmbientValues collection.
+            if ( _context.AmbientValues.ContainsKey( key ) )
+            {
+                return _context.AmbientValues[key];
+            }
+
+            return null;
+        }
+
         public void SetValue( string key, object value )
         {
             throw new NotImplementedException();
         }
 
-        //public void Stack( Action callback )
-        //{
-        //    throw new NotImplementedException();
-        //}
-
+        /// <summary>
+        /// Execute an action in a child scope, and exit the child scope when the action is complete.
+        /// </summary>
+        /// <param name="callback"></param>
         public override void Stack( Action callback )
         {
-            throw new NotImplementedException();
+            // Push a new scope onto the stack.
+            _context.EnterChildScope();
+
+            try
+            {
+                callback();
+            }
+            finally
+            {
+                _context.ReleaseScope();
+            }
         }
-
-        /// <summary>
-        /// Uses Lava to resolve any merge codes within the content using the values in the merge objects.
-        /// </summary>
-        /// <param name="content">The content.</param>
-        /// <param name="mergeObjects">The merge objects.</param>
-        /// <param name="enabledLavaCommands">The enabled lava commands.</param>
-        /// <param name="encodeStrings">if set to <c>true</c> [encode strings].</param>
-        /// <param name="throwExceptionOnErrors">if set to <c>true</c> [throw exception on errors].</param>
-        /// <returns></returns>
-        //public string ResolveMergeFields( this string content, IDictionary<string, object> mergeObjects, string enabledLavaCommands, bool encodeStrings = false, bool throwExceptionOnErrors = false )
-        //{
-        //    try
-        //    {
-        //        if ( !content.HasMergeFields() )
-        //        {
-        //            return content ?? string.Empty;
-        //        }
-
-        //        if ( GlobalAttributesCache.Get().LavaSupportLevel == Lava.LavaSupportLevel.LegacyWithWarning && mergeObjects.ContainsKey( "GlobalAttribute" ) )
-        //        {
-        //            if ( hasLegacyGlobalAttributeLavaMergeFields.IsMatch( content ) )
-        //            {
-        //                Rock.Model.ExceptionLogService.LogException( new Rock.Lava.LegacyLavaSyntaxDetectedException( "GlobalAttribute", "" ), System.Web.HttpContext.Current );
-        //            }
-        //        }
-
-        //        Template template = GetTemplate( content );
-        //        template.Registers.AddOrReplace( "EnabledCommands", enabledLavaCommands );
-
-        //        string result;
-
-        //        if ( encodeStrings )
-        //        {
-        //            // if encodeStrings = true, we want any string values to be XML Encoded ( 
-        //            RenderParameters renderParameters = new RenderParameters();
-        //            renderParameters.LocalVariables = Hash.FromDictionary( mergeObjects );
-        //            renderParameters.ValueTypeTransformers = new Dictionary<Type, Func<object, object>>();
-        //            renderParameters.ValueTypeTransformers[typeof( string )] = EncodeStringTransformer;
-        //            result = template.Render( renderParameters );
-        //        }
-        //        else
-        //        {
-        //            result = template.Render( Hash.FromDictionary( mergeObjects ) );
-        //        }
-
-        //        if ( throwExceptionOnErrors && template.Errors.Any() )
-        //        {
-        //            if ( template.Errors.Count == 1 )
-        //            {
-        //                throw template.Errors[0];
-        //            }
-        //            else
-        //            {
-        //                throw new AggregateException( template.Errors );
-        //            }
-        //        }
-
-        //        return result;
-        //    }
-        //    catch ( System.Threading.ThreadAbortException )
-        //    {
-        //        // Do nothing...it's just a Lava PageRedirect that just happened.
-        //        return string.Empty;
-        //    }
-        //    catch ( Exception ex )
-        //    {
-        //        if ( throwExceptionOnErrors )
-        //        {
-        //            throw;
-        //        }
-        //        else
-        //        {
-        //            //ExceptionLogService.LogException( ex, System.Web.HttpContext.Current );
-        //            return "Error resolving Lava merge fields: " + ex.Message;
-        //        }
-        //    }
-        //}
 
         /// <summary>
         /// Looks for a parsed template in cache (if the content is 100 characters or less).
         /// </summary>
         /// <param name="content">The content.</param>
         /// <returns></returns>
-        private FluidTemplate GetTemplate( string content )
+        private LavaFluidTemplate GetTemplate( string content )
         {
-            var template = FluidTemplate.Parse( content );
+            var template = LavaFluidTemplate.Parse( content );
 
             // Do not cache any content over 100 characters in length
             //if ( content?.Length > 100 )

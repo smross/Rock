@@ -21,17 +21,26 @@ using System.Collections.Generic;
 namespace Rock.Lava
 {
     /// <summary>
-    /// Represents a specific environment and configuration in which a Lava template is resolved at runtime by the Lava Engine.
+    /// Represents the environment and configuration in which a Lava template is resolved at runtime by the Lava Engine.
     /// </summary>
     public interface ILavaContext
     {
         /// <summary>
-        /// The set of Lava Commands that are specifically enabled for this context.
+        /// The set of Lava Commands that are enabled for this context.
         /// </summary>
         List<string> GetEnabledCommands();
 
+        /// <summary>
+        /// Sets the list of Lava commands enabled for this template.
+        /// </summary>
+        /// <param name="commands"></param>
         void SetEnabledCommands( IEnumerable<string> commands );
 
+        /// <summary>
+        /// Sets the list of Lava commands enabled for this template.
+        /// </summary>
+        /// <param name="commandList">A delimited list of command names.</param>
+        /// <param name="delimiter">The list delimiter.</param>
         void SetEnabledCommands( string commandList, string delimiter = "," );
 
         /// <summary>
@@ -128,17 +137,5 @@ namespace Rock.Lava
         //void Stack( LavaDictionary newScope, Action callback );
 
         void Stack( Action callback );
-
-        /// <summary>
-        /// Push new local scope on the stack. use <tt>Context#stack</tt> instead
-        /// </summary>
-        /// <param name="newScope"></param>
-        //void Push( LavaDictionary newScope );
-
-        /// <summary>
-        /// Pop from the stack. use <tt>Context#stack</tt> instead
-        /// </summary>
-        //LavaDictionary Pop();
-
     }
 }

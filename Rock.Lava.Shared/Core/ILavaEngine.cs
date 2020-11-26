@@ -71,21 +71,11 @@ namespace Rock.Lava
         /// <param name="factoryMethod"></param>
         void RegisterStaticShortcode( Func<string, IRockShortcode> factoryMethod );
 
-        //bool TagIsRegistered( string name );
-
         Dictionary<string, ILavaElementInfo> GetRegisteredElements();
 
         void UnregisterShortcode( string name );
 
         Type GetShortcodeType( string name );
-
-        /// <summary>
-        /// Set a value that will be used when rendering this template.
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        //void SetContextValue( string key, object value );
-
 
         /// <summary>
         /// Try to render the provided template
@@ -112,7 +102,17 @@ namespace Rock.Lava
 
         bool AreEqualValue( object left, object right );
 
-        //void RenderTag( IRockLavaBlock tag, ILavaContext context, TextWriter result );
+        /// <summary>
+        /// Gets or sets the strategy for handling exceptions encountered during the rendering process.
+        /// </summary>
+        ExceptionHandlingStrategySpecifier ExceptionHandlingStrategy { get; set; }
     }
 
+    public enum ExceptionHandlingStrategySpecifier
+    {
+        Throw = 0,
+        RenderToOutput = 1,
+        Ignore = 2
+
+    }
 }

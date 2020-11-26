@@ -37,7 +37,7 @@ namespace Rock.Lava.Fluid
         #region Constructors
 
         //private TemplateContext _templateContext;
-        private FluidTemplate _template;
+        private LavaFluidTemplate _template;
 
         //public ILavaEngine LavaEngine
         //{
@@ -51,7 +51,7 @@ namespace Rock.Lava.Fluid
 
         public override ILavaEngine LavaEngine => throw new NotImplementedException();
 
-        public FluidTemplateProxy( FluidTemplate template )
+        public FluidTemplateProxy( LavaFluidTemplate template )
         {
             _template = template;
 

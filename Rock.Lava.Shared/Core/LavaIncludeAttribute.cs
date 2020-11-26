@@ -17,7 +17,7 @@
 namespace Rock.Data
 {
     /// <summary>
-    /// Attribute so that the dotLiquid knows to include this column ( Only used when [DataMember] can't be used due to serialization )
+    /// Marks a property as being accessible to a Lava template during rendering.
     /// </summary>
     public class LavaIncludeAttribute : System.Attribute
     {

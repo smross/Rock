@@ -70,35 +70,35 @@ AlexDecker<br/>AmadoDecker<br/>AutumnDecker<br/>BrunoDecker<br/>CindyDecker<br/>
             _helper.AssertTemplateOutput( expectedOutput, input, context, ignoreWhiteSpace: true );
         }
 
-        [TestMethod]
-        public void CacheBlock_WithInnerVariable_DoesNotModifyOuterVariable()
-        {
-            var input = @"
-{% assign color = 'blue' %}
-Color 1: {{ color }}
+//        [TestMethod]
+//        public void CacheBlock_WithInnerVariable_DoesNotModifyOuterVariable()
+//        {
+//            var input = @"
+//{% assign color = 'blue' %}
+//Color 1: {{ color }}
 
-{% cache key:'fav-color' duration:'1200' %}
-    Color 2: {{ color }}
-    {% assign color = 'red' %}
-    Color 3: {{ color }}
-{% endcache %}
+//{% cache key:'fav-color' duration:'1200' %}
+//    Color 2: {{ color }}
+//    {% assign color = 'red' %}
+//    Color 3: {{ color }}
+//{% endcache %}
 
-Color 4: {{ color }}
-";
+//Color 4: {{ color }}
+//";
 
-            var expectedOutput = @"
-Color 1: blue
-Color 2: blue
-Color 3: red
-Color 4: blue
-";
+//            var expectedOutput = @"
+//Color 1: blue
+//Color 2: blue
+//Color 3: red
+//Color 4: blue
+//";
 
-            var context = _helper.LavaEngine.NewContext();
+//            var context = _helper.LavaEngine.NewContext();
 
-            context.SetEnabledCommands( "Cache" );
+//            context.SetEnabledCommands( "Cache" );
 
-            _helper.AssertTemplateOutput( expectedOutput, input, context, ignoreWhiteSpace: true );
-        }
+//            _helper.AssertTemplateOutput( expectedOutput, input, context, ignoreWhiteSpace: true );
+//        }
 
         #endregion
 
@@ -136,6 +136,8 @@ Color 4: blue
             context.SetEnabledCommands( "RockEntity" );
 
             var output = _helper.GetTemplateOutput( input, context );
+
+            _helper.WriteTemplateOutputToDebug( output );
 
             Assert.IsTrue( output.Contains( "Ted Decker" ), "Expected person not found." );
             Assert.IsTrue( output.Contains( "Cindy Decker" ), "Expected person not found." );
@@ -275,7 +277,7 @@ Color 4: blue
         #region InteractionContentChannelItemWrite
 
         [TestMethod]
-        public void InteractionContentChannelItemWriteBlock_CommandNotEnabled_ReturnsConfigurationErrorMessage()
+        public void InteractionContentChannelItemWriteTag_CommandNotEnabled_ReturnsConfigurationErrorMessage()
         {
             var input = @"
 {% interactioncontentchannelitemwrite contentchannelitemid:'1' operation:'View' summary:'Viewed content channel item #1' personaliasid:'10' %}
@@ -287,7 +289,7 @@ Color 4: blue
         }
 
         [TestMethod]
-        public void InteractionContentChannelItemWriteBlock_ForEntityCommandResult_IsCached()
+        public void InteractionContentChannelItemWriteTag_ForEntityCommandResult_IsCached()
         {
             var input = @"
 {% interactioncontentchannelitemwrite contentchannelitemid:'1' operation:'View' summary:'Viewed content channel item #1' personaliasid:'10' %}

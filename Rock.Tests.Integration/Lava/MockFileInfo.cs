@@ -15,28 +15,37 @@
 // </copyright>
 //
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Rock.Lava;
+using System.IO;
+using System.Text;
+using Microsoft.Extensions.FileProviders;
 
 namespace Rock.Tests.Integration.Lava
 {
-    [TestClass]
-    public class LavaIntegrationTestBase
+    public class MockFileInfo : IFileInfo
     {
-        public static LavaEngineTypeSpecifier EngineType
+        public MockFileInfo( string name, string content )
         {
-            get
-            {
-                return IntegrationTestHelper.EngineType;
-            }
+            Name = name;
+            Content = content;
         }
 
-        public static LavaTestHelper _helper
+        public string Content { get; set; }
+        public bool Exists => true;
+
+        public bool IsDirectory => false;
+
+        public DateTimeOffset LastModified => DateTimeOffset.MinValue;
+
+        public long Length => -1;
+
+        public string Name { get; }
+
+        public string PhysicalPath => null;
+
+        public Stream CreateReadStream()
         {
-            get
-            {
-                return IntegrationTestHelper.LavaTestHelper;
-            }
+            var data = Encoding.UTF8.GetBytes( Content );
+            return new MemoryStream( data );
         }
     }
 }

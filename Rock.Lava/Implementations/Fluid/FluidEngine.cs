@@ -68,8 +68,8 @@ namespace Rock.Lava.Fluid
 
             // Set the default strategy for locating object properties to our custom implementation that adds
             // the ability to resolve properties of nested anonymous Types using Reflection.
-            TemplateContext.GlobalMemberAccessStrategy = new DynamicMemberAccessStrategy();
-
+            TemplateContext.GlobalMemberAccessStrategy = new LavaObjectMemberAccessStrategy();
+            
             // Register custom filters last, so they can override built-in filters of the same name.
             if ( filterImplementationTypes != null )
             {
@@ -78,6 +78,17 @@ namespace Rock.Lava.Fluid
                     RegisterLavaFiltersFromImplementingType( filterImplementationType );
                 }
             }
+
+            // Register all Types that implement ILavaDataObject as safe to render.
+            RegisterSafeType( typeof( Rock.Lava.ILavaDataObject ) );
+
+            // Set the file provider to resolve included file references.
+            if ( fileSystem == null )
+            {
+                fileSystem = new LavaNullFileSystem();
+            }
+
+            TemplateContext.GlobalFileProvider = new FluidFileSystem( fileSystem );
 
         }
         /// <summary>
@@ -260,7 +271,7 @@ namespace Rock.Lava.Fluid
                             // If this is the second parameter, it must be the input template if the first parameter is a LavaContext.
                             fluidFilterArgument = input;
                         }
-                        else if ( arguments.Count > ( i - firstParameterIndex ) ) //arguments.Count > ( i - 1 ) )
+                        else if ( arguments.Count > ( i - firstParameterIndex ) )
                         {
                             // This parameter is a filter argument.
                             fluidFilterArgument = arguments.At( i - firstParameterIndex );
@@ -272,55 +283,49 @@ namespace Rock.Lava.Fluid
                         }
                         else
                         {
-                            if ( lavaFilterMethodParameters[i].ParameterType == typeof( string ) )
-                            {
-                                if ( fluidFilterArgument != null )
-                                {
-                                    lavaFilterMethodArguments[i] = fluidFilterArgument.ToStringValue();
-                                }
-                            }
-                            else if ( lavaFilterMethodParameters[i].ParameterType == typeof( int ) )
-                            {
-                                if ( fluidFilterArgument == null )
-                                {
-                                    lavaFilterMethodArguments[i] = 0;
-                                }
-                                else
-                                {
-                                    lavaFilterMethodArguments[i] = (int)fluidFilterArgument.ToNumberValue();
-                                }
-                            }
-                            else if ( lavaFilterMethodParameters[i].ParameterType == typeof( bool ) )
-                            {
-                                if ( fluidFilterArgument == null )
-                                {
-                                    lavaFilterMethodArguments[i] = false;
-                                }
-                                else
-                                {
-                                    lavaFilterMethodArguments[i] = fluidFilterArgument.ToBooleanValue();
-                                }
-                            }
-                            else if ( lavaFilterMethodParameters[i].ParameterType == typeof( object ) )
-                            {
-                                if ( fluidFilterArgument != null )
-                                {
-                                    //var fluidFilterArgumentType = fluidFilterArgument.GetType();
+                            lavaFilterMethodArguments[i] = GetLavaParameterArgumentFromFluidValue( fluidFilterArgument, lavaFilterMethodParameters[i].ParameterType );
 
-                                    //if ( fluidFilterArgument is global::Fluid.Values.DictionaryValue xyz )
-                                    //{
-                                    //    xyz.ToRealObjectValue();
-                                    //}
-                                    //else
-                                    //{
-                                        lavaFilterMethodArguments[i] = fluidFilterArgument.ToRealObjectValue();
-                                    //}
-                                }
-                            }
-                            else
-                            {
-                                throw new ArgumentOutOfRangeException( lavaFilterMethodParameters[i].Name, $"Parameter type '{lavaFilterMethodParameters[i].ParameterType.Name}' is not supported for legacy filters." );
-                            }
+
+                            //if ( lavaFilterMethodParameters[i].ParameterType == typeof( string ) )
+                            //{
+                            //    if ( fluidFilterArgument != null )
+                            //    {
+                            //        lavaFilterMethodArguments[i] = fluidFilterArgument.ToStringValue();
+                            //    }
+                            //}
+                            //else if ( lavaFilterMethodParameters[i].ParameterType == typeof( int ) )
+                            //{
+                            //    if ( fluidFilterArgument == null )
+                            //    {
+                            //        lavaFilterMethodArguments[i] = 0;
+                            //    }
+                            //    else
+                            //    {
+                            //        lavaFilterMethodArguments[i] = (int)fluidFilterArgument.ToNumberValue();
+                            //    }
+                            //}
+                            //else if ( lavaFilterMethodParameters[i].ParameterType == typeof( bool ) )
+                            //{
+                            //    if ( fluidFilterArgument == null )
+                            //    {
+                            //        lavaFilterMethodArguments[i] = false;
+                            //    }
+                            //    else
+                            //    {
+                            //        lavaFilterMethodArguments[i] = fluidFilterArgument.ToBooleanValue();
+                            //    }
+                            //}
+                            //else if ( lavaFilterMethodParameters[i].ParameterType == typeof( object ) )
+                            //{
+                            //    if ( fluidFilterArgument != null )
+                            //    {
+                            //        lavaFilterMethodArguments[i] = fluidFilterArgument.ToRealObjectValue();
+                            //    }
+                            //}
+                            //else
+                            //{
+                            //    throw new ArgumentOutOfRangeException( lavaFilterMethodParameters[i].Name, $"Parameter type '{lavaFilterMethodParameters[i].ParameterType.Name}' is not supported for legacy filters." );
+                            //}
                         }
                     }
 
@@ -333,25 +338,46 @@ namespace Rock.Lava.Fluid
             }
         }
 
-        private object GetLavaParameterArgumentFromFluidValue( FluidValue fluidFilterArgument, Type argumentType )
+        private static object GetLavaParameterArgumentFromFluidValue( FluidValue fluidFilterArgument, Type argumentType )
         {
-            object lavaArgument;
+            object lavaArgument = null;
 
             if ( argumentType == typeof( string ) )
             {
-                lavaArgument = fluidFilterArgument.ToStringValue();
+                if ( fluidFilterArgument != null )
+                {
+                    lavaArgument = fluidFilterArgument.ToStringValue();
+                }
             }
             else if ( argumentType == typeof( int ) )
             {
-                lavaArgument = (int)fluidFilterArgument.ToNumberValue();
+                if ( fluidFilterArgument == null )
+                {
+                    lavaArgument = 0;
+                }
+                else
+                {
+                    lavaArgument = (int)fluidFilterArgument.ToNumberValue();
+                }
             }
             else if ( argumentType == typeof( bool ) )
             {
-                lavaArgument = fluidFilterArgument.ToBooleanValue();
+                if ( fluidFilterArgument == null )
+                {
+                    lavaArgument = false;
+                }
+                else
+                {
+                    lavaArgument = fluidFilterArgument.ToBooleanValue();
+                }
             }
             else if ( argumentType == typeof( object ) )
             {
-                lavaArgument = fluidFilterArgument.ToObjectValue();
+                if ( fluidFilterArgument != null )
+                {
+                    // Get the object value, ensuring that any Fluid wrapper that has been applied is removed.
+                    lavaArgument = fluidFilterArgument.ToRealObjectValue();
+                }
             }
             else
             {
@@ -402,12 +428,12 @@ namespace Rock.Lava.Fluid
             }
         }
 
-        private FluidTemplate CreateNewFluidTemplate( string inputTemplate )
+        private LavaFluidTemplate CreateNewFluidTemplate( string inputTemplate )
         {
             IEnumerable<string> errors;
-            FluidTemplate template;
+            LavaFluidTemplate template;
 
-            var isValidTemplate = FluidTemplate.TryParse( inputTemplate, out template, out errors );
+            var isValidTemplate = LavaFluidTemplate.TryParse( inputTemplate, out template, out errors );
 
             if ( !isValidTemplate )
             {
@@ -430,15 +456,21 @@ namespace Rock.Lava.Fluid
                     throw new LavaException( "Invalid LavaContext type." );
                 }
 
+                /* The Fluid framework parses the input template into a set of executable statements that can be rendered.
+                 * To remain independent of a specific framework, custom Lava tags and blocks parse the original source template text to extract
+                 * the information necessary to render their output. For this reason, we need to store the source in the context so that it can be passed
+                 * to the Lava custom components when they are rendered.
+                 */
+                templateContext.SetMergeFieldValue( "Source", inputTemplate );
+
                 output = template.Render( templateContext.FluidContext );
 
                 return true;
             }
             catch ( Exception ex )
             {
-                ProcessException( ex );
+                ProcessException( ex, out output );
 
-                output = null;
                 return false;
             }
         }
@@ -468,7 +500,7 @@ namespace Rock.Lava.Fluid
             FluidTagProxy.RegisterFactory( name, factoryMethod );
 
             // Register the proxy for the specified tag name.
-            FluidTemplate.Factory.RegisterTag<FluidTagProxy>( name );
+            LavaFluidTemplate.Factory.RegisterTag<FluidTagProxy>( name );
         }
 
         public override void RegisterBlock( string name, Func<string, IRockLavaBlock> factoryMethod )
@@ -491,29 +523,30 @@ namespace Rock.Lava.Fluid
             FluidBlockProxy.RegisterFactory( name, factoryMethod );
 
             // Register the proxy for the specified tag name.
-            FluidTemplate.Factory.RegisterBlock<FluidBlockProxy>( name );
+            LavaFluidTemplate.Factory.RegisterBlock<FluidBlockProxy>( name );
         }
     }
 
     #region Member Access Strategy implementation
 
     /// <summary>
-    /// An implementation of a MemberAccessStategy for the Fluid framework, modified to support anonymous types.
-    /// This implementation closely resembles the default implementation supplied by the Fluid framework.
+    /// An implementation of a MemberAccessStrategy for the Fluid framework, modified to support anonymous types and ILavaDataObject.
+    /// The MemberAccessStrategy determines the way in which property values are retrieved from specific types of objects supported by Lava.
     /// </summary>
-    public class DynamicMemberAccessStrategy : IMemberAccessStrategy
+    public class LavaObjectMemberAccessStrategy : IMemberAccessStrategy
     {
         private Dictionary<Type, Dictionary<string, IMemberAccessor>> _map;
         private readonly IMemberAccessStrategy _parent;
 
         private DynamicMemberAccessor _dynamicMemberAccessor = new DynamicMemberAccessor();
+        private LavaDataSourceMemberAccessor _lavaDataSourceMemberAccessor = new LavaDataSourceMemberAccessor();
 
-        public DynamicMemberAccessStrategy()
+        public LavaObjectMemberAccessStrategy()
         {
             _map = new Dictionary<Type, Dictionary<string, IMemberAccessor>>();
         }
 
-        public DynamicMemberAccessStrategy( IMemberAccessStrategy parent ) : this()
+        public LavaObjectMemberAccessStrategy( IMemberAccessStrategy parent ) : this()
         {
             _parent = parent;
             MemberNameStrategy = _parent.MemberNameStrategy;
@@ -542,6 +575,12 @@ namespace Rock.Lava.Fluid
             if ( typeof( RockDynamic ).IsAssignableFrom( type ) )
             {
                 return _dynamicMemberAccessor;
+            }
+
+            if ( typeof( ILavaDataObjectSource ).IsAssignableFrom( type )
+                 || typeof( ILavaDataObject ).IsAssignableFrom( type ) )
+            {
+                return _lavaDataSourceMemberAccessor;
             }
 
             while ( type != typeof( object ) )
@@ -582,6 +621,29 @@ namespace Rock.Lava.Fluid
             typeMap[name] = getter;
         }
     }
+
+    /// <summary>
+    /// A Fluid Engine Member Accessor that can retrieve the value of a LavaDataSource.
+    /// </summary>
+    public class LavaDataSourceMemberAccessor : IMemberAccessor
+    {
+        public object Get( object obj, string name, TemplateContext ctx )
+        {
+            ILavaDataObject lavaObject;
+
+            if ( obj is Rock.Lava.ILavaDataObjectSource lavaSource )
+            {
+                lavaObject = lavaSource.GetLavaDataObject();
+            }
+            else
+            {
+                lavaObject = (ILavaDataObject)obj;
+            }
+
+            return lavaObject.GetValue( name );
+        }
+    }
+
 
     /// <summary>
     /// A Fluid Engine Member Accessor that can retrieve the value of a member of an anonymously-typed object.

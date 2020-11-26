@@ -69,6 +69,11 @@
       <HintPath>..\packages\IdentityModel.3.0.0\lib\net461\IdentityModel.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Extensions.FileProviders.Abstractions, Version=1.1.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\RockWeb\Bin\Microsoft.Extensions.FileProviders.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Primitives, Version=1.1.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60" />
     <Reference Include="Microsoft.IdentityModel.Logging, Version=1.1.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.IdentityModel.Logging.1.1.5\lib\net451\Microsoft.IdentityModel.Logging.dll</HintPath>
     </Reference>
@@ -151,8 +156,11 @@
     <Compile Include="Lava\LavaCommentsTests.cs" />
     <Compile Include="Lava\Filters\DateFilterTests.cs" />
     <Compile Include="Lava\Filters\NumericFilterTests.cs" />
+    <Compile Include="Lava\LavaFileSystemTests.cs" />
     <Compile Include="Lava\LavaTestHelper.cs" />
     <Compile Include="Lava\LavaIntegrationTestBase.cs" />
+    <Compile Include="Lava\MockFileInfo.cs" />
+    <Compile Include="Lava\MockFileProvider.cs" />
     <Compile Include="Lava\ShortcodeCodeTests.cs" />
     <Compile Include="Lava\CommandTests.cs" />
     <Compile Include="Lava\ShortcodeTemplateTests.cs" />

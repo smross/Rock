@@ -46,6 +46,20 @@ namespace Rock.Lava
         /// <summary>
         /// Initializes a new instance of the <see cref="LavaException"/> class.
         /// </summary>
+        public LavaException( string message, params object[] args )
+            : base( message )
+        {
+            if ( args != null && args.Length > 0 )
+            {
+                message = string.Format( message, args );
+            }
+
+            _message = message;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LavaException"/> class.
+        /// </summary>
         public LavaException( string message, IEnumerable<string> details )
             : base( message )
         {

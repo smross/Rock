@@ -17,7 +17,7 @@
 namespace Rock.Data
 {
     /// <summary>
-    /// Attribute so that the dotLiquid knows to ignore this column ( Only used when [DataMember] needs to be used for serialization )
+    /// Marks a property as being inaccessible to a Lava template if an object of the type exists in the Lava context.
     /// </summary>
     public class LavaIgnoreAttribute : System.Attribute
     {

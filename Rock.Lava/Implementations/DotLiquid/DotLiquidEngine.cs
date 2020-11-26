@@ -15,14 +15,9 @@
 // </copyright>
 //
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
 using System.Text.RegularExpressions;
 using DotLiquid;
-using Rock.Lava.Blocks;
 using Rock.Lava.Filters;
 
 namespace Rock.Lava.DotLiquid
@@ -86,7 +81,12 @@ namespace Rock.Lava.DotLiquid
 
             Template.NamingConvention = new global::DotLiquid.NamingConventions.CSharpNamingConvention();
 
-            Template.FileSystem = new DotLiquidLavaFileSystem( fileSystem );
+            if ( fileSystem == null )
+            {
+                fileSystem = new DotLiquidFileSystem( new LavaNullFileSystem() );
+            }
+
+            Template.FileSystem = new DotLiquidFileSystem( fileSystem );
 
             Template.RegisterSafeType( typeof( Enum ), o => o.ToString() );
             Template.RegisterSafeType( typeof( DBNull ), o => null );
@@ -98,7 +98,7 @@ namespace Rock.Lava.DotLiquid
             Template.FilterContextParameterTransformer = ( context ) =>
             {
                 // Wrap the DotLiquid context in a framework-agnostic Lava context.
-                return new DotLiquidLavaContext( context as Context );
+                return new DotLiquidLavaContext( context );
             };
 
             // Register custom filters last, so they can override built-in filters of the same name.
@@ -110,7 +110,7 @@ namespace Rock.Lava.DotLiquid
                 }
             }
 
-            //RegisterSafeType( typeof( Rock.Lava.ILiquidizable ) );
+            // Register all Types that implement ILavaDataObject as safe to render.
             RegisterSafeType( typeof( Rock.Lava.ILavaDataObject ) );
         }
 
@@ -149,14 +149,10 @@ namespace Rock.Lava.DotLiquid
                 {
                     return new DropProxy( x, ( (ILavaDataObject)x ).AvailableKeys.ToArray() );
                 } );
-
-
-                //Template.RegisterSafeType( typeof( Rock.Lava.ILavaDataObject ), ( x ) => { return ( (ILavaDataObject)x ).ToLiquid(); } );
             }
             else
             {
                 // Wrap the object in a RockDynamic proxy, and a DotLiquid compatible proxy.
-                //Template.RegisterSafeType( type, ( x ) => { return new RockDynamic( x ).ToLiquid(); } );
                 Template.RegisterSafeType( type, ( x ) =>
                 {
                     var dynamicObject = new RockDynamic( x );
@@ -165,111 +161,6 @@ namespace Rock.Lava.DotLiquid
                 } );
             }
         }
-
-        //public override void RegisterShortcode( IRockShortcode shortcode )
-        //{
-        //    throw new NotImplementedException();
-
-        //    //Tag WrapperFactoryMethod( string shortcodeName )
-        //    //{
-        //    //    return shortcode as Tag;
-        //    //};
-
-        //    // TODO: We need to register the shortcode using Reflection to access the private variable Template.shortcodes.
-        //    //Template.RegisterShortcodeFactory( shortcode.Name, WrapperFactoryMethod );
-
-        //    // Create an instance of the shortcode object and register the Type with DotLiquid.
-        //    //var shortcodeObject = shortcodeFactoryMethod.Invoke( name );
-
-        //    ////Tag shortcode = ( Tag ) Activator.CreateInstance( shortcodeType );
-
-        //    //var shortcodesCollectionInfo = typeof( Template ).GetProperty( "Shortcodes", BindingFlags.Static | BindingFlags.NonPublic );
-
-        //    //var shortcodesCollection = shortcodesCollectionInfo.GetValue( null ) as Dictionary<string, Type>;
-
-        //    //shortcodesCollection.Add( name, shortcodeObject.GetType() );
-
-
-        //    // Create a new Dynamic Shortcode
-
-
-
-        //    Template.RegisterShortcode<DotLiquidDynamicShortcodeBlockProxy>( shortcode.SourceElementName );
-        //    //Template.RegisterShortcode(<>
-        //    //Template.RegisterShortcode<DynamicShortcodeBlock>( shortcode.TagName );
-
-        //    //throw new NotImplementedException();
-        //}
-
-        //public override void RegisterStaticShortcode( string name, Func<string, IRockShortcode> shortcodeFactoryMethod )
-        //{
-        //    var instance = shortcodeFactoryMethod( name );
-
-        //    if ( instance == null )
-        //    {
-        //        throw new Exception( $"Shortcode factory could not provide a valid instance for \"{name}\" ." );
-        //    }
-
-        //    // Get a registration name for the shortcode that will not collide with an existing tag name.
-        //    var registrationName = GetShortcodeInternalName( name );
-
-        //    if ( instance.ElementType == LavaShortcodeTypeSpecifier.Inline )
-        //    {
-        //        var tagFactoryMethod = shortcodeFactoryMethod as Func<string, IRockLavaTag>;
-
-        //        DotLiquidTagProxy.RegisterFactory( registrationName, tagFactoryMethod );
-
-        //        Template.RegisterTag<DotLiquidTagProxy>( registrationName );
-        //    }
-        //    else
-        //    {
-        //        DotLiquidBlockProxy.RegisterFactory( registrationName, ( blockName ) =>
-        //        {
-        //            // Get a shortcode instance using the provided shortcut factory.
-        //            var shortcode = shortcodeFactoryMethod( registrationName );
-
-        //            // Return the shortcode instance as a RockLavaBlock
-        //            return shortcode as IRockLavaBlock;
-        //        } );
-        //        ;
-
-        //        Template.RegisterTag<DotLiquidBlockProxy>( registrationName );
-        //    }
-        //}
-
-        //public override void RegisterDynamicShortcode( string name, Func<string, DynamicShortcodeDefinition> shortcodeFactoryMethod )
-        //{
-        //    // In the DotLiquid framework, we can only register Tags by specifying a System.Type that is instantiated at runtime using a parameterless constructor.
-        //    // To overcome this limitation for creating Lava shortcodes, we register a Type that represents a DotLiquid Tag that can reconfigure itself dynamically.
-        //    // using the shortcode definition provided when the Tag is initialized.
-
-        //    // Register the shortcode according to type.
-
-
-
-        //    DotLiquidDynamicShortcodeTagProxy.TagFactoryMethods.Add( name, shortcodeFactoryMethod );
-
-        //    var registrationName = GetShortcodeInternalName( name );
-            
-        //    //Template.RegisterShortcode<DotLiquidDynamicShortcodeBlockProxy>( shortcode.SourceElementName );
-        //    Template.RegisterTag<DotLiquidDynamicShortcodeBlockProxy>( registrationName );
-        //}
-
-        //private string GetShortcodeInternalName(string shortcodeName )
-        //{
-        //    var internalName = shortcodeName + ShortcodeNameSuffix;
-
-        //    return internalName.Trim().ToLower();
-        //}
-
-        //public override void RegisterShortcode<T>( string name )
-        //{
-        //    var shortcodesCollectionInfo = typeof( Template ).GetProperty( "Shortcodes", BindingFlags.Static | BindingFlags.NonPublic );
-
-        //    var shortcodesCollection = shortcodesCollectionInfo.GetValue( null ) as Dictionary<string, Type>;
-
-        //    shortcodesCollection.Add( name, typeof( T ) );
-        //}
 
         public override void RegisterTag( string name, Func<string, IRockLavaTag> factoryMethod )
         {
@@ -305,48 +196,20 @@ namespace Rock.Lava.DotLiquid
             Template.RegisterTag<DotLiquidBlockProxy>( name );
         }
 
-        //public override void SetContextValue( string key, object value )
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //private object GetDotLiquidCompatibleValue( object value )
-        //{
-        //    if ( value == null
-        //         || value is string
-        //         || value is IEnumerable
-        //         || value is decimal
-        //         || value is DateTime
-        //         || value is DateTimeOffset
-        //         || value is TimeSpan
-        //         || value is Guid
-        //         || value is Enum
-        //         || value is KeyValuePair<string, object>
-        //         || value.GetType().IsPrimitive
-        //         )
-        //    {
-        //        return value;
-        //    }
-
-        //    var safeTypeTransformer = Template.GetSafeTypeTransformer( value.GetType() );
-
-        //    if ( safeTypeTransformer != null )
-        //    {
-        //        return safeTypeTransformer( value );
-        //    }
-
-        //    return value;
-        //}
-
-        // Convert a LavaContext to a DotLiquid RenderParameters object.
+        /// <summary>
+        /// Convert a LavaContext to a DotLiquid RenderParameters object. 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         private RenderParameters GetDotLiquidRenderParametersFromLavaContext( ILavaContext context )
         {
             var renderSettings = new RenderParameters();
 
             var dotLiquidContext = ( (DotLiquidLavaContext)context ).DotLiquidContext;
 
-            // Set the transformation function for converting a Lava Context to a DotLiquid Context.
-            // This is needed to allow the context to be injected into a filter in a way that is framework-agnostic.
+            // Set the transformation function for converting a DotLiquid Context to a Lava Context.
+            // This tranformation allows the context to be injected into a filter in a way that is independent
+            // of the underlying rendering framework.
             dotLiquidContext.FilterContextParameterType = Template.FilterContextParameterType;
             dotLiquidContext.FilterContextParameterTransformer = Template.FilterContextParameterTransformer;
 
@@ -372,9 +235,8 @@ namespace Rock.Lava.DotLiquid
             }
             catch ( Exception ex )
             {
-                ProcessException( ex );
+                ProcessException( ex, out output );
 
-                output = null;
                 return false;
             }
         }
@@ -418,10 +280,7 @@ namespace Rock.Lava.DotLiquid
             return condition( left, right );
         }
 
-        //internal static readonly Regex IsShortCode = new Regex( string.Format( @"^{0}", Liquid.ShortCodeStart ), RegexOptions.Compiled );
         internal static readonly Regex FullShortCodeToken = new Regex( @"{\[\s*(\w+)\s*([^\]}]*)?\]}", RegexOptions.Compiled );
-        //public static readonly string ShortCodeStart = @"(?-mix:\{\[)"; // R.Q( @"\{\[" );
-        //public static readonly string ShortCodeEnd = @"(?-mix:\]\})"; // R.Q( @"\]\}" );
 
         public static string ShortcodeNameSuffix = "_sc";
 

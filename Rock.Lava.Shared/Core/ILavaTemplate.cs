@@ -62,15 +62,7 @@ namespace Rock.Lava
         /// </summary>
         IList<string> EnabledCommands { get; set; }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="type"></param>
-        /// <param name="allowedMembers"></param>
-        //void RegisterSafeType( Type type, string[] allowedMembers = null );
-
-        ILavaEngine LavaEngine { get;  }
-        //ILavaContext Context { get; }
+        //ILavaEngine LavaEngine { get;  }
     }
 
     public class LavaRenderParameters
@@ -92,6 +84,7 @@ namespace Rock.Lava
         /// <summary>
         /// Private variable assignments that are shared with other instances of this template but are not accessible to the source template.
         /// </summary>
+        [Obsolete("Rename as InternalVariables?")]
         public IDictionary<string, object> Registers { get; set; }
        
         /// <summary>

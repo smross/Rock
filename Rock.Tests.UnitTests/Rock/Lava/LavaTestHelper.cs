@@ -16,8 +16,10 @@
 //
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Rock.Data;
 using Rock.Lava;
 using Rock.Tests.Shared;
 
@@ -69,6 +71,7 @@ namespace Rock.Tests.UnitTests.Lava
         {
             var outputString = GetTemplateOutput( inputTemplate, mergeValues );
 
+            WriteOutputToDebug( outputString );
             Assert.That.Equal( expectedOutput, outputString );
         }
 
@@ -83,6 +86,7 @@ namespace Rock.Tests.UnitTests.Lava
 
             var regex = new Regex( expectedOutputRegex );
 
+            WriteOutputToDebug( outputString );
             StringAssert.Matches( outputString, regex );
         }
 
@@ -100,6 +104,7 @@ namespace Rock.Tests.UnitTests.Lava
 
             var isValidDate = DateTime.TryParse( outputString, out outputDate );
 
+            WriteOutputToDebug( outputString );
             Assert.That.True( isValidDate, $"Template Output does not represent a valid DateTime. [Output=\"{ outputString }\"]" );
 
             if ( maximumDelta != null )
@@ -128,6 +133,17 @@ namespace Rock.Tests.UnitTests.Lava
             Assert.That.True( isValid, "Expected Date String input is not a valid date." );
 
             AssertTemplateOutputDate( expectedDate, inputTemplate, maximumDelta );
+        }
+
+        /// <summary>
+        /// Write the rendered template to debug output.
+        /// </summary>
+        /// <param name="outputString"></param>
+        private void WriteOutputToDebug( string outputString )
+        {
+            var engineName = global::Rock.Lava.LavaEngine.Instance.EngineName;
+
+            Debug.Print( $"\n**\n** Template Output ({engineName}):\n**\n{outputString}" );
         }
 
         #region Test Data
@@ -197,6 +213,25 @@ namespace Rock.Tests.UnitTests.Lava
             public int Id { get; set; }
             public string Name { get; set; }
         }
+
+        /// <summary>
+        /// A representation of a Person used for testing purposes.
+        /// </summary>
+        public class TestSecuredRockDynamicObject : RockDynamic
+        {
+            [LavaInclude]
+            public int Id { get; set; }
+            public string NickName { get; set; }
+            public string FirstName { get; set; }
+            public string LastName { get; set; }
+            public TestCampus Campus { get; set; }
+
+            public override string ToString()
+            {
+                return $"{NickName} {LastName}";
+            }
+        }
+
         #endregion
     }
 }

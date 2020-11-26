@@ -69,7 +69,7 @@ namespace Rock.Lava.Blocks
         public override void OnRender( ILavaContext context, TextWriter result )
         {
             // first ensure that entity commands are allowed in the context
-            var commandTypeName = this.GetType().Name;
+            var commandTypeName = this.GetType().Name.ToLower();
 
             if ( !this.IsAuthorized( context, commandTypeName ) )
             {

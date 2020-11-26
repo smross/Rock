@@ -56,6 +56,11 @@ namespace Rock.Lava
             SetEnabledCommands( commands );
         }
 
+        /// <summary>
+        /// Sets a named value that is available to be resolved in the Lava Template.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
         public void SetMergeFieldValue( string key, object value )
         {
             SetMergeFieldValue( key, value, null );
@@ -75,6 +80,19 @@ namespace Rock.Lava
                 SetMergeFieldValue( kvp.Key, kvp.Value );
             }
         }
+
+        /// <summary>
+        /// Gets a named value that is for internal use only. Internal values are not available to be resolved in the Lava Template.
+        /// </summary>
+        /// <param name="key"></param>
+        public abstract object GetInternalValue( string key );
+
+        /// <summary>
+        /// Sets a named value that is for internal use only. Internal values are not available to be resolved in the Lava Template.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        public abstract void SetInternalValue( string key, object value );
 
         //public abstract void Stack( LavaDictionary newScope, Action callback );
         public abstract void Stack( Action callback );

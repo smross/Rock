@@ -36,8 +36,6 @@ namespace Rock.Lava
 
         private object _instance;
 
-        private Type _instanceType;
-
         private Dictionary<string, PropertyInfo> InstancePropertyLookup
         {
             get
@@ -60,7 +58,6 @@ namespace Rock.Lava
         public RockDynamic()
         {
             _instance = this;
-            _instanceType = GetType();
         }
 
         /// <summary>
@@ -70,7 +67,6 @@ namespace Rock.Lava
         public RockDynamic( object obj )
         {
             _instance = obj;
-            _instanceType = obj.GetType();
         }
 
         /// <summary>
@@ -145,31 +141,48 @@ namespace Rock.Lava
         }
 
         /// <summary>
-        /// Gets the property.
+        /// Gets the property Value of the object's property as specified by propertyPathName.
+        /// If the object is a dictionary, retrieves the value associated with the matching key.
         /// </summary>
-        /// <param name="instance">The instance.</param>
-        /// <param name="name">The name.</param>
-        /// <param name="result">The result.</param>
+        /// <param name="rootObj">The root obj.</param>
+        /// <param name="propertyPathName">The named path to the property, which may include references to nested properties in a dot-separated list.</param>
         /// <returns></returns>
-        protected bool GetProperty( object instance, string name, out object result )
+        protected bool GetProperty( object rootObj, string propertyPathName, out object result )
         {
-            if ( instance == null )
+            if ( rootObj == null || string.IsNullOrWhiteSpace( propertyPathName ) )
             {
-                instance = this;
+                result = null;
+                return false;
             }
 
-            PropertyInfo prop;
+            var propPath = propertyPathName.Split( new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries ).ToList<string>();
 
-            InstancePropertyLookup.TryGetValue( name, out prop );
+            object obj = rootObj;
+            Type objType = rootObj.GetType();
 
-            if ( prop != null )
+            while ( propPath.Any() && obj != null )
             {
-                result = prop.GetValue( instance, null );
-                return true;
+                // Get the property accessor.
+                var propName = propPath.First();
+
+                PropertyInfo prop;
+
+                InstancePropertyLookup.TryGetValue( propName, out prop );
+
+                if ( prop == null )
+                {
+                    result = null;
+                    return false;
+                }
+
+                // Get the value from the property
+                obj = prop.GetValue( obj, null );
+
+                propPath = propPath.Skip( 1 ).ToList();
             }
 
-            result = null;
-            return false;
+            result = obj;
+            return true;
         }
 
         /// <summary>
@@ -444,9 +457,23 @@ namespace Rock.Lava
             return dictionary;
         }
 
+        /// <summary>
+        /// Get the value associated with the specified key.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public object GetValue( object key )
         {
-            return this[key];
+            object value;
+
+            if ( key == null )
+            {
+                return null;
+            }
+
+            GetProperty( this, key.ToString(), out value );
+
+            return value;
         }
     }
 }

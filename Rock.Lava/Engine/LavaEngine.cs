@@ -1,4 +1,20 @@
-﻿using System;
+﻿// <copyright>
+// Copyright by the Spark Development Network
+//
+// Licensed under the Rock Community License (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.rockrms.com/license
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+// </copyright>
+//
+using System;
 using System.Collections.Generic;
 using Rock.Lava.DotLiquid;
 using Rock.Lava.Blocks;
@@ -7,10 +23,11 @@ using Rock.Lava.Fluid;
 
 namespace Rock.Lava
 {
+
     /// <summary>
     /// Provides access to core functions for the Rock Lava Engine.
     /// </summary>
-    public static class LavaEngine
+    public static partial class LavaEngine
     {
         public static string ShortcodeNameSuffix = "_sc";
 
@@ -35,16 +52,16 @@ namespace Rock.Lava
             }
         }
 
-        public static void InitializeDotLiquidFramework( ILavaFileSystem fileSystem = null, IList<Type> filterImplementationTypes = null )
-        {
-            _liquidFramework = LavaEngineTypeSpecifier.DotLiquid;
+        //public static void InitializeDotLiquidFramework( ILavaFileSystem fileSystem = null, IList<Type> filterImplementationTypes = null )
+        //{
+        //    _liquidFramework = LavaEngineTypeSpecifier.DotLiquid;
 
-            var liquidEngine = new DotLiquidEngine();
+        //    var liquidEngine = new DotLiquidEngine();
 
-            liquidEngine.Initialize( fileSystem, filterImplementationTypes );
+        //    liquidEngine.Initialize( fileSystem, filterImplementationTypes );
 
-            _instance = liquidEngine;
-        }
+        //    _instance = liquidEngine;
+        //}
 
         public static void Initialize( LavaEngineTypeSpecifier? engineType, ILavaFileSystem fileSystem = null, IList<Type> filterImplementationTypes = null )
         {
@@ -55,10 +72,14 @@ namespace Rock.Lava
             if ( _liquidFramework == LavaEngineTypeSpecifier.Fluid )
             {
                 engine = new FluidEngine();
+
+                fileSystem = new FluidFileSystem( fileSystem );
             }
             else
             {
                 engine = new DotLiquidEngine();
+
+                fileSystem = new DotLiquidFileSystem( fileSystem );
             }
 
             engine.Initialize( fileSystem, filterImplementationTypes );
@@ -72,15 +93,8 @@ namespace Rock.Lava
             {
                 if ( _instance == null )
                 {
-                    if ( _liquidFramework == LavaEngineTypeSpecifier.DotLiquid )
-                    {
-                        InitializeDotLiquidFramework();
-                    }
-                    else
-                    {
-                        throw new Exception( "Liquid Framework not implemented." );
-                        // TODO: Add option to instantiate Fluid engine.
-                    }                    
+                    // Initialize a default instance.
+                    Initialize( _liquidFramework );
                 }
 
                 return _instance;

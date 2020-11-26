@@ -1,9 +1,29 @@
-﻿using System;
+﻿// <copyright>
+// Copyright by the Spark Development Network
+//
+// Licensed under the Rock Community License (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.rockrms.com/license
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+// </copyright>
+//
+using System;
 using System.Collections.Generic;
 using Rock.Lava.Shortcodes;
 
 namespace Rock.Lava
 {
+
+    /// <summary>
+    /// Provides base functionality for an engine that can parse and render Lava Templates.
+    /// </summary>
     //TODO: Implement IRockStartup.
     public abstract class LavaEngineBase : ILavaEngine // ,IRockStartup
     {
@@ -69,11 +89,6 @@ namespace Rock.Lava
 
             return internalName.Trim().ToLower();
         }
-
-        //public abstract void RegisterStaticShortcode( string name, Func<string, IRockShortcode> shortcodeFactoryMethod );
-
-
-        //public abstract void RegisterDynamicShortcode( string name, Func<string, DynamicShortcodeDefinition> shortcodeFactoryMethod );
 
         public void RegisterDynamicShortcode( string name, Func<string, DynamicShortcodeDefinition> shortcodeFactoryMethod )
         {
@@ -349,12 +364,28 @@ namespace Rock.Lava
 
         protected void ProcessException( Exception ex )
         {
-            if ( this.ThrowExceptions )
-            {
-                throw ex;
-            }
+            string discardedOutput;
+
+            ProcessException( ex, out discardedOutput );
         }
 
-        public bool ThrowExceptions { get; set; } = true;
+        protected void ProcessException( Exception ex, out string message )
+        {
+            if ( this.ExceptionHandlingStrategy == ExceptionHandlingStrategySpecifier.RenderToOutput )
+            {
+                message = ex.Message;
+            }
+            else if ( this.ExceptionHandlingStrategy == ExceptionHandlingStrategySpecifier.Ignore )
+            {
+                // We should probably log the message here rather than failing silently.
+                message = null;
+            }
+            else
+            {
+                throw ex;
+            }            
+        }
+
+        public ExceptionHandlingStrategySpecifier ExceptionHandlingStrategy { get; set; } = ExceptionHandlingStrategySpecifier.RenderToOutput;
     }
 }

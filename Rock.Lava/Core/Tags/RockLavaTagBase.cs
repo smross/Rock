@@ -140,6 +140,12 @@ namespace Rock.Lava.Blocks
         /// <param name="proxy"></param>
         void ILiquidFrameworkRenderer.Render( ILiquidFrameworkRenderer baseRenderer, ILavaContext context, TextWriter result )
         {
+            // If this tag was previously called with a different base renderer, exit to prevent a circular reference.
+            if ( _baseRenderer != null )
+            {
+                return;
+            }
+
             _baseRenderer = baseRenderer;
 
             OnRender( context, result );
