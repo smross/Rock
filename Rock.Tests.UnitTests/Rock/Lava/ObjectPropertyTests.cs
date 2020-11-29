@@ -19,8 +19,11 @@ using Rock.Lava;
 
 namespace Rock.Tests.UnitTests.Lava
 {
+    /// <summary>
+    /// Tests security of access to merge object properties in a Lava template.
+    /// </summary>
     [TestClass]
-    public class ObjectPropertyTests : LavaUnitTestBase
+    public class ObjectPropertyAccessTests : LavaUnitTestBase
     {
         #region Constructors
 
