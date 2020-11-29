@@ -14,8 +14,10 @@
 // limitations under the License.
 // </copyright>
 //
+using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Rock.Lava;
+using Rock.Data;
 
 namespace Rock.Tests.UnitTests.Lava
 {
@@ -29,85 +31,167 @@ namespace Rock.Tests.UnitTests.Lava
         {
             _helper.LavaEngine.RegisterSafeType( typeof( TestPerson ) );
             _helper.LavaEngine.RegisterSafeType( typeof( TestCampus ) );
-
         }
 
         #endregion
+
+        #region LavaTypeAtttribute
+
+        /// <summary>
+        /// Referencing a non-existent property of an input object should return an empty string.
+        /// </summary>
+        [TestMethod]
+        public void LavaTypeAttribute_WithoutNamedProperties_ShouldRenderAllProperties()
+        {
+            var testObject = new TestLavaTypeAttributeWithoutNamedPropertiesClass();
+
+            var mergeValues = new LavaDictionary { { "PersonInfo", testObject } };
+
+            var template = @"
+Name: {{ PersonInfo.Name }}
+Email: {{ PersonInfo.Email }}
+";
+
+            var expectedOutput = @"
+Name: Ted Decker
+Email: tdecker@rocksolidchurch.com
+";
+
+            var output = _helper.GetTemplateOutput( template, mergeValues );
+
+            _helper.AssertTemplateOutput( expectedOutput, output, ignoreWhitespace: true );
+        }
+
+        /// <summary>
+        /// A property that is not named as included in the LavaType attribute definition should not be exposed during the rendering process.
+        /// </summary>
+        [TestMethod]
+        public void LavaTypeAttribute_WithNamedProperties_DoesNotExposeUnnamedUndecoratedProperty()
+        {
+            var testObject = new TestLavaTypeAttributeWithNamedPropertiesClass();
+
+            var mergeValues = new LavaDictionary { { "PersonInfo", testObject } };
+
+            var template = @"
+Date of Birth: {{ PersonInfo.DateOfBirth }}
+";
+
+            var expectedOutput = @"
+Date of Birth:
+";
+
+            // Date of Birth should be omitted because it is not a named as a Lava property.
+            var output = _helper.GetTemplateOutput( template, mergeValues );
+
+            _helper.AssertTemplateOutput( expectedOutput, output, ignoreWhitespace: true );
+        }
+
+        /// <summary>
+        /// A property named as included in the LavaType attribute definition but also marked with the LavaIgnore attribute should not be exposed during the rendering process.
+        /// </summary>
+        [TestMethod]
+        public void LavaTypeAttribute_WithNamedPropertyMarkedAsIgnored_DoesNotExposeIgnoredProperty()
+        {
+            var testObject = new TestLavaTypeAttributeWithNamedPropertiesClass();
+
+            var mergeValues = new LavaDictionary { { "PersonInfo", testObject } };
+
+            var template = @"
+Password: {{ PersonInfo.Password }}
+";
+
+            var expectedOutput = @"
+Password:
+";
+
+            // Password value should be omitted even though it is named in the whitelist, because it is marked with the LavaIgnore attribute.
+            var output = _helper.GetTemplateOutput( template, mergeValues );
+
+            _helper.AssertTemplateOutput( expectedOutput, output, ignoreWhitespace: true );
+        }
+
+        #endregion
+
+        #region LavaInclude/LavaIgnore
 
         /// <summary>
         /// Referencing a valid property of an input object should return the property value.
         /// </summary>
         [TestMethod]
-        public void LavaIncludeAttribute_PropertyMarkedAsIncluded_IsRendered()
+        public void LavaIncludeAttribute_PropertyWithIncludeAttribute_IsExposedInLava()
         {
-            throw new System.Exception();
+            var testObject = new TestLavaTypeAttributeOnIndividualProperty();
 
-            System.Diagnostics.Debug.Print( _helper.GetTestPersonTedDecker().ToString() );
+            var mergeValues = new LavaDictionary { { "PersonInfo", testObject } };
 
-            var mergeValues = new LavaDictionary { { "CurrentPerson", _helper.GetTestPersonTedDecker() } };
+            var template = @"
+Name: {{ PersonInfo.Name }}
+";
 
-            _helper.AssertTemplateOutput( "Decker", "{{ CurrentPerson.LastName }}", mergeValues );
+            var expectedOutput = @"
+Name: Ted Decker
+";
+
+            // Name value should be the only available property, because it is the only property marked with LavaInclude.
+            var output = _helper.GetTemplateOutput( template, mergeValues );
+
+            _helper.AssertTemplateOutput( expectedOutput, output, ignoreWhitespace: true );
         }
 
         /// <summary>
         /// Accessing a nested property using dot-notation "Campus.Name" should return the correct value.
         /// </summary>
         [TestMethod]
-        public void LavaIgnoreAttribute_PropertyMarkedAsIgnored_IsNotRendered()
+        public void LavaIgnoreAttribute_PropertyWithIgnoredAttribute_IsNotExposed()
         {
-            throw new System.Exception();
+            var testObject = new TestLavaTypeAttributeOnIndividualProperty();
 
-            var mergeValues = new LavaDictionary { { "CurrentPerson", _helper.GetTestPersonTedDecker() } };
+            var mergeValues = new LavaDictionary { { "PersonInfo", testObject } };
 
-            _helper.AssertTemplateOutput( "North Campus", "{{ CurrentPerson.Campus.Name }}", mergeValues );
+            var template = @"
+Password: {{ PersonInfo.Password }}
+";
+
+            var expectedOutput = @"
+Password:
+";
+
+            // Name value should be the only available property, because it is the only property marked with LavaInclude.
+            var output = _helper.GetTemplateOutput( template, mergeValues );
+
+            _helper.AssertTemplateOutput( expectedOutput, output, ignoreWhitespace: true );
         }
 
-        /// <summary>
-        /// Referencing a non-existent property of an input object should return an empty string.
-        /// </summary>
-        [TestMethod]
-        public void LavaTypeAttribute_SpecifiedProperties_AreRendered()
+        #endregion
+
+        [LavaType]
+        public class TestLavaTypeAttributeWithoutNamedPropertiesClass : RockDynamic
         {
-            throw new System.Exception();
-
-            var mergeValues = new LavaDictionary { { "CurrentPerson", _helper.GetTestPersonTedDecker() } };
-
-            _helper.AssertTemplateOutput( string.Empty, "{{ CurrentPerson.NonexistentProperty }}", mergeValues );
+            public string Name { get; set; } = "Ted Decker";
+            public string Email { get; set; } = "tdecker@rocksolidchurch.com";
         }
 
-        /// <summary>
-        /// Referencing a non-existent property of an input object should return an empty string.
-        /// </summary>
-        [TestMethod]
-        public void LavaTypeAttribute_PropertiesNotSpecified_AreNotRendered()
+        [LavaType( "Name", "Email", "Password" )]
+        public class TestLavaTypeAttributeWithNamedPropertiesClass
         {
-            throw new System.Exception();
+            public string Name { get; set; } = "Ted Decker";
+            public string Email { get; set; } = "tdecker@rocksolidchurch.com";
+            public string DateOfBirth { get; set; } = "1-Aug-1980";
 
-            var mergeValues = new LavaDictionary { { "CurrentPerson", _helper.GetTestPersonTedDecker() } };
-
-            _helper.AssertTemplateOutput( string.Empty, "{{ CurrentPerson.NonexistentProperty }}", mergeValues );
+            [LavaIgnore]
+            public string Password { get; set; } = "this-should-remain-secret";
         }
-/*
-        /// <summary>
-        /// Accessing the property of a nested dynamically-typed object should return the correct value.
-        /// </summary>
-        [TestMethod]
-        public void ObjectProperty_DotNotationPropertyAccessForAnonymousObject_ReturnsValue()
+
+        [LavaType]
+        public class TestLavaTypeAttributeOnIndividualProperty
         {
-            var groupMember = new
-            {
-                GroupName = "Group 1",
-                GroupRole = new { Name = "Member", IsLeader = false },
-                Person = new { FirstName = "Alex", LastName = "Andrews", Address = new { Street = "1 Main St", City = "MyTown" } }
-            };
+            [LavaInclude]
+            public string Name { get; set; } = "Ted Decker";
+            public string Email { get; set; } = "tdecker@rocksolidchurch.com";
 
-            var mergeValues = new LavaDictionary { { "GroupMember", groupMember } };
-
-            _helper.AssertTemplateOutput( "Group 1: Andrews, Alex (1 Main St)",
-                "{{ GroupMember.GroupName }}: {{ GroupMember.Person.LastName }}, {{ GroupMember.Person.FirstName }} ({{ GroupMember.Person.Address.Street }})",
-                mergeValues );
-
+            [LavaIgnore]
+            public string Password { get; set; } = "secret_password";
         }
-*/
+
     }
 }

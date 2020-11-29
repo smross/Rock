@@ -20,9 +20,10 @@ using System.Linq;
 using System.Reflection;
 using Fluid;
 using Fluid.Values;
+using Rock.Data;
 
 namespace Rock.Lava.Fluid
-{    
+{
     public class FluidEngine : LavaEngineBase
     {
         public override string EngineName
@@ -45,12 +46,6 @@ namespace Rock.Lava.Fluid
         {
             var fluidContext = new global::Fluid.TemplateContext();
 
-            // Set the transformation function for converting a Lava Context to a Fluid TemplateContext.
-            // This is needed to allow the Lava context parameter in a filter function to be identified and 
-            // injected in a way that is framework-agnostic.
-            //fluidContext.FilterContextParameterType = Template.FilterContextParameterType;
-            //fluidContext.FilterContextParameterTransformer = Template.FilterContextParameterTransformer;
-
             return new FluidLavaContext( fluidContext );
         }
 
@@ -69,7 +64,7 @@ namespace Rock.Lava.Fluid
             // Set the default strategy for locating object properties to our custom implementation that adds
             // the ability to resolve properties of nested anonymous Types using Reflection.
             TemplateContext.GlobalMemberAccessStrategy = new LavaObjectMemberAccessStrategy();
-            
+
             // Register custom filters last, so they can override built-in filters of the same name.
             if ( filterImplementationTypes != null )
             {
@@ -284,48 +279,6 @@ namespace Rock.Lava.Fluid
                         else
                         {
                             lavaFilterMethodArguments[i] = GetLavaParameterArgumentFromFluidValue( fluidFilterArgument, lavaFilterMethodParameters[i].ParameterType );
-
-
-                            //if ( lavaFilterMethodParameters[i].ParameterType == typeof( string ) )
-                            //{
-                            //    if ( fluidFilterArgument != null )
-                            //    {
-                            //        lavaFilterMethodArguments[i] = fluidFilterArgument.ToStringValue();
-                            //    }
-                            //}
-                            //else if ( lavaFilterMethodParameters[i].ParameterType == typeof( int ) )
-                            //{
-                            //    if ( fluidFilterArgument == null )
-                            //    {
-                            //        lavaFilterMethodArguments[i] = 0;
-                            //    }
-                            //    else
-                            //    {
-                            //        lavaFilterMethodArguments[i] = (int)fluidFilterArgument.ToNumberValue();
-                            //    }
-                            //}
-                            //else if ( lavaFilterMethodParameters[i].ParameterType == typeof( bool ) )
-                            //{
-                            //    if ( fluidFilterArgument == null )
-                            //    {
-                            //        lavaFilterMethodArguments[i] = false;
-                            //    }
-                            //    else
-                            //    {
-                            //        lavaFilterMethodArguments[i] = fluidFilterArgument.ToBooleanValue();
-                            //    }
-                            //}
-                            //else if ( lavaFilterMethodParameters[i].ParameterType == typeof( object ) )
-                            //{
-                            //    if ( fluidFilterArgument != null )
-                            //    {
-                            //        lavaFilterMethodArguments[i] = fluidFilterArgument.ToRealObjectValue();
-                            //    }
-                            //}
-                            //else
-                            //{
-                            //    throw new ArgumentOutOfRangeException( lavaFilterMethodParameters[i].Name, $"Parameter type '{lavaFilterMethodParameters[i].ParameterType.Name}' is not supported for legacy filters." );
-                            //}
                         }
                     }
 
@@ -333,7 +286,7 @@ namespace Rock.Lava.Fluid
 
                     return FluidValue.Create( result );
                 }
-            
+
                 TemplateContext.GlobalFilters.AddFilter( lavaFilterMethod.Name, fluidFilterFunction );
             }
         }
@@ -398,21 +351,6 @@ namespace Rock.Lava.Fluid
         private static FluidValue NoOp( FluidValue input, FilterArguments arguments, TemplateContext context )
         {
             return input;
-        }
-
-        public override bool AreEqualValue( object left, object right )
-        {
-            throw new NotImplementedException();
-        }
-
-        public override Type GetShortcodeType( string name )
-        {
-            throw new NotImplementedException();
-        }
-
-        public override ILavaTemplate ParseTemplate( string inputTemplate )
-        {
-            throw new NotImplementedException();
         }
 
         public override void RegisterSafeType( Type type, string[] allowedMembers = null )
@@ -525,13 +463,34 @@ namespace Rock.Lava.Fluid
             // Register the proxy for the specified tag name.
             LavaFluidTemplate.Factory.RegisterBlock<FluidBlockProxy>( name );
         }
+
+        #region Obsolete/Not Required?
+
+        public override bool AreEqualValue( object left, object right )
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Type GetShortcodeType( string name )
+        {
+            throw new NotImplementedException();
+        }
+
+        public override ILavaTemplate ParseTemplate( string inputTemplate )
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
     }
 
     #region Member Access Strategy implementation
 
     /// <summary>
-    /// An implementation of a MemberAccessStrategy for the Fluid framework, modified to support anonymous types and ILavaDataObject.
-    /// The MemberAccessStrategy determines the way in which property values are retrieved from specific types of objects supported by Lava.
+    /// An implementation of a MemberAccessStrategy for the Fluid framework
+    /// The MemberAccessStrategy determines the way in which property values are retrieved from specific types of objects supported by Lava:
+    /// anonymous types, types that implement ILavaDataObject, and types that are decorated with the LavaTypeAttribute.
     /// </summary>
     public class LavaObjectMemberAccessStrategy : IMemberAccessStrategy
     {
@@ -551,6 +510,12 @@ namespace Rock.Lava.Fluid
             _parent = parent;
             MemberNameStrategy = _parent.MemberNameStrategy;
         }
+
+        /// <summary>
+        /// A flag indicating if an exception should be thrown when a member access is invalid.
+        /// If set to false, an invalid access returns an empty value.
+        /// </summary>
+        public bool ThrowOnInvalidMemberAccess { get; set; } = true;
 
         public MemberNameStrategy MemberNameStrategy { get; set; } = MemberNameStrategies.Default;
 
@@ -577,16 +542,34 @@ namespace Rock.Lava.Fluid
                 return _dynamicMemberAccessor;
             }
 
+            // Check for ILavaDataObject implementation.
             if ( typeof( ILavaDataObjectSource ).IsAssignableFrom( type )
                  || typeof( ILavaDataObject ).IsAssignableFrom( type ) )
             {
                 return _lavaDataSourceMemberAccessor;
             }
 
-            while ( type != typeof( object ) )
+            var isMapped = _map.ContainsKey( type );
+
+            if ( !isMapped )
+            {
+                // Check for LavaTypeAttribute and if it exists, register a new member accessor for the decorated type.
+                // Subsequent requests will use the registered map.
+                var attr = (LavaTypeAttribute)type.GetCustomAttributes( typeof( LavaTypeAttribute ), false ).FirstOrDefault();
+
+                if ( attr != null )
+                {
+                    RegisterLavaTypeProperties( type, attr );
+                }
+            }
+
+            // Check for a specific property map for any Type in the inheritance chain.
+            var mapType = type;
+
+            while ( mapType != typeof( object ) )
             {
                 // Look for specific property map
-                if ( _map.TryGetValue( type, out var typeMap ) )
+                if ( _map.TryGetValue( mapType, out var typeMap ) )
                 {
                     if ( typeMap.TryGetValue( name, out accessor ) || typeMap.TryGetValue( "*", out accessor ) )
                     {
@@ -594,17 +577,47 @@ namespace Rock.Lava.Fluid
                     }
                 }
 
-                accessor = accessor ?? _parent?.GetAccessor( type, name );
+                accessor = accessor ?? _parent?.GetAccessor( mapType, name );
 
                 if ( accessor != null )
                 {
                     return accessor;
                 }
 
-                type = type.GetTypeInfo().BaseType;
+                mapType = mapType.GetTypeInfo().BaseType;
             }
 
             return null;
+        }
+
+        private void RegisterLavaTypeProperties( Type type, LavaTypeAttribute attr )
+        {
+            List<PropertyInfo> includedProperties;
+
+            // Get the list of included properties, then remove the ignored properties.
+            if ( attr.AllowedMembers == null || !attr.AllowedMembers.Any() )
+            {
+                // No included properties have been specified, so assume all are included.
+                includedProperties = type.GetProperties().ToList();
+            }
+            else
+            {
+                includedProperties = type.GetProperties().Where( x => attr.AllowedMembers.Contains( x.Name, StringComparer.OrdinalIgnoreCase ) ).ToList();
+            }
+
+            var ignoredProperties = type.GetProperties().Where( x => x.GetCustomAttributes( typeof( LavaIgnoreAttribute ), false ).Any() ).ToList();
+
+            foreach ( var includedProperty in includedProperties )
+            {
+                if ( ignoredProperties.Contains( includedProperty ) )
+                {
+                    continue;
+                }
+
+                var newAccessor = new LavaTypeMemberAccessor( includedProperty );
+
+                Register( type, includedProperty.Name, newAccessor );
+            }
         }
 
         public void Register( Type type, string name, IMemberAccessor getter )
@@ -644,7 +657,6 @@ namespace Rock.Lava.Fluid
         }
     }
 
-
     /// <summary>
     /// A Fluid Engine Member Accessor that can retrieve the value of a member of an anonymously-typed object.
     /// </summary>
@@ -663,6 +675,24 @@ namespace Rock.Lava.Fluid
             }
 
             return Rock.Common.ExtensionMethods.GetPropertyValue( obj, propertyPath );
+        }
+    }
+
+    /// <summary>
+    /// A Fluid Engine Member Accessor that reads a specific property value of a class decorated with the LavaType attribute.
+    /// </summary>
+    public class LavaTypeMemberAccessor : IMemberAccessor
+    {
+        private PropertyInfo _info;
+
+        public LavaTypeMemberAccessor( PropertyInfo info )
+        {
+            _info = info;
+        }
+
+        public object Get( object obj, string name, TemplateContext ctx )
+        {
+            return _info.GetValue( obj );
         }
     }
 

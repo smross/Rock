@@ -67,11 +67,20 @@ namespace Rock.Tests.UnitTests.Lava
         /// </summary>
         /// <param name="expectedOutput"></param>
         /// <param name="inputTemplate"></param>
-        public void AssertTemplateOutput( string expectedOutput, string inputTemplate, LavaDictionary mergeValues = null )
+        public void AssertTemplateOutput( string expectedOutput, string inputTemplate, LavaDictionary mergeValues = null, bool ignoreWhitespace = false )
         {
             var outputString = GetTemplateOutput( inputTemplate, mergeValues );
 
             WriteOutputToDebug( outputString );
+
+            if ( ignoreWhitespace )
+            {
+                WriteOutputToDebug( "(Comparison ignores WhiteSpace)" );
+
+                expectedOutput = expectedOutput.RemoveWhiteSpace();
+                outputString = outputString.RemoveWhiteSpace();
+            }
+
             Assert.That.Equal( expectedOutput, outputString );
         }
 
