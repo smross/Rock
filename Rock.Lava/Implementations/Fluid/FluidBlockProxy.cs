@@ -18,12 +18,15 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.Encodings.Web;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
 using Fluid.Tags;
 using Irony.Parsing;
+using Microsoft.Extensions.Primitives;
 
 namespace Rock.Lava.Fluid
 {
@@ -76,11 +79,11 @@ namespace Rock.Lava.Fluid
         /// <returns></returns>
         public BnfTerm GetSyntax( FluidGrammar grammar )
         {
-            var blockEndTag = "%}"; // "{% end" + _lavaBlock.SourceElementName + " %}"; // "%}"
+            var blockEndTag = "%}";
             
             // Lava syntax uses whitespace as a separator between arguments, which Fluid/Irony does not support.
             // Therefore we return a syntax for this element that captures the entire argument list as a single token
-            // and we will then parse the arguments list ourselves.
+            // and we will then parse the arguments list later in the process.
             var lavaArgumentList = new FreeTextLiteral( "lavaElementAttributesMarkup", FreeTextOptions.AllowEmpty | FreeTextOptions.AllowEof, blockEndTag );
 
             // Return a syntax that allows an empty arguments list, a comma-delimited list per the standard Fluid implementation,
@@ -94,7 +97,7 @@ namespace Rock.Lava.Fluid
         {
             /* The Fluid framework parses the block into Liquid tokens using an adapted Irony.Net grammar.
              * Lava uses some syntax that is not recognized by Liquid, so we need to do some parsing of our own.
-             * Also, many Lava blocks are designed to parse the raw source text of the block.
+             * Also, some Lava blocks are designed to parse the raw source text of the block.
              * To maintain compatibility with that design, our parse process involves these steps:
              * 1. Extract the whitespace-delimited argument list from the open tag and parse it here.
              * 2. Extract text tokens from the source document, to allow Lava blocks to parse the raw source text.
@@ -119,10 +122,7 @@ namespace Rock.Lava.Fluid
             // These are the statements that are contained in the body of the block, not including the opening and closing tags.
             _statements = context.CurrentBlock.Statements;
 
-            //var sourceTemplate = context. context.CurrentBlock....CurrentBlock.get.Getin
-            //var tokens = new List<string>();
-
-            var position = node.Span.Location.ToUiString();
+            //var position = node.Span.Location.ToUiString();
 
             //foreach (Statement statement in _statements )
             //{
@@ -133,33 +133,118 @@ namespace Rock.Lava.Fluid
             //TODO: Get ea
             // Pass the remaining nodes to the OnParse method of the Lava block.
             // TODO: If OnParse returns any nodes, what can/should we do with them?
-            var tokens = GetTokenTreeFromParseTree( node );
+            //var tokens = GetTokenTreeFromParseTree( node );
 
 
-            var parseTreeNodes = Traverse( node, n => n.ChildNodes );
+            //var parseTreeNodes = Traverse( node, n => n.ChildNodes );
 
             // Get the source document?
 
-
-
-            List<object> nodes;
-
-            _lavaBlock.OnParse( tokens, out nodes );
-
-            if ( nodes != null
-                 && nodes.Count > 0 )
-            {
-                // [DJL - 2020-11-20] TODO: If a block returns nodes from this callback, they must be Fluid Statements.
-                // As far as I can tell, the returned nodes are never used.
-                // This callback could be renamed from "OnParse" to "OnParsed", with the nodes parameter omitted.
-                throw new NotImplementedException( "Fluid Engine does not support Nodes returned from OnParse() method." );
-            }
 
             var renderBlockDelegate = new DelegateStatement( ( writer, encoder, ctx ) => WriteToAsync( writer, encoder, ctx, elementAttributesMarkup, _statements ) );
 
             return renderBlockDelegate; 
         }
 
+
+        /// <summary>
+        /// Parses the specified tokens.
+        /// </summary>
+        /// <param name="tokens">The tokens.</param>
+        private string GetBlockMarkup( string tagName, string templateMarkup, int tagStartIndex )
+        {
+            // Get the block markup. The list of tokens contains all of the lava from the start tag to
+            // the end of the template. This will pull out just the internals of the block.
+
+            // We must take into consideration nested tags of the same type
+
+            // This is similar logic to the Shortcodes, but the tag regex are different. Attempted to refactor to a reusable helper, but it needs
+            // access to a lot of the internals of the command.
+            //var _blockMarkup = new StringBuilder();
+
+            //var endTagFound = false;
+
+            var startTag = $@"{{\%\s*{ tagName }\s*(.*?)\%}}";
+            var endTag = $@"{{\%\s*end{ tagName }\s*\%}}";
+
+            var openTags = 0;
+
+            Regex regExStart = new Regex( startTag );
+            Regex regExEnd = new Regex( endTag );
+
+            int currentIndex = tagStartIndex;
+            int lastIndex = templateMarkup.Length - 1;
+            int endTagIndex = -1;
+            int blockStartIndex = 0;
+            int blockEndIndex = 0;
+
+            while ( currentIndex < lastIndex )
+            {
+                Match startTagMatch = regExStart.Match( templateMarkup, currentIndex );
+
+                if ( startTagMatch.Success )
+                {
+                    if ( startTagMatch.Index > lastIndex )
+                    {
+                        continue;
+                    }
+
+                    if ( openTags == 0 )
+                    {
+                        blockStartIndex = startTagMatch.Index + startTagMatch.Length;
+                    }
+
+                    openTags++;
+
+                    currentIndex += startTagMatch.Length;
+                }
+                else
+                {
+                    Match endTagMatch = regExEnd.Match( templateMarkup, currentIndex );
+
+                    if ( endTagMatch.Success )
+                    {
+                        if ( endTagMatch.Index > lastIndex )
+                        {
+                            continue;
+                        }
+                       
+                        if ( openTags > 0 )
+                        {
+                            openTags--; // decrement the child tag counter
+                        }
+                        else
+                        {
+                            blockEndIndex = endTagMatch.Index;
+                            endTagIndex = endTagMatch.Index;
+
+                            break;
+                        }
+
+                        currentIndex += endTagMatch.Length;
+                    }
+                    else
+                    {
+                        currentIndex++;
+                    }
+                }
+            }
+
+            string blockMarkup = null;
+
+            if ( endTagIndex > blockStartIndex )
+            {
+                blockMarkup = templateMarkup.Substring( blockStartIndex, blockEndIndex - blockStartIndex );
+            }
+            else
+            {
+                throw new LavaException( "Block syntax error. Missing end tag." );
+            }
+
+            return blockMarkup;
+        }
+
+        /*
         public List<string> GetTokenTreeFromParseTree( ParseTreeNode node, int index = 0, int level = 0 )
         {
             //for ( var levelIndex = 0; levelIndex < level; levelIndex++ )
@@ -228,6 +313,7 @@ namespace Rock.Lava.Fluid
                 }
             }
         //}
+*/
 
         private List<Statement> _statements = null;
 
@@ -235,23 +321,29 @@ namespace Rock.Lava.Fluid
         {
             var lavaContext = new FluidLavaContext( context );
             
-            var sourceTemplate = lavaContext.GetInternalValue( "SourceTemplate" );
+            var sourceTemplate = lavaContext.GetInternalValue( "Source" ) as string ?? string.Empty;
 
             // Initialize the DotLiquid block.
             var tokens = new List<string>();
 
-            //TODO: Get the tokens.
-            //var startIndex = _rootNode.Span.Location.Position;
-
-            var blockText = sourceTemplate.ToString().Substring( _rootNode.Span.Location.Position, _rootNode.Span.Length );
-
-            tokens.Add( blockText );
+            // TODO: Parse the template into tokens?
 
             _lavaBlock.OnInitialize( this.SourceElementName, elementAttributesMarkup, tokens );
 
             List<object> nodes;
 
-            _lavaBlock.OnParse( tokens, out nodes );
+            var startTag = new Regex( $@"{{\%\s*", RegexOptions.RightToLeft );
+
+            var openingTagMatch = startTag.Match( sourceTemplate, _rootNode.Span.Location.Position );
+
+            if ( !openingTagMatch.Success )
+            {
+                throw new LavaException( "Opening tag not found." );
+            }
+
+            var blockText = GetBlockMarkup( this.SourceElementName, sourceTemplate, openingTagMatch.Index );
+
+            _lavaBlock.SourceElementName .OnParse( tokens, out nodes );
 
             var element = _lavaBlock as ILiquidFrameworkRenderer;
 
@@ -269,8 +361,6 @@ namespace Rock.Lava.Fluid
 
         private async ValueTask<Completion> WriteToDefaultAsync( TextWriter writer, TextEncoder encoder, TemplateContext context, List<Statement> statements )
         {
-            var sourceTemplate = context.AmbientValues["SourceTemplate"];
-
             Completion completion;
 
             foreach ( var statement in statements )

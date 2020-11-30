@@ -399,7 +399,7 @@ namespace Rock.Lava.Fluid
                  * the information necessary to render their output. For this reason, we need to store the source in the context so that it can be passed
                  * to the Lava custom components when they are rendered.
                  */
-                templateContext.SetMergeFieldValue( "Source", inputTemplate );
+                templateContext.SetInternalValue( "Source", inputTemplate );
 
                 output = template.Render( templateContext.FluidContext );
 

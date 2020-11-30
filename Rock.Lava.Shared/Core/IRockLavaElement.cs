@@ -29,6 +29,11 @@ namespace Rock.Lava
         /// </summary>
         string SourceElementName { get; }
 
+        /// <summary>
+        /// The source text that defines this element in a Lava document.
+        /// </summary>
+        string SourceText { get; }
+
         void OnInitialize( string elementName, string attributesMarkup, List<string> tokens );
 
         void OnRender( ILavaContext context, TextWriter result );
