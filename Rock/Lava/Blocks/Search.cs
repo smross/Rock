@@ -178,11 +178,11 @@ namespace Rock.Lava.Blocks
             base.OnRender( context, result );
         }
 
-        public override void OnParse( List<string> tokens, out List<object> nodes )
-        {
-            // No action required.
-            nodes = null;
-        }
+        //public override void OnParse( List<string> tokens, out List<object> nodes )
+        //{
+        //    // No action required.
+        //    nodes = null;
+        //}
 
         /// <summary>
         /// Parses the markup.

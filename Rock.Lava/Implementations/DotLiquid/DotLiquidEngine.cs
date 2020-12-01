@@ -246,6 +246,23 @@ namespace Rock.Lava.DotLiquid
             throw new NotImplementedException();
         }
 
+        public override ILavaTemplate ParseTemplate( string inputTemplate )
+        {
+            // Create a new DotLiquid template and wrap it in a proxy for use with the Lava engine.
+            var dotLiquidTemplate = CreateNewDotLiquidTemplate( inputTemplate );
+
+            var lavaTemplate = new DotLiquidTemplateProxy( dotLiquidTemplate );
+
+            return lavaTemplate;
+        }
+
+        public override bool AreEqualValue( object left, object right )
+        {
+            var condition = global::DotLiquid.Condition.Operators["=="];
+
+            return condition( left, right );
+        }
+
         private Template CreateNewDotLiquidTemplate( string inputTemplate )
         {
             var formattedInput = ReplaceTemplateShortcodes( inputTemplate );
@@ -266,30 +283,16 @@ namespace Rock.Lava.DotLiquid
             return template;
         }
 
-        public override ILavaTemplate ParseTemplate( string inputTemplate )
-        {
-            var lavaTemplate = new DotLiquidTemplateProxy( CreateNewDotLiquidTemplate( inputTemplate ) );
-
-            return lavaTemplate;
-        }
-
-        public override bool AreEqualValue( object left, object right )
-        {
-            var condition = global::DotLiquid.Condition.Operators["=="];
-
-            return condition( left, right );
-        }
-
         internal static readonly Regex FullShortCodeToken = new Regex( @"{\[\s*(\w+)\s*([^\]}]*)?\]}", RegexOptions.Compiled );
 
         public static string ShortcodeNameSuffix = "_sc";
 
         private string ReplaceTemplateShortcodes( string inputTemplate )
         {
-            /* Lava shortcode syntax is not recognized as a valid document element by Liquid parsers.
-             * Replace the shortcode token "{[ ]}" with the Liquid tag token "{% %}",
-             * and add a prefix to avoid naming collisions with existing registered tags.
-             * The shortcode can then be processed as a regular custom tag by the Liquid templating engine.
+            /* The Lava shortcode syntax is not recognized by standard Liquid parsers, and there is no way to intercept or replace the parser component.
+             * Prior to Rock v13, we forked the DotLiquid library to include this functionality - but in doing so the library became very difficult to maintain or replace. 
+             * As of v13, we pre-process the template to replace the Lava shortcode token "{[ ]}" with the Liquid tag token "{% %}" and add a prefix to avoid naming collisions with existing standard tags.
+             * The shortcode can then be processed as a regular custom block by the DotLiquid templating engine.
              */
             var newBlockName = "{% $1<suffix> $2 %}".Replace( "<suffix>", ShortcodeNameSuffix );
 

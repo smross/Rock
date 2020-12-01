@@ -24,7 +24,7 @@ namespace Rock.Lava
     /// </summary>
     public abstract class LavaTemplateBase : ILavaTemplate
     {
-        public abstract ILavaEngine LavaEngine { get; }
+        //public abstract ILavaEngine LavaEngine { get; }
 
         /// <summary>
         /// The set of Lava commands permitted for this template.
@@ -67,8 +67,8 @@ namespace Rock.Lava
             return output;           
         }
 
-        [Obsolete("Not used?")]
-        public abstract void SetContextValue( string key, object value );
+        //[Obsolete("Not used?")]
+        //public abstract void SetContextValue( string key, object value );
 
         public bool TryRender( IDictionary<string, object> values, out string output, out IList<Exception> errors )
         {

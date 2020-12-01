@@ -48,7 +48,7 @@ namespace Rock.Lava.DotLiquid
     /// Implementation of a Dynamic Shortcode Tag for the DotLiquid templating framework.
     /// </summary>
     [Obsolete("Reimplemented using DotLiquidTagProxy")]
-    public partial class DotLiquidDynamicShortcodeTagProxy : Tag, ILiquidFrameworkRenderer // IRockShortcode // RockLavaShortcodeBase
+    public partial class DotLiquidDynamicShortcodeTagProxy : Tag, ILiquidFrameworkElementRenderer // IRockShortcode // RockLavaShortcodeBase
     {
         private static readonly Regex Syntax = new Regex( @"(\w+)" );
 
@@ -280,7 +280,7 @@ namespace Rock.Lava.DotLiquid
 
         #region ILiquidFrameworkRenderer implementation
 
-        void ILiquidFrameworkRenderer.Render( ILiquidFrameworkRenderer baseRenderer, ILavaContext context, TextWriter result )
+        void ILiquidFrameworkElementRenderer.Render( ILiquidFrameworkElementRenderer baseRenderer, ILavaContext context, TextWriter result )
         {
             // Call the default DotLiquid renderer.
             var dotLiquidContext = ( (DotLiquidLavaContext)context ).DotLiquidContext;
@@ -288,7 +288,7 @@ namespace Rock.Lava.DotLiquid
             base.Render( dotLiquidContext, result );
         }
 
-        void ILiquidFrameworkRenderer.Parse( ILiquidFrameworkRenderer baseRenderer, List<string> tokens, out List<object> nodes )
+        void ILiquidFrameworkElementRenderer.Parse( ILiquidFrameworkElementRenderer baseRenderer, List<string> tokens, out List<object> nodes )
         {
             base.Parse( tokens );
 

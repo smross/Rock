@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using Fluid;
 using Fluid.Values;
 using Rock.Data;
@@ -371,7 +372,9 @@ namespace Rock.Lava.Fluid
             IEnumerable<string> errors;
             LavaFluidTemplate template;
 
-            var isValidTemplate = LavaFluidTemplate.TryParse( inputTemplate, out template, out errors );
+            var formattedInput = ReplaceTemplateShortcodes( inputTemplate );
+
+            var isValidTemplate = LavaFluidTemplate.TryParse( formattedInput, out template, out errors );
 
             if ( !isValidTemplate )
             {
@@ -379,6 +382,24 @@ namespace Rock.Lava.Fluid
             }
 
             return template;
+        }
+
+        internal static readonly Regex FullShortCodeToken = new Regex( @"{\[\s*(\w+)\s*([^\]}]*)?\]}", RegexOptions.Compiled );
+
+        public static string ShortcodeNameSuffix = "_sc";
+
+        private string ReplaceTemplateShortcodes( string inputTemplate )
+        {
+            /* The Lava shortcode syntax is not recognized as a document element by the Fluid parser, and at present there is no way to intercept or replace the Fluid parser.
+             * As a workaround, pre-process the template to replace the Lava shortcode token "{[ ]}" with the Liquid tag token "{% %}" and add a prefix to avoid naming collisions with existing standard tags.
+             * The shortcode can then be processed as a regular custom block by the Fluid templating engine.
+             * As a future improvement, we could look at submitting a pull request to the Fluid project to add support for custom parsers.
+             */
+            var newBlockName = "{% $1<suffix> $2 %}".Replace( "<suffix>", ShortcodeNameSuffix );
+
+            inputTemplate = FullShortCodeToken.Replace( inputTemplate, newBlockName );
+
+            return inputTemplate;
         }
 
         public override bool TryRender( string inputTemplate, out string output, ILavaContext context )
@@ -399,10 +420,10 @@ namespace Rock.Lava.Fluid
                  * the information necessary to render their output. For this reason, we need to store the source in the context so that it can be passed
                  * to the Lava custom components when they are rendered.
                  */
-                templateContext.SetInternalValue( "Source", inputTemplate );
+                templateContext.SetInternalValue( Constants.ContextKeys.SourceTemplateText, inputTemplate );
 
                 output = template.Render( templateContext.FluidContext );
-
+                
                 return true;
             }
             catch ( Exception ex )
@@ -464,6 +485,13 @@ namespace Rock.Lava.Fluid
             LavaFluidTemplate.Factory.RegisterBlock<FluidBlockProxy>( name );
         }
 
+        public override ILavaTemplate ParseTemplate( string inputTemplate )
+        {
+            var lavaTemplate = new FluidTemplateProxy( CreateNewFluidTemplate( inputTemplate ) );
+
+            return lavaTemplate;
+        }
+
         #region Obsolete/Not Required?
 
         public override bool AreEqualValue( object left, object right )
@@ -472,11 +500,6 @@ namespace Rock.Lava.Fluid
         }
 
         public override Type GetShortcodeType( string name )
-        {
-            throw new NotImplementedException();
-        }
-
-        public override ILavaTemplate ParseTemplate( string inputTemplate )
         {
             throw new NotImplementedException();
         }

@@ -32,7 +32,7 @@ namespace Rock.Lava.DotLiquid
     /// We need to intercept this process and generate a proxy Tag from a source class that does not inherit from the DotLiquid.Tag base class.
     /// This proxy class is instantiated by the DotLiquid framework, and we generate an internal instance of a Lava tag that performs the processing.
     /// </remarks>
-    internal class DotLiquidTagProxy : Tag, ILiquidFrameworkRenderer
+    internal class DotLiquidTagProxy : Tag, ILiquidFrameworkElementRenderer
     {
         private static Dictionary<string, Func<string, IRockLavaTag>> _factoryMethods = new Dictionary<string, Func<string, IRockLavaTag>>( StringComparer.OrdinalIgnoreCase );
 
@@ -87,7 +87,7 @@ namespace Rock.Lava.DotLiquid
         {
             var lavaContext = new DotLiquidLavaContext( context );
 
-            var tag = _lavaElement as ILiquidFrameworkRenderer;
+            var tag = _lavaElement as ILiquidFrameworkElementRenderer;
 
             if ( tag == null )
             {
@@ -103,7 +103,7 @@ namespace Rock.Lava.DotLiquid
         #region IRockLavaTag implementation
 
 
-        void ILiquidFrameworkRenderer.Render( ILiquidFrameworkRenderer baseRenderer, ILavaContext context, TextWriter result )
+        void ILiquidFrameworkElementRenderer.Render( ILiquidFrameworkElementRenderer baseRenderer, ILavaContext context, TextWriter result )
         {
             var dotLiquidContext = ( (DotLiquidLavaContext)context ).DotLiquidContext;
 
@@ -115,7 +115,7 @@ namespace Rock.Lava.DotLiquid
             throw new NotImplementedException( "The OnStartup method is not a valid operation for the DotLiquidTagProxy." );
         }
 
-        void ILiquidFrameworkRenderer.Parse( ILiquidFrameworkRenderer baseRenderer, List<string> tokens, out List<object> nodes )
+        void ILiquidFrameworkElementRenderer.Parse( ILiquidFrameworkElementRenderer baseRenderer, List<string> tokens, out List<object> nodes )
         {
             base.Parse( tokens );
 

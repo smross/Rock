@@ -146,11 +146,11 @@ namespace Rock.Lava.Blocks
             }
         }
 
-        public override void OnParse( List<string> tokens, out List<object> nodes )
-        {
-            // No action required.
-            nodes = null;
-        }
+        //public override void OnParse( List<string> tokens, out List<object> nodes )
+        //{
+        //    // No action required.
+        //    nodes = null;
+        //}
 
         /// <summary>
         /// Cleans the input.

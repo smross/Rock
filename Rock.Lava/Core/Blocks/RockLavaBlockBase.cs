@@ -23,7 +23,7 @@ namespace Rock.Lava.Blocks
     /// <summary>
     /// Provides base functionality for implementation of a Rock Lava block.
     /// </summary>
-    public abstract class RockLavaBlockBase : IRockLavaBlock, ILiquidFrameworkRenderer
+    public abstract class RockLavaBlockBase : IRockLavaBlock, ILiquidFrameworkElementRenderer
     {
         private string _sourceElementName = null;
 
@@ -49,6 +49,11 @@ namespace Rock.Lava.Blocks
         }
 
         /// <summary>
+        /// The text that defines this element in the Lava source document.
+        /// </summary>
+        public string SourceText { get; set; }
+
+        /// <summary>
         /// Determines if this block is authorized in the specified Lava context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -68,7 +73,7 @@ namespace Rock.Lava.Blocks
             return LavaSecurityHelper.IsAuthorized( context, commandName );
         }
 
-        #region DotLiquid Block Implementation
+        #region IRockLavaElement Implementation
 
         /// <summary>
         /// Override this method to provide custom initialization for the block.
@@ -95,6 +100,8 @@ namespace Rock.Lava.Blocks
             }
         }
 
+/*
+         
         /// <summary>
         /// Parse a set of Lava tokens into a set of document nodes that can be processed by the underlying rendering framework.
         /// </summary>
@@ -114,6 +121,8 @@ namespace Rock.Lava.Blocks
         {
             nodes = null;
         }
+
+*/
 
         /// <summary>
         /// Override this method to perform tasks when the block is first loaded at startup.
@@ -146,7 +155,7 @@ namespace Rock.Lava.Blocks
 
         #region ILiquidFrameworkRenderer implementation
 
-        private ILiquidFrameworkRenderer _baseRenderer = null;
+        private ILiquidFrameworkElementRenderer _baseRenderer = null;
 
         /// <summary>
         /// Render this component using the Liquid templating engine.
@@ -154,7 +163,7 @@ namespace Rock.Lava.Blocks
         /// <param name="context"></param>
         /// <param name="result"></param>
         /// <param name="proxy"></param>
-        void ILiquidFrameworkRenderer.Render( ILiquidFrameworkRenderer baseRenderer, ILavaContext context, TextWriter result )
+        void ILiquidFrameworkElementRenderer.Render( ILiquidFrameworkElementRenderer baseRenderer, ILavaContext context, TextWriter result )
         {
             // If this block was previously called with a different base renderer, exit to prevent a circular reference.
             if ( _baseRenderer != null )
@@ -167,7 +176,7 @@ namespace Rock.Lava.Blocks
             OnRender( context, result );
         }
 
-        void ILiquidFrameworkRenderer.Parse( ILiquidFrameworkRenderer baseRenderer, List<string> tokens, out List<object> nodes )
+        void ILiquidFrameworkElementRenderer.Parse( ILiquidFrameworkElementRenderer baseRenderer, List<string> tokens, out List<object> nodes )
         {
             baseRenderer.Parse( baseRenderer, tokens, out nodes );
         }

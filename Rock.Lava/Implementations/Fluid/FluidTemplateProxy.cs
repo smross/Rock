@@ -36,113 +36,62 @@ namespace Rock.Lava.Fluid
     {
         #region Constructors
 
-        //private TemplateContext _templateContext;
         private LavaFluidTemplate _template;
 
-        //public ILavaEngine LavaEngine
-        //{
-        //    get
-        //    {
-        //        return new FluidEngine();
-        //    }
-        //}
-
-        //public IList<string> EnabledCommands { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-        public override ILavaEngine LavaEngine => throw new NotImplementedException();
+        //public override ILavaEngine LavaEngine => throw new NotImplementedException();
 
         public FluidTemplateProxy( LavaFluidTemplate template )
         {
             _template = template;
-
-            // Initialize the engine and create a new context.
-            //FluidEngine.Initialize();
-
-            //_templateContext = new TemplateContext();
-
-            //_templateContext.ParserFactory = new LavaFluidParserFactory();
-
-            //_templateContext.TemplateFactory = () => { return new FluidTemplateProxy(); };
-            ////_templateContext.TemplateFactory
-
-            //_templateContext.Filters.RegisterFiltersFromType( typeof( global::Rock.Lava.Fluid.Filters.FluidFilters ) );
         }
 
         #endregion
 
-        public void Dispose()
-        {
-            //
-        }
+        //public void Dispose()
+        //{
+        //    //
+        //}
 
-        public void RegisterSafeType( Type type, string[] allowedMembers = null )
-        {
-            // Not required?
-        }
+        //public void RegisterSafeType( Type type, string[] allowedMembers = null )
+        //{
+        //    // Not required?
+        //}
 
-        [Obsolete]
-        public override void SetContextValue( string key, object value )
-        {
-            throw new NotImplementedException();
-        }
+        //[Obsolete]
+        //public override void SetContextValue( string key, object value )
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         protected override bool OnTryRender( LavaRenderParameters parameters, out string output, out IList<Exception> errors )
         {
             output = null;
             errors = new List<Exception>();
 
-            //LavaFluidTemplate template;
-
-            //var parser = _templateContext.TemplateFactory.cre .ParserFactory.CreateParser();
-
-            //bool isValidTemplate = parser.pa .TryParse(( inputTemplate, out template );
-            //bool isValidTemplate = LavaFluidTemplate.TryParse( inputTemplate, out template );
-
-            //_templateContext.TemplateFactory. .TemplateFactory
-
-            //List<Statement> statements;
-            //IEnumerable<string> errors;
-
-            //isValidTemplate = LavaFluidTemplate.Factory.CreateParser().TryParse( inputTemplate, stripEmptyLines: false, out statements, out errors );
-
-            //if ( isValidTemplate )
-            //{
-            //    template = new LavaFluidTemplate
-            //    {
-            //        Statements = statements
-            //    };
-            //}
-
-
             var templateContext = new TemplateContext();
 
-            //parameters.EnabledCommands
-
-            //parameters.InstanceAssigns = null;
-
-            parameters.LocalVariables = null;
-            parameters.Registers = null;
-            //parameters.ValueTypeTransformers;
-
-            foreach ( var p in parameters.LocalVariables )
+            // Copy the local variables into the Fluid Template context.
+            // TODO: What about InstanceAssigns and Registers?
+            if ( parameters.LocalVariables != null )
             {
-                templateContext.SetValue( p.Key, p.Value );
+                foreach ( var p in parameters.LocalVariables )
+                {
+                    templateContext.SetValue( p.Key, p.Value );
+                }
             }
 
-            //var parser = LavaFluidTemplate.Factory.CreateParser();
-            //parser.TryParse( inputTemplate, true, out statements, out errors );
+            try
+            {
+                output = _template.Render( templateContext );
+            }
+            catch (Exception ex)
+            {
+                errors.Add( ex );
 
-            //if ( !isValidTemplate )
-            //{
-            //    output = null;
-            //    return false;
-            //}
-
-            output = _template.Render( templateContext );
-            // template.Render( _templateContext );
-
+                return false;
+            }
+            
             return true;
-
         }
     }
 }

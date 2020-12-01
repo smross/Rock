@@ -35,7 +35,7 @@ namespace Rock.Lava.Fluid
     /// The FluidTagProxy wraps a LavaTag that is executed internally to render the element content.
     /// This approach allows the LavaTag to be more easily adapted for use with alternative Liquid templating engines.
     /// </remarks>
-    internal class FluidTagProxy : global::Fluid.Tags.ITag, ILiquidFrameworkRenderer
+    internal class FluidTagProxy : global::Fluid.Tags.ITag, ILiquidFrameworkElementRenderer
     {
         #region Static factory methods
 
@@ -111,7 +111,7 @@ namespace Rock.Lava.Fluid
         {
             var lavaContext = new FluidLavaContext( context );
 
-            var tag = _lavaTag as ILiquidFrameworkRenderer;
+            var tag = _lavaTag as ILiquidFrameworkElementRenderer;
 
             if ( tag == null )
             {
@@ -128,7 +128,7 @@ namespace Rock.Lava.Fluid
 
         #region IRockLavaTag implementation
 
-        void ILiquidFrameworkRenderer.Render( ILiquidFrameworkRenderer baseRenderer, ILavaContext context, TextWriter result )
+        void ILiquidFrameworkElementRenderer.Render( ILiquidFrameworkElementRenderer baseRenderer, ILavaContext context, TextWriter result )
         {
             var fluidContext = ( (FluidLavaContext)context ).FluidContext;
 
@@ -140,7 +140,7 @@ namespace Rock.Lava.Fluid
             throw new NotImplementedException( "The OnStartup method is not a valid operation for the DotLiquidTagProxy." );
         }
 
-        void ILiquidFrameworkRenderer.Parse( ILiquidFrameworkRenderer baseRenderer, List<string> tokens, out List<object> nodes )
+        void ILiquidFrameworkElementRenderer.Parse( ILiquidFrameworkElementRenderer baseRenderer, List<string> tokens, out List<object> nodes )
         {
             // TODO: May need to rework this?
             // Make sure we are getting a list of text-based tokens here.

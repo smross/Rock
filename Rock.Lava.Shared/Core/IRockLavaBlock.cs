@@ -14,29 +14,14 @@
 // limitations under the License.
 // </copyright>
 //
-using System.Collections.Generic;
-using System.IO;
 
 namespace Rock.Lava
 {
     /// <summary>
-    /// Interface that classes can implement to be included when searching assemblies for custom Lava Commands.
+    /// An interface that marks a type to be included when searching assemblies for custom Lava elements.
     /// </summary>
     public interface IRockLavaBlock : IRockLavaElement
     {
-        /// <summary>
-        /// The name of the block.
-        /// </summary>
-        //string SourceElementName { get; }
-
-        /*
-        void OnInitialize( string tagName, string markup, List<string> tokens );
-
-        void OnRender( ILavaContext context, TextWriter result );
-
-        void OnParse( List<string> tokens, out List<object> nodes );
-
-        void OnStartup();
-        */
+        //
     }
 }

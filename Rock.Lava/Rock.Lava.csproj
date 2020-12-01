@@ -82,7 +82,7 @@
     <Compile Include="Core\Blocks\LavaSecurityHelper.cs" />
     <Compile Include="Core\Blocks\RockLavaBlockBase.cs" />
     <Compile Include="Core\Shortcodes\DynamicShortcode.cs" />
-    <Compile Include="Core\Shortcodes\ILiquidFrameworkRenderer.cs" />
+    <Compile Include="Core\Shortcodes\ILiquidFrameworkElementRenderer.cs" />
     <Compile Include="Core\Shortcodes\RockLavaShortcodeBase.cs" />
     <Compile Include="Engine\LavaNullFileSystem.cs" />
     <Compile Include="Implementations\Fluid\FluidFileSystem.cs" />

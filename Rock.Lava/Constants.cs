@@ -10,5 +10,10 @@ namespace Rock.Lava
         {
             public const string NotAuthorizedMessage = "The Lava command '{0}' is not configured for this template.";
         }
+
+        public static class ContextKeys
+        {
+            public const string SourceTemplateText = "Source";
+        }
     }
 }

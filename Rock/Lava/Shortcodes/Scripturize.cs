@@ -143,10 +143,10 @@ namespace Rock.Lava.Shortcodes
             }
         }
 
-        public override void OnParse( List<string> tokens, out List<object> nodes )
-        {
-            base.OnParse( tokens, out nodes );
-        }
+        //public override void OnParse( List<string> tokens, out List<object> nodes )
+        //{
+        //    base.OnParse( tokens, out nodes );
+        //}
 
         /// <summary>
         /// Parses the markup.

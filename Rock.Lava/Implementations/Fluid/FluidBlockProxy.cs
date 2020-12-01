@@ -27,6 +27,7 @@ using Fluid.Ast;
 using Fluid.Tags;
 using Irony.Parsing;
 using Microsoft.Extensions.Primitives;
+using Rock.Lava.Blocks;
 
 namespace Rock.Lava.Fluid
 {
@@ -39,7 +40,7 @@ namespace Rock.Lava.Fluid
     /// The FluidBlockProxy wraps a LavaBlock that is executed internally to render the element content.
     /// This approach allows the LavaBlock to be more easily adapted for use with alternative Liquid templating engines.
     /// </remarks>
-    internal class FluidBlockProxy : global::Fluid.Tags.ITag, ILiquidFrameworkRenderer
+    internal class FluidBlockProxy : global::Fluid.Tags.ITag, ILiquidFrameworkElementRenderer
     {
         #region Static factory methods
 
@@ -321,14 +322,12 @@ namespace Rock.Lava.Fluid
         {
             var lavaContext = new FluidLavaContext( context );
             
-            var sourceTemplate = lavaContext.GetInternalValue( "Source" ) as string ?? string.Empty;
+            var sourceTemplate = lavaContext.GetInternalValue( Constants.ContextKeys.SourceTemplateText ) as string ?? string.Empty;
 
             // Initialize the DotLiquid block.
             var tokens = new List<string>();
 
             // TODO: Parse the template into tokens?
-
-            _lavaBlock.OnInitialize( this.SourceElementName, elementAttributesMarkup, tokens );
 
             List<object> nodes;
 
@@ -341,16 +340,26 @@ namespace Rock.Lava.Fluid
                 throw new LavaException( "Opening tag not found." );
             }
 
-            var blockText = GetBlockMarkup( this.SourceElementName, sourceTemplate, openingTagMatch.Index );
-
-            _lavaBlock.SourceElementName .OnParse( tokens, out nodes );
-
-            var element = _lavaBlock as ILiquidFrameworkRenderer;
+            var element = _lavaBlock as ILiquidFrameworkElementRenderer;
 
             if ( element == null )
             {
                 throw new Exception( "Block proxy cannot be rendered." );
             }
+
+            var blockText = GetBlockMarkup( this.SourceElementName, sourceTemplate, openingTagMatch.Index );
+
+            //_lavaBlock.OnParse( tokens, out nodes );
+
+            //_lavaBlock.SetSourceMarkup( blockText );
+            var blockBase = _lavaBlock as RockLavaBlockBase;
+
+            if ( blockBase != null )
+            {
+                blockBase.SourceText = blockText;
+            }
+
+            _lavaBlock.OnInitialize( this.SourceElementName, elementAttributesMarkup, tokens );
 
             element.Render( this, lavaContext, writer );
 
@@ -379,7 +388,7 @@ namespace Rock.Lava.Fluid
 
         #region ILiquidFrameworkRenderer implementation
 
-        void ILiquidFrameworkRenderer.Render( ILiquidFrameworkRenderer baseRenderer, ILavaContext context, TextWriter writer )
+        void ILiquidFrameworkElementRenderer.Render( ILiquidFrameworkElementRenderer baseRenderer, ILavaContext context, TextWriter writer )
         {
             var fluidContext = ( (FluidLavaContext)context ).FluidContext;
 
@@ -391,7 +400,7 @@ namespace Rock.Lava.Fluid
             throw new NotImplementedException( "The OnStartup method is not a valid operation for the DotLiquidBlockProxy." );
         }
 
-        void ILiquidFrameworkRenderer.Parse( ILiquidFrameworkRenderer baseRenderer, List<string> tokens, out List<object> nodes )
+        void ILiquidFrameworkElementRenderer.Parse( ILiquidFrameworkElementRenderer baseRenderer, List<string> tokens, out List<object> nodes )
         {
             // TODO: May need to rework this?
             // Make sure we are getting a list of text-based tokens here.

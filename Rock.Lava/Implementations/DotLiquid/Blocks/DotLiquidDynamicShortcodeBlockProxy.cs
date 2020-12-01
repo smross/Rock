@@ -35,7 +35,7 @@ namespace Rock.Lava.DotLiquid
     /// By contrast, a static shortcode has a fixed definition that is defined in a Rock code component.
     /// </summary>
     [Obsolete("Reimplemented using DotLiquidBlockProxy")]
-    public class DotLiquidDynamicShortcodeBlockProxy : Block, ILiquidFrameworkRenderer //, IRockShortcode
+    public class DotLiquidDynamicShortcodeBlockProxy : Block, ILiquidFrameworkElementRenderer //, IRockShortcode
     {
         private static readonly Regex Syntax = new Regex( @"(\w+)" );
 
@@ -505,7 +505,7 @@ namespace Rock.Lava.DotLiquid
 
         #region ILiquidFrameworkRenderer implementation
 
-        void ILiquidFrameworkRenderer.Render( ILiquidFrameworkRenderer baseRenderer, ILavaContext context, TextWriter result )
+        void ILiquidFrameworkElementRenderer.Render( ILiquidFrameworkElementRenderer baseRenderer, ILavaContext context, TextWriter result )
         {
             // Call the default DotLiquid renderer.
             var dotLiquidContext = ( (DotLiquidLavaContext)context ).DotLiquidContext;
@@ -513,7 +513,7 @@ namespace Rock.Lava.DotLiquid
             base.Render( dotLiquidContext, result );
         }
 
-        void ILiquidFrameworkRenderer.Parse( ILiquidFrameworkRenderer baseRenderer, List<string> tokens, out List<object> nodes )
+        void ILiquidFrameworkElementRenderer.Parse( ILiquidFrameworkElementRenderer baseRenderer, List<string> tokens, out List<object> nodes )
         {
             base.Parse( tokens );
 

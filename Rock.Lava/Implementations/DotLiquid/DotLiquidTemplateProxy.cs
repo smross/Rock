@@ -43,34 +43,21 @@ namespace Rock.Lava.DotLiquid
 
         #endregion
 
-        public override ILavaEngine LavaEngine
-        {
-            get
-            {
-                return global::Rock.Lava.LavaEngine.Instance;
-            }
-        }
+        //public override ILavaEngine LavaEngine
+        //{
+        //    get
+        //    {
+        //        return global::Rock.Lava.LavaEngine.Instance;
+        //    }
+        //}
 
-        [Obsolete]
-        public override void SetContextValue( string key, object value )
-        {
-            // DotLiquid does not process ExpandoObjects, so replace with Dictionary<string, object>
-            //value = ConvertExpandoObjectsToDictionaries( value );
+        //[Obsolete]
+        //public override void SetContextValue( string key, object value )
+        //{
+        //    var newValue = ConvertExpandoObjectsToDictionaries( value );
 
-            //var converter = new ExpandoObjectConverter();
-
-            //var serialized = JsonConvert.SerializeObject( value ); // .Serialize( Object<List<ExpandoObject>>( json, converter );
-
-            //var newValue = JsonConvert.DeserializeObject( serialized, new JsonSerializerSettings { Converters = new List<JsonConverter> { new ExpandoConverter() } } );
-
-            //object input = null;
-            //input = JsonConvert.DeserializeObject<List<ExpandoObject>>( json, converter );
-            //var output = ( List<object> ) StandardFilters.Sort( input, "StartDateTime", "desc" );
-
-            var newValue = ConvertExpandoObjectsToDictionaries( value );
-
-            _Context.AddOrReplace( key, newValue );
-        }
+        //    _Context.AddOrReplace( key, newValue );
+        //}
 
         /// <summary>
         /// Try to render the template using the supplied context variables.
@@ -106,7 +93,8 @@ namespace Rock.Lava.DotLiquid
             //dotLiquidRenderParameters.LocalVariables = Hash.FromDictionary( parameters.LocalVariables );
             //dotLiquidRenderParameters.Registers = Hash.FromDictionary( parameters.Registers );
 
-            // Store the EnabledCommands setting for the context and the template in the DotLiquid registers.
+            // Store the EnabledCommands setting for the context and the template in the DotLiquid Registers collection.
+            // Registers are internal variables that are not exposed in the template during the rendering process.
             var enabledCommands = new List<string>();
 
             if ( this.EnabledCommands != null )
@@ -135,105 +123,66 @@ namespace Rock.Lava.DotLiquid
         /// </summary>
         /// <param name="expando">The <see cref="ExpandoObject"/> to convert</param>
         /// <returns>The fully converted <see cref="ExpandoObject"/></returns>
-        private object ConvertExpandoObjectsToDictionaries( object input )
-        {
-            // Replace ExpandoObject collection.
-            var expandoCollection = input as IEnumerable<ExpandoObject>;
+        //private object ConvertExpandoObjectsToDictionaries( object input )
+        //{
+        //    // Replace ExpandoObject collection.
+        //    var expandoCollection = input as IEnumerable<ExpandoObject>;
 
-            if ( expandoCollection != null )
-            {
-                // Replace with a list of Dictionary<string, object>
-                var newList = new List<Dictionary<string, object>>();
+        //    if ( expandoCollection != null )
+        //    {
+        //        // Replace with a list of Dictionary<string, object>
+        //        var newList = new List<Dictionary<string, object>>();
                 
-                foreach (var expandoElement in expandoCollection)
-                {
-                    var newDictionary = ConvertExpandoObjectsToDictionaries( expandoElement ) as Dictionary<string, object>;
+        //        foreach (var expandoElement in expandoCollection)
+        //        {
+        //            var newDictionary = ConvertExpandoObjectsToDictionaries( expandoElement ) as Dictionary<string, object>;
 
-                    newList.Add( newDictionary );
-                }
+        //            newList.Add( newDictionary );
+        //        }
 
-                return newList;
-            }
+        //        return newList;
+        //    }
 
-            // Replace ExpandoObject.
-            var expando = input as ExpandoObject;
+        //    // Replace ExpandoObject.
+        //    var expando = input as ExpandoObject;
 
-            if ( expando != null )
-            {
-                // Replace with a list of Dictionary<string, object>
-                var newValue = new Dictionary<string, object>( expando );
+        //    if ( expando != null )
+        //    {
+        //        // Replace with a list of Dictionary<string, object>
+        //        var newValue = new Dictionary<string, object>( expando );
 
-                return ConvertExpandoObjectsToDictionaries( newValue );
-            }
+        //        return ConvertExpandoObjectsToDictionaries( newValue );
+        //    }
             
-            var dictionary = input as IDictionary<string, object>;
+        //    var dictionary = input as IDictionary<string, object>;
 
-            if ( dictionary != null )
-            {
-                var replacementItems = new Dictionary<string, object>();
+        //    if ( dictionary != null )
+        //    {
+        //        var replacementItems = new Dictionary<string, object>();
 
-                foreach ( var kvp in dictionary )
-                {
-                    var newValue = ConvertExpandoObjectsToDictionaries( kvp.Value );
+        //        foreach ( var kvp in dictionary )
+        //        {
+        //            var newValue = ConvertExpandoObjectsToDictionaries( kvp.Value );
 
-                    if ( newValue != kvp.Value )
-                    {
-                        replacementItems.Add( kvp.Key, newValue );
-                    }
-                }
+        //            if ( newValue != kvp.Value )
+        //            {
+        //                replacementItems.Add( kvp.Key, newValue );
+        //            }
+        //        }
 
-                if ( replacementItems.Any() )
-                {
-                    foreach (var kvp in replacementItems )
-                    {
-                        dictionary.AddOrReplace( kvp.Key, kvp.Value );
-                    }
-                }
+        //        if ( replacementItems.Any() )
+        //        {
+        //            foreach (var kvp in replacementItems )
+        //            {
+        //                dictionary.AddOrReplace( kvp.Key, kvp.Value );
+        //            }
+        //        }
 
-                return dictionary;
-            }
+        //        return dictionary;
+        //    }
 
-            //var list = input as IList;
-
-            //if ( list != null )
-            //{
-            //    var replacementList = new List<object>();
-
-            //    for ( int i = 0; i < list.Count; i++ )
-            //    {
-            //        var newItem = ConvertExpandoObjectsToDictionaries( list[i] );
-
-            //        if ( newItem != list[i] )
-            //        {
-            //            replacementList.Add( newItem );
-            //        }
-
-            //        list[i] = ConvertExpandoObjectsToDictionaries( list[i] );
-            //    }
-
-            //    if ( replacementList)
-            //    return list;
-            //}
-
-            //var collection = input as ICollection;
-
-            //if ( collection != null )
-            //{
-            //    var addElements = new List<object>();
-            //    var removeElements = new List<object>();
-
-            //    foreach ( var element in collection )
-            //    {
-            //        var newElement = ConvertExpandoObjectsToDictionaries( element );
-            //        //collection.Add( list[i] = ConvertExpandoObjectsToDictionaries( list[i] );
-            //    }
-            //    return list;
-            //}
-
-            return input;
-
-            //return RecursivelyConvertIDictToDict( expando );
-        }
+        //    return input;
+        //}
 
         /// <summary>
         /// This method takes an <see cref="IDictionary{string, object}"/> and recursively converts it to a <see cref="Dictionary{string, object}"/>. 
@@ -241,79 +190,42 @@ namespace Rock.Lava.DotLiquid
         /// </summary>
         /// <param name="value">The <see cref="IDictionary{string, object}"/> to convert</param>
         /// <returns>The fully converted <see cref="Dictionary{string, object}"/></returns>
-        private Dictionary<string, object> RecursivelyConvertIDictToDict( IDictionary<string, object> value )
-        {
-            var newDictionary = value.ToDictionary(
-                keySelector => keySelector.Key,
-                elementSelector =>
-                {
-                    // if it's another IDict just go through it recursively
-                    if ( elementSelector.Value is IDictionary<string, object> dict )
-                    {
-                        return RecursivelyConvertIDictToDict( dict );
-                    }
+        //private Dictionary<string, object> RecursivelyConvertIDictToDict( IDictionary<string, object> value )
+        //{
+        //    var newDictionary = value.ToDictionary(
+        //        keySelector => keySelector.Key,
+        //        elementSelector =>
+        //        {
+        //            // if it's another IDict just go through it recursively
+        //            if ( elementSelector.Value is IDictionary<string, object> dict )
+        //            {
+        //                return RecursivelyConvertIDictToDict( dict );
+        //            }
 
-                    // if it's an IEnumerable check each element
-                    if ( elementSelector.Value is IEnumerable<object> list )
-                    {
-                        // go through all objects in the list
-                        // if the object is an IDict -> convert it
-                        // if not keep it as is
-                        return list
-                                    .Select( o => o is IDictionary<string, object>
-                                 ? RecursivelyConvertIDictToDict( ( IDictionary<string, object> ) o )
-                                 : o
-                                    );
-                    }
+        //            // if it's an IEnumerable check each element
+        //            if ( elementSelector.Value is IEnumerable<object> list )
+        //            {
+        //                // go through all objects in the list
+        //                // if the object is an IDict -> convert it
+        //                // if not keep it as is
+        //                return list
+        //                            .Select( o => o is IDictionary<string, object>
+        //                         ? RecursivelyConvertIDictToDict( ( IDictionary<string, object> ) o )
+        //                         : o
+        //                            );
+        //            }
 
-                    // neither an IDict nor an IEnumerable -> it's fine to just return the value it has
-                    return elementSelector.Value;
-                }
-            );
+        //            // neither an IDict nor an IEnumerable -> it's fine to just return the value it has
+        //            return elementSelector.Value;
+        //        }
+        //    );
 
-            return newDictionary;
-        }
+        //    return newDictionary;
+        //}
 
         public void Dispose()
         {
             //
         }
-
-        //public void RegisterSafeType( Type type, string[] allowedMembers = null )
-        //{
-        //    if ( allowedMembers == null )
-        //    {
-        //        allowedMembers = type.GetProperties().Select( x => x.Name )
-        //            .Union( type.GetFields().Where(x => x.IsPublic ).Select( x => x.Name ) )
-        //            .ToArray();
-        //    }
-
-        //    Template.RegisterSafeType( type, allowedMembers );
-        //}
-
-        //public bool TryRender( IDictionary<string, object> values, out string output )
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //public bool TryRender( LavaRenderParameters parameters, out string output )
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //public bool TryRender( IDictionary<string, object> values, out string output, out IList<Exception> errors )
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //public bool TryRender( LavaRenderParameters parameters, out string output, out IList<Exception> errors )
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //public string Render( IDictionary<string, object> values )
-        //{
-        //    var isValid = TryRender( string inputTemplate, out string output )
-        //}
     }
 }

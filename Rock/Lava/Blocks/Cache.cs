@@ -41,7 +41,7 @@ namespace Rock.Lava.Blocks
         string _markup = string.Empty;
         string _tagName = string.Empty;
 
-        StringBuilder _blockMarkup = new StringBuilder();
+        string _blockMarkup = null; // = new StringBuilder();
 
         const int _maxRecursionDepth = 10;
 
@@ -65,9 +65,12 @@ namespace Rock.Lava.Blocks
             _markup = markup;
             _tagName = tagName;
 
+            _blockMarkup = this.SourceText;
+
             base.OnInitialize( tagName, markup, tokens );
         }
 
+        /*
         /// <summary>
         /// Parses the specified tokens.
         /// </summary>
@@ -133,6 +136,8 @@ namespace Rock.Lava.Blocks
                 AssertMissingDelimitation();
             }
         }
+
+        */
 
         /// <summary>
         /// Renders the specified context.
@@ -266,9 +271,9 @@ namespace Rock.Lava.Blocks
         private string MergeLava( string lavaTemplate, ILavaContext context )
         {
             // Get enabled commands
-            var enabledCommands = context.GetEnabledCommands();
+            //var enabledCommands = context.GetEnabledCommands();
 
-            var lavaMergeFields = context.GetMergeFieldsForLocalScope();
+            //var lavaMergeFields = context.GetMergeFieldsForLocalScope();
 
             /*
             // Get mergefields from lava context
@@ -290,8 +295,22 @@ namespace Rock.Lava.Blocks
                 }
             }
             */
+            string output = null;
 
-            return lavaTemplate.ResolveMergeFields( lavaMergeFields, enabledCommands );
+            // Resolve the Lava template contained in this block in a new context.
+            var innerContext = LavaEngine.Instance.NewContext();
+
+            
+
+
+            // Resolve the inner template using a new scope.
+            context.Stack( () => LavaEngine.Instance.TryRender( lavaTemplate, out output, context ) );
+            //LavaEngine.Instance.TryRender( lavaTemplate, out output, context );
+
+            return output;
+
+
+            //return lavaTemplate.ResolveMergeFields( lavaMergeFields, enabledCommands, throwExceptionOnErrors:true );
         }
 
         /// <summary>

@@ -27,7 +27,7 @@ namespace Rock.Lava.DotLiquid
     /// <remarks>
     /// This class implements a Lava Block element using the DotLiquid.Block Type that can be processed by the DotLiquid framework.
     /// </remarks>
-    internal class DotLiquidBlockProxy : Block, ILiquidFrameworkRenderer
+    internal class DotLiquidBlockProxy : Block, ILiquidFrameworkElementRenderer
     {
         #region Static factory methods
 
@@ -86,7 +86,7 @@ namespace Rock.Lava.DotLiquid
         {
             var lavaContext = new DotLiquidLavaContext( context );
 
-            var block = _lavaBlock as ILiquidFrameworkRenderer;
+            var block = _lavaBlock as ILiquidFrameworkElementRenderer;
 
             if ( block == null )
             {
@@ -104,13 +104,13 @@ namespace Rock.Lava.DotLiquid
         protected override void Parse( List<string> tokens )
         {
             // Parse the tokens using the Lava block implementation.
-            List<object> nodes;
+            //List<object> nodes;
 
-            int tokenCount = tokens.Count;
+            //int tokenCount = tokens.Count;
 
             // The output of the parsing process is a set of nodes that can be rendered by the DotLiquid rendering engine.
             // Tokens should be removed sequentially from the list as they are parsed into nodes.
-            _lavaBlock.OnParse( tokens, out nodes );
+            //_lavaBlock.OnParse( tokens, out nodes );
 
             //if ( nodes != null )
             //{
@@ -118,11 +118,11 @@ namespace Rock.Lava.DotLiquid
             //}
 
             // If the Lava block did not process any tokens or create any nodes, call the default DotLiquid implementation.
-            if ( nodes == null
-                 && tokens.Count == tokenCount )
-            {
+            //if ( nodes == null
+              //   && tokens.Count == tokenCount )
+            //{
                 base.Parse( tokens );
-            }
+            //}
 
             if ( this.NodeList == null )
             {
@@ -134,7 +134,7 @@ namespace Rock.Lava.DotLiquid
 
         #region ILiquidFrameworkRenderer implementation
 
-        void ILiquidFrameworkRenderer.Render( ILiquidFrameworkRenderer baseRenderer, ILavaContext context, TextWriter result )
+        void ILiquidFrameworkElementRenderer.Render( ILiquidFrameworkElementRenderer baseRenderer, ILavaContext context, TextWriter result )
         {
             // Call the default DotLiquid renderer.
             var dotLiquidContext = ( (DotLiquidLavaContext)context ).DotLiquidContext;
@@ -142,7 +142,7 @@ namespace Rock.Lava.DotLiquid
             base.Render( dotLiquidContext, result );
         }
 
-        void ILiquidFrameworkRenderer.Parse( ILiquidFrameworkRenderer baseRenderer, List<string> tokens, out List<object> nodes )
+        void ILiquidFrameworkElementRenderer.Parse( ILiquidFrameworkElementRenderer baseRenderer, List<string> tokens, out List<object> nodes )
         {
             base.Parse( tokens );
 

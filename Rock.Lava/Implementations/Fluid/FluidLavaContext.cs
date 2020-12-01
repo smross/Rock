@@ -420,12 +420,18 @@ namespace Rock.Lava.Fluid
         public override object GetInternalValue( string key )
         {
             // In the Fluid framework, internal values are stored in the AmbientValues collection.
-            if ( _context.AmbientValues.ContainsKey( key ) )
-            {
-                return _context.AmbientValues[key];
-            }
+            object value;
 
-            return null;
+            _context.AmbientValues.TryGetValue( key, out value );
+
+            return value;
+
+            //if ( _context.AmbientValues.ContainsKey( key ) )
+            //{
+            //    return _context.AmbientValues[key];
+            //}
+
+            //return null;
         }
 
         public void SetValue( string key, object value )

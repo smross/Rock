@@ -24,7 +24,7 @@ namespace Rock.Lava
     /// <summary>
     /// Provides base functionality for a Lava shortcode element.
     /// </summary>
-    public abstract class RockLavaShortcodeBase : IRockShortcode, ILiquidFrameworkRenderer
+    public abstract class RockLavaShortcodeBase : IRockShortcode, ILiquidFrameworkElementRenderer
     {
         private string _elementName = null;
         private string _internalName = null;
@@ -58,6 +58,11 @@ namespace Rock.Lava
                 }
             }
         }
+
+        /// <summary>
+        /// The text that defines this element in the Lava source document.
+        /// </summary>
+        public string SourceText { get; set; }
 
         /// <summary>
         /// The key used to identify the shortcode internally.
@@ -165,7 +170,7 @@ namespace Rock.Lava
 
         #region ILiquidFrameworkRenderer implementation
 
-        private ILiquidFrameworkRenderer _baseRenderer = null;
+        private ILiquidFrameworkElementRenderer _baseRenderer = null;
 
         /// <summary>
         /// Render this component using the Liquid templating engine.
@@ -173,7 +178,7 @@ namespace Rock.Lava
         /// <param name="context"></param>
         /// <param name="result"></param>
         /// <param name="proxy"></param>
-        void ILiquidFrameworkRenderer.Render( ILiquidFrameworkRenderer baseRenderer, ILavaContext context, TextWriter result )
+        void ILiquidFrameworkElementRenderer.Render( ILiquidFrameworkElementRenderer baseRenderer, ILavaContext context, TextWriter result )
         {
             _baseRenderer = baseRenderer;
 
@@ -181,7 +186,7 @@ namespace Rock.Lava
             OnRender( context, result );
         }
 
-        void ILiquidFrameworkRenderer.Parse( ILiquidFrameworkRenderer baseRenderer, List<string> tokens, out List<object> nodes )
+        void ILiquidFrameworkElementRenderer.Parse( ILiquidFrameworkElementRenderer baseRenderer, List<string> tokens, out List<object> nodes )
         {
             if ( baseRenderer == null )
             {

@@ -14,20 +14,20 @@
 // limitations under the License.
 // </copyright>
 //
+using System;
 using System.Collections.Generic;
 using System.IO;
 
 namespace Rock.Lava
 {
     /// <summary>
-    /// A component that can parse and render a Lava document element using the Liquid templating framework.
+    /// A component that can parse and render a Lava document element using a Liquid templating framework.
     /// </summary>
-    internal interface ILiquidFrameworkRenderer
+    internal interface ILiquidFrameworkElementRenderer
     {
-        // TODO: Remove the frameworkObject parameter - it should appear in IRockLavaBlock/Tag.
+        void Render( ILiquidFrameworkElementRenderer baseRenderer, ILavaContext context, TextWriter writer );
 
-        void Render( ILiquidFrameworkRenderer baseRenderer, ILavaContext context, TextWriter writer );
-
-        void Parse( ILiquidFrameworkRenderer baseRenderer, List<string> tokens, out List<object> nodes );
+        [Obsolete]
+        void Parse( ILiquidFrameworkElementRenderer baseRenderer, List<string> tokens, out List<object> nodes );
     }
 }

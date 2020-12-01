@@ -30,7 +30,7 @@ namespace Rock.Lava
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        void SetContextValue( string key, object value );
+        //void SetContextValue( string key, object value );
 
         /// <summary>
         /// Try to render the template.

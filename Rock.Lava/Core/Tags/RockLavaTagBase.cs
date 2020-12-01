@@ -23,7 +23,7 @@ namespace Rock.Lava.Blocks
     /// <summary>
     /// Provides base functionality for a Lava Tag element.
     /// </summary>
-    public abstract class RockLavaTagBase : IRockLavaTag, ILiquidFrameworkRenderer
+    public abstract class RockLavaTagBase : IRockLavaTag, ILiquidFrameworkElementRenderer
     {
         private string _sourceElementName = null;
         private string _attributesMarkup;
@@ -82,6 +82,11 @@ namespace Rock.Lava.Blocks
             }
         }
 
+        /// <summary>
+        /// The text that defines this element in the Lava source document.
+        /// </summary>
+        public string SourceText { get; set; }
+
         #endregion
 
         #region Customisation methods.
@@ -130,7 +135,7 @@ namespace Rock.Lava.Blocks
 
         #region ILiquidFrameworkRenderer implementation
 
-        private ILiquidFrameworkRenderer _baseRenderer = null;
+        private ILiquidFrameworkElementRenderer _baseRenderer = null;
 
         /// <summary>
         /// Render this component using the Liquid templating engine.
@@ -138,7 +143,7 @@ namespace Rock.Lava.Blocks
         /// <param name="context"></param>
         /// <param name="result"></param>
         /// <param name="proxy"></param>
-        void ILiquidFrameworkRenderer.Render( ILiquidFrameworkRenderer baseRenderer, ILavaContext context, TextWriter result )
+        void ILiquidFrameworkElementRenderer.Render( ILiquidFrameworkElementRenderer baseRenderer, ILavaContext context, TextWriter result )
         {
             // If this tag was previously called with a different base renderer, exit to prevent a circular reference.
             if ( _baseRenderer != null )
@@ -151,7 +156,7 @@ namespace Rock.Lava.Blocks
             OnRender( context, result );
         }
 
-        void ILiquidFrameworkRenderer.Parse( ILiquidFrameworkRenderer baseRenderer, List<string> tokens, out List<object> nodes )
+        void ILiquidFrameworkElementRenderer.Parse( ILiquidFrameworkElementRenderer baseRenderer, List<string> tokens, out List<object> nodes )
         {
             baseRenderer.Parse( baseRenderer, tokens, out nodes );
         }
