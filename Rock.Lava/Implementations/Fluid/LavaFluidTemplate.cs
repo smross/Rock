@@ -15,6 +15,7 @@
 // </copyright>
 //
 
+using System.Collections.Generic;
 using Fluid;
 
 namespace Rock.Lava.Fluid
@@ -34,6 +35,8 @@ namespace Rock.Lava.Fluid
         /// The text of the Lava source template.
         /// </summary>
         public string SourceDocument { get; set; }
+
+        public List<FluidParsedTemplateElement> Elements { get; set; }
 
         static LavaFluidTemplate()
         {

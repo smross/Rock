@@ -71,6 +71,16 @@ namespace Rock.Lava.Fluid
 
     */
 
+    /// <summary>
+    /// An element from a Fluid template that has been parsed.
+    /// </summary>
+    public class FluidParsedTemplateElement
+    {
+        public Statement Statement { get; set; }
+        public string Node {get; set; }
+    }
+
+
     public class LavaFluidParser : IFluidParser
     {
         protected bool _isComment; // true when the current block is a comment
@@ -91,12 +101,27 @@ namespace Rock.Lava.Fluid
 
         public bool TryParse( string template, bool stripEmptyLines, out List<Statement> result, out IEnumerable<string> errors )
         {
+            List<FluidParsedTemplateElement> elements;
+
+            var success = TryParse( template, stripEmptyLines, out elements, out errors );
+
+            result = elements.Select( x => x.Statement ).ToList();
+
+            return success;
+        }
+
+        public bool TryParse( string template, bool stripEmptyLines, out List<FluidParsedTemplateElement> result, out IEnumerable<string> errors )
+        {
             errors = Array.Empty<string>();
             var segment = new StringSegment( template );
             Parser parser = null;
             _context = new ParserContext();
-            result = _context.CurrentBlock.Statements;
-            
+
+            //result = _context.CurrentBlock.Statements;
+            result = new List<FluidParsedTemplateElement>();
+
+            //var elements = new List<FluidParsedTemplateElement>();
+
             var contextBlocksPropertyInfo = _context.GetType().GetProperty( "_blocks", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic );
             var contextBlocksInstance = contextBlocksPropertyInfo.GetValue( _context );
             var contextBlocksCountPropertyInfo = contextBlocksInstance.GetType().GetProperty( "Count" );
@@ -121,6 +146,8 @@ namespace Rock.Lava.Fluid
                         {
                             // Consume last Text statement
                             ConsumeTextStatement( segment, previous, index, trimAfter, false, stripEmptyLines );
+
+                            result.Add( new FluidParsedTemplateElement { Statement = _context.CurrentBlock.Statements.Last(), Node = segment.Substring( previous, index - previous ) } );
                         }
 
                         break;
@@ -139,6 +166,8 @@ namespace Rock.Lava.Fluid
                         {
                             // Consume current Text statement
                             ConsumeTextStatement( segment, previous, start, trimAfter, trimBefore, stripEmptyLines );
+
+                            result.Add( new FluidParsedTemplateElement { Statement = _context.CurrentBlock.Statements.Last(), Node = segment.Substring( previous, start - previous ) } );
                         }
 
                         trimAfter = segment.Index( end - 2 ) == '-';
@@ -229,8 +258,10 @@ namespace Rock.Lava.Fluid
                         
                         if ( s != null )
                         {
-                            _context.CurrentBlock.AddStatement( s );
+                            _context.CurrentBlock.AddStatement( s );                            
                         }
+
+                        result.Add( new FluidParsedTemplateElement { Statement = s, Node = tag } );
                     }
                 }
 

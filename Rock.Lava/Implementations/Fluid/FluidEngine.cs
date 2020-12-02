@@ -397,15 +397,18 @@ namespace Rock.Lava.Fluid
         {
             // This is a replacement for the BaseFluidTemplate.TryParse() method, which allows us to use a modified parser.
             //IFluidParser parser = new FluidParserFactory().CreateParser();
-            IFluidParser parser = _parserFactory.CreateParser();
+            var parser = _parserFactory.CreateParser() as LavaFluidParser;
 
-            var success = parser.TryParse( template, false, out var statements, out errors );
+            List<FluidParsedTemplateElement> elements;
+
+            var success = parser.TryParse( template, false, out elements, out errors );
 
             if ( success )
             {
                 result = new LavaFluidTemplate
                 {
-                    Statements = statements
+                    Elements = elements,
+                    Statements = elements.Select( x => x.Statement ).ToList()
                 };
                 return true;
             }
@@ -456,6 +459,8 @@ namespace Rock.Lava.Fluid
                  * to the Lava custom components when they are rendered.
                  */
                 templateContext.SetInternalValue( Constants.ContextKeys.SourceTemplateText, liquidTemplate );
+
+                templateContext.FluidContext.ParserFactory = _parserFactory;
 
                 output = template.Render( templateContext.FluidContext );
                 
