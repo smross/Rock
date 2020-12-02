@@ -231,7 +231,7 @@ namespace Rock.Lava.Fluid
                 }
             }
 
-            string blockMarkup = null;
+            string blockMarkup;
 
             if ( endTagIndex > blockStartIndex )
             {
@@ -347,7 +347,7 @@ namespace Rock.Lava.Fluid
                 throw new Exception( "Block proxy cannot be rendered." );
             }
 
-            var blockText = GetBlockMarkup( this.SourceElementName, sourceTemplate, openingTagMatch.Index );
+            var blockText = GetBlockMarkup( _lavaBlock.InternalElementName, sourceTemplate, openingTagMatch.Index );
 
             //_lavaBlock.OnParse( tokens, out nodes );
 

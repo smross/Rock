@@ -85,6 +85,7 @@
     <Compile Include="Core\Shortcodes\ILiquidFrameworkElementRenderer.cs" />
     <Compile Include="Core\Shortcodes\RockLavaShortcodeBase.cs" />
     <Compile Include="Engine\LavaNullFileSystem.cs" />
+    <Compile Include="Engine\LavaUtilityHelper.cs" />
     <Compile Include="Implementations\Fluid\FluidFileSystem.cs" />
     <Compile Include="Engine\LavaEngine.cs" />
     <Compile Include="Engine\LavaEngineBase.cs" />

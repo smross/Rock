@@ -68,7 +68,7 @@ namespace Rock.Lava.DotLiquid
         {
             get
             {
-                return this.SourceElementName + LavaEngine.ShortcodeNameSuffix;
+                return LavaUtilityHelper.GetLiquidElementNameFromShortcodeName( this.SourceElementName );
             }
         }
 

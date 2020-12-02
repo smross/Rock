@@ -74,7 +74,7 @@ namespace Rock.Lava
             {
                 if ( _internalName == null )
                 {
-                    return this.SourceElementName + LavaEngine.ShortcodeNameSuffix;
+                    return LavaUtilityHelper.GetLiquidElementNameFromShortcodeName( this.SourceElementName );
                 }
 
                 return _internalName;

@@ -361,7 +361,7 @@ AlexDecker<br/>AmadoDecker<br/>AutumnDecker<br/>BrunoDecker<br/>CindyDecker<br/>
 ";
 
             var expectedOutput = @"
-Liquid error: Search results not available. Universal search is not enabled for this Rock instance.
+Search results not available. Universal search is not enabled for this Rock instance.
 ";
 
             var context = _helper.LavaEngine.NewContext();

@@ -34,8 +34,20 @@ namespace Rock.Lava.Fluid
             KnownTags.Rule |= Elseif; 
         }
     }
-    
-    public class LavaFluidParserFactory : IFluidParserFactory
+
+    public class LavaFluidParserFactory : FluidParserFactoryBase
+    {
+        protected override IFluidParser OnCreateParser( LanguageData languageData, Dictionary<string, ITag> tags, Dictionary<string, ITag> blocks )
+        {
+            return new LavaFluidParser( languageData, tags, blocks );
+        }
+
+    }
+
+    /// <summary>
+    /// This implementation is a direct replacement for the standard FluidParserFactory, but it allows a custom parser implementation to be returned.
+    /// </summary>
+    public abstract class FluidParserFactoryBase : IFluidParserFactory
     {
         private readonly LavaFluidGrammar _grammar = new LavaFluidGrammar();
         private readonly Dictionary<string, ITag> _tags = new Dictionary<string, ITag>();
@@ -56,8 +68,10 @@ namespace Rock.Lava.Fluid
                 }
             }
 
-            return new LavaFluidParser( _languageData, _tags, _blocks );
+            return OnCreateParser( _languageData, _tags, _blocks );
         }
+
+        protected abstract IFluidParser OnCreateParser( LanguageData languageData, Dictionary<string, ITag> tags, Dictionary<string, ITag> blocks );
 
         public void RegisterTag( string name, ITag tag )
         {
@@ -114,9 +128,4 @@ namespace Rock.Lava.Fluid
             RegisterBlock( name, new T() );
         }
     }
-
-
-
-    
-
 }

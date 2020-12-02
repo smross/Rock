@@ -285,7 +285,7 @@ namespace Rock.Lava.DotLiquid
 
         internal static readonly Regex FullShortCodeToken = new Regex( @"{\[\s*(\w+)\s*([^\]}]*)?\]}", RegexOptions.Compiled );
 
-        public static string ShortcodeNameSuffix = "_sc";
+        //public static string ShortcodeNameSuffix = "_sc";
 
         private string ReplaceTemplateShortcodes( string inputTemplate )
         {
@@ -294,7 +294,7 @@ namespace Rock.Lava.DotLiquid
              * As of v13, we pre-process the template to replace the Lava shortcode token "{[ ]}" with the Liquid tag token "{% %}" and add a prefix to avoid naming collisions with existing standard tags.
              * The shortcode can then be processed as a regular custom block by the DotLiquid templating engine.
              */
-            var newBlockName = "{% $1<suffix> $2 %}".Replace( "<suffix>", ShortcodeNameSuffix );
+            var newBlockName = "{% $1<suffix> $2 %}".Replace( "<suffix>", LavaEngine.ShortcodeInternalNameSuffix );
 
             inputTemplate = FullShortCodeToken.Replace( inputTemplate, newBlockName );
 

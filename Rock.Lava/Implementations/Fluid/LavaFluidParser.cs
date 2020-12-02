@@ -226,7 +226,7 @@ namespace Rock.Lava.Fluid
                             s = new TextStatement( ConsumeTag( segment, end + 1, "endraw", out end ) );
                             index = end;
                         }
-
+                        
                         if ( s != null )
                         {
                             _context.CurrentBlock.AddStatement( s );

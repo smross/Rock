@@ -51,7 +51,7 @@ namespace Rock.Lava.Fluid
         }
 
         /// <summary>
-        /// Initializes Rock's Lava system (which uses DotLiquid)
+        /// Initializes the Lava engine.
         /// Doing this in startup will force the static Liquid class to get instantiated
         /// so that the standard filters are loaded prior to the custom RockFilter.
         /// This is to allow the custom 'Date' filter to replace the standard Date filter.
@@ -367,14 +367,21 @@ namespace Rock.Lava.Fluid
             }
         }
 
-        private LavaFluidTemplate CreateNewFluidTemplate( string inputTemplate )
+        /// <summary>
+        /// Pre-parses a Lava template to ensure it is using Liquid-compliant syntax, and creates a new template object.
+        /// </summary>
+        /// <param name="lavaTemplate"></param>
+        /// <param name=""></param>
+        /// <returns></returns>
+        private LavaFluidTemplate CreateNewFluidTemplate( string lavaTemplate, out string liquidTemplate )
         {
             IEnumerable<string> errors;
             LavaFluidTemplate template;
 
-            var formattedInput = ReplaceTemplateShortcodes( inputTemplate );
+            liquidTemplate = ReplaceTemplateShortcodes( lavaTemplate );
 
-            var isValidTemplate = LavaFluidTemplate.TryParse( formattedInput, out template, out errors );
+            //var isValidTemplate = LavaFluidTemplate.TryParse( liquidTemplate, out template, out errors );
+            var isValidTemplate = TryParse( liquidTemplate, out template, out errors );
 
             if ( !isValidTemplate )
             {
@@ -384,18 +391,44 @@ namespace Rock.Lava.Fluid
             return template;
         }
 
+        private static LavaFluidParserFactory _parserFactory = new LavaFluidParserFactory();
+
+        private bool TryParse( string template, out LavaFluidTemplate result, out IEnumerable<string> errors )
+        {
+            // This is a replacement for the BaseFluidTemplate.TryParse() method, which allows us to use a modified parser.
+            //IFluidParser parser = new FluidParserFactory().CreateParser();
+            IFluidParser parser = _parserFactory.CreateParser();
+
+            var success = parser.TryParse( template, false, out var statements, out errors );
+
+            if ( success )
+            {
+                result = new LavaFluidTemplate
+                {
+                    Statements = statements
+                };
+                return true;
+            }
+            else
+            {
+                result = new LavaFluidTemplate();
+                return false;
+            }
+        }
+
         internal static readonly Regex FullShortCodeToken = new Regex( @"{\[\s*(\w+)\s*([^\]}]*)?\]}", RegexOptions.Compiled );
 
-        public static string ShortcodeNameSuffix = "_sc";
+        //public static string ShortcodeNamePrefix = "@";
+        //public static string ShortcodeNameSuffix = "_sc";
 
         private string ReplaceTemplateShortcodes( string inputTemplate )
         {
-            /* The Lava shortcode syntax is not recognized as a document element by the Fluid parser, and at present there is no way to intercept or replace the Fluid parser.
-             * As a workaround, pre-process the template to replace the Lava shortcode token "{[ ]}" with the Liquid tag token "{% %}" and add a prefix to avoid naming collisions with existing standard tags.
+            /* The Lava shortcode syntax is not recognized as a document element by Fluid, and at present there is no way to intercept or replace the Fluid parser.
+             * As a workaround, we pre-process the template to replace the Lava shortcode token "{[ ]}" with the Liquid tag token "{% %}" and add a prefix to avoid naming collisions with existing standard tags.
              * The shortcode can then be processed as a regular custom block by the Fluid templating engine.
              * As a future improvement, we could look at submitting a pull request to the Fluid project to add support for custom parsers.
              */
-            var newBlockName = "{% $1<suffix> $2 %}".Replace( "<suffix>", ShortcodeNameSuffix );
+            var newBlockName = "{% $1<suffix> $2 %}".Replace( "<suffix>", LavaEngine.ShortcodeInternalNameSuffix );
 
             inputTemplate = FullShortCodeToken.Replace( inputTemplate, newBlockName );
 
@@ -406,7 +439,9 @@ namespace Rock.Lava.Fluid
         {
             try
             {
-                var template = CreateNewFluidTemplate( inputTemplate );
+                string liquidTemplate;
+
+                var template = CreateNewFluidTemplate( inputTemplate, out liquidTemplate );
 
                 var templateContext = context as FluidLavaContext;
 
@@ -420,7 +455,7 @@ namespace Rock.Lava.Fluid
                  * the information necessary to render their output. For this reason, we need to store the source in the context so that it can be passed
                  * to the Lava custom components when they are rendered.
                  */
-                templateContext.SetInternalValue( Constants.ContextKeys.SourceTemplateText, inputTemplate );
+                templateContext.SetInternalValue( Constants.ContextKeys.SourceTemplateText, liquidTemplate );
 
                 output = template.Render( templateContext.FluidContext );
                 
@@ -459,7 +494,8 @@ namespace Rock.Lava.Fluid
             FluidTagProxy.RegisterFactory( name, factoryMethod );
 
             // Register the proxy for the specified tag name.
-            LavaFluidTemplate.Factory.RegisterTag<FluidTagProxy>( name );
+            _parserFactory.RegisterTag<FluidTagProxy>( name );
+            //LavaFluidTemplate.Factory.RegisterTag<FluidTagProxy>( name );
         }
 
         public override void RegisterBlock( string name, Func<string, IRockLavaBlock> factoryMethod )
@@ -482,14 +518,19 @@ namespace Rock.Lava.Fluid
             FluidBlockProxy.RegisterFactory( name, factoryMethod );
 
             // Register the proxy for the specified tag name.
-            LavaFluidTemplate.Factory.RegisterBlock<FluidBlockProxy>( name );
+            _parserFactory.RegisterBlock<FluidBlockProxy>( name );
+            //LavaFluidTemplate.Factory.RegisterBlock<FluidBlockProxy>( name );
         }
 
-        public override ILavaTemplate ParseTemplate( string inputTemplate )
+        public override ILavaTemplate ParseTemplate( string lavaTemplate )
         {
-            var lavaTemplate = new FluidTemplateProxy( CreateNewFluidTemplate( inputTemplate ) );
+            string liquidTemplate;
 
-            return lavaTemplate;
+            var fluidTemplate = this.CreateNewFluidTemplate( lavaTemplate, out liquidTemplate );
+
+            var newTemplate = new FluidTemplateProxy( fluidTemplate );
+
+            return newTemplate;
         }
 
         #region Obsolete/Not Required?

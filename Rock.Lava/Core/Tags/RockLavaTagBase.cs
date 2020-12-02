@@ -83,6 +83,17 @@ namespace Rock.Lava.Blocks
         }
 
         /// <summary>
+        /// The name of the block as it appears in the source tag.
+        /// </summary>
+        public string InternalElementName
+        {
+            get
+            {
+                return this.SourceElementName;
+            }
+        }
+
+        /// <summary>
         /// The text that defines this element in the Lava source document.
         /// </summary>
         public string SourceText { get; set; }

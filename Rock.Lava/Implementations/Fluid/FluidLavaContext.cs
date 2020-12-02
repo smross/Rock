@@ -425,13 +425,6 @@ namespace Rock.Lava.Fluid
             _context.AmbientValues.TryGetValue( key, out value );
 
             return value;
-
-            //if ( _context.AmbientValues.ContainsKey( key ) )
-            //{
-            //    return _context.AmbientValues[key];
-            //}
-
-            //return null;
         }
 
         public void SetValue( string key, object value )

@@ -30,6 +30,15 @@ namespace Rock.Lava
         string SourceElementName { get; }
 
         /// <summary>
+        /// The name by which this element is identified in a Liquid-compliant version of the Lava document.
+        /// For example, a Lava shortcode tag "{[ myshortcode ]} may be replaced by a Liquid block tag with a prefix "{{ sc_myshortcode }}"
+        /// </summary>
+        string InternalElementName
+        {
+            get;
+        }
+
+        /// <summary>
         /// The source text that defines this element in a Lava document.
         /// </summary>
         string SourceText { get; }

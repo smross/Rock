@@ -29,7 +29,10 @@ namespace Rock.Lava
     /// </summary>
     public static partial class LavaEngine
     {
-        public static string ShortcodeNameSuffix = "_sc";
+        // A suffix that is added to shortcode elements to avoid naming collisions with other tags and blocks.
+        // Note that a suffix is used because the closing tag of an element uses the "end" prefix.
+        // It is simpler to work with "{% shortcodename@ %}" and "{% endshortcodename@ %}
+        public static string ShortcodeInternalNameSuffix = "@";
 
         private static ILavaEngine _instance = null;
         private static LavaEngineTypeSpecifier _liquidFramework = LavaEngineTypeSpecifier.DotLiquid;
@@ -51,17 +54,6 @@ namespace Rock.Lava
                 }
             }
         }
-
-        //public static void InitializeDotLiquidFramework( ILavaFileSystem fileSystem = null, IList<Type> filterImplementationTypes = null )
-        //{
-        //    _liquidFramework = LavaEngineTypeSpecifier.DotLiquid;
-
-        //    var liquidEngine = new DotLiquidEngine();
-
-        //    liquidEngine.Initialize( fileSystem, filterImplementationTypes );
-
-        //    _instance = liquidEngine;
-        //}
 
         public static void Initialize( LavaEngineTypeSpecifier? engineType, ILavaFileSystem fileSystem = null, IList<Type> filterImplementationTypes = null )
         {

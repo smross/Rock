@@ -40,14 +40,6 @@ namespace Rock.Lava
     /// </summary>
     public interface IRockShortcode : IRockLavaElement
     {
-        /// <summary>
-        /// The key that internally identifies the block or tag element associated with this shortcode.
-        /// </summary>
-        string InternalElementName
-        {
-            get;
-        }
-
         LavaShortcodeTypeSpecifier ElementType { get; }
     }
 }
