@@ -111,8 +111,8 @@ namespace Rock.Lava.Blocks
             }
         }
 
-/*
-         
+
+
         /// <summary>
         /// Parse a set of Lava tokens into a set of document nodes that can be processed by the underlying rendering framework.
         /// </summary>
@@ -133,7 +133,7 @@ namespace Rock.Lava.Blocks
             nodes = null;
         }
 
-*/
+
 
         /// <summary>
         /// Override this method to perform tasks when the block is first loaded at startup.

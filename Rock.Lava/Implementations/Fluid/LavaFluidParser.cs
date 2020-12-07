@@ -76,12 +76,32 @@ namespace Rock.Lava.Fluid
     /// </summary>
     public class FluidParsedTemplateElement
     {
+        public string ElementId { get; set; }
+
         public Statement Statement { get; set; }
         public string Node {get; set; }
+
+        public int StartIndex { get; set; }
+        public int EndIndex { get; set; }
     }
 
+    public class FluidElementParseEventArgs : EventArgs
+    {
+        public string ElementId { get; set; }
+        public string ElementText { get; set; }
+        public int StartIndex { get; set; }
+        public int EndIndex { get; set; }
 
-    public class LavaFluidParser : IFluidParser
+        public Statement Statement { get; set; }
+    }
+
+    public interface IFluidParserEx : IFluidParser
+    {
+        event EventHandler<FluidElementParseEventArgs> ElementParsing;
+        event EventHandler<FluidElementParseEventArgs> ElementParsed;
+    }
+
+    public class LavaFluidParser : IFluidParser, IFluidParserEx
     {
         protected bool _isComment; // true when the current block is a comment
         protected bool _isRaw; // true when the current block is raw
@@ -92,6 +112,9 @@ namespace Rock.Lava.Fluid
 
         private static IList<AssignStatement> _assignStatements;
 
+        public event EventHandler<FluidElementParseEventArgs> ElementParsing;
+        public event EventHandler<FluidElementParseEventArgs> ElementParsed;
+
         public LavaFluidParser( LanguageData languageData, Dictionary<string, ITag> tags, Dictionary<string, ITag> blocks )
         {
             _languageData = languageData;
@@ -101,26 +124,23 @@ namespace Rock.Lava.Fluid
 
         public bool TryParse( string template, bool stripEmptyLines, out List<Statement> result, out IEnumerable<string> errors )
         {
-            List<FluidParsedTemplateElement> elements;
+        //    List<FluidParsedTemplateElement> elements;
 
-            var success = TryParse( template, stripEmptyLines, out elements, out errors );
+        //    var success = TryParse( template, stripEmptyLines, out elements, out errors );
 
-            result = elements.Select( x => x.Statement ).ToList();
+        //    result = elements.Select( x => x.Statement ).ToList();
 
-            return success;
-        }
+        //    return success;
+        //}
 
-        public bool TryParse( string template, bool stripEmptyLines, out List<FluidParsedTemplateElement> result, out IEnumerable<string> errors )
-        {
+        //public bool TryParse( string template, bool stripEmptyLines, out List<FluidParsedTemplateElement> result, out IEnumerable<string> errors )
+        //{
             errors = Array.Empty<string>();
             var segment = new StringSegment( template );
             Parser parser = null;
             _context = new ParserContext();
 
-            //result = _context.CurrentBlock.Statements;
-            result = new List<FluidParsedTemplateElement>();
-
-            //var elements = new List<FluidParsedTemplateElement>();
+            result = _context.CurrentBlock.Statements;
 
             var contextBlocksPropertyInfo = _context.GetType().GetProperty( "_blocks", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic );
             var contextBlocksInstance = contextBlocksPropertyInfo.GetValue( _context );
@@ -146,8 +166,6 @@ namespace Rock.Lava.Fluid
                         {
                             // Consume last Text statement
                             ConsumeTextStatement( segment, previous, index, trimAfter, false, stripEmptyLines );
-
-                            result.Add( new FluidParsedTemplateElement { Statement = _context.CurrentBlock.Statements.Last(), Node = segment.Substring( previous, index - previous ) } );
                         }
 
                         break;
@@ -166,8 +184,6 @@ namespace Rock.Lava.Fluid
                         {
                             // Consume current Text statement
                             ConsumeTextStatement( segment, previous, start, trimAfter, trimBefore, stripEmptyLines );
-
-                            result.Add( new FluidParsedTemplateElement { Statement = _context.CurrentBlock.Statements.Last(), Node = segment.Substring( previous, start - previous ) } );
                         }
 
                         trimAfter = segment.Index( end - 2 ) == '-';
@@ -258,10 +274,21 @@ namespace Rock.Lava.Fluid
                         
                         if ( s != null )
                         {
-                            _context.CurrentBlock.AddStatement( s );                            
+                            _context.CurrentBlock.AddStatement( s );
                         }
 
-                        result.Add( new FluidParsedTemplateElement { Statement = s, Node = tag } );
+                        if ( ElementParsed != null )
+                        {
+                            var elementId = GetOrAssignNodeId( tree?.Root );
+                            
+                            if ( elementId == null )
+                            {
+                                int i = 0;
+                            }
+
+                            ElementParsed.Invoke( this,
+                                new FluidElementParseEventArgs { ElementId = elementId, ElementText = tag, StartIndex = start, EndIndex = end, Statement = s } );
+                        }
                     }
                 }
 
@@ -291,6 +318,16 @@ namespace Rock.Lava.Fluid
             if ( textStatement != null )
             {
                 _context.CurrentBlock.AddStatement( textStatement );
+            }
+
+            if ( ElementParsed != null )
+            {
+                var tag = _context?.CurrentBlock?.Tag;
+
+                var elementId = GetOrAssignNodeId( tag );
+
+                ElementParsed.Invoke( this,
+                    new FluidElementParseEventArgs { ElementId = elementId, ElementText = segment.Substring( start, end - start ), StartIndex = start, EndIndex = end, Statement = textStatement } );
             }
         }
 
@@ -580,9 +617,26 @@ namespace Rock.Lava.Fluid
 
         #region Build methods
 
+        private string GetOrAssignNodeId( ParseTreeNode node )
+        {
+            if ( node != null )
+            {
+                if ( node.Tag == null )
+                {
+                    node.Tag = Guid.NewGuid().ToString();
+                }
+
+                return node.Tag as string;
+            }
+
+            return null;
+        }
+
         public virtual Statement BuildTagStatement( ParseTreeNode node )
         {
             var tag = node.ChildNodes[0];
+
+            GetOrAssignNodeId( tag );
 
             switch ( tag.Term.Name )
             {

@@ -100,20 +100,20 @@ namespace Rock.Lava.Fluid
             throw new NotImplementedException();
         }
 
-        public override LavaDictionary GetMergeFieldsForLocalScope()
+        public override LavaDictionary GetMergeFieldsInLocalScope()
         {
             var fields = new LavaDictionary();
 
             // First, get all of the variables defined in the local lava context
             var properties = GetScopeLocalValues( _context.LocalScope );
 
-            //foreach ( var scope in _context.LocalScope..AmbientValues //Scopes )
-            //{
-            //    foreach ( var item in scope )
-            //    {
-            //        fields.AddOrReplace( item.Key, item.Value );
-            //    }
-            //}
+            foreach ( var item in properties )
+            {
+                //foreach ( var item in scope )
+                //{
+                    fields.AddOrReplace( item.Key, item.Value );
+                //}
+            }
 
             // Second, apply overrides defined by the block or container in which the template is being resolved.
             //foreach ( var environment in _context.AmbientValues )
@@ -128,7 +128,8 @@ namespace Rock.Lava.Fluid
         }
         public override IDictionary<string, object> GetMergeFieldsInContainerScope()
         {
-            throw new NotImplementedException();
+            return GetMergeFieldsInLocalScope();
+            //throw new NotImplementedException();
         }
 
         public IDictionary<string, object> GetMergeFieldsInEnvironment()

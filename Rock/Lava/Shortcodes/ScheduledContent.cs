@@ -294,7 +294,7 @@ namespace Rock.Lava.Shortcodes
 
                 var results = _blockMarkup.ToString().ResolveMergeFields( mergeFields, _enabledSecurityCommands );
                 result.Write( results.Trim() );
-                base.OnRender( context, result );
+                //base.OnRender( context, result );
             }
         }
 

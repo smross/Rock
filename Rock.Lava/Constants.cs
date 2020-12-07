@@ -13,7 +13,8 @@ namespace Rock.Lava
 
         public static class ContextKeys
         {
-            public const string SourceTemplateText = "Source";
+            public const string SourceTemplateText = "SourceText";
+            public const string SourceTemplateElements = "SourceElements";
         }
     }
 }

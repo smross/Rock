@@ -25,6 +25,9 @@ using Rock.Data;
 
 namespace Rock.Lava.Fluid
 {
+    /// <summary>
+    /// An implementation of the Lava Engine using the Fluid Templating Framework.
+    /// </summary>
     public class FluidEngine : LavaEngineBase
     {
         public override string EngineName
@@ -46,6 +49,8 @@ namespace Rock.Lava.Fluid
         public override ILavaContext NewContext()
         {
             var fluidContext = new global::Fluid.TemplateContext();
+
+            fluidContext.ParserFactory = _parserFactory;
 
             return new FluidLavaContext( fluidContext );
         }
@@ -399,16 +404,25 @@ namespace Rock.Lava.Fluid
             //IFluidParser parser = new FluidParserFactory().CreateParser();
             var parser = _parserFactory.CreateParser() as LavaFluidParser;
 
-            List<FluidParsedTemplateElement> elements;
+            var elements = new List<FluidParsedTemplateElement>();
 
-            var success = parser.TryParse( template, false, out elements, out errors );
+            parser.ElementParsed += (object sender, FluidElementParseEventArgs e) =>
+            {
+                elements.Add( new FluidParsedTemplateElement { ElementId = e.ElementId, Statement = e.Statement, Node = e.ElementText, StartIndex = e.StartIndex, EndIndex = e.EndIndex } );
+            };
+
+            //List<FluidParsedTemplateElement> elements;
+
+            List <global::Fluid.Ast.Statement> statements;
+
+            var success = parser.TryParse( template, false, out statements, out errors );
 
             if ( success )
             {
                 result = new LavaFluidTemplate
                 {
                     Elements = elements,
-                    Statements = elements.Select( x => x.Statement ).ToList()
+                    Statements = statements
                 };
                 return true;
             }
@@ -460,8 +474,15 @@ namespace Rock.Lava.Fluid
                  */
                 templateContext.SetInternalValue( Constants.ContextKeys.SourceTemplateText, liquidTemplate );
 
-                templateContext.FluidContext.ParserFactory = _parserFactory;
+                if ( templateContext.GetInternalValue( Constants.ContextKeys.SourceTemplateElements ) != null )
+                {
+                    int i = 0;
+                }
 
+                templateContext.SetInternalValue( Constants.ContextKeys.SourceTemplateElements, template.Elements );
+
+                templateContext.FluidContext.ParserFactory = _parserFactory;
+                
                 output = template.Render( templateContext.FluidContext );
                 
                 return true;
@@ -515,16 +536,10 @@ namespace Rock.Lava.Fluid
             base.RegisterBlock( name, factoryMethod );
 
             // Some Lava elements, such as shortcodes, are defined dynamically at runtime.
-            // Therefore, we register the tag as a factory that can produce the requested element on demand.
-            var lavaBlock = factoryMethod( name );
-
-            //var fluidBlock = new FluidBlockProxy();
-
+            // To implement this behaviour, register the tag as a factory that can create the requested element on demand.
             FluidBlockProxy.RegisterFactory( name, factoryMethod );
 
-            // Register the proxy for the specified tag name.
             _parserFactory.RegisterBlock<FluidBlockProxy>( name );
-            //LavaFluidTemplate.Factory.RegisterBlock<FluidBlockProxy>( name );
         }
 
         public override ILavaTemplate ParseTemplate( string lavaTemplate )

@@ -106,7 +106,7 @@ namespace Rock.Lava.DotLiquid
         /// Values are defined by the outermost container first, and overridden by values defined in a contained scope.
         /// </summary>
         /// <returns></returns>
-        public override LavaDictionary GetMergeFieldsForLocalScope()
+        public override LavaDictionary GetMergeFieldsInLocalScope()
         {
             var fields = new LavaDictionary();
 

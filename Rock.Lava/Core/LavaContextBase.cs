@@ -39,7 +39,7 @@ namespace Rock.Lava
 
         public abstract List<string> GetEnabledCommands();
         public abstract IList<LavaDictionary> GetEnvironments();
-        public abstract LavaDictionary GetMergeFieldsForLocalScope();
+        public abstract LavaDictionary GetMergeFieldsInLocalScope();
         public abstract IDictionary<string, object> GetMergeFieldsInContainerScope();
         public abstract IDictionary<string, object> GetMergeFieldsInScope();
         public abstract object GetMergeFieldValue( string key, object defaultValue );

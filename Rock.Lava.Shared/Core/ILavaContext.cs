@@ -111,7 +111,7 @@ namespace Rock.Lava
         /// Values are defined by the outermost container first, and overridden by values defined in a contained scope.
         /// </summary>
         /// <returns></returns>
-        LavaDictionary GetMergeFieldsForLocalScope();
+        LavaDictionary GetMergeFieldsInLocalScope();
 
         /// <summary>
         /// Gets the set of merge fields in the current Lava block or container hierarchy.

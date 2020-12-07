@@ -322,7 +322,7 @@ namespace Rock.Lava.Blocks
         private Dictionary<string, string> ParseMarkup( string markup, ILavaContext context )
         {
             // first run lava across the inputted markup
-            var internalMergeFields = context.GetMergeFieldsForLocalScope();
+            var internalMergeFields = context.GetMergeFieldsInLocalScope();
 
             var parms = new Dictionary<string, string>();
             parms.Add( "key", string.Empty );

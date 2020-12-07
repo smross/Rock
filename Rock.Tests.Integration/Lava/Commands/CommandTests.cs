@@ -137,7 +137,7 @@ AlexDecker<br/>AmadoDecker<br/>AutumnDecker<br/>BrunoDecker<br/>CindyDecker<br/>
 
             var output = _helper.GetTemplateOutput( input, context );
 
-            _helper.WriteTemplateOutputToDebug( output );
+            _helper.WriteTemplateRenderToDebug( input, output );
 
             Assert.IsTrue( output.Contains( "Ted Decker" ), "Expected person not found." );
             Assert.IsTrue( output.Contains( "Cindy Decker" ), "Expected person not found." );
@@ -315,6 +315,29 @@ AlexDecker<br/>AmadoDecker<br/>AutumnDecker<br/>BrunoDecker<br/>CindyDecker<br/>
             var input = @"
 {% javascript %}
     alert('Hello world!');
+{% endjavascript %}
+";
+
+            var expectedOutput = @"
+<script>
+    (function(){
+        alert('Hello world!');    
+    })();
+</script>
+";
+
+            _helper.AssertTemplateOutput( expectedOutput, input, ignoreWhitespace: true );
+        }
+
+        [TestMethod]
+        public void JavascriptBlock_MultipleScriptBlocks_ReturnsJavascriptScript()
+        {
+            var input = @"
+{% javascript %}
+    alert('Hello world!');
+{% endjavascript %}
+{% javascript %}
+    alert('Hello solar system!');
 {% endjavascript %}
 ";
 

@@ -27,6 +27,9 @@ using Rock.Lava.Utility;
 
 namespace Rock.Lava.Shortcodes
 {
+    /// <summary>
+    /// An implementation of a shortcode that takes the form of a Liquid block element.
+    /// </summary>
     public class DynamicShortcodeBlock: DynamicShortcode, IRockLavaBlock
     {
         public DynamicShortcodeBlock()
@@ -41,6 +44,9 @@ namespace Rock.Lava.Shortcodes
         }
     }
 
+    /// <summary>
+    /// An implementation of a shortcode that takes the form of an inline Liquid tag element.
+    /// </summary>
     public class DynamicShortcodeTag : DynamicShortcode, IRockLavaTag
     {
         public DynamicShortcodeTag()
@@ -63,7 +69,6 @@ namespace Rock.Lava.Shortcodes
         string _elementAttributesMarkup = string.Empty;
         string _tagName = string.Empty;
         DynamicShortcodeDefinition _shortcode = null;
-        //private string _shortcodeParameters = null;
         private Dictionary<string, object> _internalMergeFields;
         StringBuilder _blockMarkup = new StringBuilder();
 
@@ -99,21 +104,6 @@ namespace Rock.Lava.Shortcodes
         }
 
         /// <summary>
-        /// Method that will be run at Rock startup
-        /// </summary>
-        //public override void OnStartup()
-        //{
-        //    // get all the inline dynamic shortcodes and register them
-        //    //var inlineShortCodes = LavaShortcodeCache.All().Where( s => s.TagType == TagType.Inline );
-
-        //    //foreach(var shortcode in inlineShortCodes )
-        //    //{
-        //    //    // register this shortcode
-        //    //    Template.RegisterShortcode<DynamicShortcodeInline>( shortcode.TagName );
-        //    //}
-        //}
-
-        /// <summary>
         /// Initializes the specified tag name.
         /// </summary>
         /// <param name="tagName">Name of the tag.</param>
@@ -147,11 +137,11 @@ namespace Rock.Lava.Shortcodes
 
             // Create regular expressions for start and end tags.
             // In the source document, the Lava Shortcode element tag format is "{[ tagname ]}".
-            // However, our pre-processing of the document substitutes the Lava-specific tag format for the Liquid-compatible tag format "{% tagname_sc %}"
-            var startTag = $@"{{\%\s*{ _tagName }\s*\%}}";
+            // However, our pre-processing of the document substitutes the Lava-specific tag format for the Liquid-compatible tag format "{% tagname@ %}"
+            var startTag = $@"{{\%\s*{ _tagName }\s*(.*?)\%}}";
             var endTag = $@"{{\%\s*end{ _tagName }\s*\%}}";
 
-            var childTags = 0;
+            var startTags = 0;
 
             Regex regExStart = new Regex( startTag );
             Regex regExEnd = new Regex( endTag );
@@ -165,8 +155,11 @@ namespace Rock.Lava.Shortcodes
                 Match startTagMatch = regExStart.Match( token );
                 if ( startTagMatch.Success )
                 {
-                    childTags++; // increment the child tag counter
-                    _blockMarkup.Append( token );
+                    startTags++; // increment the child tag counter
+                    if ( startTags > 1 )
+                    {
+                        _blockMarkup.Append( token );
+                    }
                 }
                 else
                 {
@@ -174,9 +167,9 @@ namespace Rock.Lava.Shortcodes
 
                     if ( endTagMatch.Success )
                     {
-                        if ( childTags > 0 )
+                        if ( startTags > 1 )
                         {
-                            childTags--; // decrement the child tag counter
+                            startTags--; // decrement the child tag counter
                             _blockMarkup.Append( token );
                         }
                         else
@@ -238,18 +231,21 @@ namespace Rock.Lava.Shortcodes
                 }
                 parms.AddOrReplace( "RecursionDepth", currentRecurrsionDepth );
 
-                var lavaTemplate = _shortcode.TemplateMarkup;
+                // Resolve any merge fields in the block content.
+                // The block content will then be merged into the shortcode template to produce the final output.
                 var blockMarkup = context.ResolveMergeFields( _blockMarkup.ToString(), _internalMergeFields );
 
-                // pull child parameters from block content
-                Dictionary<string, object> childParamters;
-                blockMarkup = GetChildParameters( blockMarkup, out childParamters );
-                foreach ( var item in childParamters )
+                // Extract any child parameters from the block content.
+                Dictionary<string, object> childParameters;
+
+                blockMarkup = GetChildParameters( blockMarkup, out childParameters );
+
+                foreach ( var item in childParameters )
                 {
                     parms.AddOrReplace( item.Key, item.Value );
                 }
 
-                // merge the block markup in
+                // After extracting the child parameters, merge the remaining block markup into the template.
                 if ( blockMarkup.IsNotNullOrWhiteSpace() )
                 {
                     // JME (7/23/2019) Commented out the two lines below and substituted the line after to allow for better
@@ -288,14 +284,22 @@ namespace Rock.Lava.Shortcodes
                         context.SetEnabledCommands( _shortcode.EnabledLavaCommands );
                     }
 
-                    var results = context.ResolveMergeFields( lavaTemplate, parms );
+                    // Resolve the child parameters in the template to get the final output.
+                    var lavaTemplate = _shortcode.TemplateMarkup;
+
+                    string results;
+
+                    var isValid = LavaEngine.Instance.TryRender( lavaTemplate, out results, new LavaDictionary( parms ) );
+
+                    //var results = context.ResolveMergeFields( lavaTemplate, parms );
 
                     result.Write( results.Trim() );
 
                     // Revert the enabled commands to those of the block.
                     context.SetEnabledCommands( blockCommands );
 
-                    base.OnRender( context, result );
+                    // TODO: Removed 5/12/2020.
+                    //base.OnRender( context, result );
                 }
             }
             else

@@ -35,6 +35,11 @@ namespace Rock.Lava.Blocks
 
         string _markup = string.Empty;
 
+        public Javascript()
+        {
+            int i = 0;
+        }
+
         /// <summary>
         /// Initializes the specified tag name.
         /// </summary>
@@ -211,7 +216,7 @@ namespace Rock.Lava.Blocks
         private Dictionary<string, string> ParseMarkup( string markup, ILavaContext context )
         {
             // first run lava across the inputted markup
-            var internalMergeFields = context.GetMergeFieldsForLocalScope();
+            var internalMergeFields = context.GetMergeFieldsInLocalScope();
 
             var resolvedMarkup = markup.ResolveMergeFields( internalMergeFields );
 

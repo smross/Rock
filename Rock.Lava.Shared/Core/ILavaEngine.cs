@@ -57,7 +57,7 @@ namespace Rock.Lava
         void RegisterBlock( string name, Func<string, IRockLavaBlock> factoryMethod );
 
         /// <summary>
-        /// Registers a shortcode with a factory method that provides the definition of the shortcode dynamically.
+        /// Registers a shortcode with a factory method that provides the definition of the shortcode at runtime.
         /// </summary>
         /// <param name="name"></param>
         /// <param name="factoryMethod"></param>

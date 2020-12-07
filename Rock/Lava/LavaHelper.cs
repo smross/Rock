@@ -322,7 +322,7 @@ namespace Rock.Lava
                 throw new ArgumentNullException( nameof( parms ) );
             }
 
-            var mergeFields = context.GetMergeFieldsForLocalScope();
+            var mergeFields = context.GetMergeFieldsInLocalScope();
 
             // Resolve merge fields.
             var resolvedMarkup = markup.ResolveMergeFields( mergeFields );

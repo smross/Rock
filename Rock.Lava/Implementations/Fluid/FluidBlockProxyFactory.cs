@@ -40,7 +40,7 @@ namespace Rock.Lava.Fluid
     /// The FluidBlockProxy wraps a LavaBlock that is executed internally to render the element content.
     /// This approach allows the LavaBlock to be more easily adapted for use with alternative Liquid templating engines.
     /// </remarks>
-    internal class FluidBlockProxy : global::Fluid.Tags.ITag, ILiquidFrameworkElementRenderer
+    internal class FluidBlockProxyFactory : global::Fluid.Tags.ITag, ILiquidFrameworkElementRenderer
     {
         #region Static factory methods
 
@@ -128,26 +128,12 @@ namespace Rock.Lava.Fluid
 
             var nodeStartPosition = node.Span.Location.Position;
 
-            string nodeGuid; //= (string)node.Tag; //.ToString();
-
-            if ( node.Tag == null )
-            {
-                nodeGuid = Guid.NewGuid().ToString();
-                node.Tag = nodeGuid;
-            }
-            else
-            {
-                nodeGuid = (string)node.Tag;
-            }
-            //node.Tag = nodeGuid;
-
-            //node.Tag = context.CurrentBlock..Tag. "Position= node.Span.Location.Position
-            var renderBlockDelegate = new DelegateStatement( ( writer, encoder, ctx ) => WriteToAsync( writer, encoder, ctx, elementAttributesMarkup, _statements, node, nodeGuid, nodeStartPosition ) );
+            var renderBlockDelegate = new DelegateStatement( ( writer, encoder, ctx ) => WriteToAsync( writer, encoder, ctx, elementAttributesMarkup, _statements, node ) );
 
             return renderBlockDelegate; 
         }
 
-/*
+
         /// <summary>
         /// Parses the specified tokens.
         /// </summary>
@@ -245,6 +231,7 @@ namespace Rock.Lava.Fluid
             return blockMarkup;
         }
 
+        /*
         public List<string> GetTokenTreeFromParseTree( ParseTreeNode node, int index = 0, int level = 0 )
         {
             //for ( var levelIndex = 0; levelIndex < level; levelIndex++ )
@@ -317,7 +304,7 @@ namespace Rock.Lava.Fluid
 
         private List<Statement> _statements = null;
 
-        private ValueTask<Completion> WriteToAsync( TextWriter writer, TextEncoder encoder, TemplateContext context, string elementAttributesMarkup, List<Statement> statements, ParseTreeNode node, string blockTagGuid, int nodeStartPosition )
+        private ValueTask<Completion> WriteToAsync( TextWriter writer, TextEncoder encoder, TemplateContext context, string elementAttributesMarkup, List<Statement> statements, ParseTreeNode node )
         {
             var lavaContext = new FluidLavaContext( context );
             
@@ -328,23 +315,11 @@ namespace Rock.Lava.Fluid
             //var tokens = new List<string>();
 
             // Get the tokens associated with this block
-            var startPosition = 0; // node.Span.Location.Position;
+            var startPosition = node.Span.Location.Position;
             var endPosition = node.Span.EndPosition;
 
             var tokens = new List<string>();
             bool addElements = false;
-
-            var testElement = sourceElements.FirstOrDefault( x => x.ElementId != null && x.ElementId.StartsWith( blockTagGuid.Substring(0,6), StringComparison.OrdinalIgnoreCase ) );
-            var firstElement = sourceElements.FirstOrDefault( x => x.ElementId != null && x.ElementId == blockTagGuid );
-
-            if ( firstElement != null )
-            {
-                startPosition = firstElement.StartIndex;
-            }
-            else
-            {
-                int i = 0;
-            }
 
             //var firstStatement = statements.FirstOrDefault();
 

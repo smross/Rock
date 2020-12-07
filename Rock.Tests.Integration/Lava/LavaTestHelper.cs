@@ -164,45 +164,43 @@ namespace Rock.Tests.Integration.Lava
 
         private static void RegisterDynamicShortcodes( ILavaEngine engine )
         {
-            // Register dynamic shortcodes with a factory method to ensure that the latest definition is retrieved from the global cache.
+            // Register dynamic shortcodes with a factory method to ensure that the latest definition is retrieved from the global cache each time the shortcode is used.
             Func<string, DynamicShortcodeDefinition> shortCodeFactory = ( shortcodeName ) =>
             {
-                DynamicShortcodeDefinition newShortcode = null;
-
                 var shortcodeDefinition = LavaShortcodeCache.All().Where( c => c.TagName == shortcodeName ).FirstOrDefault();
 
-                if ( shortcodeDefinition != null )
+                if ( shortcodeDefinition == null )
                 {
-                    newShortcode = new DynamicShortcodeDefinition();
+                    return null;
+                }
 
-                    newShortcode.Name = shortcodeDefinition.Name;
-                    newShortcode.TemplateMarkup = shortcodeDefinition.Markup;
+                var newShortcode = new DynamicShortcodeDefinition();
 
-                    var parameters = RockSerializableDictionary.FromUriEncodedString( shortcodeDefinition.Parameters );
+                newShortcode.Name = shortcodeDefinition.Name;
+                newShortcode.TemplateMarkup = shortcodeDefinition.Markup;
 
-                    newShortcode.Parameters = new Dictionary<string, string>( parameters.Dictionary );
+                var parameters = RockSerializableDictionary.FromUriEncodedString( shortcodeDefinition.Parameters );
 
-                    newShortcode.EnabledLavaCommands = shortcodeDefinition.EnabledLavaCommands.SplitDelimitedValues( ",", StringSplitOptions.RemoveEmptyEntries ).ToList();
+                newShortcode.Parameters = new Dictionary<string, string>( parameters.Dictionary );
 
-                    if ( shortcodeDefinition.TagType == TagType.Block )
-                    {
-                        newShortcode.ElementType = LavaShortcodeTypeSpecifier.Block;
-                    }
-                    else
-                    {
-                        newShortcode.ElementType = LavaShortcodeTypeSpecifier.Inline;
-                    }
+                newShortcode.EnabledLavaCommands = shortcodeDefinition.EnabledLavaCommands.SplitDelimitedValues( ",", StringSplitOptions.RemoveEmptyEntries ).ToList();
+
+                if ( shortcodeDefinition.TagType == TagType.Block )
+                {
+                    newShortcode.ElementType = LavaShortcodeTypeSpecifier.Block;
+                }
+                else
+                {
+                    newShortcode.ElementType = LavaShortcodeTypeSpecifier.Inline;
                 }
 
                 return newShortcode;
             };
 
-            var blockShortCodes = LavaShortcodeCache.All();
-            //.Where( s => s.TagType == TagType.Block );
+            var shortCodes = LavaShortcodeCache.All();
 
-            foreach ( var shortcode in blockShortCodes )
+            foreach ( var shortcode in shortCodes )
             {
-                // register this shortcode
                 engine.RegisterDynamicShortcode( shortcode.TagName, shortCodeFactory );
             }
         }
@@ -258,7 +256,7 @@ namespace Rock.Tests.Integration.Lava
         {
             var outputString = GetTemplateOutput( inputTemplate, context );
 
-            WriteTemplateOutputToDebug( outputString );
+            WriteTemplateRenderToDebug( inputTemplate, outputString );
 
             if ( ignoreWhiteSpace )
             {
@@ -284,7 +282,7 @@ namespace Rock.Tests.Integration.Lava
                 expectedOutput = Regex.Replace( expectedOutput, @"\s*", string.Empty );
             }
 
-            WriteTemplateOutputToDebug( outputString );
+            WriteTemplateRenderToDebug( inputTemplate, outputString );
             Assert.That.Equal( expectedOutput, outputString );
         }
 
@@ -292,10 +290,11 @@ namespace Rock.Tests.Integration.Lava
         /// Write a rendered template to debug, with some additional configuration details.
         /// </summary>
         /// <param name="outputString"></param>
-        public void WriteTemplateOutputToDebug( string outputString )
+        public void WriteTemplateRenderToDebug( string inputString, string outputString )
         {
             var engineName = global::Rock.Lava.LavaEngine.Instance.EngineName;
 
+            Debug.Print( $"\n**\n** Template Input:\n**\n{inputString}" );
             Debug.Print( $"\n**\n** Template Output ({engineName}):\n**\n{outputString}" );
         }
 
@@ -310,7 +309,7 @@ namespace Rock.Tests.Integration.Lava
 
             var regex = new Regex(expectedOutputRegex);
 
-            WriteTemplateOutputToDebug( outputString );
+            WriteTemplateRenderToDebug( inputTemplate, outputString );
             StringAssert.Matches( outputString, regex );
         }
 
@@ -339,7 +338,7 @@ namespace Rock.Tests.Integration.Lava
 
             var regex = new Regex( expectedOutput );
 
-            WriteTemplateOutputToDebug( outputString );
+            WriteTemplateRenderToDebug( inputTemplate, outputString );
             StringAssert.Matches( outputString, regex );
         }
 
@@ -360,7 +359,7 @@ namespace Rock.Tests.Integration.Lava
             
             var regex = new Regex( expectedOutputRegex );
 
-            WriteTemplateOutputToDebug( outputString );
+            WriteTemplateRenderToDebug( inputTemplate, outputString );
             StringAssert.Matches( outputString, regex );
         }
 
@@ -374,7 +373,7 @@ namespace Rock.Tests.Integration.Lava
         {
             var outputString = GetTemplateOutput( inputTemplate );
 
-            WriteTemplateOutputToDebug( outputString );
+            WriteTemplateRenderToDebug( inputTemplate, outputString );
 
             DateTime outputDate;
 

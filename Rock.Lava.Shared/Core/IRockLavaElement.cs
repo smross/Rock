@@ -47,7 +47,7 @@ namespace Rock.Lava
 
         void OnRender( ILavaContext context, TextWriter result );
 
-        //void OnParse( List<string> tokens, out List<object> nodes );
+        void OnParse( List<string> tokens, out List<object> nodes );
 
         /// <summary>
         /// Executed when the element is first loaded during application startup.

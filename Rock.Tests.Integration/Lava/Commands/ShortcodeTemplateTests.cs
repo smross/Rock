@@ -198,6 +198,7 @@ var chart = new Chart(ctx, {
 {[ easypie value:'25' scalelinelength:'0' chartwidth:'50' ]} {[ endeasypie ]}
 ";
 
+            // TODO: The second script tag does not render
             var expectedOutput = @"
 <script src='https://cdnjs.cloudflare.com/ajax/libs/easy-pie-chart/2.1.6/jquery.easypiechart.min.js' type='text/javascript'></script>
 
