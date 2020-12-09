@@ -109,6 +109,7 @@
     <Compile Include="Implementations\Fluid\FluidTemplateProxy.cs" />
     <Compile Include="Core\LavaException.cs" />
     <Compile Include="Implementations\Fluid\LavaFluidParser.cs" />
+    <Compile Include="Implementations\Fluid\LavaFluidParserContext.cs" />
     <Compile Include="Implementations\Fluid\LavaFluidParserFactory.cs" />
     <Compile Include="Implementations\Fluid\LavaFluidTemplate.cs" />
     <Compile Include="Implementations\Fluid\LavaGrammar.cs" />

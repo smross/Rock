@@ -27,6 +27,16 @@ using System.Text;
 using Fluid.Ast.BinaryExpressions;
 using Fluid.Values;
 using Microsoft.Extensions.Primitives;
+using Rock.Lava.Fluid;
+
+namespace Fluid.Tags
+{
+    public interface ITagEx : ITag
+    {
+        Statement Parse( ParseTreeNode node, LavaFluidParserContext context );
+    }
+}
+
 
 namespace Rock.Lava.Fluid
 {
@@ -72,6 +82,23 @@ namespace Rock.Lava.Fluid
     */
 
     /// <summary>
+    /// An extension of the Fluid BlockContext that allows stoaring additional context information.
+    /// </summary>
+    public class BlockContextEx : BlockContext
+    {
+        public BlockContextEx( ParseTreeNode tag )
+            : base( tag )
+        {
+            //
+        }
+
+        /// <summary>
+        /// A property to store extended information about the block context.
+        /// </summary>
+        public BlockInfo AdditionalData { get; set; }
+    }
+
+    /// <summary>
     /// An element from a Fluid template that has been parsed.
     /// </summary>
     public class FluidParsedTemplateElement
@@ -101,6 +128,17 @@ namespace Rock.Lava.Fluid
         event EventHandler<FluidElementParseEventArgs> ElementParsed;
     }
 
+    public class BlockInfo
+    {
+        public int StartPosition { get; set; }
+        public int EndPosition { get; set; }
+
+        public string SourceText { get; set; }
+        public string OpenTag { get; set; }
+        public string InnerText { get; set; }
+        public string CloseTag { get; set; }
+    }
+
     public class LavaFluidParser : IFluidParser, IFluidParserEx
     {
         protected bool _isComment; // true when the current block is a comment
@@ -108,7 +146,7 @@ namespace Rock.Lava.Fluid
         private readonly LanguageData _languageData;
         private readonly Dictionary<string, ITag> _tags;
         private readonly Dictionary<string, ITag> _blocks;
-        protected ParserContext _context;
+        protected LavaFluidParserContext _context;
 
         private static IList<AssignStatement> _assignStatements;
 
@@ -138,7 +176,7 @@ namespace Rock.Lava.Fluid
             errors = Array.Empty<string>();
             var segment = new StringSegment( template );
             Parser parser = null;
-            _context = new ParserContext();
+            _context = new LavaFluidParserContext();
 
             result = _context.CurrentBlock.Statements;
 
@@ -248,7 +286,7 @@ namespace Rock.Lava.Fluid
                                 break;
 
                             case "tag":
-                                s = BuildTagStatement( tree.Root );
+                                s = BuildTagStatement( tree.Root, segment, start, end );
                                 break;
 
                             default:
@@ -632,16 +670,25 @@ namespace Rock.Lava.Fluid
             return null;
         }
 
-        public virtual Statement BuildTagStatement( ParseTreeNode node )
+        private void EnterBlock( ParseTreeNode tag, StringSegment segment, int start, int end )
+        {
+            var tagText = segment.Substring( start, end - start + 1 );
+
+            _context.EnterBlock( tag, segment, start, end );
+        }
+
+        public virtual Statement BuildTagStatement( ParseTreeNode node, StringSegment segment, int start, int end )
         {
             var tag = node.ChildNodes[0];
 
             GetOrAssignNodeId( tag );
 
+            var tagText = segment.Substring( start, end - start + 1 );
+
             switch ( tag.Term.Name )
             {
                 case "for":
-                    _context.EnterBlock( tag );
+                    _context.EnterBlock( tag, segment, start, end );
                     break;
 
                 case "endfor":
@@ -650,7 +697,7 @@ namespace Rock.Lava.Fluid
                     return forStatement;
 
                 case "case":
-                    _context.EnterBlock( tag );
+                    _context.EnterBlock( tag, segment, start, end );
                     break;
 
                 case "when":
@@ -663,11 +710,11 @@ namespace Rock.Lava.Fluid
                     return caseStatement;
 
                 case "if":
-                    _context.EnterBlock( tag );
+                    _context.EnterBlock( tag, segment, start, end );
                     break;
 
                 case "unless":
-                    _context.EnterBlock( tag );
+                    _context.EnterBlock( tag, segment, start, end );
                     break;
 
                 case "endif":
@@ -735,7 +782,7 @@ namespace Rock.Lava.Fluid
                     return BuildDecrementStatement( tag );
 
                 case "capture":
-                    _context.EnterBlock( tag );
+                    _context.EnterBlock( tag, segment, start, end );
                     break;
 
                 case "endcapture":
@@ -759,7 +806,10 @@ namespace Rock.Lava.Fluid
                                 throw new ParseException( $"Unexpected tag: '{tag.Term.Name}' not matching '{_context.CurrentBlock.Tag.Term.Name}' tag." );
                             }
 
-                            var statement = customEndBlock.Parse( _context.CurrentBlock.Tag, _context );
+                            //_context.CurrentBlockEndPosition = end;
+
+                            var statement = CreateStatementForCustomTag( customEndBlock, segment, start, end );
+
                             _context.ExitBlock();
                             return statement;
                         }
@@ -767,18 +817,60 @@ namespace Rock.Lava.Fluid
 
                     if ( _tags.TryGetValue( tag.Term.Name, out ITag customTag ) )
                     {
-                        return customTag.Parse( tag, _context );
+                        return CreateStatementForCustomTag( customTag, segment, start, end );
                     }
 
                     if ( _blocks.TryGetValue( tag.Term.Name, out ITag customBlock ) )
                     {
-                        _context.EnterBlock( tag );
+                        _context.EnterBlock( tag, segment, start, end );
                     }
 
                     break;
             }
 
             return null;
+        }
+
+        private List<FluidParsedTemplateElement> _tokens = new List<FluidParsedTemplateElement>();
+
+        private void AddToken( List<FluidParsedTemplateElement> elements, string elementId, string nodeText, int start, int end, Statement statement )
+        {
+            //var elements = new List<FluidParsedTemplateElement>();
+
+            var newElement = new FluidParsedTemplateElement { ElementId = elementId, Statement = statement, Node = nodeText, StartIndex = start, EndIndex = end };
+
+            _tokens.Add( newElement );
+        }
+
+        private Statement CreateStatementForCustomTag( ITag customEndBlock, StringSegment segment, int endTagStartPosition, int endTagEndPosition )
+        {
+            //Statement statement = null;
+            
+            if ( customEndBlock is ITagEx blockEx )
+            {
+                if ( _context.CurrentBlock.AdditionalData == null )
+                {
+                    _context.CurrentBlock.AdditionalData = new BlockInfo();
+                }
+
+                var blockData = _context.CurrentBlock.AdditionalData;
+
+                blockData.EndPosition = endTagStartPosition - 1;
+                
+                blockData.CloseTag = segment.Substring( endTagStartPosition, endTagEndPosition - endTagStartPosition + 1 );
+
+                var startInnerText = blockData.StartPosition + blockData.OpenTag.Length;
+
+                blockData.InnerText = segment.Substring( startInnerText, endTagStartPosition - startInnerText );
+                 
+                return blockEx.Parse( _context.CurrentBlock.Tag, _context );
+            }
+            else
+            {
+                throw new NotImplementedException();
+                //statement = customEndBlock.Parse( _context.CurrentBlock.Tag, _context as ParserContext );
+            }
+
         }
 
         public static CaptureStatement BuildCaptureStatement( BlockContext context )

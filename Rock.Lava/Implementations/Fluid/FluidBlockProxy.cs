@@ -40,7 +40,7 @@ namespace Rock.Lava.Fluid
     /// The FluidBlockProxy wraps a LavaBlock that is executed internally to render the element content.
     /// This approach allows the LavaBlock to be more easily adapted for use with alternative Liquid templating engines.
     /// </remarks>
-    internal class FluidBlockProxy : global::Fluid.Tags.ITag, ILiquidFrameworkElementRenderer
+    internal class FluidBlockProxy : ITagEx, ILiquidFrameworkElementRenderer
     {
         #region Static factory methods
 
@@ -96,6 +96,11 @@ namespace Rock.Lava.Fluid
 
         public Statement Parse( ParseTreeNode node, ParserContext context )
         {
+            throw new NotImplementedException();
+        }
+
+        public Statement Parse( ParseTreeNode node, LavaFluidParserContext context )
+        {
             /* The Fluid framework parses the block into Liquid tokens using an adapted Irony.Net grammar.
              * Lava uses some syntax that is not recognized by Liquid, so we need to do some parsing of our own.
              * Also, some Lava blocks are designed to parse the raw source text of the block.
@@ -126,7 +131,9 @@ namespace Rock.Lava.Fluid
             // TODO: Extract identifying info/position from here?
             var thisTag = context.CurrentBlock.Tag;
 
-            var nodeStartPosition = node.Span.Location.Position;
+            var nodeStartPosition = context.CurrentBlock.AdditionalData.StartPosition;
+
+            var blockInnerText = context.CurrentBlock.AdditionalData.InnerText;
 
             string nodeGuid; //= (string)node.Tag; //.ToString();
 
@@ -147,7 +154,7 @@ namespace Rock.Lava.Fluid
 
 
             //node.Tag = context.CurrentBlock..Tag. "Position= node.Span.Location.Position
-            var renderBlockDelegate = new DelegateStatement( ( writer, encoder, ctx ) => WriteToAsync( writer, encoder, ctx, elementAttributesMarkup, _statements, node, nodeGuid, nodeStartPosition ) );
+            var renderBlockDelegate = new DelegateStatement( ( writer, encoder, ctx ) => WriteToAsync( writer, encoder, ctx, elementAttributesMarkup, _statements, blockInnerText, node, nodeGuid, nodeStartPosition ) );
 
             return renderBlockDelegate; 
         }
@@ -244,13 +251,13 @@ namespace Rock.Lava.Fluid
 
 
 
-        private ValueTask<Completion> WriteToAsync( TextWriter writer, TextEncoder encoder, TemplateContext context, string elementAttributesMarkup, List<Statement> statements, ParseTreeNode node, string blockTagGuid, int nodeStartPosition )
+        private ValueTask<Completion> WriteToAsync( TextWriter writer, TextEncoder encoder, TemplateContext context, string elementAttributesMarkup, List<Statement> statements, string blockInnerText, ParseTreeNode node, string blockTagGuid, int nodeStartPosition )
         {
             var lavaContext = new FluidLavaContext( context );
 
-            var sourceElements = lavaContext.GetInternalValue( Constants.ContextKeys.SourceTemplateElements ) as List<FluidParsedTemplateElement> ?? new List<FluidParsedTemplateElement>();
+            //var sourceElements = lavaContext.GetInternalValue( Constants.ContextKeys.SourceTemplateElements ) as List<FluidParsedTemplateElement> ?? new List<FluidParsedTemplateElement>();
 
-            var tokens = this.GetBlockTokens( sourceElements, blockTagGuid, statements.LastOrDefault() );
+            //var tokens = this.GetBlockTokens( sourceElements, blockTagGuid, statements.LastOrDefault() );
 
             List<object> nodes;
 
@@ -286,6 +293,8 @@ namespace Rock.Lava.Fluid
             //{
             //    blockBase.SourceText = blockText;
             //}
+
+            var tokens = new List<string> { blockInnerText };
 
             var tagName = node.Term.Name; // _lavaBlock.InternalElementName
 

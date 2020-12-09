@@ -30,6 +30,12 @@ using Microsoft.Extensions.Primitives;
 
 namespace Rock.Lava
 {
+    public enum LavaTokenTypeSpecifier
+    {
+        Text = 0,
+        Tag = 1
+
+    }
 
     /// <summary>
     /// An element from a Fluid template that has been parsed.
@@ -38,8 +44,10 @@ namespace Rock.Lava
     {
         public string ElementId { get; set; }
 
+        public LavaTokenTypeSpecifier NodeType { get; set; }
+
         //public Statement Statement { get; set; }
-        public string Node {get; set; }
+        public string Text {get; set; }
 
         public int StartIndex { get; set; }
         public int EndIndex { get; set; }
@@ -61,28 +69,36 @@ namespace Rock.Lava
     //    event EventHandler<TokeniseEventArgs> ElementParsed;
     //}
 
+    /// <summary>
+    /// Converts a Lava template into a series of tokens separated by Lava syntax markers.
+    /// Lava syntax is based on the Liquid template format, with some extensions for shortcodes.
+    /// </summary>
+    /// <remarks>
+    /// The tokeniser partitions the template into tokens and categorises them based on their syntax.
+    /// It does not perform any parsing or interpretation of the template content.
+    /// </remarks>
     public class LavaTemplateTokeniser // : IFluidParser, IFluidParserEx
     {
         protected bool _isComment; // true when the current block is a comment
         protected bool _isRaw; // true when the current block is raw
-        private readonly LanguageData _languageData;
-        private readonly Dictionary<string, ITag> _tags;
-        private readonly Dictionary<string, ITag> _blocks;
-        protected ParserContext _context;
+        //private readonly LanguageData _languageData;
+        //private readonly Dictionary<string, ITag> _tags;
+        //private readonly Dictionary<string, ITag> _blocks;
+        //protected ParserContext _context;
 
-        private static IList<AssignStatement> _assignStatements;
+        //private static IList<AssignStatement> _assignStatements;
 
         public event EventHandler<TokeniseEventArgs> ElementParsing;
         public event EventHandler<TokeniseEventArgs> ElementParsed;
 
-        public LavaTemplateTokeniser( LanguageData languageData, Dictionary<string, ITag> tags, Dictionary<string, ITag> blocks )
-        {
-            _languageData = languageData;
-            _tags = tags;
-            _blocks = blocks;
-        }
+        //public LavaTemplateTokeniser() // LanguageData languageData ) //, Dictionary<string, ITag> tags, Dictionary<string, ITag> blocks )
+        //{
+        //    _languageData = languageData;
+        //    //_tags = tags;
+        //    //_blocks = blocks;
+        //}
 
-        public bool TryParse( string template, bool stripEmptyLines, out List<string> result, out IEnumerable<string> errors )
+        public bool TryTokenise( string template, bool stripEmptyLines, out List<string> result, out IEnumerable<string> errors )
         {
         //    List<LavaTemplateToken> elements;
 
@@ -97,14 +113,16 @@ namespace Rock.Lava
         //{
             errors = Array.Empty<string>();
             var segment = new StringSegment( template );
-            Parser parser = null;
-            _context = new ParserContext();
+            //Parser parser = null;
+            //_context = new ParserContext();
+            var tokens = new List<LavaTemplateToken>();
 
-            result = _context.CurrentBlock.Statements;
+            result = null;
+            //result = _context.CurrentBlock.Statements;
 
-            var contextBlocksPropertyInfo = _context.GetType().GetProperty( "_blocks", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic );
-            var contextBlocksInstance = contextBlocksPropertyInfo.GetValue( _context );
-            var contextBlocksCountPropertyInfo = contextBlocksInstance.GetType().GetProperty( "Count" );
+            //var contextBlocksPropertyInfo = _context.GetType().GetProperty( "_blocks", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic );
+            //var contextBlocksInstance = contextBlocksPropertyInfo.GetValue( _context );
+            //var contextBlocksCountPropertyInfo = contextBlocksInstance.GetType().GetProperty( "Count" );
 
             try
             {
@@ -125,7 +143,9 @@ namespace Rock.Lava
                         if ( index != previous )
                         {
                             // Consume last Text statement
-                            ConsumeTextStatement( segment, previous, index, trimAfter, false, stripEmptyLines );
+                            var textToken = GetAndConsumeTextStatement( segment, previous, index, trimAfter, false, stripEmptyLines );
+
+                            tokens.Add( textToken );
                         }
 
                         break;
@@ -135,15 +155,17 @@ namespace Rock.Lava
                         trimBefore = segment.Index( start + 2 ) == '-';
 
                         // Only create a parser if there are tags in the template
-                        if ( parser == null )
-                        {
-                            parser = new Parser( _languageData );
-                        }
+                        //if ( parser == null )
+                        //{
+                        //    parser = new Parser( _languageData );
+                        //}
 
                         if ( start != previous )
                         {
                             // Consume current Text statement
-                            ConsumeTextStatement( segment, previous, start, trimAfter, trimBefore, stripEmptyLines );
+                            var textToken = GetAndConsumeTextStatement( segment, previous, start, trimAfter, trimBefore, stripEmptyLines );
+
+                            tokens.Add( textToken );
                         }
 
                         trimAfter = segment.Index( end - 2 ) == '-';
@@ -169,6 +191,11 @@ namespace Rock.Lava
                             tag = sb.ToString();
                         }
 
+                        AddTokenForTag( tokens, tag, start, end, LavaTokenTypeSpecifier.Tag );
+
+                        // TODO: Add an event here to allow the tag to be modified?
+
+                        /*
                         var tree = parser.Parse( tag );
 
                         if ( tree.HasErrors() )
@@ -216,53 +243,63 @@ namespace Rock.Lava
                                 break;
                         }
 
+                        */
+
                         index = end + 1;
 
                         // Entered a comment block?
                         if ( _isComment )
                         {
-                            s = new CommentStatement( ConsumeTag( segment, end + 1, "endcomment", out end ) );
+                            var commentText = ConsumeTag( segment, end + 1, "endcomment", out end );
+
+                            AddTokenForTag( tokens, commentText.ToString(), start, end, LavaTokenTypeSpecifier.Tag );
+
+                            //s = new CommentStatement( ConsumeTag( segment, end + 1, "endcomment", out end ) );
                             index = end;
                         }
 
                         // Entered a raw block?
                         if ( _isRaw )
                         {
-                            s = new TextStatement( ConsumeTag( segment, end + 1, "endraw", out end ) );
+                            var rawText = ConsumeTag( segment, end + 1, "endraw", out end );
+
+                            AddTokenForTag( tokens, rawText.ToString(), start, end, LavaTokenTypeSpecifier.Tag );
+
+                            //s = new TextStatement((  );
                             index = end;
                         }
                         
-                        if ( s != null )
-                        {
-                            _context.CurrentBlock.AddStatement( s );
-                        }
+                        //if ( s != null )
+                        //{
+                        //    _context.CurrentBlock.AddStatement( s );
+                        //}
 
-                        if ( ElementParsed != null )
-                        {
-                            var elementId = GetOrAssignNodeId( tree?.Root );
+                        //if ( ElementParsed != null )
+                        //{
+                        //    var elementId = GetOrAssignNodeId( tree?.Root );
                             
-                            if ( elementId == null )
-                            {
-                                int i = 0;
-                            }
+                        //    if ( elementId == null )
+                        //    {
+                        //        int i = 0;
+                        //    }
 
-                            ElementParsed.Invoke( this,
-                                new TokeniseEventArgs { ElementId = elementId, ElementText = tag, StartIndex = start, EndIndex = end, Statement = s } );
-                        }
+                        //    ElementParsed.Invoke( this,
+                        //        new TokeniseEventArgs { ElementId = elementId, ElementText = tag, StartIndex = start, EndIndex = end, Statement = s } );
+                        //}
                     }
                 }
 
                 // Make sure we aren't still in a block
                 //if ( _context._blocks.Count > 0 )
-                var contextBlocksCount = (int)contextBlocksCountPropertyInfo.GetValue( contextBlocksInstance );
+                //var contextBlocksCount = (int)contextBlocksCountPropertyInfo.GetValue( contextBlocksInstance );
 
-                if ( contextBlocksCount > 0 )
-                {
-                    throw ( new ParseException( $"Expected end of block: {_context.CurrentBlock.Tag}" ) );
-                }
+                //if ( contextBlocksCount > 0 )
+                //{
+                //    throw ( new LavaException( $"Expected end of block: {_context.CurrentBlock.Tag}" ) );
+                //}
                 return true;
             }
-            catch ( ParseException e )
+            catch ( LavaException e )
             {
                 errors = new[] { e.Message };
             }
@@ -271,24 +308,48 @@ namespace Rock.Lava
         }
 
         [MethodImpl( MethodImplOptions.AggressiveInlining )]
-        private void ConsumeTextStatement( StringSegment segment, int start, int end, bool trimStart, bool trimEnd, bool stripEmptyLines )
+        private LavaTemplateToken GetAndConsumeTextStatement( StringSegment segment, int start, int end, bool trimStart, bool trimEnd, bool stripEmptyLines )
         {
+
             var textStatement = CreateTextStatement( segment, start, end, trimStart, trimEnd, stripEmptyLines );
 
-            if ( textStatement != null )
+            if ( textStatement == null )
             {
-                _context.CurrentBlock.AddStatement( textStatement );
+                return null;
+                
             }
 
-            if ( ElementParsed != null )
-            {
-                var tag = _context?.CurrentBlock?.Tag;
+            var node = new LavaTemplateToken();
 
-                var elementId = GetOrAssignNodeId( tag );
+            node.NodeType = LavaTokenTypeSpecifier.Text;
+            node.StartIndex = start;
+            node.EndIndex = end;
 
-                ElementParsed.Invoke( this,
-                    new TokeniseEventArgs { ElementId = elementId, ElementText = segment.Substring( start, end - start ), StartIndex = start, EndIndex = end, Statement = textStatement } );
-            }
+            node.Text = textStatement;
+
+            return node;
+
+            //if ( ElementParsed != null )
+            //{
+            //    var tag = _context?.CurrentBlock?.Tag;
+
+            //    var elementId = GetOrAssignNodeId( tag );
+
+            //    ElementParsed.Invoke( this,
+            //        new TokeniseEventArgs { ElementId = elementId, ElementText = segment.Substring( start, end - start ), StartIndex = start, EndIndex = end, Statement = textStatement } );
+            //}
+        }
+
+        private void AddTokenForTag( List<LavaTemplateToken> tokens, string tokenText, int start, int end, LavaTokenTypeSpecifier tokenType)
+        {
+            var tagToken = new LavaTemplateToken();
+
+            tagToken.NodeType = tokenType;
+            tagToken.Text = tokenText;
+            tagToken.StartIndex = start;
+            tagToken.EndIndex = end;
+
+            tokens.Add( tagToken );
         }
 
         /// <summary>
@@ -332,7 +393,7 @@ namespace Rock.Lava
 
             // We reached the end of the segment without finding the matched tag.
             // Ideally we could return a parsing error, right now we just return the text.
-            throw new ParseException( $"Expected '{endTag}'" );
+            throw new LavaException( $"Expected '{endTag}'" );
         }
 
         /// <summary>
@@ -343,7 +404,7 @@ namespace Rock.Lava
         /// <param name="start"></param>
         /// <param name="end"></param>
         /// <returns></returns>
-        private TextStatement CreateTextStatement( StringSegment segment, int start, int end, bool trimStart, bool trimEnd, bool stripEmptyLines )
+        private string CreateTextStatement( StringSegment segment, int start, int end, bool trimStart, bool trimEnd, bool stripEmptyLines )
         {
             int index;
 
@@ -512,7 +573,7 @@ namespace Rock.Lava
                 return null;
             }
 
-            return new TextStatement( segment.Subsegment( start, end - start ) );
+            return segment.Subsegment( start, end - start ).ToString();
         }
 
         private bool MatchTag( StringSegment template, int startIndex, out int start, out int end )
@@ -1231,18 +1292,18 @@ namespace Rock.Lava
 
         #endregion
 */
-        private static void Traverse( ParseTreeNode tag )
-        {
-            if ( tag.ChildNodes.Count == 1 )
-            {
-                _assignStatements.Add( BuildIncludeAssignStatement( tag.ChildNodes[0] ) );
-            }
-            else
-            {
-                Traverse( tag.ChildNodes[0] );
-                _assignStatements.Add( BuildIncludeAssignStatement( tag.ChildNodes[2] ) );
-            }
-        }
+        //private static void Traverse( ParseTreeNode tag )
+        //{
+        //    if ( tag.ChildNodes.Count == 1 )
+        //    {
+        //        _assignStatements.Add( BuildIncludeAssignStatement( tag.ChildNodes[0] ) );
+        //    }
+        //    else
+        //    {
+        //        Traverse( tag.ChildNodes[0] );
+        //        _assignStatements.Add( BuildIncludeAssignStatement( tag.ChildNodes[2] ) );
+        //    }
+        //}
     }
 
 

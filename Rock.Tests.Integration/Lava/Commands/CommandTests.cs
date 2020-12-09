@@ -347,6 +347,12 @@ AlexDecker<br/>AmadoDecker<br/>AutumnDecker<br/>BrunoDecker<br/>CindyDecker<br/>
         alert('Hello world!');    
     })();
 </script>
+<script>
+    (function(){
+        alert('Hello solar system!');    
+    })();
+</script>
+
 ";
 
             _helper.AssertTemplateOutput( expectedOutput, input, ignoreWhitespace: true );
