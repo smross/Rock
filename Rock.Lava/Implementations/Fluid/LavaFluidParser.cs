@@ -82,7 +82,7 @@ namespace Rock.Lava.Fluid
     */
 
     /// <summary>
-    /// An extension of the Fluid BlockContext that allows stoaring additional context information.
+    /// An extension of the Fluid BlockContext that allows storing additional context information.
     /// </summary>
     public class BlockContextEx : BlockContext
     {
@@ -808,7 +808,7 @@ namespace Rock.Lava.Fluid
 
                             //_context.CurrentBlockEndPosition = end;
 
-                            var statement = CreateStatementForCustomTag( customEndBlock, segment, start, end );
+                            var statement = CreateStatementForCustomBlock( _context.CurrentBlock.Tag, customEndBlock, segment, start, end );
 
                             _context.ExitBlock();
                             return statement;
@@ -817,7 +817,7 @@ namespace Rock.Lava.Fluid
 
                     if ( _tags.TryGetValue( tag.Term.Name, out ITag customTag ) )
                     {
-                        return CreateStatementForCustomTag( customTag, segment, start, end );
+                        return CreateStatementForCustomTag( tag, customTag, segment, start, end );
                     }
 
                     if ( _blocks.TryGetValue( tag.Term.Name, out ITag customBlock ) )
@@ -842,28 +842,54 @@ namespace Rock.Lava.Fluid
             _tokens.Add( newElement );
         }
 
-        private Statement CreateStatementForCustomTag( ITag customEndBlock, StringSegment segment, int endTagStartPosition, int endTagEndPosition )
+        private Statement CreateStatementForCustomTag( ParseTreeNode node, ITag customTag, StringSegment segment, int tagStartPosition, int tagEndPosition )
         {
-            //Statement statement = null;
-            
-            if ( customEndBlock is ITagEx blockEx )
+            if ( customTag is ITagEx blockEx )
             {
-                if ( _context.CurrentBlock.AdditionalData == null )
-                {
-                    _context.CurrentBlock.AdditionalData = new BlockInfo();
-                }
+                _context.CurrentBlock.AdditionalData = new BlockInfo();
 
                 var blockData = _context.CurrentBlock.AdditionalData;
 
-                blockData.EndPosition = endTagStartPosition - 1;
-                
-                blockData.CloseTag = segment.Substring( endTagStartPosition, endTagEndPosition - endTagStartPosition + 1 );
+                blockData.StartPosition = tagStartPosition;
+
+                blockData.OpenTag = segment.Substring( tagStartPosition, tagEndPosition - tagStartPosition + 1 );
+
+                blockData.CloseTag = blockData.OpenTag;
+
+                blockData.EndPosition = tagEndPosition;
+                 
+                return blockEx.Parse( node, _context );
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+
+        }
+
+        private Statement CreateStatementForCustomBlock( ParseTreeNode node, ITag customEndBlock, StringSegment segment, int closingTagStartPosition, int closingTagEndPosition )
+        {
+            //Statement statement = null;
+
+            if ( customEndBlock is ITagEx blockEx )
+            {
+                //if ( _context.CurrentBlock.AdditionalData == null )
+                //{
+                //    // This is an inline tag.
+                //    _context.CurrentBlock.AdditionalData = new BlockInfo();
+                //}
+
+                var blockData = _context.CurrentBlock.AdditionalData;
+
+                blockData.EndPosition = closingTagStartPosition - 1;
+
+                blockData.CloseTag = segment.Substring( closingTagStartPosition, closingTagEndPosition - closingTagStartPosition + 1 );
 
                 var startInnerText = blockData.StartPosition + blockData.OpenTag.Length;
 
-                blockData.InnerText = segment.Substring( startInnerText, endTagStartPosition - startInnerText );
-                 
-                return blockEx.Parse( _context.CurrentBlock.Tag, _context );
+                blockData.InnerText = segment.Substring( startInnerText, closingTagStartPosition - startInnerText );
+
+                return blockEx.Parse( node, _context );
             }
             else
             {
@@ -872,7 +898,6 @@ namespace Rock.Lava.Fluid
             }
 
         }
-
         public static CaptureStatement BuildCaptureStatement( BlockContext context )
         {
             if ( context.Tag == null )

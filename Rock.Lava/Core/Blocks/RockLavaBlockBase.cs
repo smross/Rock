@@ -179,6 +179,7 @@ namespace Rock.Lava.Blocks
             // If this block was previously called with a different base renderer, exit to prevent a circular reference.
             if ( _baseRenderer != null )
             {
+                baseRenderer.Render( null, context, result );
                 return;
             }
 

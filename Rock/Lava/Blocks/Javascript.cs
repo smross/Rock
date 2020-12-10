@@ -35,11 +35,6 @@ namespace Rock.Lava.Blocks
 
         string _markup = string.Empty;
 
-        public Javascript()
-        {
-            int i = 0;
-        }
-
         /// <summary>
         /// Initializes the specified tag name.
         /// </summary>

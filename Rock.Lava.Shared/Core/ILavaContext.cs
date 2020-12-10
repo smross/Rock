@@ -25,6 +25,10 @@ namespace Rock.Lava
     /// </summary>
     public interface ILavaContext
     {
+        object GetInternalValue( string key );
+
+        void SetInternalValue( string key, object value );
+
         /// <summary>
         /// The set of Lava Commands that are enabled for this context.
         /// </summary>

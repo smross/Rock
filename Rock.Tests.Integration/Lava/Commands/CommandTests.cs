@@ -26,6 +26,39 @@ namespace Rock.Tests.Integration.Lava
     [TestClass]
     public class CommandTests : LavaIntegrationTestBase
     {
+        #region Command Internals
+
+        [TestMethod]
+        public void Command_MultipleInstancesOfCustomBlock_ResolvesAllInstances()
+        {
+            var input = @"
+{% javascript %}
+    alert('Hello world!');
+{% endjavascript %}
+{% javascript %}
+    alert('Hello solar system!');
+{% endjavascript %}
+";
+
+            var expectedOutput = @"
+<script>
+    (function(){
+        alert('Hello world!');    
+    })();
+</script>
+<script>
+    (function(){
+        alert('Hello solar system!');    
+    })();
+</script>
+
+";
+
+            _helper.AssertTemplateOutput( expectedOutput, input, ignoreWhitespace: true );
+        }
+
+        #endregion
+
         #region Cache
 
         [TestMethod]
@@ -324,35 +357,6 @@ AlexDecker<br/>AmadoDecker<br/>AutumnDecker<br/>BrunoDecker<br/>CindyDecker<br/>
         alert('Hello world!');    
     })();
 </script>
-";
-
-            _helper.AssertTemplateOutput( expectedOutput, input, ignoreWhitespace: true );
-        }
-
-        [TestMethod]
-        public void JavascriptBlock_MultipleScriptBlocks_ReturnsJavascriptScript()
-        {
-            var input = @"
-{% javascript %}
-    alert('Hello world!');
-{% endjavascript %}
-{% javascript %}
-    alert('Hello solar system!');
-{% endjavascript %}
-";
-
-            var expectedOutput = @"
-<script>
-    (function(){
-        alert('Hello world!');    
-    })();
-</script>
-<script>
-    (function(){
-        alert('Hello solar system!');    
-    })();
-</script>
-
 ";
 
             _helper.AssertTemplateOutput( expectedOutput, input, ignoreWhitespace: true );

@@ -520,7 +520,9 @@ namespace Rock.Lava.Fluid
             FluidTagProxy.RegisterFactory( name, factoryMethod );
 
             // Register the proxy for the specified tag name.
-            _parserFactory.RegisterTag<FluidTagProxy>( name );
+            var proxyInstance = new FluidTagProxy();
+
+            _parserFactory.RegisterTag( name, proxyInstance ); // <FluidTagProxy>( name );
             //LavaFluidTemplate.Factory.RegisterTag<FluidTagProxy>( name );
         }
 
@@ -539,7 +541,9 @@ namespace Rock.Lava.Fluid
             // To implement this behaviour, register the tag as a factory that can create the requested element on demand.
             FluidBlockProxy.RegisterFactory( name, factoryMethod );
 
-            _parserFactory.RegisterBlock<FluidBlockProxy>( name );
+            var proxyInstance = new FluidBlockProxy();
+
+            _parserFactory.RegisterBlock( name, proxyInstance ); // (<FluidBlockProxy>( name );
         }
 
         public override ILavaTemplate ParseTemplate( string lavaTemplate )

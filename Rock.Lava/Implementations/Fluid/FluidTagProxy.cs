@@ -35,7 +35,7 @@ namespace Rock.Lava.Fluid
     /// The FluidTagProxy wraps a LavaTag that is executed internally to render the element content.
     /// This approach allows the LavaTag to be more easily adapted for use with alternative Liquid templating engines.
     /// </remarks>
-    internal class FluidTagProxy : global::Fluid.Tags.ITag, ILiquidFrameworkElementRenderer
+    internal class FluidTagProxy : global::Fluid.Tags.ITagEx, ILiquidFrameworkElementRenderer
     {
         #region Static factory methods
 
@@ -68,6 +68,12 @@ namespace Rock.Lava.Fluid
         #region Fluid ITag Implementation
 
         public Statement Parse( ParseTreeNode node, ParserContext context )
+        {
+            throw new NotImplementedException( "Use Parse( ParseTreeNode, LavaFluidParserContext ) instead." );
+
+            //return Parse( node, context as LavaFluidParserContext );
+        }
+        public Statement Parse( ParseTreeNode node, LavaFluidParserContext context )
         {
             // Get the tag instance.
             var tagName = node.Term.Name;
