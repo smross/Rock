@@ -687,6 +687,7 @@
     <Compile Include="Lava\Blocks\InteractionWrite.cs" />
     <Compile Include="Lava\Blocks\InteractionContentChannelItemWrite.cs" />
     <Compile Include="Lava\Blocks\CalendarEvents.cs" />
+    <Compile Include="Lava\LavaElementAttributes.cs" />
     <Compile Include="Lava\WebsiteLavaFileSystem.cs" />
     <Compile Include="Lava\RockFilters.cs" />
     <Compile Include="Logging\IRockLogReader.cs" />

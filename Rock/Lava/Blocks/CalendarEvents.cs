@@ -19,7 +19,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-using DotLiquid;
 using Rock.Model;
 
 namespace Rock.Lava.Blocks
@@ -45,10 +44,10 @@ namespace Rock.Lava.Blocks
         /// <summary>
         /// Method that will be run at Rock startup
         /// </summary>
-        public override void OnStartup()
-        {
-            Template.RegisterTag<CalendarEvents>( TagSourceName );
-        }
+        //public override void OnStartup()
+        //{
+        //    Template.RegisterTag<CalendarEvents>( TagSourceName );
+        //}
 
         /// <summary>
         /// Initializes the specified tag name.
@@ -56,11 +55,11 @@ namespace Rock.Lava.Blocks
         /// <param name="tagName">Name of the tag.</param>
         /// <param name="markup">The markup.</param>
         /// <param name="tokens">The tokens.</param>
-        public override void Initialize( string tagName, string markup, List<string> tokens )
+        public override void OnInitialize( string tagName, string markup, List<string> tokens )
         {
             _attributesMarkup = markup;
 
-            base.Initialize( tagName, markup, tokens );
+            base.OnInitialize( tagName, markup, tokens );
         }
 
         /// <summary>
@@ -68,7 +67,7 @@ namespace Rock.Lava.Blocks
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="result">The result.</param>
-        public override void Render( Context context, TextWriter result )
+        public override void OnRender( ILavaContext context, TextWriter result )
         {
             try
             {
@@ -80,7 +79,8 @@ namespace Rock.Lava.Blocks
 
                 AddLavaMergeFieldsToContext( context, events );
 
-                RenderAll( this.NodeList, context, result );
+                base.OnRender( context, result );
+                //RenderAll( this.NodeList, context, result );
             }
             catch ( Exception ex )
             {
@@ -97,7 +97,7 @@ namespace Rock.Lava.Blocks
             }
         }
 
-        private void AddLavaMergeFieldsToContext( Context context, List<EventOccurrenceSummary> eventOccurrenceSummaries )
+        private void AddLavaMergeFieldsToContext( ILavaContext context, List<EventOccurrenceSummary> eventOccurrenceSummaries )
         {
             var eventSummaries = eventOccurrenceSummaries
                 .OrderBy( e => e.DateTime )
