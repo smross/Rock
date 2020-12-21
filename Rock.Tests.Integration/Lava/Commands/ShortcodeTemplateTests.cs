@@ -105,7 +105,7 @@ namespace Rock.Tests.Integration.Lava
 
             expectedOutput = expectedOutput.Replace( "``", @"""" );
 
-            _helper.AssertTemplateOutputWithWildcard( expectedOutput, input, ignoreWhitespace: true, wildCard: "<<guid>>" );
+            _helper.AssertTemplateOutputWithWildcard( expectedOutput, input, ignoreWhiteSpace: true, wildCard: "<<guid>>" );
         }
 
         #endregion
@@ -184,7 +184,7 @@ var chart = new Chart(ctx, {
 
             expectedOutput = expectedOutput.Replace( "``", @"""" );
 
-            _helper.AssertTemplateOutputWithWildcard( expectedOutput, input, ignoreWhitespace: true, wildCard: "<<guid>>" );
+            _helper.AssertTemplateOutputWithWildcard( expectedOutput, input, ignoreWhiteSpace: true, wildCard: "<<guid>>" );
         }
 
         #endregion
@@ -283,7 +283,7 @@ $( document ).ready(function() {
 
             expectedOutput = expectedOutput.Replace( "``", @"""" );
 
-            _helper.AssertTemplateOutputWithWildcard( expectedOutput, input, ignoreWhitespace: true );
+            _helper.AssertTemplateOutputWithWildcard( expectedOutput, input, ignoreWhiteSpace: true );
 
         }
 
@@ -404,7 +404,7 @@ $( document ).ready(function() {
 
             expectedOutput = expectedOutput.Replace( "``", @"""" );
 
-            _helper.AssertTemplateOutputWithWildcard( expectedOutput, input, ignoreWhitespace: true, wildCard: "<<guid>>" );
+            _helper.AssertTemplateOutputWithWildcard( expectedOutput, input, ignoreWhiteSpace: true, wildCard: "<<guid>>" );
         }
 
         #endregion
@@ -524,7 +524,7 @@ $( document ).ready(function() {
 
             expectedOutput = expectedOutput.Replace( "``", @"""" );
 
-            _helper.AssertTemplateOutputWithWildcard( expectedOutput, input, ignoreWhitespace: true, wildCard: "<<guid>>" );
+            _helper.AssertTemplateOutputWithWildcard( expectedOutput, input, ignoreWhiteSpace: true, wildCard: "<<guid>>" );
         }
 
         #endregion
@@ -559,7 +559,7 @@ This is a super simple panel.
 
             expectedOutput = expectedOutput.Replace( "``", @"""" );
 
-            _helper.AssertTemplateOutputWithWildcard( expectedOutput, input, ignoreWhitespace: true );
+            _helper.AssertTemplateOutputWithWildcard( expectedOutput, input, ignoreWhiteSpace: true );
         }
 
         #endregion
@@ -618,7 +618,7 @@ This is a super simple panel.
 
             expectedOutput = expectedOutput.Replace( "``", @"""" );
 
-            _helper.AssertTemplateOutputWithWildcard( expectedOutput, input, ignoreWhitespace: true, wildCard: "<<guid>>" );
+            _helper.AssertTemplateOutputWithWildcard( expectedOutput, input, ignoreWhiteSpace: true, wildCard: "<<guid>>" );
 
         }
 
@@ -666,7 +666,7 @@ This is a super simple panel.
 
             expectedOutput = expectedOutput.Replace( "``", @"""" );
 
-            _helper.AssertTemplateOutputWithWildcard( expectedOutput, input, ignoreWhitespace: true, wildCard: "<<guid>>" );
+            _helper.AssertTemplateOutputWithWildcard( expectedOutput, input, ignoreWhiteSpace: true, wildCard: "<<guid>>" );
         }
 
         #endregion
@@ -698,7 +698,7 @@ This is a super simple panel.
 </div>
 ";
 
-            _helper.AssertTemplateOutputWithWildcard( expectedOutput, input, ignoreWhitespace: true, wildCard: "<<guid>>" );
+            _helper.AssertTemplateOutputWithWildcard( expectedOutput, input, ignoreWhiteSpace: true, wildCard: "<<guid>>" );
         }
 
         #endregion
@@ -777,7 +777,7 @@ Another possibility would be to merge a word’s tree with a single large tree o
 
             expectedOutput = expectedOutput.Replace( "``", @"""" );
 
-            _helper.AssertTemplateOutputWithWildcard( expectedOutput, input, ignoreWhitespace: true, wildCard: "<<guid>>" );
+            _helper.AssertTemplateOutputWithWildcard( expectedOutput, input, ignoreWhiteSpace: true, wildCard: "<<guid>>" );
         }
 
         #endregion
@@ -814,7 +814,7 @@ Another possibility would be to merge a word’s tree with a single large tree o
 </div>
 ";
 
-            _helper.AssertTemplateOutputWithWildcard( expectedOutput, input, ignoreWhitespace: true, wildCard: "<<guid>>" );
+            _helper.AssertTemplateOutputWithWildcard( expectedOutput, input, ignoreWhiteSpace: true, wildCard: "<<guid>>" );
         }
 
         #endregion

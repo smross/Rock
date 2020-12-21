@@ -318,14 +318,14 @@ namespace Rock.Tests.Integration.Lava
         /// </summary>
         /// <param name="expectedOutput"></param>
         /// <param name="inputTemplate"></param>
-        public void AssertTemplateOutputWithWildcard( string expectedOutput, string inputTemplate, LavaDictionary mergeValues = null, bool ignoreWhitespace = false, string wildCard = "*" )
+        public void AssertTemplateOutputWithWildcard( string expectedOutput, string inputTemplate, LavaDictionary mergeValues = null, bool ignoreWhiteSpace = false, string wildCard = "*" )
         {
             var outputString = GetTemplateOutput( inputTemplate, mergeValues );
 
             // Replace the wildcards with a non-Regex symbol.
             expectedOutput = expectedOutput.Replace( wildCard, "<<<wildCard>>>" );
 
-            if ( ignoreWhitespace )
+            if ( ignoreWhiteSpace )
             {
                 outputString = Regex.Replace( outputString, @"\s*", string.Empty );
                 expectedOutput = Regex.Replace( expectedOutput, @"\s*", string.Empty );
@@ -347,14 +347,14 @@ namespace Rock.Tests.Integration.Lava
         /// </summary>
         /// <param name="expectedOutputRegex"></param>
         /// <param name="inputTemplate"></param>
-        public void AssertTemplateOutputRegex( string expectedOutputRegex, string inputTemplate, ILavaContext context, bool ignoreWhitespace = true )
+        public void AssertTemplateOutputRegex( string expectedOutputRegex, string inputTemplate, ILavaContext context, bool ignoreWhiteSpace = true )
         {
             var outputString = GetTemplateOutput( inputTemplate, context );
 
             // If ignoring whitespace, replace any whitespace in the expected output regex with a greedy whitespace match.
-            if ( ignoreWhitespace )
+            if ( ignoreWhiteSpace )
             {
-                expectedOutputRegex = Regex.Replace( expectedOutputRegex, @"\s+", @"\\s\*" );
+                expectedOutputRegex = Regex.Replace( expectedOutputRegex, @"\s+", @"\s*" );
             }
             
             var regex = new Regex( expectedOutputRegex );

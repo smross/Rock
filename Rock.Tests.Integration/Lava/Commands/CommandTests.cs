@@ -103,36 +103,6 @@ AlexDecker<br/>AmadoDecker<br/>AutumnDecker<br/>BrunoDecker<br/>CindyDecker<br/>
             _helper.AssertTemplateOutput( expectedOutput, input, context, ignoreWhiteSpace: true );
         }
 
-//        [TestMethod]
-//        public void CacheBlock_WithInnerVariable_DoesNotModifyOuterVariable()
-//        {
-//            var input = @"
-//{% assign color = 'blue' %}
-//Color 1: {{ color }}
-
-//{% cache key:'fav-color' duration:'1200' %}
-//    Color 2: {{ color }}
-//    {% assign color = 'red' %}
-//    Color 3: {{ color }}
-//{% endcache %}
-
-//Color 4: {{ color }}
-//";
-
-//            var expectedOutput = @"
-//Color 1: blue
-//Color 2: blue
-//Color 3: red
-//Color 4: blue
-//";
-
-//            var context = _helper.LavaEngine.NewContext();
-
-//            context.SetEnabledCommands( "Cache" );
-
-//            _helper.AssertTemplateOutput( expectedOutput, input, context, ignoreWhiteSpace: true );
-//        }
-
         #endregion
 
         #region Entity
@@ -238,6 +208,39 @@ AlexDecker<br/>AmadoDecker<br/>AutumnDecker<br/>BrunoDecker<br/>CindyDecker<br/>
 
         [TestMethod]
         public void ExecuteBlock_ClassType_ReturnsExpectedOutput()
+        {
+            var input = @"
+{% execute type:'class' %}
+    using Rock;
+    using Rock.Data;
+    using Rock.Model;
+    
+    public class MyScript 
+    {
+        public string Execute() {
+            using(RockContext rockContext = new RockContext()) {
+                var person = new PersonService(rockContext).Get(""<PersonGuid>"".AsGuid());
+                
+                return person.FullName;
+            }
+        }
+    }
+{% endexecute %}
+";
+
+            input = input.Replace( "<PersonGuid>", _helper.GetTestPersonTedDecker().Guid );
+
+            var expectedOutput = @"Ted Decker";
+
+            var context = _helper.LavaEngine.NewContext();
+
+            context.SetEnabledCommands( "execute" );
+
+            _helper.AssertTemplateOutput( expectedOutput, input, context );
+        }
+
+        [TestMethod]
+        public void ExecuteBlock_WithContextValues_ResolvesContextValuesCorrectly()
         {
             var input = @"
 {% execute type:'class' %}
@@ -393,15 +396,13 @@ AlexDecker<br/>AmadoDecker<br/>AutumnDecker<br/>BrunoDecker<br/>CindyDecker<br/>
 {% endsearch %}
 ";
 
-            var expectedOutput = @"
-Search results not available. Universal search is not enabled for this Rock instance.
-";
+            var expectedOutput = @"(.*)Search results not available. Universal search is not enabled for this Rock instance.";
 
             var context = _helper.LavaEngine.NewContext();
 
             context.SetEnabledCommands( "Search" );
 
-            _helper.AssertTemplateOutput( expectedOutput, input, context, ignoreWhiteSpace: true );
+            _helper.AssertTemplateOutputRegex( expectedOutput, input, context );
         }
 
         #endregion Search
@@ -503,16 +504,9 @@ Search results not available. Universal search is not enabled for this Rock inst
         public void WebRequestBlock_CommandNotEnabled_ReturnsConfigurationErrorMessage()
         {
             var input = @"
-{% webrequest url:'https://api.github.com/repos/SparkDevNetwork/Rock/commits' %}
-    <ul>
-    {% for item in results %}
-	    <li>
-            <strong>{{ item.commit.author.name }}</strong><br />
-            {{ item.commit.message }}
-        </li>
-    {% endfor %}
-    </ul>
-{% endwebrequest %}
+{% webrequest url:'https://api.github.com/repos/SparkDevNetwork/Rock/git/commits/88b33817b02b798679d75f237970649f25332fe1' return:'commit' %}
+    {{ commit.message }}
+{% endwebrequest %}  
 ";
 
             var expectedOutput = @"\s*The Lava command 'webrequest' is not configured for this template\.\s*";
@@ -524,10 +518,8 @@ Search results not available. Universal search is not enabled for this Rock inst
         public void WebRequestBlock_GetRockRepoCommits_ReturnsValidResponse()
         {
             var input = @"
-{% webrequest url:'https://api.github.com/repos/SparkDevNetwork/Rock/commits' basicauth:'unknown_user,invalid_password' %}
-    <pre>
-        {{ results | ToJSON }}
-    </pre>
+{% webrequest url:'https://api.github.com/repos/SparkDevNetwork/Rock/git/commits/88b33817b02b798679d75f237970649f25332fe1' return:'commit' %}
+    {{ commit.message }}
 {% endwebrequest %}  
 ";
 
@@ -535,12 +527,7 @@ Search results not available. Universal search is not enabled for this Rock inst
 
             context.SetEnabledCommands( "WebRequest" );
 
-            var output = _helper.GetTemplateOutput( input, context );
-
-            // The expected "valid" response is a message indicating that the provided credentials are invalid.
-            // This indicates that the webrequest received a correct response from the server.
-            Assert.That.Contains( output, "Unauthorized");
-            Assert.That.Contains( output, "Bad credentials" );
+            _helper.AssertTemplateOutput( "readme", input, context, ignoreWhiteSpace: true );
         }
 
         #endregion
