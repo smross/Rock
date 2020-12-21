@@ -23,24 +23,20 @@ namespace Rock.Tests.UnitTests.Lava
     [TestClass]
     public class LavaUnitTestBase
     {
-        public static LavaEngineTypeSpecifier EngineType { get; set; }
-        public static LavaTestHelper _helper { get; set; }
-
-        [AssemblyInitialize]
-        public static void ClassInitialize( TestContext testContext )
+        public static LavaEngineTypeSpecifier EngineType
         {
-            LavaEngineTypeSpecifier engineType;
-
-            var isValid = Enum.TryParse( testContext.Properties["LavaEngineType"].ToString(), out engineType );
-
-            if ( !isValid )
+            get
             {
-                engineType = LavaEngineTypeSpecifier.DotLiquid;
+                return UnitTestHelper.EngineType;
             }
+        }
 
-            EngineType = engineType;
-
-            _helper = LavaTestHelper.New( engineType );
+        public static LavaTestHelper _helper
+        {
+            get
+            {
+                return UnitTestHelper.LavaTestHelper;
+            }
         }
     }
 }

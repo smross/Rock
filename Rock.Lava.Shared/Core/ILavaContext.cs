@@ -90,8 +90,6 @@ namespace Rock.Lava
         /// <returns></returns>
         object this[string key] { get; set; }
 
-        ILavaEngine LavaEngine { get; }
-
         /// <summary>
         /// Retrieves a nested stack of Environments, with the current environment first.
         /// An environment holds the variables that have been defined by the container in which a Lava template is resolved.
@@ -138,8 +136,9 @@ namespace Rock.Lava
         /// <param name="newScope"></param>
         /// <param name="callback"></param>
         /// <returns></returns>
+        void Stack( Action callback );
+
         //void Stack( LavaDictionary newScope, Action callback );
 
-        void Stack( Action callback );
     }
 }

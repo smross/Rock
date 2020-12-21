@@ -298,7 +298,7 @@ namespace Rock.Tests.UnitTests.Lava
         {
             var currentDateTime = RockDateTime.Now;
 
-            var targetDate = new DateTime( currentDateTime.Year, currentDateTime.Month + 1, 1 );
+            var targetDate = new DateTime( currentDateTime.Year, currentDateTime.Month, 1 ).AddMonths(1);
 
             targetDate = targetDate.AddDays( -1 );
 
