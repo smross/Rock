@@ -149,10 +149,15 @@ namespace Rock.Lava
         /// <returns></returns>
         protected bool GetProperty( object rootObj, string propertyPathName, out object result )
         {
-            if ( rootObj == null || string.IsNullOrWhiteSpace( propertyPathName ) )
+            if ( string.IsNullOrWhiteSpace( propertyPathName ) )
             {
                 result = null;
                 return false;
+            }
+
+            if ( rootObj == null )
+            {
+                rootObj = this;
             }
 
             var propPath = propertyPathName.Split( new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries ).ToList<string>();
@@ -166,17 +171,39 @@ namespace Rock.Lava
                 var propName = propPath.First();
 
                 PropertyInfo prop;
+                bool getPropertyValue;
 
-                InstancePropertyLookup.TryGetValue( propName, out prop );
-
-                if ( prop == null )
+                if ( obj == this )
                 {
-                    result = null;
-                    return false;
+                    // Get the property accessor for this object.
+                    InstancePropertyLookup.TryGetValue( propName, out prop );
+                    getPropertyValue = true;
+                }
+                else if ( obj is RockDynamic rd )
+                {
+                    // Get the property value for the dynamic object.
+                    rd.GetProperty( obj, propName, out obj );
+                    prop = null;
+                    getPropertyValue = false;
+                }
+                else
+                {
+                    // Get the property accessor for the child property value.
+                    prop = obj.GetType().GetProperty( propName );
+                    getPropertyValue = true;
                 }
 
-                // Get the value from the property
-                obj = prop.GetValue( obj, null );
+                if ( getPropertyValue )
+                {
+                    if ( prop == null )
+                    {
+                        result = null;
+                        return false;
+                    }
+
+                    // Get the value from the property
+                    obj = prop.GetValue( obj, null );
+                }
 
                 propPath = propPath.Skip( 1 ).ToList();
             }

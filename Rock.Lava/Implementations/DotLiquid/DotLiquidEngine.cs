@@ -138,11 +138,11 @@ namespace Rock.Lava.DotLiquid
 
         public override void RegisterSafeType( Type type, string[] allowedMembers = null )
         {
-            if ( type is Rock.Lava.ILavaDataObjectSource )
+            if ( typeof( Rock.Lava.ILavaDataObjectSource ).IsAssignableFrom( type ) )
             {
                 Template.RegisterSafeType( type, ( x ) => { return ( (Rock.Lava.ILavaDataObjectSource)x ).GetLavaDataObject(); } );
             }
-            else if ( type is Rock.Lava.ILavaDataObject )
+            else if ( typeof( Rock.Lava.ILavaDataObject ).IsAssignableFrom( type ) ) 
             {
                 Template.RegisterSafeType( typeof( Rock.Lava.ILavaDataObject ),
                 x =>
