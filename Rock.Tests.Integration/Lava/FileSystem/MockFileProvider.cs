@@ -31,6 +31,8 @@ namespace Rock.Tests.Integration.Lava
         {
         }
 
+        #region IFileProvider implementation
+
         public IDirectoryContents GetDirectoryContents( string subpath )
         {
             throw new NotImplementedException();
@@ -59,13 +61,17 @@ namespace Rock.Tests.Integration.Lava
             throw new NotImplementedException();
         }
 
+        #endregion
+
+        #region ILavaFileSystem implementation
+
         public string ReadTemplateFile( ILavaContext context, string templateName )
         {
             var fi = GetFileInfo( templateName );
 
             if ( fi == null )
             {
-                return string.Empty;
+                return $"File Load Failed. The file \"{templateName}\" could not be found.";
             }
 
             var sb = new StringBuilder();
@@ -88,5 +94,7 @@ namespace Rock.Tests.Integration.Lava
         {
             return _files.ContainsKey( filePath );
         }
+
+        #endregion
     }
 }

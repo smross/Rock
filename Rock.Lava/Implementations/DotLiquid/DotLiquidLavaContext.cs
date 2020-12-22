@@ -19,10 +19,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reflection;
 using DotLiquid;
 using DotLiquid.Exceptions;
 
 using Rock.Common;
+using Rock.Data;
 
 namespace Rock.Lava.DotLiquid
 {
@@ -67,16 +69,6 @@ namespace Rock.Lava.DotLiquid
 
             return environments;
         }
-
-        public override ILavaEngine LavaEngine
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        //private List<string> _enabledCommands = new List<string>();
 
         public override void SetEnabledCommands( IEnumerable<string> commands )
         {
@@ -434,6 +426,7 @@ namespace Rock.Lava.DotLiquid
 
         private object GetDotLiquidCompatibleValue( object value )
         {
+            // Primitive values do not require any special processing.
             if ( value == null
                  || value is string
                  || value is IEnumerable
@@ -444,22 +437,96 @@ namespace Rock.Lava.DotLiquid
                  || value is Guid
                  || value is Enum
                  || value is KeyValuePair<string, object>
-                 || value.GetType().IsPrimitive
                  )
             {
                 return value;
             }
 
-            var safeTypeTransformer = Template.GetSafeTypeTransformer( value.GetType() );
+            var valueType = value.GetType();
+
+            if ( valueType.IsPrimitive )
+            {
+                return value;
+            }
+
+            // For complex types, check if a specific transformer has been defined for the type.
+            var safeTypeTransformer = Template.GetSafeTypeTransformer( valueType );
 
             if ( safeTypeTransformer != null )
             {
                 return safeTypeTransformer( value );
             }
 
+            // Check if the type is decorated with the LavaType attribute.
+            var attr = (LavaTypeAttribute)valueType.GetCustomAttributes( typeof( LavaTypeAttribute ), false ).FirstOrDefault();
+
+            if ( attr != null )
+            {
+                var allowedProperties = GetLavaTypeAllowedProperties( valueType, attr );
+
+                return new DropProxy( value, allowedProperties );
+
+                //return GetLavaTypeProxy( valueType  new DropProxy( value, attr.AllowedMembers );
+            }
+
+            // Check if any of the type properties are decorated with LavaInclude or LavaIgnore attributes.
+            //xyzzy
+
             return value;
         }
 
+        private string[] GetLavaTypeAllowedProperties( Type type, LavaTypeAttribute attr )
+        {
+            List<PropertyInfo> includedProperties;
+
+            // Get the list of included properties, then remove the ignored properties.
+            if ( attr.AllowedMembers == null || !attr.AllowedMembers.Any() )
+            {
+                // No included properties have been specified, so assume all are included.
+                includedProperties = type.GetProperties().ToList();
+            }
+            else
+            {
+                includedProperties = type.GetProperties().Where( x => attr.AllowedMembers.Contains( x.Name, StringComparer.OrdinalIgnoreCase ) ).ToList();
+            }
+
+            var ignoredProperties = type.GetProperties().Where( x => x.GetCustomAttributes( typeof( LavaIgnoreAttribute ), false ).Any() ).ToList();
+
+            var allowedProperties = includedProperties.Except( ignoredProperties ).Select( x => x.Name ).ToArray();
+
+            return allowedProperties;
+
+            //var attr = (LavaTypeAttribute)valueType.GetCustomAttributes( typeof( LavaTypeAttribute ), false ).First();
+
+            //return new DropProxy( value, allowedProperties );
+
+
+            //foreach ( var includedProperty in includedProperties )
+            //{
+            //    if ( ignoredProperties.Contains( includedProperty ) )
+            //    {
+            //        continue;
+            //    }
+
+            //    var newAccessor = new LavaTypeMemberAccessor( includedProperty );
+
+            //    Register( type, includedProperty.Name, newAccessor );
+            //}
+        }
+
+        //public void Register( Type type, string name, IMemberAccessor getter )
+        //{
+        //    if ( !_map.TryGetValue( type, out var typeMap ) )
+        //    {
+        //        typeMap = new Dictionary<string, IMemberAccessor>( IgnoreCasing
+        //            ? StringComparer.OrdinalIgnoreCase
+        //            : StringComparer.Ordinal );
+
+        //        _map[type] = typeMap;
+        //    }
+
+        //    typeMap[name] = getter;
+        //}
 
         #region Unused???
 

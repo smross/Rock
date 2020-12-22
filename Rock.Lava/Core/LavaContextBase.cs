@@ -35,8 +35,6 @@ namespace Rock.Lava
             }
         }
 
-        public abstract ILavaEngine LavaEngine { get; }
-
         public abstract List<string> GetEnabledCommands();
         public abstract IList<LavaDictionary> GetEnvironments();
         public abstract LavaDictionary GetMergeFieldsInLocalScope();
@@ -45,8 +43,6 @@ namespace Rock.Lava
         public abstract object GetMergeFieldValue( string key, object defaultValue );
         public abstract LavaDictionary GetMergeFieldValues();
         public abstract IList<LavaDictionary> GetScopes();
-        //public abstract LavaDictionary Pop();
-        //public abstract void Push( LavaDictionary newScope );
         public abstract string ResolveMergeFields( string content, IDictionary<string, object> mergeObjects, string enabledLavaCommands = null, bool encodeStrings = false, bool throwExceptionOnErrors = false );
         public abstract void SetEnabledCommands( IEnumerable<string> commands );
         public void SetEnabledCommands( string commandList, string delimiter = "," )

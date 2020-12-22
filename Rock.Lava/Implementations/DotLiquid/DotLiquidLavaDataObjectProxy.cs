@@ -23,7 +23,7 @@ namespace Rock.Lava.DotLiquid
     /// <summary>
     /// An implementation of a Lava Data Object that can be used by the DotLiquid Templating Framework.
     /// </summary>
-    internal class DotLiquidLavaDataObjectProxy : ILiquidizable, IIndexable, ILavaDataObject
+    internal class DotLiquidLavaDataObjectProxy : ILiquidizable, IIndexable, IValueTypeConvertible, ILavaDataObject
     {
         private ILavaDataObject _dataObject = null;
 
@@ -50,6 +50,20 @@ namespace Rock.Lava.DotLiquid
                 return GetValue( key );
             }
         }
+
+        #region IValueTypeConvertible implementation
+
+        public object ConvertToValueType()
+        {
+            if ( _dataObject == null )
+            {
+                return null;
+            }
+
+            return _dataObject;
+        }
+
+        #endregion
 
         #region ILavaDataObject implementation
 

@@ -33,12 +33,7 @@ namespace Rock.Lava
             _lavaFileSystem = lavaFileSystem;
         }
 
-        //public string ReadTemplateFile( ILavaContext context, string templateName )
-        //{
-        //    throw new System.NotImplementedException();
-        //}
-
-        #region IFileSystem implementation.
+        #region IFileSystem implementation
 
         string IFileSystem.ReadTemplateFile( Context context, string templateName )
         {
@@ -54,12 +49,14 @@ namespace Rock.Lava
             }
             catch
             {
-                throw new LavaException( "LavaFileSystem ReadTemplate failed. The template \"{0}\" could not loaded.", templateName );
+                throw new LavaException( "File Load Failed. The template \"{0}\" could not loaded.", templateName );
             }
 
         }
 
         #endregion
+
+        #region ILavaFileSystem implementation
 
         /// <summary>
         /// Called by Liquid to retrieve a template file
@@ -77,5 +74,7 @@ namespace Rock.Lava
         {
             return _lavaFileSystem.FileExists( filePath );
         }
+
+        #endregion
     }
 }

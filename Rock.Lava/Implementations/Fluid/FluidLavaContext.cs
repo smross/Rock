@@ -76,14 +76,6 @@ namespace Rock.Lava.Fluid
 
         }
 
-        public override ILavaEngine LavaEngine
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-
         public override List<string> GetEnabledCommands()
         {
             // The set of enabled Lava Commands is stored in the Fluid AmbientValues collection.

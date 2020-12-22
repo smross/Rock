@@ -279,7 +279,7 @@ namespace Rock.Tests.UnitTests.Lava
         public void RegExMatch_EmailAddressValidationSucceeds( string input, bool isMatch )
         {
             // This regular expression is the same one used in Rock for email validation.
-            var template = @"{{ '<input>' | RegExMatch:'\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*' }}"
+            var template = @"{{ '<input>' | RegExMatch:'\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*' }}"
                            .Replace( "<input>", input );
 
             _helper.AssertTemplateOutput( isMatch.ToString().ToLower(), template );
@@ -291,8 +291,10 @@ namespace Rock.Tests.UnitTests.Lava
         [TestMethod]
         public void RegExMatchValue_FindsFirstMatchOnly()
         {
-            _helper.AssertTemplateOutput( "12345", @"{{ 'group 12345' | RegExMatchValue:'\\d+' }}" );
-            _helper.AssertTemplateOutput( "Saturday", @"{{ 'Services on Saturday and Sunday' | RegExMatchValue:'\\b\\w+day\\b' }}" );
+            // [2020-12-22] DJL - This test passes using DotLiquid - modified "\\" to "\".
+            // May need to verify if Fluid automatically escapes the filter parameter input?
+            _helper.AssertTemplateOutput( "12345", @"{{ 'group 12345' | RegExMatchValue:'\d+' }}" );
+            _helper.AssertTemplateOutput( "Saturday", @"{{ 'Services on Saturday and Sunday' | RegExMatchValue:'\b\w+day\b' }}" );
         }
 
         /// <summary>
@@ -302,7 +304,7 @@ namespace Rock.Tests.UnitTests.Lava
         public void RegExMatchValues_FindsAllMatches()
         {
             var template = @"
-{% assign days = 'Services on Saturday and Sunday and now also on Monday!' | RegExMatchValues:'\\b\\w+day\\b' %}
+{% assign days = 'Services on Saturday and Sunday and now also on Monday!' | RegExMatchValues:'\b\w+day\b' %}
 {% for day in days %}{{ day }},{% endfor %}
 ";
             template = template.Replace( "\n", string.Empty ).Replace( "\r", string.Empty );

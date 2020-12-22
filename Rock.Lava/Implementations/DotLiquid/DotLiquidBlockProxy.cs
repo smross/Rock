@@ -110,7 +110,7 @@ namespace Rock.Lava.DotLiquid
 
             // The output of the parsing process is a set of nodes that can be rendered by the DotLiquid rendering engine.
             // Tokens should be removed sequentially from the list as they are parsed into nodes.
-            //_lavaBlock.OnParse( tokens, out nodes );
+            _lavaBlock.OnParse( tokens, out nodes );
 
             //if ( nodes != null )
             //{

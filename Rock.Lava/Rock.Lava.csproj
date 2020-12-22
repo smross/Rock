@@ -127,6 +127,7 @@
     <Compile Include="Implementations\DotLiquid\DotLiquidLavaTagBase.cs" />
     <Compile Include="Core\LavaTemplateBase.cs" />
     <Compile Include="Core\LavaContextBase.cs" />
+    <Compile Include="Implementations\Fluid\LavaObjectMemberAccessStrategy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Shortcodes\LavaShortcodeMetaDataAttribute.cs" />
     <Compile Include="Utilities\ListExtensionMethods.cs" />

@@ -140,25 +140,31 @@ namespace Rock.Lava.DotLiquid
         {
             if ( typeof( Rock.Lava.ILavaDataObjectSource ).IsAssignableFrom( type ) )
             {
-                Template.RegisterSafeType( type, ( x ) => { return ( (Rock.Lava.ILavaDataObjectSource)x ).GetLavaDataObject(); } );
+                Template.RegisterSafeType( type,
+                    ( x ) =>
+                    {
+                        return ( (Rock.Lava.ILavaDataObjectSource)x ).GetLavaDataObject();
+                    } );
             }
             else if ( typeof( Rock.Lava.ILavaDataObject ).IsAssignableFrom( type ) ) 
             {
                 Template.RegisterSafeType( typeof( Rock.Lava.ILavaDataObject ),
-                x =>
-                {
-                    return new DropProxy( x, ( (ILavaDataObject)x ).AvailableKeys.ToArray() );
-                } );
+                    ( x ) =>
+                    {
+                        var wrapper = new DotLiquidLavaDataObjectProxy( (Rock.Lava.ILavaDataObject)x );
+                        return wrapper;
+                    } );
             }
             else
             {
                 // Wrap the object in a RockDynamic proxy, and a DotLiquid compatible proxy.
-                Template.RegisterSafeType( type, ( x ) =>
-                {
-                    var dynamicObject = new RockDynamic( x );
-                    var wrapper = new DotLiquidLavaDataObjectProxy( dynamicObject );
-                    return wrapper;
-                } );
+                Template.RegisterSafeType( type,
+                    ( x ) =>
+                    {
+                        var dynamicObject = new RockDynamic( x );
+                        var wrapper = new DotLiquidLavaDataObjectProxy( dynamicObject );
+                        return wrapper;
+                    } );
             }
         }
 
