@@ -62,7 +62,7 @@ namespace Rock.Lava.Blocks
         /// <summary>
         /// The text that defines this element in the Lava source document.
         /// </summary>
-        public string SourceText { get; set; }
+        //public string SourceText { get; set; }
 
         /// <summary>
         /// Determines if this block is authorized in the specified Lava context.
@@ -118,22 +118,20 @@ namespace Rock.Lava.Blocks
         /// </summary>
         /// <param name="tokens"></param>
         /// <param name="nodes"></param>
-        public void Parse( List<string> tokens, out List<object> nodes )
-        {
-            OnParse( tokens, out nodes );
-        }
+        //public void Parse( List<string> tokens, out List<object> nodes )
+        //{
+        //    OnParsed( tokens, out nodes );
+        //}
 
         /// <summary>
-        /// Override this method to provide custom parsing for the block.
+        /// Override this method to perform custom actions after parsing of the block is completed.
         /// </summary>
         /// <param name="tokens"></param>
         /// <param name="nodes"></param>
-        public virtual void OnParse( List<string> tokens, out List<object> nodes )
+        public virtual void OnParsed( List<string> tokens )
         {
-            nodes = null;
+            //
         }
-
-
 
         /// <summary>
         /// Override this method to perform tasks when the block is first loaded at startup.

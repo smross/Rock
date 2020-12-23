@@ -231,88 +231,13 @@ namespace Rock.Lava.Fluid
             return blockMarkup;
         }
 
-        /*
-        public List<string> GetTokenTreeFromParseTree( ParseTreeNode node, int index = 0, int level = 0 )
-        {
-            //for ( var levelIndex = 0; levelIndex < level; levelIndex++ )
-            //{
-            //    Console.Write( "\t" );
-            //}
-            var nodes = new List<string>();
-
-            if ( node.IsPunctuationOrEmptyTransient() )
-            {
-                nodes.Add( node.ToString() );
-            }
-            else if ( node.Term != null )
-            {
-                nodes.Add( node.Term.Name );
-            }
-            else if ( node.Token != null )
-            {
-                nodes.Add( node.Token.Text );
-            }
-            else
-            {
-                nodes.Add( node.ToString() );
-            }
-            
-
-            var childIndex = 0;
-
-            foreach ( var child in node.ChildNodes )
-            {
-                var childNodes = GetTokenTreeFromParseTree( child, childIndex, level + 1 );
-
-                nodes.AddRange( childNodes );
-
-                childIndex++;
-            }
-
-            return nodes;
-        }
-
-        /// <summary>
-        /// Parser extension methods
-        /// </summary>
-        //public static class ParserExt
-        //{
-            /// <summary>
-            /// Converts parser nodes tree to flat collection
-            /// </summary>
-            /// <param name="item"></param>
-            /// <param name="childSelector"></param>
-            /// <returns></returns>
-            private IEnumerable<ParseTreeNode> Traverse( ParseTreeNode item, Func<ParseTreeNode, IEnumerable<ParseTreeNode>> childSelector )
-            {
-                var stack = new Stack<ParseTreeNode>();
-                stack.Push( item );
-                while ( stack.Any() )
-                {
-                    var next = stack.Pop();
-                    yield return next;
-
-                    var childs = childSelector( next ).ToList();
-                    for ( var childId = childs.Count - 1; childId >= 0; childId-- )
-                    {
-                        stack.Push( childs[childId] );
-                    }
-                }
-            }
-        //}
-*/
-
         private List<Statement> _statements = null;
 
         private ValueTask<Completion> WriteToAsync( TextWriter writer, TextEncoder encoder, TemplateContext context, string elementAttributesMarkup, List<Statement> statements, ParseTreeNode node )
         {
             var lavaContext = new FluidLavaContext( context );
             
-            var sourceTemplate = lavaContext.GetInternalValue( Constants.ContextKeys.SourceTemplateText ) as string ?? string.Empty;
             var sourceElements = lavaContext.GetInternalValue( Constants.ContextKeys.SourceTemplateElements ) as List<FluidParsedTemplateElement> ?? new List<FluidParsedTemplateElement>();
-
-            // Initialize the DotLiquid block.
-            //var tokens = new List<string>();
 
             // Get the tokens associated with this block
             var startPosition = node.Span.Location.Position;
@@ -321,18 +246,6 @@ namespace Rock.Lava.Fluid
             var tokens = new List<string>();
             bool addElements = false;
 
-            //var firstStatement = statements.FirstOrDefault();
-
-            //if ( firstStatement != null )
-            //{
-            //    var firstElement = sourceElements.FirstOrDefault( x => x.Statement == firstStatement );
-
-            //    if ( firstElement != null )
-            //    {
-            //        //startPosition = firstElement.StartIndex;
-            //    }
-            //}
-
             if ( elementAttributesMarkup == "url:'~/Scripts/Chartjs/Chart.min.js' id:'chartjs'" )
             {
                 int i = 0;
@@ -340,15 +253,6 @@ namespace Rock.Lava.Fluid
 
             var lastStatement = statements.LastOrDefault();
 
-            if ( lastStatement != null )
-            {
-                // Find the end of the node associated with the last statement in the block.
-                //var last = 
-            }
-
-            //if ( firstStatement != null
-              //   && lastStatement != null )
-            //{
                 for ( int i = 0; i < sourceElements.Count; i++ )
                 {
                     var element = sourceElements[i];
@@ -356,9 +260,6 @@ namespace Rock.Lava.Fluid
                     if ( element.StartIndex < startPosition && element.EndIndex >= endPosition )
                     {
                         addElements = true;
-
-                        // Add the element for the opening tag, which does not have an associated statement.
-                        //tokens.Add( sourceElements[i - 1].Node );
                     }
 
                     if ( addElements )
@@ -369,30 +270,12 @@ namespace Rock.Lava.Fluid
                     if ( lastStatement == null
                          || element.Statement == lastStatement )
                     {
-                        endPosition = element.EndIndex;
-                    
                         // Add the element for the closing tag, which does not have an associated statement.
                         tokens.Add( sourceElements[i + 1].Node );
 
                         break;
                     }
-                //}
             }
-
-            //var tokens = sourceElements.Where( x => x.StartIndex >= startPosition ).Select( x => x.Node ).ToList();
-
-            List<object> nodes;
-
-            /*
-            var startTag = new Regex( $@"{{\%\s*", RegexOptions.RightToLeft );
-
-            var openingTagMatch = startTag.Match( sourceTemplate, _rootNode.Span.Location.Position );
-
-            if ( !openingTagMatch.Success )
-            {
-                throw new LavaException( "Opening tag not found." );
-            }
-            */
 
             var elementRenderer = _lavaBlock as ILiquidFrameworkElementRenderer;
 
@@ -401,26 +284,11 @@ namespace Rock.Lava.Fluid
                 throw new Exception( "Block proxy cannot be rendered." );
             }
 
-            //var blockText = GetBlockMarkup( _lavaBlock.InternalElementName, sourceTemplate, openingTagMatch.Index );
-
-
-
-            //xyzyy: Need to get the tokens and pass them in here.
-            //_lavaBlock.OnParse( tokens, out nodes );
-
-            //_lavaBlock.SetSourceMarkup( blockText );
-            //var blockBase = _lavaBlock as RockLavaBlockBase;
-
-            //if ( blockBase != null )
-            //{
-            //    blockBase.SourceText = blockText;
-            //}
-
-            var tagName = node.Term.Name; // _lavaBlock.InternalElementName
+            var tagName = node.Term.Name;
 
             _lavaBlock.OnInitialize( tagName, elementAttributesMarkup, tokens );
 
-            _lavaBlock.OnParse( tokens, out nodes );
+            _lavaBlock.OnParsed( tokens );
 
             elementRenderer.Render( this, lavaContext, writer );
 

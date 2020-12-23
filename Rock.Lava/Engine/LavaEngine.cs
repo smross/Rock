@@ -30,9 +30,9 @@ namespace Rock.Lava
     public static partial class LavaEngine
     {
         // A suffix that is added to shortcode elements to avoid naming collisions with other tags and blocks.
-        // Note that a suffix is used because the closing tag of an element uses the "end" prefix.
-        // It is simpler to work with "{% shortcodename@ %}" and "{% endshortcodename@ %}
-        public static string ShortcodeInternalNameSuffix = "@";
+        // Note that a suffix is used because the closing tag of a Liquid language element must use the "end" prefix.
+        // Also, the suffix must match a regular expression word character, either A to Z or "_" to be compatible with the DotLiquid engine parser.
+        public static string ShortcodeInternalNameSuffix = "_";
 
         private static ILavaEngine _instance = null;
         private static LavaEngineTypeSpecifier _liquidFramework = LavaEngineTypeSpecifier.DotLiquid;

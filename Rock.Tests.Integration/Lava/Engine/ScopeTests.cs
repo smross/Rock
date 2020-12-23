@@ -58,7 +58,7 @@ namespace Rock.Tests.Integration.Lava
         }
 
         [TestMethod]
-        public void Scope_WithInnerVariable_DoesNotModifyOuterVariable()
+        public void Scope_InnerScopeAssign_DoesNotModifyOuterVariable()
         {
             var input = @"
 {% assign color = 'blue' %}

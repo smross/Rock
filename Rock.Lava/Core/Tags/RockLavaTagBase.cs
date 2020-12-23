@@ -51,10 +51,10 @@ namespace Rock.Lava.Blocks
             OnRender( context, result );
         }
 
-        public void Parse( List<string> tokens, out List<object> nodes )
-        {
-            OnParse( tokens, out nodes );
-        }
+        //public void Parse( List<string> tokens, out List<object> nodes )
+        //{
+        //    OnParsed( tokens, out nodes );
+        //}
 
         #region IRockLavaElement implementation
 
@@ -131,9 +131,9 @@ namespace Rock.Lava.Blocks
         /// </summary>
         /// <param name="tokens"></param>
         /// <param name="nodes"></param>
-        public virtual void OnParse( List<string> tokens, out List<object> nodes )
+        public virtual void OnParsed( List<string> tokens )
         {
-            nodes = null;
+            return;
         }
 
         #endregion

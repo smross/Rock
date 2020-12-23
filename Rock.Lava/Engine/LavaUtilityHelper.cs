@@ -31,7 +31,7 @@ namespace Rock.Lava
             if ( shortcodeName != null
                  && shortcodeName.EndsWith( LavaEngine.ShortcodeInternalNameSuffix ) )
             {
-                return shortcodeName.Substring( 0, shortcodeName.Length - 1 );
+                return shortcodeName.Substring( 0, shortcodeName.Length - LavaEngine.ShortcodeInternalNameSuffix.Length );
             }
 
             return string.Empty;

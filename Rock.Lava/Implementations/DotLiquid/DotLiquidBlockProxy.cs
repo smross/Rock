@@ -76,7 +76,15 @@ namespace Rock.Lava.DotLiquid
             }
 
             // Initialize the Lava block first, because it may be called during the DotLiquid.Block initialization process.
-            _lavaBlock.OnInitialize( tagName, markup, tokens );
+            var blockTokens = new List<string>( tokens );
+
+            // Remove the closing tag because it is not part of the block content.
+            if ( blockTokens.Count > 0 )
+            {
+                blockTokens.RemoveAt( blockTokens.Count - 1 );
+            }
+
+            _lavaBlock.OnInitialize( tagName, markup, blockTokens );
 
             // Initialize the DotLiquid block.
             base.Initialize( tagName, markup, tokens );
@@ -103,31 +111,18 @@ namespace Rock.Lava.DotLiquid
         /// <param name="tokens"></param>
         protected override void Parse( List<string> tokens )
         {
-            // Parse the tokens using the Lava block implementation.
-            //List<object> nodes;
+            // Tokens are consumed as they are processed, so create a copy of the list for post-processing.
+            var blockTokens = new List<string>( tokens );
 
-            //int tokenCount = tokens.Count;
-
-            // The output of the parsing process is a set of nodes that can be rendered by the DotLiquid rendering engine.
-            // Tokens should be removed sequentially from the list as they are parsed into nodes.
-            _lavaBlock.OnParse( tokens, out nodes );
-
-            //if ( nodes != null )
-            //{
-            //    this.NodeList = nodes;
-            //}
-
-            // If the Lava block did not process any tokens or create any nodes, call the default DotLiquid implementation.
-            //if ( nodes == null
-              //   && tokens.Count == tokenCount )
-            //{
-                base.Parse( tokens );
-            //}
+            base.Parse( tokens );
 
             if ( this.NodeList == null )
             {
                 this.NodeList = new List<object>();
             }
+
+            // Allow the custom block to perform actions using the parsed tokens prior to rendering.
+            _lavaBlock.OnParsed( blockTokens );
         }
 
         #endregion

@@ -65,7 +65,7 @@ namespace Rock.Lava.Blocks
             _markup = markup;
             _tagName = tagName;
 
-            _blockMarkup = this.SourceText;
+            _blockMarkup = tokens.JoinStrings( string.Empty );
 
             base.OnInitialize( tagName, markup, tokens );
         }
@@ -222,8 +222,8 @@ namespace Rock.Lava.Blocks
             result.Write( lavaResults );
 
 
-
-            base.OnRender( context, result );
+            // TODO: Removed to fix for DotLiquid implementation - if present, output prints twice.
+            //base.OnRender( context, result );
         }
 
         /// <summary>

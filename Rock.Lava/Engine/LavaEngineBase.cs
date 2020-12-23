@@ -183,6 +183,7 @@ namespace Rock.Lava
         public abstract bool AreEqualValue( object left, object right );
         //
 
+/*
         /// <summary>
         /// Method that will be run at Rock startup
         /// </summary>
@@ -215,6 +216,7 @@ namespace Rock.Lava
             //    Template.RegisterShortcode<DynamicShortcodeBlock>( shortcode.TagName );
             //}
         }
+*/
 
         public bool TryParseTemplate( string inputTemplate, out ILavaTemplate template )
         {

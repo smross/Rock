@@ -129,11 +129,8 @@ namespace Rock.Lava
         /// </summary>
         /// <param name="tokens"></param>
         /// <param name="nodes"></param>
-        public virtual void OnParse( List<string> tokens, out List<object> nodes )
+        public virtual void OnParsed( List<string> tokens )
         {
-            // By default, no parsing is implemented.
-            nodes = null;
-
             return;
         }
 

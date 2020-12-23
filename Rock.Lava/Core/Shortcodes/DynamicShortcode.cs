@@ -126,7 +126,7 @@ namespace Rock.Lava.Shortcodes
             }
         }
 
-        public override void OnParse( List<string> tokens, out List<object> nodes )
+        public override void OnParsed( List<string> tokens )
         {
             // Get the block markup. The list of tokens contains all of the lava from the start tag to
             // the end of the template. This will pull out just the internals of the block.
@@ -145,8 +145,6 @@ namespace Rock.Lava.Shortcodes
 
             Regex regExStart = new Regex( startTag );
             Regex regExEnd = new Regex( endTag );
-
-            nodes = new List<object>();
 
             string token;
             while ( ( token = tokens.Shift() ) != null )

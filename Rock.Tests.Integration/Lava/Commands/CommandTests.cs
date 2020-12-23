@@ -84,16 +84,16 @@ namespace Rock.Tests.Integration.Lava
         {
             var input = @"
 {% cache key:'decker-page-list' duration:'3600' %}
-    {% person where:'LastName == ""Decker""' %}
+    {% person where:'LastName == ""Decker"" && NickName == ""Ted""' %}
         {% for person in personItems %}
-            {{ person.FullName }} < br />
+            {{ person.FullName }} <br/>
         {% endfor %}
     {% endperson %}
 {% endcache %}
 ";
 
             var expectedOutput = @"
-AlexDecker<br/>AmadoDecker<br/>AutumnDecker<br/>BrunoDecker<br/>CindyDecker<br/>DavidDecker<br/>DeweyDecker<br/>EarlDecker<br/>EllisDecker<br/>EmmettDecker<br/>FrederickaDecker<br/>HattieDecker<br/>JackieDecker<br/>JeannieDecker<br/>JohnDecker<br/>JudeDecker<br/>KarieDecker<br/>KeishaDecker<br/>KiaDecker<br/>Kid0Decker<br/>Kid0Decker<br/>Kid0Decker<br/>Kid1Decker<br/>Kid2Decker<br/>KristaDecker<br/>LaceyDecker<br/>LaurenceDecker<br/>LavernDecker<br/>LavernDecker<br/>LelandDecker<br/>LibradaDecker<br/>MelissaDecker<br/>MeridithDecker<br/>NoahDecker<br/>PiperDecker<br/>SherronDecker<br/>SparkleDecker<br/>StephenDecker<br/>SuzanDecker<br/>TaniaDecker<br/>TedDecker<br/>ToddDecker<br/>ZolaDecker<br/>
+TedDecker<br/>
 ";
 
             var context = _helper.LavaEngine.NewContext();

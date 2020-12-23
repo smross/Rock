@@ -148,8 +148,6 @@ namespace Rock.Lava.Fluid
         {
             var lavaContext = new FluidLavaContext( context );
 
-            List<object> nodes;
-
             var elementRenderer = lavaBlock as ILiquidFrameworkElementRenderer;
 
             if ( elementRenderer == null )
@@ -159,18 +157,7 @@ namespace Rock.Lava.Fluid
 
             lavaBlock.OnInitialize( blockName, blockAttributesMarkup, tokens );
 
-            lavaBlock.OnParse( tokens, out nodes );
-
-            //_lavaBlock.OnRender( lavaContext, writer );
-
-            // Check if the nodes collection has been modified by the custom block.
-            // This behavior was supported by default in previous releases using the DotLiquid framework, but does not seem to be used and is no longer supported.
-            // This safety check is to prevent any unexpected behavior in third-party plugins that may have tried to use this feature.
-            if ( nodes != null
-                 && nodes.Any() )
-            {
-                throw new LavaException( "Block Rendering error: Modifying the Nodes collection during the Parse operation is not supported." );
-            }
+            lavaBlock.OnParsed( tokens );
 
             lavaContext.SetInternalValue( "statements", statements );
 

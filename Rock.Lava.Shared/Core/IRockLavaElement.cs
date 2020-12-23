@@ -41,13 +41,17 @@ namespace Rock.Lava
         /// <summary>
         /// The source text that defines this element in a Lava document.
         /// </summary>
-        string SourceText { get; }
+        //string SourceText { get; }
 
         void OnInitialize( string elementName, string attributesMarkup, List<string> tokens );
 
         void OnRender( ILavaContext context, TextWriter result );
 
-        void OnParse( List<string> tokens, out List<object> nodes );
+        /// <summary>
+        /// Called after the parser has divided the document into a set of recognized Lava tokens.
+        /// </summary>
+        /// <param name="tokens"></param>
+        void OnParsed( List<string> tokens );
 
         /// <summary>
         /// Executed when the element is first loaded during application startup.

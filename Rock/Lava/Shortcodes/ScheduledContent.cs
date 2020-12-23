@@ -111,18 +111,17 @@ namespace Rock.Lava.Shortcodes
         /// Parses the specified tokens.
         /// </summary>
         /// <param name="tokens">The tokens.</param>
-        /// <param name="nodes"></param>
-        public override void OnParse( List<string> tokens, out List<object> nodes )
+        public override void OnParsed( List<string> tokens )
         {
             // This block does not return any nodes for further processing.
-            nodes = null;
+            //nodes = null;
 
             // Get the block markup. The list of tokens contains all of the lava from the start tag to
             // the end of the template. This will pull out just the internals of the block.
 
             // We must take into consideration nested tags of the same type
 
-            var endTagFound = false;
+            //var endTagFound = false;
 
             //var startTag = $@"{{\[\s*{ this.InternalElementName }\s*\]}}";
             //var endTag = $@"{{\[\s*end{ this.InternalElementName }\s*\]}}";
@@ -155,11 +154,11 @@ namespace Rock.Lava.Shortcodes
                             childTags--; // decrement the child tag counter
                             _blockMarkup.Append( token );
                         }
-                        else
-                        {
-                            endTagFound = true;
-                            break;
-                        }
+                        //else
+                        //{
+                        //    endTagFound = true;
+                        //    break;
+                        //}
                     }
                     else
                     {
@@ -168,7 +167,7 @@ namespace Rock.Lava.Shortcodes
                 }
             }
 
-            if ( !endTagFound )
+            if ( childTags > 0 )
             {
                 AssertMissingDelimitation();
             }
