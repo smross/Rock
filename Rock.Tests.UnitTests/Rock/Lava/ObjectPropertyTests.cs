@@ -41,7 +41,7 @@ namespace Rock.Tests.UnitTests.Lava
         /// Referencing a valid property of an input object should return the property value.
         /// </summary>
         [TestMethod]
-        public void ObjectProperty_DotNotationPropertyAccess_ReturnsPropertyValue()
+        public void RockDynamicType_DotNotationPropertyAccess_ReturnsPropertyValue()
         {
             System.Diagnostics.Debug.Print( _helper.GetTestPersonTedDecker().ToString() );
 
@@ -54,7 +54,7 @@ namespace Rock.Tests.UnitTests.Lava
         /// Accessing a nested property using dot-notation "Campus.Name" should return the correct value.
         /// </summary>
         [TestMethod]
-        public void ObjectProperty_DotNotationNestedPropertyAccessForPoco_ReturnsPropertyValue()
+        public void RockDynamicType_DotNotationNestedPropertyAccess_ReturnsPropertyValue()
         {
             var mergeValues = new LavaDictionary { { "CurrentPerson", _helper.GetTestPersonTedDecker() } };
 
@@ -65,7 +65,7 @@ namespace Rock.Tests.UnitTests.Lava
         /// Referencing a non-existent property of an input object should return an empty string.
         /// </summary>
         [TestMethod]
-        public void ObjectProperty_DotNotationInvalidPropertyName_ReturnsEmptyString()
+        public void RockDynamicType_DotNotationInvalidPropertyName_ReturnsEmptyString()
         {
             var mergeValues = new LavaDictionary { { "CurrentPerson", _helper.GetTestPersonTedDecker() } };
 
@@ -76,7 +76,7 @@ namespace Rock.Tests.UnitTests.Lava
         /// Accessing the property of a nested dynamically-typed object should return the correct value.
         /// </summary>
         [TestMethod]
-        public void ObjectProperty_DotNotationPropertyAccessForAnonymousObject_ReturnsValue()
+        public void AnonymousType_DotNotationPropertyAccess_ReturnsValue()
         {
             var groupMember = new
             {

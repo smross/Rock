@@ -91,6 +91,20 @@ namespace Rock.Lava
         public abstract void SetInternalValue( string key, object value );
 
         //public abstract void Stack( LavaDictionary newScope, Action callback );
-        public abstract void Stack( Action callback );
+        //public abstract void Stack( Action callback );
+        public void Stack( Action<ILavaContext> callback )
+        {
+            EnterChildScope();
+            try
+            {
+                callback( this );
+            }
+            finally
+            {
+                ExitChildScope();
+            }
+        }
+        public abstract void EnterChildScope();
+        public abstract void ExitChildScope();
     }
 }

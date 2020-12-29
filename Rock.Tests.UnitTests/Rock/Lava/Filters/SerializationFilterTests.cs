@@ -28,7 +28,7 @@ namespace Rock.Tests.UnitTests.Lava
         /// The filter should accept a Person object as input and return a valid JSON string.
         /// </summary>
         [TestMethod]
-        public void ToJSON_ForTestPersonObject_ProducesJsonString()
+        public void ToJSON_ForDynamicObject_ProducesJsonString()
         {
             var person = _helper.GetTestPersonTedDecker();
 
@@ -37,6 +37,21 @@ namespace Rock.Tests.UnitTests.Lava
             var personJson = person.ToJson( Formatting.Indented );
 
             _helper.AssertTemplateOutput( personJson, "{{ CurrentPerson | ToJSON }}", mergeValues );
+        }
+
+        /// <summary>
+        /// The filter should accept a Person object as input and return a valid JSON string.
+        /// </summary>
+        [TestMethod]
+        public void ToJSON_ForTestArray_ProducesJsonString()
+        {
+            var numbers = new int[] { 1, 2, 3 };
+
+            var mergeValues = new LavaDictionary { { "Numbers", numbers } };
+
+            var personJson = numbers.ToJson( Formatting.Indented );
+
+            _helper.AssertTemplateOutput( personJson, "{{ Numbers | ToJSON }}", mergeValues );
         }
 
         /// <summary>

@@ -29,7 +29,6 @@ namespace Rock.Lava
     /// It can also be used to create a Lava Proxy for C# objects that can't inherit from RockDynamic.
     /// </summary>
     /// <seealso cref="System.Dynamic.DynamicObject" />
-    /// <seealso cref="Rock.Lava.ILiquidizable" />
     public class RockDynamic : DynamicObject, ILavaDataObject
     {
         private Dictionary<string, object> _members = new Dictionary<string, object>();
@@ -436,10 +435,11 @@ namespace Rock.Lava
         /// Returns a Liquid framework compatible representation of the object.
         /// </summary>
         /// <returns></returns>
-        public object ToLiquid()
-        {
-            return AsDictionary();
-        }
+        //public object ToLiquid()
+        //{
+        //    //if ( )
+        //    return AsDictionary();
+        //}
 
         /// <summary>
         /// Determines whether the specified key contains key.
@@ -501,6 +501,11 @@ namespace Rock.Lava
             GetProperty( this, key.ToString(), out value );
 
             return value;
+        }
+
+        public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
+        {
+            return this.AsDictionary().GetEnumerator();
         }
     }
 }

@@ -102,9 +102,16 @@ namespace Rock.Lava.DotLiquid
         {
             var fields = new LavaDictionary();
 
-            // First, get all of the variables defined in the local lava context
-            foreach ( var scope in _context.Scopes )
+            // First, get all of the variables defined in the local lava context.
+            // In DotLiquid, the innermost scope is the first element in the collection.
+            //int i = _context.Scopes.Count;
+
+            for ( int i = _context.Scopes.Count - 1; i >= 0; i-- )
             {
+                //foreach ( var scope in _context.Scopes.Reverse() )
+                //{
+                var scope = _context.Scopes[i];
+
                 foreach ( var item in scope )
                 {
                     fields.AddOrReplace( item.Key, item.Value );
@@ -112,8 +119,14 @@ namespace Rock.Lava.DotLiquid
             }
 
             // Second, apply overrides defined by the block or container in which the template is being resolved.
-            foreach ( var environment in _context.Environments )
+            for ( int i = _context.Environments.Count - 1; i >= 0; i-- )
             {
+                //foreach ( var scope in _context.Scopes.Reverse() )
+                //{
+                var environment = _context.Environments[i];
+
+            //foreach ( var environment in _context.Environments )
+            //{
                 foreach ( var item in environment )
                 {
                     fields.AddOrReplace( item.Key, item.Value );
@@ -334,91 +347,6 @@ namespace Rock.Lava.DotLiquid
             //return template;
         }
 
-        /// <summary>
-        /// Push new local scope on the stack. use <tt>Context#stack</tt> instead
-        /// </summary>
-        /// <param name="newScope"></param>
-        //public override void Push( LavaDictionary newScope )
-        //{
-        //    if ( _context.Scopes.Count > 80 )
-        //    {
-        //        throw new StackLevelException( "ContextStackException" );
-        //    }
-
-        //    _context.Scopes.Insert( 0, newScope. Hash.FromDictionary( newScope ) );
-        //}
-
-        /// <summary>
-        /// Pop from the stack. use <tt>Context#stack</tt> instead
-        /// </summary>
-        //public override LavaDictionary Pop()
-        //{
-        //    if ( _context.Scopes.Count == 1 )
-        //    {
-        //        throw new ContextException();
-        //    }
-
-        //    var result = LavaDictionary.FromDictionary( _context.Scopes[0] );
-
-        //    _context.Scopes.RemoveAt( 0 );
-
-        //    return result;
-        //}
-
-        //public override void Stack( LavaDictionary newScope, Action callback )
-        //{
-        //    Push( newScope );
-        //    try
-        //    {
-        //        callback();
-        //    }
-        //    finally
-        //    {
-        //        Pop();
-        //    }
-        //}
-
-        /// <summary>
-        /// pushes a new local scope on the stack, pops it at the end of the block
-        /// 
-        /// Example:
-        /// 
-        /// context.stack do
-        /// context['var'] = 'hi'
-        /// end
-        /// context['var] #=> nil
-        /// </summary>
-        /// <param name="newScope"></param>
-        /// <param name="callback"></param>
-        /// <returns></returns>
-        public override void Stack( Action callback )
-        {
-            // Push a new scope onto the stack.
-            if ( _context.Scopes.Count > 80 )
-            {
-                throw new StackLevelException( "ContextStackException" );
-            }
-
-            var newScope = new Hash();
-
-            _context.Scopes.Insert( 0, newScope );
-
-            try
-            {
-                callback();
-            }
-            finally
-            {
-                if ( _context.Scopes.Count == 1 )
-                {
-                    throw new ContextException();
-                }
-
-                _context.Scopes.RemoveAt( 0 );
-            }
-
-        }
-
         public void ClearValues()
         {
             _context.ClearInstanceAssigns();
@@ -573,6 +501,89 @@ namespace Rock.Lava.DotLiquid
         {
             throw new NotImplementedException();
         }
+
+        public override void EnterChildScope()
+        {
+            // Push a new scope onto the stack.
+            var newScope = new Hash();
+
+            _context.Push( newScope );
+        }
+
+        public override void ExitChildScope()
+        {
+            _context.Pop();
+        }
+
+        /// <summary>
+        /// Push new local scope on the stack. use <tt>Context#stack</tt> instead
+        /// </summary>
+        /// <param name="newScope"></param>
+        //public override void Push( LavaDictionary newScope )
+        //{
+        //    if ( _context.Scopes.Count > 80 )
+        //    {
+        //        throw new StackLevelException( "ContextStackException" );
+        //    }
+
+        //    _context.Scopes.Insert( 0, newScope. Hash.FromDictionary( newScope ) );
+        //}
+
+        /// <summary>
+        /// Pop from the stack. use <tt>Context#stack</tt> instead
+        /// </summary>
+        //public override LavaDictionary Pop()
+        //{
+        //    if ( _context.Scopes.Count == 1 )
+        //    {
+        //        throw new ContextException();
+        //    }
+
+        //    var result = LavaDictionary.FromDictionary( _context.Scopes[0] );
+
+        //    _context.Scopes.RemoveAt( 0 );
+
+        //    return result;
+        //}
+
+        //public override void Stack( LavaDictionary newScope, Action callback )
+        //{
+        //    Push( newScope );
+        //    try
+        //    {
+        //        callback();
+        //    }
+        //    finally
+        //    {
+        //        Pop();
+        //    }
+        //}
+
+        /// <summary>
+        /// pushes a new local scope on the stack, pops it at the end of the block
+        /// 
+        /// Example:
+        /// 
+        /// context.stack do
+        /// context['var'] = 'hi'
+        /// end
+        /// context['var] #=> nil
+        /// </summary>
+        /// <param name="newScope"></param>
+        /// <param name="callback"></param>
+        /// <returns></returns>
+        //public override void Stack( Action callback )
+        //{
+
+        //    try
+        //    {
+        //        callback();
+        //    }
+        //    finally
+        //    {
+        //    }
+
+        //}
 
         #endregion
 

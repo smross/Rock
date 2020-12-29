@@ -94,12 +94,14 @@ namespace Rock.Lava
         /// Retrieves a nested stack of Environments, with the current environment first.
         /// An environment holds the variables that have been defined by the container in which a Lava template is resolved.
         /// </summary>
+        [Obsolete("Not required?")]
         IList<LavaDictionary> GetEnvironments();
 
         /// <summary>
         /// Retrieves a nested stack of Variables, with the current context first.
         /// A scope holds the variables that have been created and assigned in the process of resolving a Lava template.
         /// </summary>
+        [Obsolete("Not required?")]
         IList<LavaDictionary> GetScopes();
 
         /// <summary>
@@ -136,7 +138,19 @@ namespace Rock.Lava
         /// <param name="newScope"></param>
         /// <param name="callback"></param>
         /// <returns></returns>
-        void Stack( Action callback );
+        [Obsolete("Rename to ExecuteInChildScope")]
+        void Stack( Action<ILavaContext> callback );
+
+        /// <summary>
+        /// Creates a new isolated scope. After than any value added to this content object will be released once
+        /// <see cref="ReleaseScope" /> is called. The previous scope is linked such that its values are still available.
+        /// </summary>
+        void EnterChildScope();
+
+        /// <summary>
+        /// Exits the current scope that has been created by <see cref="EnterChildScope" />
+        /// </summary>
+        void ExitChildScope();
 
         //void Stack( LavaDictionary newScope, Action callback );
 

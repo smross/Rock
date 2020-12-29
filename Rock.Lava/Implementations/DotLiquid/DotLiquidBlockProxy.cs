@@ -17,6 +17,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
+using System.Text.RegularExpressions;
 using DotLiquid;
 
 namespace Rock.Lava.DotLiquid
@@ -76,18 +78,73 @@ namespace Rock.Lava.DotLiquid
             }
 
             // Initialize the Lava block first, because it may be called during the DotLiquid.Block initialization process.
-            var blockTokens = new List<string>( tokens );
-
-            // Remove the closing tag because it is not part of the block content.
-            if ( blockTokens.Count > 0 )
-            {
-                blockTokens.RemoveAt( blockTokens.Count - 1 );
-            }
+            var blockTokens = GetBlockTokens( tagName, tokens );
 
             _lavaBlock.OnInitialize( tagName, markup, blockTokens );
 
             // Initialize the DotLiquid block.
             base.Initialize( tagName, markup, tokens );
+        }
+
+        /// <summary>
+        /// Gets the set of tokens contained in the current block.
+        /// </summary>
+        /// <param name="tokens">The tokens.</param>
+        private List<string> GetBlockTokens( string tagName, List<string> tokens )
+        {
+            // Get the block markup. The list of tokens contains all of the lava from the start tag to
+            // the end of the template. This will pull out just the internals of the block.
+            // We must take into consideration nested tags of the same type and include them in the block content.
+            var endTagFound = false;
+
+            var startTag = $@"{{\%\s*{ tagName }\s*\%}}";
+            var endTag = $@"{{\%\s*end{ tagName }\s*\%}}";
+
+            var childTags = 0;
+
+            var regExStart = new Regex( startTag );
+            var regExEnd = new Regex( endTag );
+
+            var blockTokens = new List<string>();
+
+            foreach ( var token in tokens )
+            {
+                Match startTagMatch = regExStart.Match( token );
+                if ( startTagMatch.Success )
+                {
+                    childTags++;
+                }
+                else
+                {
+                    Match endTagMatch = regExEnd.Match( token );
+
+                    if ( endTagMatch.Success )
+                    {
+                        if ( childTags > 0 )
+                        {
+                            childTags--;
+                        }
+                        else
+                        {
+                            endTagFound = true;
+                        }
+                    }
+                }
+
+                if ( endTagFound )
+                {
+                    break;
+                }
+
+                blockTokens.Add( token );
+            }
+
+            if ( !endTagFound )
+            {
+                AssertMissingDelimitation();
+            }
+
+            return blockTokens;
         }
 
         public override void Render( Context context, TextWriter result )
@@ -145,6 +202,5 @@ namespace Rock.Lava.DotLiquid
         }
 
         #endregion
-
     }
 }

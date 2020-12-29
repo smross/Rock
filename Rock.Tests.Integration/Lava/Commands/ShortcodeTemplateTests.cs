@@ -576,7 +576,7 @@ This is a super simple panel.
 ";
 
             var expectedOutput = @"
-<div id=``id-<<guid>>`` data-jarallax class=``jarallax`` data-type=``scroll`` data-speed=``1.50`` data-img-position=```` data-object-position=```` data-background-position=```` data-zindex=``2`` data-no-android=```` data-no-ios=``false``>
+<div id=``id-<<guid>>`` data-jarallax class=``jarallax`` data-type=``scroll`` data-speed=``50`` data-img-position=```` data-object-position=```` data-background-position=```` data-zindex=``2`` data-no-android=```` data-no-ios=``false``>
         <img class=``jarallax-img`` src=``http://cdn.wonderfulengineering.com/wp-content/uploads/2014/09/star-wars-wallpaper-4.jpg`` alt=````>
 
                     <div class=``parallax-content``>

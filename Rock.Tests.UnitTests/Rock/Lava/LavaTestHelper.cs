@@ -71,15 +71,17 @@ namespace Rock.Tests.UnitTests.Lava
         {
             var outputString = GetTemplateOutput( inputTemplate, mergeValues );
 
-            WriteOutputToDebug( outputString );
+            var debugString = outputString;
 
             if ( ignoreWhitespace )
             {
-                WriteOutputToDebug( "(Comparison ignores WhiteSpace)" );
-
                 expectedOutput = expectedOutput.RemoveWhiteSpace();
                 outputString = outputString.RemoveWhiteSpace();
+
+                debugString += "\n(Comparison ignores WhiteSpace)";
             }
+
+            WriteOutputToDebug( debugString );
 
             Assert.That.Equal( expectedOutput, outputString );
         }

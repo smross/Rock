@@ -429,20 +429,20 @@ namespace Rock.Lava.Fluid
         /// Execute an action in a child scope, and exit the child scope when the action is complete.
         /// </summary>
         /// <param name="callback"></param>
-        public override void Stack( Action callback )
-        {
-            // Push a new scope onto the stack.
-            _context.EnterChildScope();
+        //public override void Stack( Action callback )
+        //{
+        //    // Push a new scope onto the stack.
+        //    _context.EnterChildScope();
 
-            try
-            {
-                callback();
-            }
-            finally
-            {
-                _context.ReleaseScope();
-            }
-        }
+        //    try
+        //    {
+        //        callback();
+        //    }
+        //    finally
+        //    {
+        //        _context.ReleaseScope();
+        //    }
+        //}
 
         /// <summary>
         /// Looks for a parsed template in cache (if the content is 100 characters or less).
@@ -516,6 +516,16 @@ namespace Rock.Lava.Fluid
             }
 
             return dictionary;
+        }
+
+        public override void EnterChildScope()
+        {
+            _context.EnterChildScope();
+        }
+
+        public override void ExitChildScope()
+        {
+            _context.ReleaseScope();
         }
     }
 }

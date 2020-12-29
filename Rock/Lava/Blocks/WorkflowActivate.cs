@@ -140,7 +140,7 @@ namespace Rock.Lava.Blocks
 
             /* Process inside a new stack level so our own created variables do not
              * persist throughout the rest of the workflow. */
-            context.Stack( ( System.Action)(() =>
+            context.Stack( (System.Action<ILavaContext>)((newContext) =>
             {
                 using ( var rockContext = new RockContext() )
                 {

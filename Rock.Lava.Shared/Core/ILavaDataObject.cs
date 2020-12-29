@@ -41,5 +41,11 @@ namespace Rock.Lava
         /// Gets a list of the keys defined by this data object.
         /// </summary>
         List<string> AvailableKeys { get; }
+
+        /// <summary>
+        /// Gets a string representation of the object.
+        /// </summary>
+        /// <returns></returns>
+        string ToString();
     }
 }

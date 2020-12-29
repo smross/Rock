@@ -73,10 +73,12 @@ Email: tdecker@rocksolidchurch.com
             var mergeValues = new LavaDictionary { { "PersonInfo", testObject } };
 
             var template = @"
+Name: {{ PersonInfo.Name }}
 Date of Birth: {{ PersonInfo.DateOfBirth }}
 ";
 
             var expectedOutput = @"
+Name: Ted Decker
 Date of Birth:
 ";
 
@@ -97,10 +99,12 @@ Date of Birth:
             var mergeValues = new LavaDictionary { { "PersonInfo", testObject } };
 
             var template = @"
+Name: {{ PersonInfo.Name }}
 Password: {{ PersonInfo.Password }}
 ";
 
             var expectedOutput = @"
+Name: Ted Decker
 Password:
 ";
 
@@ -149,10 +153,12 @@ Name: Ted Decker
             var mergeValues = new LavaDictionary { { "PersonInfo", testObject } };
 
             var template = @"
+Name: {{ PersonInfo.Name }}
 Password: {{ PersonInfo.Password }}
 ";
 
             var expectedOutput = @"
+Name: Ted Decker
 Password:
 ";
 
@@ -165,7 +171,7 @@ Password:
         #endregion
 
         [LavaType]
-        public class TestLavaTypeAttributeWithoutNamedPropertiesClass : RockDynamic
+        public class TestLavaTypeAttributeWithoutNamedPropertiesClass
         {
             public string Name { get; set; } = "Ted Decker";
             public string Email { get; set; } = "tdecker@rocksolidchurch.com";

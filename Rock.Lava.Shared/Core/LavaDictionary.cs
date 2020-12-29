@@ -240,6 +240,11 @@ namespace Rock.Lava
             return ContainsKey( key.ToString() );
         }
 
+        public Dictionary<string, object> ToDictionary()
+        {
+            return new Dictionary<string, object>( _nestedDictionary );
+        }
+
         public object this[string key]
         {
             get { return GetValue( key ); }
