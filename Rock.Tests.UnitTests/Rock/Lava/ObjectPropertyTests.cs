@@ -16,6 +16,7 @@
 //
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Rock.Lava;
+using Rock.Utility;
 
 namespace Rock.Tests.UnitTests.Lava
 {
@@ -91,6 +92,13 @@ namespace Rock.Tests.UnitTests.Lava
                 "{{ GroupMember.GroupName }}: {{ GroupMember.Person.LastName }}, {{ GroupMember.Person.FirstName }} ({{ GroupMember.Person.Address.Street }})",
                 mergeValues );
 
+        }
+
+        [LavaType]
+        public class TestRockDynamicPersonClass : RockDynamic
+        {
+            public string Name { get; set; } = "Ted Decker";
+            public string Email { get; set; } = "tdecker@rocksolidchurch.com";
         }
     }
 }

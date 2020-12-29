@@ -178,10 +178,10 @@ namespace Rock.Lava
                     InstancePropertyLookup.TryGetValue( propName, out prop );
                     getPropertyValue = true;
                 }
-                else if ( obj is LavaDataObject rd )
+                else if ( obj is LavaDataObject dataObject )
                 {
                     // Get the property value for the dynamic object.
-                    rd.GetProperty( obj, propName, out obj );
+                    dataObject.GetProperty( obj, propName, out obj );
                     prop = null;
                     getPropertyValue = false;
                 }

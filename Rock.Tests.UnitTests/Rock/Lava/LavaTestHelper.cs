@@ -223,6 +223,11 @@ namespace Rock.Tests.UnitTests.Lava
         {
             public int Id { get; set; }
             public string Name { get; set; }
+
+            public override string ToString()
+            {
+                return Name;
+            }
         }
 
         /// <summary>

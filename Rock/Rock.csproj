@@ -687,6 +687,7 @@
     <Compile Include="Lava\Blocks\InteractionWrite.cs" />
     <Compile Include="Lava\Blocks\InteractionContentChannelItemWrite.cs" />
     <Compile Include="Lava\Blocks\CalendarEvents.cs" />
+    <Compile Include="Lava\ILiquidizable.cs" />
     <Compile Include="Lava\LavaElementAttributes.cs" />
     <Compile Include="Lava\WebsiteLavaFileSystem.cs" />
     <Compile Include="Lava\RockFilters.cs" />
@@ -760,6 +761,7 @@
     <Compile Include="Utility\KeyHelper.cs" />
     <Compile Include="Utility\ExtensionMethods\Request.cs" />
     <Compile Include="Utility\Settings\GivingAnalytcis\GivingAnalyticsSetting.cs" />
+    <Compile Include="Utility\RockDynamic.cs" />
     <Compile Include="Utility\TaskActivityMessageHub.cs" />
     <Compile Include="Utility\RockSerializableList.cs" />
     <Compile Include="Utility\RockSerializableDictionary.cs" />

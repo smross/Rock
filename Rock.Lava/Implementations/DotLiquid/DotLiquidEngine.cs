@@ -151,19 +151,22 @@ namespace Rock.Lava.DotLiquid
                 Template.RegisterSafeType( typeof( Rock.Lava.ILavaDataObject ),
                     ( x ) =>
                     {
-                        var wrapper = new DotLiquidLavaDataObjectProxy( (Rock.Lava.ILavaDataObject)x );
-                        return wrapper;
+                        var dataObject = new LavaDataObject( x );
+                        return dataObject;
+                        //var wrapper = new DotLiquidLavaDataObjectProxy( (Rock.Lava.ILavaDataObject)x );
+                        //return wrapper;
                     } );
             }
             else
             {
-                // Wrap the object in a RockDynamic proxy, and a DotLiquid compatible proxy.
+                // Wrap the object in a DotLiquid compatible proxy that supports the IDictionary<string, object> interface.
                 Template.RegisterSafeType( type,
                     ( x ) =>
                     {
-                        var dynamicObject = new LavaDataObject( x );
-                        var wrapper = new DotLiquidLavaDataObjectProxy( dynamicObject );
-                        return wrapper;
+                        var dataObject = new LavaDataObject( x );
+                        return dataObject;
+                        //var wrapper = new DotLiquidLavaDataObjectProxy( dynamicObject );
+                        //return wrapper;
                     } );
             }
         }
