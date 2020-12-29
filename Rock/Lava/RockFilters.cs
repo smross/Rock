@@ -2402,7 +2402,7 @@ namespace Rock.Lava
 
                 if ( propertyValue is IDictionary<string, object> )
                 {
-                    var dictionaryObject = input as IDictionary<string, object>;
+                    var dictionaryObject = propertyValue as IDictionary<string, object>;
                     if ( dictionaryObject.ContainsKey( propName ) )
                     {
                         propertyValue = dictionaryObject[propName];
