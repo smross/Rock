@@ -2375,9 +2375,9 @@ $('#{this.ClientID} .{GRID_SELECT_CELL_CSS_CLASS}').on( 'click', function (event
                 List<PropertyInfo> allprops = new List<PropertyInfo>( oType.GetProperties() );
 
                 // If this is a RockDynamic class, don't include any of the properties that are inherited from RockDynamic
-                if ( typeof( RockDynamic ).IsAssignableFrom( oType ) )
+                if ( typeof( LavaDataObject ).IsAssignableFrom( oType ) )
                 {
-                    var dropProperties = typeof( RockDynamic ).GetProperties().Select( a => a.Name );
+                    var dropProperties = typeof( LavaDataObject ).GetProperties().Select( a => a.Name );
                     allprops = allprops.Where( a => !dropProperties.Contains( a.Name ) ).ToList();
                 }
 
@@ -3665,9 +3665,9 @@ $('#{this.ClientID} .{GRID_SELECT_CELL_CSS_CLASS}').on( 'click', function (event
             }
 
             // If this is a RockDynamic class, don't include any of the properties that are inherited from RockDynamic
-            if ( typeof( RockDynamic ).IsAssignableFrom( dataSourceObjectType ) )
+            if ( typeof( LavaDataObject ).IsAssignableFrom( dataSourceObjectType ) )
             {
-                var dropProperties = typeof( RockDynamic ).GetProperties().Select( a => a.Name );
+                var dropProperties = typeof( LavaDataObject ).GetProperties().Select( a => a.Name );
                 additionalMergeProperties = additionalMergeProperties.Where( a => !dropProperties.Contains( a.Name ) ).ToList();
             }
 

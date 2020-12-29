@@ -27,7 +27,7 @@ namespace Rock.CheckIn
     /// A family option for the current check-in
     /// </summary>
     [DataContract]
-    public class CheckInFamily : RockDynamic
+    public class CheckInFamily : LavaDataObject
     {
         /// <summary>
         /// A list of <see cref="Rock.Model.Attendance"/> records for the family check-in 

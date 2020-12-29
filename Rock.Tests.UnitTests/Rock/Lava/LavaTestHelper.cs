@@ -202,7 +202,7 @@ namespace Rock.Tests.UnitTests.Lava
         /// <summary>
         /// A representation of a Person used for testing purposes.
         /// </summary>
-        public class TestPerson : RockDynamic
+        public class TestPerson : LavaDataObject
         {
             public int Id { get; set; }
             public string NickName { get; set; }
@@ -219,7 +219,7 @@ namespace Rock.Tests.UnitTests.Lava
         /// <summary>
         /// A representation of a Campus used for testing purposes.
         /// </summary>
-        public class TestCampus : RockDynamic
+        public class TestCampus : LavaDataObject
         {
             public int Id { get; set; }
             public string Name { get; set; }
@@ -228,7 +228,7 @@ namespace Rock.Tests.UnitTests.Lava
         /// <summary>
         /// A representation of a Person used for testing purposes.
         /// </summary>
-        public class TestSecuredRockDynamicObject : RockDynamic
+        public class TestSecuredRockDynamicObject : LavaDataObject
         {
             [LavaInclude]
             public int Id { get; set; }

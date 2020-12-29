@@ -23,7 +23,7 @@ namespace Rock.StatementGenerator
     /// <summary>
     /// 
     /// </summary>
-    public class StatementGeneratorOptions : RockDynamic
+    public class StatementGeneratorOptions : LavaDataObject
     {
         /// <summary>
         /// Gets or sets the start date.

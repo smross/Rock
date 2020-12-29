@@ -22,7 +22,7 @@ namespace Rock.UniversalSearch
     /// <summary>
     /// Search Result Object
     /// </summary>
-    public class SearchResultModel: RockDynamic
+    public class SearchResultModel: LavaDataObject
     {
         /// <summary>
         /// Gets or sets the score.

@@ -27,7 +27,7 @@ namespace Rock.Web.UI.Controls
     /// <summary>
     /// 
     /// </summary>
-    public class NoteOptions : RockDynamic
+    public class NoteOptions : LavaDataObject
     {
         private StateBag _containerViewState;
 

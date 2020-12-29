@@ -226,7 +226,7 @@ namespace Rock.Lava.Blocks
         /// <summary>
         ///
         /// </summary>
-        private class DataRowDrop : RockDynamic
+        private class DataRowDrop : LavaDataObject
         {
             private readonly DataRow _dataRow;
 

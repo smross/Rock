@@ -161,7 +161,7 @@ namespace Rock.Lava.DotLiquid
                 Template.RegisterSafeType( type,
                     ( x ) =>
                     {
-                        var dynamicObject = new RockDynamic( x );
+                        var dynamicObject = new LavaDataObject( x );
                         var wrapper = new DotLiquidLavaDataObjectProxy( dynamicObject );
                         return wrapper;
                     } );

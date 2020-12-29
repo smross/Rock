@@ -619,7 +619,7 @@ namespace Rock.Model
         /// <summary>
         /// The MotivatorScore struct used to return the motivator score
         /// </summary>
-        public class MotivatorScore : RockDynamic
+        public class MotivatorScore : LavaDataObject
         {
             /// <summary>
             /// Gets or sets the Name.

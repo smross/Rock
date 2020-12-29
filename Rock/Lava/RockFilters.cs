@@ -4161,19 +4161,19 @@ namespace Rock.Lava
 
             if ( dataObject is IEntity entity )
             {
-                resultDataObject = new RockDynamic( dataObject );
+                resultDataObject = new LavaDataObject( dataObject );
                 resultDataObject.EntityTypeId = EntityTypeCache.GetId( dataObject.GetType() );
                 isCollection = false;
             }
             else if ( dataObject is IEnumerable<IEntity> entityList )
             {
                 var firstEntity = entityList.FirstOrDefault();
-                var dynamicEntityList = new List<RockDynamic>();
+                var dynamicEntityList = new List<LavaDataObject>();
                 if ( firstEntity != null )
                 {
                     foreach ( var item in entityList )
                     {
-                        dynamic rockDynamicItem = new RockDynamic( item );
+                        dynamic rockDynamicItem = new LavaDataObject( item );
                         rockDynamicItem.EntityTypeId = EntityTypeCache.GetId( item.GetType() );
                         dynamicEntityList.Add( rockDynamicItem );
                     }
@@ -6101,7 +6101,7 @@ namespace Rock.Lava
         /// <summary>
         /// POCO to translate an HTTP cookie in to a Liquidizable form
         /// </summary>
-        public class HttpCookieDrop : RockDynamic
+        public class HttpCookieDrop : LavaDataObject
         {
             private readonly HttpCookie _cookie;
 
@@ -6258,7 +6258,7 @@ namespace Rock.Lava
                 //{
                 //    obj = drop.InvokeDrop( properties.First() );
                 //}
-                if ( obj is RockDynamic rockDynamic )
+                if ( obj is LavaDataObject rockDynamic )
                 {
                     rockDynamic.TryGetMember( properties.First(), out obj );
 

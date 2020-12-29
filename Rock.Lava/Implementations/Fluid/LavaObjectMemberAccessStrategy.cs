@@ -73,7 +73,7 @@ namespace Rock.Lava.Fluid
                 return _dynamicMemberAccessor;
             }
 
-            if ( typeof( RockDynamic ).IsAssignableFrom( type ) )
+            if ( typeof( LavaDataObject ).IsAssignableFrom( type ) )
             {
                 return _dynamicMemberAccessor;
             }

@@ -25,11 +25,11 @@ using Rock.Data;
 namespace Rock.Lava
 {
     /// <summary>
-    /// RockDynamic can be as a base class for C# POCO objects that need to be available to Lava.
-    /// It can also be used to create a Lava Proxy for C# objects that can't inherit from RockDynamic.
+    /// LavaDataObject can be as a base class for C# classes that need to be available to Lava.
+    /// It can also be used to create a Lava Proxy for C# objects that cannot directly inherit from this class.
     /// </summary>
     /// <seealso cref="System.Dynamic.DynamicObject" />
-    public class RockDynamic : DynamicObject, ILavaDataObject
+    public class LavaDataObject : DynamicObject, ILavaDataObject, IDictionary<string, object>
     {
         private Dictionary<string, object> _members = new Dictionary<string, object>();
 
@@ -41,7 +41,7 @@ namespace Rock.Lava
             {
                 if ( _instancePropertyInfoLookup == null && _instance != null )
                 {
-                    var rockDynamicType = typeof( RockDynamic );
+                    var rockDynamicType = typeof( LavaDataObject );
                     _instancePropertyInfoLookup = _instance.GetType().GetProperties().Where( a => a.DeclaringType != rockDynamicType ).ToDictionary( k => k.Name, v => v );
                 }
 
@@ -52,18 +52,18 @@ namespace Rock.Lava
         private Dictionary<string, PropertyInfo> _instancePropertyInfoLookup;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RockDynamic"/> class.
+        /// Initializes a new instance of the <see cref="LavaDataObject"/> class.
         /// </summary>
-        public RockDynamic()
+        public LavaDataObject()
         {
             _instance = this;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RockDynamic"/> class as a proxy that makes the object available to lava
+        /// Initializes a new instance of the <see cref="LavaDataObject"/> class as a proxy that makes the object available to lava
         /// </summary>
         /// <param name="obj">The object.</param>
-        public RockDynamic( object obj )
+        public LavaDataObject( object obj )
         {
             _instance = obj;
         }
@@ -178,7 +178,7 @@ namespace Rock.Lava
                     InstancePropertyLookup.TryGetValue( propName, out prop );
                     getPropertyValue = true;
                 }
-                else if ( obj is RockDynamic rd )
+                else if ( obj is LavaDataObject rd )
                 {
                     // Get the property value for the dynamic object.
                     rd.GetProperty( obj, propName, out obj );
@@ -503,9 +503,120 @@ namespace Rock.Lava
             return value;
         }
 
+        #region IDictionary<string, object> implementation.
+
+        public ICollection<string> Keys
+        {
+            get
+            {
+                return this.AvailableKeys;
+            }
+        }
+
+        public ICollection<object> Values
+        {
+            get
+            {
+                var dictionary = GetValueDictionary();
+
+                return dictionary.Values;
+            }
+        }
+
+        public int Count
+        {
+            get
+            {
+                return this.GetDynamicMemberNames().Count();
+            }
+        }
+
+        public bool IsReadOnly
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        public bool ContainsKey( string key )
+        {
+            return this.GetDynamicMemberNames().Contains( key );
+        }
+
+        public void Add( string key, object value )
+        {
+            this[key] = value;
+        }
+
+        public bool Remove( string key )
+        {
+            return ( (IDictionary<string, object>)_members ).Remove( key );
+        }
+
+        public bool TryGetValue( string key, out object value )
+        {
+            return this.TryGetMember( key, out value );
+        }
+
+        public void Add( KeyValuePair<string, object> item )
+        {
+            this[item.Key] = item.Value;
+        }
+
+        public void Clear()
+        {
+            ( (IDictionary<string, object>)_members ).Clear();
+        }
+
+        public bool Contains( KeyValuePair<string, object> item )
+        {
+            return ( (IDictionary<string, object>)_members ).Contains( item );
+        }
+
+        public void CopyTo( KeyValuePair<string, object>[] array, int arrayIndex )
+        {
+            ( (IDictionary<string, object>)_members ).CopyTo( array, arrayIndex );
+        }
+
+        public bool Remove( KeyValuePair<string, object> item )
+        {
+            return ( (IDictionary<string, object>)_members ).Remove( item );
+        }
+
         public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
         {
-            return this.AsDictionary().GetEnumerator();
+            return this.GetValueDictionary().GetEnumerator();
         }
+
+        private Dictionary<string, object> GetValueDictionary()
+        {
+            var memberNames = this.GetDynamicMemberNames();
+
+            var dictionary = new Dictionary<string, object>( _members );
+
+            foreach ( var memberName in memberNames )
+            {
+                if ( dictionary.ContainsKey( memberName ) )
+                {
+                    dictionary[memberName] = this[memberName];
+                }
+                else
+                {
+                    dictionary.Add( memberName, this[memberName] );
+                }
+            }
+
+            return dictionary;
+
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
+        }
+
+        #endregion
+
     }
 }

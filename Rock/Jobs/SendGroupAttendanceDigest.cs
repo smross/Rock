@@ -262,7 +262,7 @@ namespace Rock.Jobs
         /// <summary>
         /// A class to represent the attendance summary.
         /// </summary>
-        private class AttendanceSummary : RockDynamic
+        private class AttendanceSummary : LavaDataObject
         {
             /// <summary>
             /// The start date for this attendance summary.
@@ -283,7 +283,7 @@ namespace Rock.Jobs
         /// <summary>
         /// A class to represent a regional group and attendance data for each of its child groups.
         /// </summary>
-        private class RegionalGroupAttendance : RockDynamic
+        private class RegionalGroupAttendance : LavaDataObject
         {
             /// <summary>
             /// The regional group name.
@@ -304,7 +304,7 @@ namespace Rock.Jobs
         /// <summary>
         /// A class to represent attendance data for a group.
         /// </summary>
-        private class GroupAttendance : RockDynamic
+        private class GroupAttendance : LavaDataObject
         {
             /// <summary>
             /// The group name.

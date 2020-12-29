@@ -458,7 +458,7 @@ namespace Rock.Tests.Integration.Lava
         /// <summary>
         /// A representation of a Person used for testing purposes.
         /// </summary>
-        public class TestPerson : RockDynamic
+        public class TestPerson : LavaDataObject
         {
             public int Id { get; set; }
             public string Guid { get; set; }
@@ -476,7 +476,7 @@ namespace Rock.Tests.Integration.Lava
         /// <summary>
         /// A representation of a Campus used for testing purposes.
         /// </summary>
-        public class TestCampus : RockDynamic
+        public class TestCampus : LavaDataObject
         {
             public int Id { get; set; }
             public string Name { get; set; }

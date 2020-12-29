@@ -137,7 +137,7 @@ namespace Rock.Lava.DotLiquid
                 return dictionary;
             }
 
-            if ( _dataObject is RockDynamic rockDynamic )
+            if ( _dataObject is LavaDataObject rockDynamic )
             {
                 // Return the RockDynamic object as a dictionary of values.
                 return rockDynamic; //.AsDictionary();

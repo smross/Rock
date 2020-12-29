@@ -90,7 +90,7 @@
     <Compile Include="Core\LavaIgnoreAttribute.cs" />
     <Compile Include="Core\LavaIncludeAttribute.cs" />
     <Compile Include="Core\LavaTypeAttribute.cs" />
-    <Compile Include="Core\RockDynamic.cs" />
+    <Compile Include="Core\LavaDataObject.cs" />
     <Compile Include="Core\ILavaContext.cs" />
     <Compile Include="Core\ILavaElementInfo.cs" />
     <Compile Include="Core\ILavaEngine.cs" />

@@ -272,7 +272,7 @@ namespace Rock.Model
         /// <summary>
         /// 
         /// </summary>
-        public class HistorySummaryByDateTimeAndVerb : RockDynamic
+        public class HistorySummaryByDateTimeAndVerb : LavaDataObject
         {
             /// <summary>
             /// Gets or sets the date time 
@@ -310,7 +310,7 @@ namespace Rock.Model
         /// <summary>
         /// 
         /// </summary>
-        public class HistorySummaryListByEntityTypeAndVerb : RockDynamic
+        public class HistorySummaryListByEntityTypeAndVerb : LavaDataObject
         {
             /// <summary>
             /// Gets or sets the verb.
@@ -370,7 +370,7 @@ namespace Rock.Model
         /// <summary>
         /// 
         /// </summary>
-        public class HistorySummaryByDateTime : RockDynamic
+        public class HistorySummaryByDateTime : LavaDataObject
         {
             /// <summary>
             /// Gets or sets the date time.
@@ -392,7 +392,7 @@ namespace Rock.Model
         /// <summary>
         /// 
         /// </summary>
-        public class HistorySummary : RockDynamic
+        public class HistorySummary : LavaDataObject
         {
             /// <summary>
             /// Gets or sets the created date time.

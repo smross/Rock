@@ -416,7 +416,7 @@ namespace Rock.Model
         /// <summary>
         /// The SpiritualGiftScore struct used to return the spiritual gift score
         /// </summary>
-        public class SpiritualGiftScore : RockDynamic
+        public class SpiritualGiftScore : LavaDataObject
         {
             /// <summary>
             /// Gets or sets the defined value unique identifier.

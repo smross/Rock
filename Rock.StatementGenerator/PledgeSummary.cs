@@ -24,7 +24,7 @@ namespace Rock.StatementGenerator
     /// <summary>
     /// A Pledge (or Multiple Pledges) for a specific Account
     /// </summary>
-    public class PledgeSummary: RockDynamic
+    public class PledgeSummary: LavaDataObject
     {
         /// <summary>
         /// Gets or sets the pledge list.
