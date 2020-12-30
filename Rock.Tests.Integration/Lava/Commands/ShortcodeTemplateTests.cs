@@ -15,6 +15,11 @@
 // </copyright>
 //
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Rock;
+using Rock.Data;
+using Rock.Model;
+using Rock.Lava;
+using System.Collections.Generic;
 
 namespace Rock.Tests.Integration.Lava
 {
@@ -24,6 +29,62 @@ namespace Rock.Tests.Integration.Lava
     [TestClass]
     public class ShortcodeTemplateTests : LavaIntegrationTestBase
     {
+        private const string TestShortcodeAccordionGuid = "";
+
+        [TestMethod]
+        public void ShortcodeBlock_WithChildItems_EmitsCorrectHtml()
+        {
+            var shortcodeTemplate = @"
+Parameter 1: {{ parameter1 }}
+Parameter 2: {{ parameter2 }}
+Items:
+{%- for item in items -%}
+{{ item.title }} - {{ item.content }}
+{%- endfor -%}
+";
+
+            // Create a new test shortcode.
+            var shortcodeDefinition = new DynamicShortcodeDefinition();
+
+            shortcodeDefinition.ElementType = LavaShortcodeTypeSpecifier.Block;
+            shortcodeDefinition.TemplateMarkup = shortcodeTemplate;
+            shortcodeDefinition.Name = "shortcodetest";
+            shortcodeDefinition.Parameters = new Dictionary<string, string> { { "parameter1", "value1" }, { "parameter2", "value2" } };
+
+            _helper.LavaEngine.RegisterDynamicShortcode( shortcodeDefinition.Name, ( shortcodeName ) => { return shortcodeDefinition; } );
+
+            var input = @"
+{[ shortcodetest ]}
+
+    [[ item title:'Panel 1' ]]
+        Panel 1 content.
+    [[ enditem ]]
+    
+    [[ item title:'Panel 2' ]]
+        Panel 2 content.
+    [[ enditem ]]
+    
+    [[ item title:'Panel 3' ]]
+        Panel 3 content.
+    [[ enditem ]]
+
+{[ endshortcodetest ]}
+";
+
+            var expectedOutput = @"
+Parameter 1: value1
+Parameter 2: value2
+Items:
+Panel 1 - Panel 1 content.
+Panel 2 - Panel 2 content.
+Panel 3 - Panel 3 content.
+";
+
+            expectedOutput = expectedOutput.Replace( "``", @"""" );
+
+            _helper.AssertTemplateOutput( expectedOutput, input, null, ignoreWhiteSpace: true );
+        }
+
         #region Accordion
 
         [TestMethod]
@@ -576,7 +637,7 @@ This is a super simple panel.
 ";
 
             var expectedOutput = @"
-<div id=``id-<<guid>>`` data-jarallax class=``jarallax`` data-type=``scroll`` data-speed=``50`` data-img-position=```` data-object-position=```` data-background-position=```` data-zindex=``2`` data-no-android=```` data-no-ios=``false``>
+<div id=``id-<<guid>>`` data-jarallax class=``jarallax`` data-type=``scroll`` data-speed=``1.50`` data-img-position=```` data-object-position=```` data-background-position=```` data-zindex=``2`` data-no-android=```` data-no-ios=``false``>
         <img class=``jarallax-img`` src=``http://cdn.wonderfulengineering.com/wp-content/uploads/2014/09/star-wars-wallpaper-4.jpg`` alt=````>
 
                     <div class=``parallax-content``>

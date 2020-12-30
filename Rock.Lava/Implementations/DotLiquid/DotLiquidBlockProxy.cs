@@ -141,7 +141,7 @@ namespace Rock.Lava.DotLiquid
 
             if ( !endTagFound )
             {
-                AssertMissingDelimitation();
+                throw new LavaException( $"{tagName} was never closed." );
             }
 
             return blockTokens;

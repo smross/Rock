@@ -197,112 +197,110 @@ namespace Rock.Lava.Shortcodes
         //public override void Render( Context context, TextWriter result )
         public override void OnRender( ILavaContext context, TextWriter result )
         {
-            if ( _shortcode != null )
+            if ( _shortcode == null )
             {
-                // Get shortcode parameter default settings.
-                var parms = new Dictionary<string, object>();
+                result.Write( $"An error occurred while processing the {0} shortcode.", _tagName );
+            }
+            
+            // Get shortcode parameter default settings.
+            var parms = new Dictionary<string, object>();
 
-                foreach ( var shortcodeParm in _shortcode.Parameters )
+            foreach ( var shortcodeParm in _shortcode.Parameters )
+            {
+                parms.AddOrReplace( shortcodeParm.Key, shortcodeParm.Value );
+            }
+
+            // Apply the merge fields in the block context.
+            LoadBlockMergeFields( context, parms );
+
+            SetParametersFromElementAttributes( parms, _elementAttributesMarkup, context );
+
+            // add a unique id so shortcodes have easy access to one
+            parms.AddOrReplace( "uniqueid", "id-" + Guid.NewGuid().ToString() );
+
+            // keep track of the recursion depth
+            int currentRecurrsionDepth = 0;
+            if ( parms.ContainsKey( "RecursionDepth" ) )
+            {
+                currentRecurrsionDepth = parms["RecursionDepth"].ToString().AsInteger() + 1;
+
+                if ( currentRecurrsionDepth > _maxRecursionDepth )
                 {
-                    parms.AddOrReplace( shortcodeParm.Key, shortcodeParm.Value );
+                    result.Write( "A recursive loop was detected and processing of this shortcode has stopped." );
+                    return;
                 }
+            }
+            parms.AddOrReplace( "RecursionDepth", currentRecurrsionDepth );
 
-                // Apply the merge fields in thie block context.
-                LoadBlockMergeFields( context, parms );
+            // Resolve any merge fields in the block content.
+            // The block content will then be merged into the shortcode template to produce the final output.
+            var blockMarkup = context.ResolveMergeFields( _blockMarkup.ToString(), _internalMergeFields );
 
-                SetParametersFromElementAttributes( parms, _elementAttributesMarkup, context );
+            // Extract any child parameters from the block content.
+            Dictionary<string, object> childParameters;
 
-                // add a unique id so shortcodes have easy access to one
-                parms.AddOrReplace( "uniqueid", "id-" + Guid.NewGuid().ToString() );
+            blockMarkup = GetChildParameters( blockMarkup, out childParameters );
 
-                // keep track of the recursion depth
-                int currentRecurrsionDepth = 0;
-                if ( parms.ContainsKey( "RecursionDepth" ) )
-                {
-                    currentRecurrsionDepth = parms["RecursionDepth"].ToString().AsInteger() + 1;
+            foreach ( var item in childParameters )
+            {
+                parms.AddOrReplace( item.Key, item.Value );
+            }
 
-                    if ( currentRecurrsionDepth > _maxRecursionDepth )
-                    {
-                        result.Write( "A recursive loop was detected and processing of this shortcode has stopped." );
-                        return;
-                    }
-                }
-                parms.AddOrReplace( "RecursionDepth", currentRecurrsionDepth );
+            // After extracting the child parameters, merge the remaining block markup into the template.
+            if ( blockMarkup.IsNotNullOrWhiteSpace() )
+            {
+                // JME (7/23/2019) Commented out the two lines below and substituted the line after to allow for better
+                // processing of the block content. Testing was done on all existing shortcodes but leaving
+                // this code in place in case a future edge case is found. Could/should remove this in the future.
+                // Regex rgx = new Regex( @"{{\s*blockContent\s*}}", RegexOptions.IgnoreCase );
+                // lavaTemplate = rgx.Replace( lavaTemplate, blockMarkup );
+                parms.AddOrReplace( "blockContent", blockMarkup );
 
-                // Resolve any merge fields in the block content.
-                // The block content will then be merged into the shortcode template to produce the final output.
-                var blockMarkup = context.ResolveMergeFields( _blockMarkup.ToString(), _internalMergeFields );
-
-                // Extract any child parameters from the block content.
-                Dictionary<string, object> childParameters;
-
-                blockMarkup = GetChildParameters( blockMarkup, out childParameters );
-
-                foreach ( var item in childParameters )
-                {
-                    parms.AddOrReplace( item.Key, item.Value );
-                }
-
-                // After extracting the child parameters, merge the remaining block markup into the template.
-                if ( blockMarkup.IsNotNullOrWhiteSpace() )
-                {
-                    // JME (7/23/2019) Commented out the two lines below and substituted the line after to allow for better
-                    // processing of the block content. Testing was done on all existing shortcodes but leaving
-                    // this code in place in case a future edge case is found. Could/should remove this in the future.
-                    // Regex rgx = new Regex( @"{{\s*blockContent\s*}}", RegexOptions.IgnoreCase );
-                    // lavaTemplate = rgx.Replace( lavaTemplate, blockMarkup );
-                    parms.AddOrReplace( "blockContent", blockMarkup );
-
-                    parms.AddOrReplace( "blockContentExists", true );
-                }
-                else
-                {
-                    parms.AddOrReplace( "blockContentExists", false );
-                }
-
-                // next ensure they did not use any entity commands in the block that are not allowed
-                // this is needed as the shortcode it configured to allow entities for processing that
-                // might allow more entities than the source block, template, action, etc allows
-                var securityCheck = context.ResolveMergeFields( blockMarkup, new Dictionary<string, object>() );
-
-                Regex securityPattern = new Regex( string.Format( Constants.Messages.NotAuthorizedMessage, ".*" ) );
-                Match securityMatch = securityPattern.Match( securityCheck );
-
-                if ( securityMatch.Success )
-                {
-                    result.Write( securityMatch.Value ); // return security error message
-                }
-                else
-                {
-                    // If the shortcode specifies a set of enabled Lava commands, set these for the current context.
-                    var blockCommands = context.GetEnabledCommands();
-
-                    if ( _shortcode.EnabledLavaCommands.Any() )
-                    {
-                        context.SetEnabledCommands( _shortcode.EnabledLavaCommands );
-                    }
-
-                    // Resolve the child parameters in the template to get the final output.
-                    var lavaTemplate = _shortcode.TemplateMarkup;
-
-                    string results;
-
-                    var isValid = LavaEngine.Instance.TryRender( lavaTemplate, out results, new LavaDictionary( parms ) );
-
-                    //var results = context.ResolveMergeFields( lavaTemplate, parms );
-
-                    result.Write( results.Trim() );
-
-                    // Revert the enabled commands to those of the block.
-                    context.SetEnabledCommands( blockCommands );
-
-                    // TODO: Removed 5/12/2020.
-                    //base.OnRender( context, result );
-                }
+                parms.AddOrReplace( "blockContentExists", true );
             }
             else
             {
-                result.Write( $"An error occurred while processing the {0} shortcode.", _tagName );
+                parms.AddOrReplace( "blockContentExists", false );
+            }
+
+            // Now ensure there aren't any entity commands in the block that are not allowed.
+            // This is necessary because the shortcode may be configured to allow more entities for processing
+            // than the source block, template, action, etc. permits.
+            var securityCheck = context.ResolveMergeFields( blockMarkup, new Dictionary<string, object>() );
+
+            Regex securityPattern = new Regex( string.Format( Constants.Messages.NotAuthorizedMessage, ".*" ) );
+            Match securityMatch = securityPattern.Match( securityCheck );
+
+            if ( securityMatch.Success )
+            {
+                result.Write( securityMatch.Value ); // return security error message
+            }
+            else
+            {
+                // If the shortcode specifies a set of enabled Lava commands, set these for the current context.
+                var blockCommands = context.GetEnabledCommands();
+
+                if ( _shortcode.EnabledLavaCommands.Any() )
+                {
+                    context.SetEnabledCommands( _shortcode.EnabledLavaCommands );
+                }
+
+                // Resolve the child parameters in the template to get the final output.
+                var lavaTemplate = _shortcode.TemplateMarkup;
+
+                string results;
+
+                LavaEngine.Instance.TryRender( lavaTemplate, out results, new LavaDictionary( parms ) );
+
+                //var results = context.ResolveMergeFields( lavaTemplate, parms );
+
+                result.Write( results.Trim() );
+
+                // Revert the enabled commands to those of the block.
+                context.SetEnabledCommands( blockCommands );
+
+                // TODO: Removed 5/12/2020.
+                //base.OnRender( context, result );
             }
         }
 

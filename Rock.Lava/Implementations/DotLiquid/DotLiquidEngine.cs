@@ -214,6 +214,11 @@ namespace Rock.Lava.DotLiquid
         {
             var renderSettings = new RenderParameters();
 
+            if ( context == null )
+            {
+                context = this.NewContext();
+            }
+
             var dotLiquidContext = ( (DotLiquidLavaContext)context ).DotLiquidContext;
 
             // Set the transformation function for converting a DotLiquid Context to a Lava Context.
