@@ -92,7 +92,7 @@ namespace Rock.Lava
 
         //public abstract void Stack( LavaDictionary newScope, Action callback );
         //public abstract void Stack( Action callback );
-        public void Stack( Action<ILavaContext> callback )
+        public void ExecuteInChildScope( Action<ILavaContext> callback )
         {
             EnterChildScope();
             try

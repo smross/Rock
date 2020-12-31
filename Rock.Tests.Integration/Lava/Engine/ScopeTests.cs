@@ -57,35 +57,43 @@ namespace Rock.Tests.Integration.Lava
             _helper.AssertTemplateOutput( expectedOutput, input, context );
         }
 
+        /// <summary>
+        /// The purpose of this test is to document a valid but unexpected behavior of the Assign statement in Liquid.
+        /// The Assign statement either creates or replaces an existing variable of the same name, in the current scope or any higher level scope.
+        /// The nesting level at which an Assign statement first creates an internal variable determines the nesting level of that variable for the entire document.
+        /// This does not align with the scoping rules for other programming languages.
+        /// </summary>
         [TestMethod]
-        public void Scope_InnerScopeAssign_DoesNotModifyOuterVariable()
+        public void Assign_InnerScopeAssign_ModifiesOuterVariable()
         {
             var input = @"
-{% assign color = 'blue' %}
-Color 1: {{ color }}
-
-{% cache key:'fav-color' duration:'1200' %}
-    Color 2: {{ color }}
-    {% assign color = 'red' %}
-    Color 3: {{color }}
-{% endcache %}
-
-Color 4: {{ color }}
+Context Value (Level 0): {{ currentBlock }}
+{%- assign currentBlock = 'document_1' -%}
+Document Value (Level 1): {{ currentBlock }}
+{%- for i in (1..3) -%}
+    {%- assign currentBlock = i | Prepend:'for_loop_' -%}
+    Loop Value (Level 2): {{ currentBlock }}
+{%- endfor -%}
+Document Value (Level 1): {{ currentBlock }}
+{%- assign currentBlock = 'document_2' -%}
+Document Value (Level 1): {{ currentBlock }}
 ";
+
 
             var expectedOutput = @"
-Color 1: blue
-Color 2: blue
-Color 3: red
-Color 4: blue
-";
+Context Value (Level 0): context
+Document Value (Level 1): document_1   
+Loop Value (Level 2): for_loop_1
+Loop Value (Level 2): for_loop_2
+Loop Value (Level 2): for_loop_3
+Document Value (Level 1): for_loop_3
+Document Value (Level 1): document_2";
 
             var context = _helper.LavaEngine.NewContext();
 
-            context.SetEnabledCommands( "Cache" );
+            context.SetMergeFieldValue( "currentBlock", "context" );
 
             _helper.AssertTemplateOutput( expectedOutput, input, context, ignoreWhiteSpace: true );
         }
-
     }
 }

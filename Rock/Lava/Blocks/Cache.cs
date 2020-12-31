@@ -304,7 +304,7 @@ namespace Rock.Lava.Blocks
 
 
             // Resolve the inner template using a new scope.
-            context.Stack( ( newContext ) => LavaEngine.Instance.TryRender( lavaTemplate, out output, newContext ) );
+            context.ExecuteInChildScope( ( newContext ) => LavaEngine.Instance.TryRender( lavaTemplate, out output, newContext ) );
             //LavaEngine.Instance.TryRender( lavaTemplate, out output, context );
 
             return output;

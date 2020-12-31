@@ -126,24 +126,14 @@ namespace Rock.Lava
         string ResolveMergeFields( string content, IDictionary<string, object> mergeObjects, string enabledLavaCommands = null, bool encodeStrings = false, bool throwExceptionOnErrors = false );
 
         /// <summary>
-        /// pushes a new local scope on the stack, pops it at the end of the block
-        /// 
-        /// Example:
-        /// 
-        /// context.stack do
-        /// context['var'] = 'hi'
-        /// end
-        /// context['var] #=> nil
+        /// Executes the specified action in a new child scope.
         /// </summary>
-        /// <param name="newScope"></param>
         /// <param name="callback"></param>
-        /// <returns></returns>
-        [Obsolete("Rename to ExecuteInChildScope")]
-        void Stack( Action<ILavaContext> callback );
+        void ExecuteInChildScope( Action<ILavaContext> callback );
 
         /// <summary>
-        /// Creates a new isolated scope. After than any value added to this content object will be released once
-        /// <see cref="ReleaseScope" /> is called. The previous scope is linked such that its values are still available.
+        /// Creates a new child scope. Values added to the child scope will be released once
+        /// <see cref="ExitChildScope" /> is called. Values in the parent scope remain available to the child scope.
         /// </summary>
         void EnterChildScope();
 
@@ -151,8 +141,5 @@ namespace Rock.Lava
         /// Exits the current scope that has been created by <see cref="EnterChildScope" />
         /// </summary>
         void ExitChildScope();
-
-        //void Stack( LavaDictionary newScope, Action callback );
-
     }
 }
