@@ -270,42 +270,47 @@ namespace Rock.Lava.Blocks
         /// <returns></returns>
         private string MergeLava( string lavaTemplate, ILavaContext context )
         {
-            // Get enabled commands
-            //var enabledCommands = context.GetEnabledCommands();
-
-            //var lavaMergeFields = context.GetMergeFieldsForLocalScope();
-
             /*
+            // Get enabled commands
+            var enabledCommands = context.Registers["EnabledCommands"].ToString();
+
             // Get mergefields from lava context
             var lavaMergeFields = new Dictionary<string, object>();
-            if ( context.GetEnvironments?.Count > 0 )
+            if ( context.Environments?.Count > 0 )
             {
-                foreach ( var item in context.GetEnvironments[0] )
+                foreach ( var item in context.Environments[0] )
                 {
                     lavaMergeFields.Add( item.Key, item.Value );
                 }
             }
 
             // Add variables in the scope (defined in the lava itself via assign)
-            if ( context.GetScopes?.Count > 0 )
+            if ( context.Scopes?.Count > 0 )
             {
-                foreach ( var item in context.GetScopes[0] )
+                foreach ( var item in context.Scopes[0] )
                 {
                     lavaMergeFields.Add( item.Key, item.Value );
                 }
             }
+
+            return lavaTemplate.ResolveMergeFields( lavaMergeFields, enabledCommands );
             */
             string output = null;
 
             // Resolve the Lava template contained in this block in a new context.
-            var innerContext = LavaEngine.Instance.NewContext();
+            var newContext = LavaEngine.Instance.NewContext();
 
-            
+            // Copy the merge fields from the supplied context.
 
+
+            // Copy the internal variables from the supplied context.
+            newContext.SetMergeFieldValues( context.GetMergeFieldValues() );
+            newContext.SetInternalValues( context.GetInternalValues() );
 
             // Resolve the inner template using a new scope.
-            context.ExecuteInChildScope( ( newContext ) => LavaEngine.Instance.TryRender( lavaTemplate, out output, newContext ) );
-            //LavaEngine.Instance.TryRender( lavaTemplate, out output, context );
+            //context.ExecuteInChildScope( ( newContext ) => LavaEngine.Instance.TryRender( lavaTemplate, out output, newContext ) );
+
+            LavaEngine.Instance.TryRender( lavaTemplate, out output, newContext );
 
             return output;
 

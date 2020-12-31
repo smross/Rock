@@ -84,14 +84,19 @@ namespace Rock.Lava
         public abstract object GetInternalValue( string key );
 
         /// <summary>
+        /// Gets the collection of variables defined for internal use only.  Internal values are not available to be resolved in the Lava Template.
+        /// </summary>
+        public abstract LavaDictionary GetInternalValues();
+
+        /// <summary>
         /// Sets a named value that is for internal use only. Internal values are not available to be resolved in the Lava Template.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
         public abstract void SetInternalValue( string key, object value );
 
-        //public abstract void Stack( LavaDictionary newScope, Action callback );
-        //public abstract void Stack( Action callback );
+        public abstract void SetInternalValues( LavaDictionary values );
+
         public void ExecuteInChildScope( Action<ILavaContext> callback )
         {
             EnterChildScope();

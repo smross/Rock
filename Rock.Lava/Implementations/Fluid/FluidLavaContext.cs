@@ -406,6 +406,14 @@ namespace Rock.Lava.Fluid
             _context.AmbientValues[key] = value;
         }
 
+        public override void SetInternalValues( LavaDictionary values )
+        {
+            foreach ( var kvp in values )
+            {
+                _context.AmbientValues[kvp.Key] = kvp.Value;
+            }
+        }
+
         /// <summary>
         /// Gets a named value that is for internal use only. Internal values are not available to be resolved in the Lava Template.
         /// </summary>
@@ -418,6 +426,17 @@ namespace Rock.Lava.Fluid
             _context.AmbientValues.TryGetValue( key, out value );
 
             return value;
+        }
+        public override LavaDictionary GetInternalValues()
+        {
+            var values = new LavaDictionary();
+
+            foreach ( var item in _context.AmbientValues )
+            {
+                values.AddOrReplace( item.Key, item.Value );
+            }
+
+            return values;
         }
 
         public void SetValue( string key, object value )

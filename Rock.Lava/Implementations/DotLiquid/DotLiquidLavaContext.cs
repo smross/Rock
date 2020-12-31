@@ -160,7 +160,23 @@ namespace Rock.Lava.DotLiquid
         /// </summary>
         public override LavaDictionary GetMergeFieldValues()
         {
-            return LavaDictionary.FromDictionary( _context.Registers );
+            var dictionary = new LavaDictionary();
+
+            // TODO: Do we also need to merge in the Environment values stack here?
+
+            // Get a flattened set of values from all Scopes in the current context.
+            // Scopes are listed from innermost to outermost, and therefore need to be collated from outermost to innermost.
+            for ( int i = _context.Scopes.Count - 1; i >= 0; i-- )
+            {
+                var scope = _context.Scopes[i];
+
+                foreach (var kvp in scope )
+                {
+                    dictionary[kvp.Key] = kvp.Value;
+                }
+            }
+
+            return dictionary;
         }
 
         public override string ResolveMergeFields( string content, IDictionary<string, object> mergeObjects, string enabledLavaCommands = null, bool encodeStrings = false, bool throwExceptionOnErrors = false )
@@ -478,28 +494,58 @@ namespace Rock.Lava.DotLiquid
         // TODO: Remove this?
         public override IDictionary<string, object> GetMergeFieldsInScope()
         {
-            var internalMergeFields = new Dictionary<string, object>();
+            var fields = new Dictionary<string, object>();
 
             // get variables defined in the lava source
             foreach ( var scope in _context.Scopes )
             {
                 foreach ( var item in scope )
                 {
-                    internalMergeFields.AddOrReplace( item.Key, item.Value );
+                    fields.AddOrReplace( item.Key, item.Value );
                 }
             }
 
-            return internalMergeFields;
+            return fields;
         }
 
         public override object GetInternalValue( string key )
         {
-            throw new NotImplementedException();
+            return _context.Registers[key];
+        }
+
+        public override LavaDictionary GetInternalValues()
+        {
+            var values = new LavaDictionary();
+
+            foreach ( var item in _context.Registers )
+            {
+                values.AddOrReplace( item.Key, item.Value );
+            }
+
+            // TODO: Should we merge in the Environment variables here too?
+            //var lavaMergeFields = new Dictionary<string, object>();
+            //if ( context.Environments?.Count > 0 )
+            //{
+            //    foreach ( var item in context.Environments[0] )
+            //    {
+            //        lavaMergeFields.Add( item.Key, item.Value );
+            //    }
+            //}
+
+            return values;
         }
 
         public override void SetInternalValue( string key, object value )
         {
-            throw new NotImplementedException();
+            _context.Registers[key] = value;
+        }
+
+        public override void SetInternalValues( LavaDictionary values )
+        {
+            foreach ( var kvp in values )
+            {
+                _context.Registers[kvp.Key] = kvp.Value;
+            }
         }
 
         public override void EnterChildScope()

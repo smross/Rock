@@ -25,9 +25,29 @@ namespace Rock.Lava
     /// </summary>
     public interface ILavaContext
     {
+        /// <summary>
+        /// Gets a named value that is for internal use only. Internal values are not available to be resolved in the Lava Template.
+        /// </summary>
+        /// <param name="key"></param>
         object GetInternalValue( string key );
 
+        /// <summary>
+        /// Gets the collection of variables defined for internal use only.  Internal values are not available to be resolved in the Lava Template.
+        /// </summary>
+        LavaDictionary GetInternalValues();
+
+        /// <summary>
+        /// Sets a named value that is for internal use only. Internal values are not available to be resolved in the Lava Template.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
         void SetInternalValue( string key, object value );
+
+        /// <summary>
+        /// Sets a collection of named values for internal use only. Internal values are not available to be resolved in the Lava Template.
+        /// </summary>
+        /// <param name="values"></param>
+        void SetInternalValues( LavaDictionary values );
 
         /// <summary>
         /// The set of Lava Commands that are enabled for this context.
@@ -56,7 +76,7 @@ namespace Rock.Lava
         object GetMergeFieldValue( string key, object defaultValue );
 
         /// <summary>
-        /// Gets the collection of user-defined variables in the current context that are internally available to custom filters and tags.
+        /// Gets the collection of user-defined variables in the current context that are accessible in a template.
         /// </summary>
         LavaDictionary GetMergeFieldValues();
 
@@ -90,39 +110,6 @@ namespace Rock.Lava
         /// <returns></returns>
         object this[string key] { get; set; }
 
-        /// <summary>
-        /// Retrieves a nested stack of Environments, with the current environment first.
-        /// An environment holds the variables that have been defined by the container in which a Lava template is resolved.
-        /// </summary>
-        [Obsolete("Not required?")]
-        IList<LavaDictionary> GetEnvironments();
-
-        /// <summary>
-        /// Retrieves a nested stack of Variables, with the current context first.
-        /// A scope holds the variables that have been created and assigned in the process of resolving a Lava template.
-        /// </summary>
-        [Obsolete("Not required?")]
-        IList<LavaDictionary> GetScopes();
-
-        /// <summary>
-        /// Gets the set of merge fields in the current Lava source markup.
-        /// </summary>
-        /// <returns></returns>
-        IDictionary<string, object> GetMergeFieldsInScope();
-
-        /// <summary>
-        /// Gets the dictionary of values that are active in the local scope.
-        /// Values are defined by the outermost container first, and overridden by values defined in a contained scope.
-        /// </summary>
-        /// <returns></returns>
-        LavaDictionary GetMergeFieldsInLocalScope();
-
-        /// <summary>
-        /// Gets the set of merge fields in the current Lava block or container hierarchy.
-        /// </summary>
-        /// <returns></returns>
-        IDictionary<string, object> GetMergeFieldsInContainerScope();
-
         string ResolveMergeFields( string content, IDictionary<string, object> mergeObjects, string enabledLavaCommands = null, bool encodeStrings = false, bool throwExceptionOnErrors = false );
 
         /// <summary>
@@ -141,5 +128,46 @@ namespace Rock.Lava
         /// Exits the current scope that has been created by <see cref="EnterChildScope" />
         /// </summary>
         void ExitChildScope();
+
+        #region Obsolete
+
+        /// <summary>
+        /// Retrieves a nested stack of Environments, with the current environment first.
+        /// An environment holds the variables that have been defined by the container in which a Lava template is resolved.
+        /// </summary>
+        [Obsolete( "Not required?" )]
+        IList<LavaDictionary> GetEnvironments();
+
+        /// <summary>
+        /// Retrieves a nested stack of Variables, with the current context first.
+        /// A scope holds the variables that have been created and assigned in the process of resolving a Lava template.
+        /// </summary>
+        [Obsolete( "Not required?" )]
+        IList<LavaDictionary> GetScopes();
+
+        /// <summary>
+        /// Gets the set of merge fields in the current Lava source markup.
+        /// </summary>
+        /// <returns></returns>
+        [Obsolete( "Use GetMergeFields instead?" )]
+        IDictionary<string, object> GetMergeFieldsInScope();
+
+        /// <summary>
+        /// Gets the dictionary of values that are active in the local scope.
+        /// Values are defined by the outermost container first, and overridden by values defined in a contained scope.
+        /// </summary>
+        /// <returns></returns>
+        [Obsolete( "Rename as GetMergeFields()?" )]
+        LavaDictionary GetMergeFieldsInLocalScope();
+
+        /// <summary>
+        /// Gets the set of merge fields in the current Lava block or container hierarchy.
+        /// </summary>
+        /// <returns></returns>
+        [Obsolete( "Use GetMergeFields instead?" )]
+        IDictionary<string, object> GetMergeFieldsInContainerScope();
+
+        #endregion
+
     }
 }
