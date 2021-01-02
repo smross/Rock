@@ -387,7 +387,7 @@ namespace Rock.Lava.Fluid
 
                     index = index + 2;
 
-                    while ( index < segment.Length && Char.IsWhiteSpace( segment.Index( index ) ) )
+                    while ( index < segment.Length && ( Char.IsWhiteSpace( segment.Index( index ) ) || segment.Index( index ) == '-' ) )
                     {
                         index++;
                     }
