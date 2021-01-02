@@ -2237,7 +2237,7 @@ namespace Rock.Lava
                     if ( theValue.HasMergeFields() )
                     {
                         // Global attributes may reference other global attributes, so try to resolve this value again
-                        var mergeFields = context.GetMergeFieldsInContainerScope();
+                        var mergeFields = context.GetMergeFields();
 
                         rawValue = theValue.ResolveMergeFields( mergeFields );
                     }
@@ -2262,7 +2262,7 @@ namespace Rock.Lava
                 if ( theValue.HasMergeFields() )
                 {
                     // SystemSetting attributes may reference other global attributes, so try to resolve this value again
-                    var mergeFields = context.GetMergeFieldsInContainerScope();
+                    var mergeFields = context.GetMergeFields();
 
                     rawValue = theValue.ResolveMergeFields( mergeFields );
                 }
@@ -3845,15 +3845,22 @@ namespace Rock.Lava
                 }
             }
 
-            var mergeFields = context.GetEnvironments().SelectMany( a => a ).ToDictionary( k => k.Key, v => v.Value );
+            var mergeFields = context.GetMergeFields() as IDictionary<string, object>;
 
-            var allFields = mergeFields.Union( context.GetScopes().SelectMany( a => a ).DistinctBy( x => x.Key ).ToDictionary( k => k.Key, v => v.Value ) );
+            if ( input != null
+                 && mergeFields.Any( a => a.Value == input ) )
+            {
+                mergeFields = mergeFields.Where( a => a.Value == input ).ToDictionary( k => k.Key, v => v.Value );
+            }
+
+            //var mergeFields = context.GetEnvironments().SelectMany( a => a ).ToDictionary( k => k.Key, v => v.Value );
+            //var allFields = mergeFields.Union( context.GetScopes().SelectMany( a => a ).DistinctBy( x => x.Key ).ToDictionary( k => k.Key, v => v.Value ) );
 
             // if a specific MergeField was specified as the Input, limit the help to just that MergeField
-            if ( input != null && allFields.Any( a => a.Value == input ) )
-            {
-                mergeFields = allFields.Where( a => a.Value == input ).ToDictionary( k => k.Key, v => v.Value );
-            }
+            //if ( input != null && allFields.Any( a => a.Value == input ) )
+            //{
+            //    mergeFields = allFields.Where( a => a.Value == input ).ToDictionary( k => k.Key, v => v.Value );
+            //}
 
             // TODO: implement the outputFormat option to support ASCII
             return mergeFields.lavaDebugInfo();

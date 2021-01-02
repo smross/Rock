@@ -94,6 +94,13 @@ namespace Rock.Lava.Blocks
         /// <param name="tokens"></param>
         public virtual void OnInitialize( string tagName, string markup, List<string> tokens )
         {
+            if (_baseRenderer != null )
+            {
+                int i = 0;
+            }
+
+            // Reset the base renderer.
+            _baseRenderer = null;
             //
         }
 

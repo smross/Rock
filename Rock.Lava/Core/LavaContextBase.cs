@@ -36,13 +36,15 @@ namespace Rock.Lava
         }
 
         public abstract List<string> GetEnabledCommands();
-        public abstract IList<LavaDictionary> GetEnvironments();
-        public abstract LavaDictionary GetMergeFieldsInLocalScope();
-        public abstract IDictionary<string, object> GetMergeFieldsInContainerScope();
-        public abstract IDictionary<string, object> GetMergeFieldsInScope();
+        //public abstract IList<LavaDictionary> GetEnvironments();
+        //public abstract LavaDictionary GetMergeFieldsInLocalScope();
+        //public abstract IDictionary<string, object> GetMergeFieldsInContainerScope();
+        //public abstract IDictionary<string, object> GetMergeFieldsInScope();
+
         public abstract object GetMergeFieldValue( string key, object defaultValue );
-        public abstract LavaDictionary GetMergeFieldValues();
-        public abstract IList<LavaDictionary> GetScopes();
+        public abstract LavaDictionary GetMergeFields();
+        //public abstract IList<LavaDictionary> GetScopes();
+
         public abstract string ResolveMergeFields( string content, IDictionary<string, object> mergeObjects, string enabledLavaCommands = null, bool encodeStrings = false, bool throwExceptionOnErrors = false );
         public abstract void SetEnabledCommands( IEnumerable<string> commands );
         public void SetEnabledCommands( string commandList, string delimiter = "," )
@@ -81,21 +83,21 @@ namespace Rock.Lava
         /// Gets a named value that is for internal use only. Internal values are not available to be resolved in the Lava Template.
         /// </summary>
         /// <param name="key"></param>
-        public abstract object GetInternalValue( string key );
+        public abstract object GetInternalFieldValue( string key );
 
         /// <summary>
         /// Gets the collection of variables defined for internal use only.  Internal values are not available to be resolved in the Lava Template.
         /// </summary>
-        public abstract LavaDictionary GetInternalValues();
+        public abstract LavaDictionary GetInternalFields();
 
         /// <summary>
         /// Sets a named value that is for internal use only. Internal values are not available to be resolved in the Lava Template.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        public abstract void SetInternalValue( string key, object value );
+        public abstract void SetInternalFieldValue( string key, object value );
 
-        public abstract void SetInternalValues( LavaDictionary values );
+        public abstract void SetInternalFieldValues( LavaDictionary values );
 
         public void ExecuteInChildScope( Action<ILavaContext> callback )
         {

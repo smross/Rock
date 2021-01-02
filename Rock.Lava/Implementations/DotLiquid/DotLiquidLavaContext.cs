@@ -46,29 +46,29 @@ namespace Rock.Lava.DotLiquid
             }
         }
 
-        public override IList<LavaDictionary> GetEnvironments()
-        {
-            var environments = new List<LavaDictionary>();
+        //public override IList<LavaDictionary> GetEnvironments()
+        //{
+        //    var environments = new List<LavaDictionary>();
 
-            foreach ( var hash in _context.Environments )
-            {
-                environments.Add( new LavaDictionary( hash ) );
-            }
+        //    foreach ( var hash in _context.Environments )
+        //    {
+        //        environments.Add( new LavaDictionary( hash ) );
+        //    }
 
-            return environments;
-        }
+        //    return environments;
+        //}
 
-        public override IList<LavaDictionary> GetScopes()
-        {
-            var environments = new List<LavaDictionary>();
+        //public override IList<LavaDictionary> GetScopes()
+        //{
+        //    var environments = new List<LavaDictionary>();
 
-            foreach ( var hash in _context.Scopes )
-            {
-                environments.Add( new LavaDictionary( hash ) );
-            }
+        //    foreach ( var hash in _context.Scopes )
+        //    {
+        //        environments.Add( new LavaDictionary( hash ) );
+        //    }
 
-            return environments;
-        }
+        //    return environments;
+        //}
 
         public override void SetEnabledCommands( IEnumerable<string> commands )
         {
@@ -98,43 +98,28 @@ namespace Rock.Lava.DotLiquid
         /// Values are defined by the outermost container first, and overridden by values defined in a contained scope.
         /// </summary>
         /// <returns></returns>
-        public override LavaDictionary GetMergeFieldsInLocalScope()
+        public override LavaDictionary GetMergeFields()
         {
             var fields = new LavaDictionary();
 
             // First, get all of the variables defined in the local lava context.
             // In DotLiquid, the innermost scope is the first element in the collection.
-            //int i = _context.Scopes.Count;
-
-            for ( int i = _context.Scopes.Count - 1; i >= 0; i-- )
+            foreach ( var scope in _context.Scopes )
             {
-                //foreach ( var scope in _context.Scopes.Reverse() )
-                //{
-                var scope = _context.Scopes[i];
-
                 foreach ( var item in scope )
                 {
-                    fields.AddOrReplace( item.Key, item.Value );
+                    fields.AddOrIgnore( item.Key, item.Value );
                 }
             }
 
-            // Second, apply overrides defined by the block or container in which the template is being resolved.
-            for ( int i = _context.Environments.Count - 1; i >= 0; i-- )
+            // Second, add any variables defined by the block or container in which the template is being resolved.
+            foreach ( var environment in _context.Environments )
             {
-                //foreach ( var scope in _context.Scopes.Reverse() )
-                //{
-                var environment = _context.Environments[i];
-
-            //foreach ( var environment in _context.Environments )
-            //{
                 foreach ( var item in environment )
                 {
-                    fields.AddOrReplace( item.Key, item.Value );
+                    fields.AddOrIgnore( item.Key, item.Value );
                 }
             }
-
-            // TODO: Verify that this order is correct? It is the same order that is used in numerous places throughout Rock, but it seems to be inverted?
-            // Shouldn't the local scope override the container scope?
 
             return fields;
         }
@@ -158,26 +143,26 @@ namespace Rock.Lava.DotLiquid
         /// <summary>
         /// Get a dictionary of field values that are accessible for merging in to a template.
         /// </summary>
-        public override LavaDictionary GetMergeFieldValues()
-        {
-            var dictionary = new LavaDictionary();
+        //public override LavaDictionary GetMergeFields()
+        //{
+        //    var dictionary = new LavaDictionary();
 
-            // TODO: Do we also need to merge in the Environment values stack here?
+        //    // TODO: Do we also need to merge in the Environment values stack here?
 
-            // Get a flattened set of values from all Scopes in the current context.
-            // Scopes are listed from innermost to outermost, and therefore need to be collated from outermost to innermost.
-            for ( int i = _context.Scopes.Count - 1; i >= 0; i-- )
-            {
-                var scope = _context.Scopes[i];
+        //    // Get a flattened set of values from all Scopes in the current context.
+        //    // Scopes are listed from innermost to outermost, and therefore need to be collated from outermost to innermost.
+        //    for ( int i = _context.Scopes.Count - 1; i >= 0; i-- )
+        //    {
+        //        var scope = _context.Scopes[i];
 
-                foreach (var kvp in scope )
-                {
-                    dictionary[kvp.Key] = kvp.Value;
-                }
-            }
+        //        foreach (var kvp in scope )
+        //        {
+        //            dictionary[kvp.Key] = kvp.Value;
+        //        }
+        //    }
 
-            return dictionary;
-        }
+        //    return dictionary;
+        //}
 
         public override string ResolveMergeFields( string content, IDictionary<string, object> mergeObjects, string enabledLavaCommands = null, bool encodeStrings = false, bool throwExceptionOnErrors = false )
         {
@@ -475,45 +460,45 @@ namespace Rock.Lava.DotLiquid
         #region Unused???
 
         //TODO: Remove this?
-        public override IDictionary<string, object> GetMergeFieldsInContainerScope()
-        {
-            // get merge fields loaded by the block or container
-            var internalMergeFields = new Dictionary<string, object>();
+        //public override IDictionary<string, object> GetMergeFieldsInContainerScope()
+        //{
+        //    // get merge fields loaded by the block or container
+        //    var internalMergeFields = new Dictionary<string, object>();
 
-            if ( _context.Environments.Count > 0 )
-            {
-                foreach ( var item in _context.Environments[0] )
-                {
-                    internalMergeFields.AddOrReplace( item.Key, item.Value );
-                }
-            }
+        //    if ( _context.Environments.Count > 0 )
+        //    {
+        //        foreach ( var item in _context.Environments[0] )
+        //        {
+        //            internalMergeFields.AddOrReplace( item.Key, item.Value );
+        //        }
+        //    }
 
-            return internalMergeFields;
-        }
+        //    return internalMergeFields;
+        //}
 
         // TODO: Remove this?
-        public override IDictionary<string, object> GetMergeFieldsInScope()
-        {
-            var fields = new Dictionary<string, object>();
+        //public override IDictionary<string, object> GetMergeFieldsInScope()
+        //{
+        //    var fields = new Dictionary<string, object>();
 
-            // get variables defined in the lava source
-            foreach ( var scope in _context.Scopes )
-            {
-                foreach ( var item in scope )
-                {
-                    fields.AddOrReplace( item.Key, item.Value );
-                }
-            }
+        //    // get variables defined in the lava source
+        //    foreach ( var scope in _context.Scopes )
+        //    {
+        //        foreach ( var item in scope )
+        //        {
+        //            fields.AddOrReplace( item.Key, item.Value );
+        //        }
+        //    }
 
-            return fields;
-        }
+        //    return fields;
+        //}
 
-        public override object GetInternalValue( string key )
+        public override object GetInternalFieldValue( string key )
         {
             return _context.Registers[key];
         }
 
-        public override LavaDictionary GetInternalValues()
+        public override LavaDictionary GetInternalFields()
         {
             var values = new LavaDictionary();
 
@@ -535,12 +520,12 @@ namespace Rock.Lava.DotLiquid
             return values;
         }
 
-        public override void SetInternalValue( string key, object value )
+        public override void SetInternalFieldValue( string key, object value )
         {
             _context.Registers[key] = value;
         }
 
-        public override void SetInternalValues( LavaDictionary values )
+        public override void SetInternalFieldValues( LavaDictionary values )
         {
             foreach ( var kvp in values )
             {

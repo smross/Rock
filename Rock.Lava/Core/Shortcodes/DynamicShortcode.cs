@@ -292,8 +292,6 @@ namespace Rock.Lava.Shortcodes
 
                 LavaEngine.Instance.TryRender( lavaTemplate, out results, new LavaDictionary( parms ) );
 
-                //var results = context.ResolveMergeFields( lavaTemplate, parms );
-
                 result.Write( results.Trim() );
 
                 // Revert the enabled commands to those of the block.
@@ -483,20 +481,11 @@ namespace Rock.Lava.Shortcodes
         {
             _internalMergeFields = new Dictionary<string, object>();
 
-            // get variables defined in the lava source
-            foreach ( var item in context.GetMergeFieldsInScope() )
-            {
-                _internalMergeFields.AddOrReplace( item.Key, item.Value );
-            }
-
-            // get merge fields loaded by the block or container
-            foreach ( var item in context.GetMergeFieldsInContainerScope() )
+            foreach ( var item in context.GetMergeFields() )
             {
                 _internalMergeFields.AddOrReplace( item.Key, item.Value );
                 parms.AddOrReplace( item.Key, item.Value );
             }
         }
-
-
     }
 }

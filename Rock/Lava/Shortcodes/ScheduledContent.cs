@@ -284,7 +284,7 @@ namespace Rock.Lava.Shortcodes
                     }
                 }
 
-                var mergeFields = context.GetMergeFieldsInContainerScope();
+                var mergeFields = context.GetMergeFields();
 
                 mergeFields.Add( "NextOccurrenceDateTime", nextStartDateTime );
                 mergeFields.Add( "OccurrenceEndDateTime", occurrenceEndDateTime );
@@ -330,7 +330,7 @@ namespace Rock.Lava.Shortcodes
         private Dictionary<string, string> ParseMarkup( string markup, ILavaContext context )
         {
             // first run lava across the inputted markup
-            var internalMergeFields = context.GetMergeFieldsInScope();
+            var internalMergeFields = context.GetMergeFields();
 
             var resolvedMarkup = markup.ResolveMergeFields( internalMergeFields );
 

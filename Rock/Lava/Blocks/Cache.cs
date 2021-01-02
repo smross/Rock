@@ -65,7 +65,15 @@ namespace Rock.Lava.Blocks
             _markup = markup;
             _tagName = tagName;
 
-            _blockMarkup = tokens.JoinStrings( string.Empty );
+            // Get the internal content of the block. The list of tokens includes the block closing tag, so remove it to get the internal markup for the block.
+            if ( tokens.Any() )
+            {
+                _blockMarkup = tokens.Take( tokens.Count - 1 ).JoinStrings( string.Empty );
+            }
+            else
+            {
+                _blockMarkup = string.Empty;
+            }
 
             base.OnInitialize( tagName, markup, tokens );
         }
@@ -304,8 +312,8 @@ namespace Rock.Lava.Blocks
 
 
             // Copy the internal variables from the supplied context.
-            newContext.SetMergeFieldValues( context.GetMergeFieldValues() );
-            newContext.SetInternalValues( context.GetInternalValues() );
+            newContext.SetMergeFieldValues( context.GetMergeFields() );
+            newContext.SetInternalFieldValues( context.GetInternalFields() );
 
             // Resolve the inner template using a new scope.
             //context.ExecuteInChildScope( ( newContext ) => LavaEngine.Instance.TryRender( lavaTemplate, out output, newContext ) );
@@ -327,7 +335,7 @@ namespace Rock.Lava.Blocks
         private Dictionary<string, string> ParseMarkup( string markup, ILavaContext context )
         {
             // first run lava across the inputted markup
-            var internalMergeFields = context.GetMergeFieldsInLocalScope();
+            var internalMergeFields = context.GetMergeFields();
 
             var parms = new Dictionary<string, string>();
             parms.Add( "key", string.Empty );

@@ -87,42 +87,37 @@ namespace Rock.Lava.Fluid
             return new List<string>();
         }
 
-        public override IList<LavaDictionary> GetEnvironments()
-        {
-            throw new NotImplementedException();
-        }
+        //public override LavaDictionary GetMergeFieldsInLocalScope()
+        //{
+        //    var fields = new LavaDictionary();
 
-        public override LavaDictionary GetMergeFieldsInLocalScope()
-        {
-            var fields = new LavaDictionary();
+        //    // First, get all of the variables defined in the local lava context
+        //    var properties = GetScopeDefinedValues( _context.LocalScope );
 
-            // First, get all of the variables defined in the local lava context
-            var properties = GetScopeLocalValues( _context.LocalScope );
+        //    foreach ( var item in properties )
+        //    {
+        //        //foreach ( var item in scope )
+        //        //{
+        //            fields.AddOrReplace( item.Key, item.Value );
+        //        //}
+        //    }
 
-            foreach ( var item in properties )
-            {
-                //foreach ( var item in scope )
-                //{
-                    fields.AddOrReplace( item.Key, item.Value );
-                //}
-            }
+        //    // Second, apply overrides defined by the block or container in which the template is being resolved.
+        //    //foreach ( var environment in _context.AmbientValues )
+        //    //{
+        //    foreach ( var item in _context.AmbientValues )
+        //    {
+        //        fields.AddOrReplace( item.Key, item.Value );
+        //    }
+        //    //}
 
-            // Second, apply overrides defined by the block or container in which the template is being resolved.
-            //foreach ( var environment in _context.AmbientValues )
-            //{
-            foreach ( var item in _context.AmbientValues )
-            {
-                fields.AddOrReplace( item.Key, item.Value );
-            }
-            //}
-
-            return fields;
-        }
-        public override IDictionary<string, object> GetMergeFieldsInContainerScope()
-        {
-            return GetMergeFieldsInLocalScope();
-            //throw new NotImplementedException();
-        }
+        //    return fields;
+        //}
+        //public override IDictionary<string, object> GetMergeFieldsInContainerScope()
+        //{
+        //    return GetMergeFieldsInLocalScope();
+        //    //throw new NotImplementedException();
+        //}
 
         public IDictionary<string, object> GetMergeFieldsInEnvironment()
         {
@@ -142,33 +137,9 @@ namespace Rock.Lava.Fluid
 
             return internalMergeFields;
         }
-
-        //public IDictionary<string, object> GetMergeFieldsInScope()
+        //public override IDictionary<string, object> GetMergeFieldsInScope()
         //{
-        //    //return new Dictionary<string, object>( _context.AmbientValues );
-
-        //    //var internalMergeFields = new Dictionary<string, object>();
-
-        //    //// get variables defined in the lava source
-        //    //foreach ( var scope in _context.AmbientValues )
-        //    //{
-        //    //    foreach ( var item in scope )
-        //    //    {
-        //    //        internalMergeFields.AddOrReplace( item.Key, item.Value );
-        //    //    }
-        //    //}
-
-        //    //return internalMergeFields;
-        //}
-
-        public override IDictionary<string, object> GetMergeFieldsInScope()
-        {
-            return new Dictionary<string, object>( _context.AmbientValues );
-        }
-
-        //public object GetMergeFieldValue( string key, object defaultValue )
-        //{
-        //    throw new NotImplementedException();
+        //    return new Dictionary<string, object>( _context.AmbientValues );
         //}
 
         public override object GetMergeFieldValue( string key, object defaultValue )
@@ -182,31 +153,11 @@ namespace Rock.Lava.Fluid
 
         }
 
-        //public LavaDictionary GetMergeFieldValues()
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        public override LavaDictionary GetMergeFieldValues()
+        public override LavaDictionary GetMergeFields()
         {
-            return LavaDictionary.FromDictionary( _context.AmbientValues );
-        }
+            var dictionary = new LavaDictionary( this.GetScopeAggregatedValues( _context.LocalScope ) );
 
-        //public IList<LavaDictionary> GetScopes()
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        public override IList<LavaDictionary> GetScopes()
-        {
-            throw new NotImplementedException();
-        }
-
-        public object GetValue( string key )
-        {
-            var value = _context.LocalScope.GetValue( key ).ToRealObjectValue();
-
-            return value;
+            return dictionary;
         }
 
         /// <summary>
@@ -400,13 +351,13 @@ namespace Rock.Lava.Fluid
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        public override void SetInternalValue( string key, object value )
+        public override void SetInternalFieldValue( string key, object value )
         {
             // In the Fluid framework, internal values are stored in the AmbientValues collection.
             _context.AmbientValues[key] = value;
         }
 
-        public override void SetInternalValues( LavaDictionary values )
+        public override void SetInternalFieldValues( LavaDictionary values )
         {
             foreach ( var kvp in values )
             {
@@ -418,7 +369,7 @@ namespace Rock.Lava.Fluid
         /// Gets a named value that is for internal use only. Internal values are not available to be resolved in the Lava Template.
         /// </summary>
         /// <param name="key"></param>
-        public override object GetInternalValue( string key )
+        public override object GetInternalFieldValue( string key )
         {
             // In the Fluid framework, internal values are stored in the AmbientValues collection.
             object value;
@@ -427,7 +378,7 @@ namespace Rock.Lava.Fluid
 
             return value;
         }
-        public override LavaDictionary GetInternalValues()
+        public override LavaDictionary GetInternalFields()
         {
             var values = new LavaDictionary();
 
@@ -439,28 +390,9 @@ namespace Rock.Lava.Fluid
             return values;
         }
 
-        public void SetValue( string key, object value )
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Execute an action in a child scope, and exit the child scope when the action is complete.
-        /// </summary>
-        /// <param name="callback"></param>
-        //public override void Stack( Action callback )
+        //public void SetValue( string key, object value )
         //{
-        //    // Push a new scope onto the stack.
-        //    _context.EnterChildScope();
-
-        //    try
-        //    {
-        //        callback();
-        //    }
-        //    finally
-        //    {
-        //        _context.ReleaseScope();
-        //    }
+        //    throw new NotImplementedException();
         //}
 
         /// <summary>
@@ -515,10 +447,40 @@ namespace Rock.Lava.Fluid
             return parentScope;
         }
 
-        private Dictionary<string, object> GetScopeLocalValues( Scope scope )
+        /// <summary>
+        /// Gets an aggregated set of key/value pairs for variables in the current scope and outer scopes.
+        /// </summary>
+        /// <param name="scope"></param>
+        /// <returns></returns>
+        private Dictionary<string, object> GetScopeAggregatedValues( Scope scope )
         {
             var dictionary = new Dictionary<string, object>( StringComparer.OrdinalIgnoreCase );
 
+            while ( scope != null )
+            {
+                var properties = GetScopeDefinedValues( scope );
+
+                foreach ( var key in properties.Keys )
+                {
+                    dictionary.AddOrIgnore( key, properties[key] );
+                }
+
+                scope = GetParentScope( scope );
+            }
+
+            return dictionary;
+        }
+
+        /// <summary>
+        /// Gets an aggregated set of key/value pairs for variables defined in the current scope.
+        /// </summary>
+        /// <param name="scope"></param>
+        /// <returns></returns>
+        private Dictionary<string, object> GetScopeDefinedValues( Scope scope )
+        {
+            var dictionary = new Dictionary<string, object>( StringComparer.OrdinalIgnoreCase );
+
+            // Fluid does not provide access to the key collection for the scope, so we need to use Reflection to get the underlying dictionary.
             var propertiesField = scope.GetType().GetField( "_properties", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance );
 
             if ( propertiesField != null )

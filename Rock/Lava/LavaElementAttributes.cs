@@ -178,7 +178,7 @@ namespace Rock.Lava
             // First, resolve any Lava merge fields that exist in the element attributes markup.
             if ( context != null )
             {
-                elementAttributesMarkup = elementAttributesMarkup.ResolveMergeFields( context.GetMergeFieldsInLocalScope() );
+                elementAttributesMarkup = elementAttributesMarkup.ResolveMergeFields( context.GetMergeFields() );
             }
 
             // Get the set of parameters using variations of the following pattern:

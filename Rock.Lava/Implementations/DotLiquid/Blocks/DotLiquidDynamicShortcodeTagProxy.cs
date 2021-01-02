@@ -192,30 +192,15 @@ namespace Rock.Lava.DotLiquid
         /// <returns></returns>
         private Dictionary<string, object> ParseMarkup( string markup, ILavaContext context )
         {
-            //var parms = new Dictionary<string, object>();
-
             // first run lava across the inputted markup
-            var _internalMergeFields = new Dictionary<string, object>();
+            var _internalMergeFields = context.GetMergeFields();
 
-            var parms = new Dictionary<string, object>( _internalMergeFields );
+            var parms = new Dictionary<string, object>();
 
-            // get merge fields loaded by the block or container
-
-            //if ( context.Environments.Count > 0 )
-            //{
-                foreach ( var item in context.GetMergeFieldsInContainerScope() )
-                {
-                    _internalMergeFields.AddOrReplace( item.Key, item.Value );
-                    parms.AddOrReplace( item.Key, item.Value );
-                }
-            //}
-
-            // get variables defined in the lava source
-                foreach ( var item in context.GetMergeFieldsInScope() )
-                {
-                    _internalMergeFields.AddOrReplace( item.Key, item.Value );
-                    parms.AddOrReplace( item.Key, item.Value );
-                }
+            foreach ( var item in _internalMergeFields )
+            {
+                parms.AddOrReplace( item.Key, item.Value );
+            }
 
             var resolvedMarkup = context.ResolveMergeFields( markup, _internalMergeFields );
 

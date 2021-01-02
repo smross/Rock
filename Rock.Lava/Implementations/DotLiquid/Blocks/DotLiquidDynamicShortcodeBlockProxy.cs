@@ -474,14 +474,7 @@ namespace Rock.Lava.DotLiquid
         {
             _internalMergeFields = new Dictionary<string, object>();
 
-            // get variables defined in the lava source
-            foreach ( var item in context.GetMergeFieldsInScope() )
-            {
-                _internalMergeFields.AddOrReplace( item.Key, item.Value );
-            }
-
-            // get merge fields loaded by the block or container
-            foreach ( var item in context.GetMergeFieldsInContainerScope() )
+            foreach ( var item in context.GetMergeFields() )
             {
                 _internalMergeFields.AddOrReplace( item.Key, item.Value );
                 parms.AddOrReplace( item.Key, item.Value );

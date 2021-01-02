@@ -135,9 +135,9 @@ namespace Rock.Lava.Fluid
 
             // Custom blocks expect to receive the full set of tokens for the block excluding the opening tag.
             var tokens = new List<string>();
-
-            tokens.Add( context.CurrentBlock.AdditionalData.CloseTag );
+            
             tokens.Add( context.CurrentBlock.AdditionalData.InnerText );
+            tokens.Add( context.CurrentBlock.AdditionalData.CloseTag );
 
             var renderBlockDelegate = new DelegateStatement( ( writer, encoder, ctx ) => WriteToAsync( writer, encoder, ctx, _lavaBlock, blockName, blockAttributesMarkup, tokens, statements ) );
 
@@ -159,7 +159,7 @@ namespace Rock.Lava.Fluid
 
             lavaBlock.OnParsed( tokens );
 
-            lavaContext.SetInternalValue( "statements", statements );
+            lavaContext.SetInternalFieldValue( Constants.ContextKeys.SourceTemplateStatements, statements );
 
             elementRenderer.Render( this, lavaContext, writer );
 
@@ -193,7 +193,7 @@ namespace Rock.Lava.Fluid
         {
             var fluidContext = ( (FluidLavaContext)context ).FluidContext;
 
-            var statements = context.GetInternalValue( "statements" ) as List<Statement>;
+            var statements = context.GetInternalFieldValue( Constants.ContextKeys.SourceTemplateStatements ) as List<Statement>;
 
             var result = WriteToDefaultAsync( writer, HtmlEncoder.Default, fluidContext, statements );
         }

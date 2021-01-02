@@ -216,10 +216,17 @@ namespace Rock.Lava.DotLiquid
 
             if ( context == null )
             {
-                context = this.NewContext();
+                context = NewContext();
             }
 
-            var dotLiquidContext = ( (DotLiquidLavaContext)context ).DotLiquidContext;
+            var templateContext = context as DotLiquidLavaContext;
+
+            if ( templateContext == null )
+            {
+                throw new LavaException( "Invalid LavaContext parameter. This context type is not compatible with the DotLiquid templating engine." );
+            }
+
+            var dotLiquidContext = templateContext.DotLiquidContext;
 
             // Set the transformation function for converting a DotLiquid Context to a Lava Context.
             // This tranformation allows the context to be injected into a filter in a way that is independent

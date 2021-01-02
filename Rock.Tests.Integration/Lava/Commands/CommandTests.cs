@@ -33,22 +33,22 @@ namespace Rock.Tests.Integration.Lava
         {
             var input = @"
 {% javascript %}
-    alert('Hello world!');
+    alert('Message 1');
 {% endjavascript %}
 {% javascript %}
-    alert('Hello solar system!');
+    alert('Message 2');
 {% endjavascript %}
 ";
 
             var expectedOutput = @"
 <script>
     (function(){
-        alert('Hello world!');    
+        alert('Message 1');    
     })();
 </script>
 <script>
     (function(){
-        alert('Hello solar system!');    
+        alert('Message 2');
     })();
 </script>
 

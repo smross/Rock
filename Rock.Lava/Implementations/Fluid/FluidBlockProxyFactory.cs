@@ -237,7 +237,7 @@ namespace Rock.Lava.Fluid
         {
             var lavaContext = new FluidLavaContext( context );
             
-            var sourceElements = lavaContext.GetInternalValue( Constants.ContextKeys.SourceTemplateElements ) as List<FluidParsedTemplateElement> ?? new List<FluidParsedTemplateElement>();
+            var sourceElements = lavaContext.GetInternalFieldValue( Constants.ContextKeys.SourceTemplateElements ) as List<FluidParsedTemplateElement> ?? new List<FluidParsedTemplateElement>();
 
             // Get the tokens associated with this block
             var startPosition = node.Span.Location.Position;

@@ -459,11 +459,16 @@ namespace Rock.Lava.Fluid
 
                 var template = CreateNewFluidTemplate( inputTemplate, out liquidTemplate );
 
+                if ( context == null )
+                {
+                    context = NewContext();
+                }
+
                 var templateContext = context as FluidLavaContext;
 
                 if ( templateContext == null )
                 {
-                    throw new LavaException( "Invalid LavaContext type." );
+                    throw new LavaException( "Invalid LavaContext parameter. This context type is not compatible with the Fluid templating engine." );
                 }
 
                 /* The Fluid framework parses the input template into a set of executable statements that can be rendered.
@@ -471,14 +476,14 @@ namespace Rock.Lava.Fluid
                  * the information necessary to render their output. For this reason, we need to store the source in the context so that it can be passed
                  * to the Lava custom components when they are rendered.
                  */
-                templateContext.SetInternalValue( Constants.ContextKeys.SourceTemplateText, liquidTemplate );
+                //templateContext.SetInternalValue( Constants.ContextKeys.SourceTemplateText, liquidTemplate );
 
-                if ( templateContext.GetInternalValue( Constants.ContextKeys.SourceTemplateElements ) != null )
-                {
-                    int i = 0;
-                }
+                //if ( templateContext.GetInternalValue( Constants.ContextKeys.SourceTemplateElements ) != null )
+                //{
+                //    int i = 0;
+                //}
 
-                templateContext.SetInternalValue( Constants.ContextKeys.SourceTemplateElements, template.Elements );
+                templateContext.SetInternalFieldValue( Constants.ContextKeys.SourceTemplateElements, template.Elements );
 
                 templateContext.FluidContext.ParserFactory = _parserFactory;
                 

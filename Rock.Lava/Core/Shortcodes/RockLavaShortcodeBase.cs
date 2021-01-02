@@ -29,8 +29,6 @@ namespace Rock.Lava
         private string _elementName = null;
         private string _internalName = null;
 
-        //private ILiquidFrameworkRenderer _frameworkProxy = null;
-
         /// <summary>
         /// The name of the element.
         /// </summary>
