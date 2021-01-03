@@ -161,7 +161,12 @@ namespace Rock.Lava.Fluid
 
             lavaContext.SetInternalFieldValue( Constants.ContextKeys.SourceTemplateStatements, statements );
 
-            elementRenderer.Render( this, lavaContext, writer );
+            if (encoder == null )
+            {
+                encoder = HtmlEncoder.Default;
+            }
+
+            elementRenderer.Render( this, lavaContext, writer, encoder );
 
             //return WriteToDefaultAsync( writer, encoder, context, statements );
             return new ValueTask<Completion>( Completion.Normal );
@@ -173,6 +178,10 @@ namespace Rock.Lava.Fluid
         {
             Completion completion;
 
+            if ( encoder == null )
+            {
+                encoder = global::Fluid.NullEncoder.Default;
+            }
             foreach ( var statement in statements )
             {
                 completion = await statement.WriteToAsync( writer, encoder, context );
@@ -189,13 +198,13 @@ namespace Rock.Lava.Fluid
 
         #region ILiquidFrameworkRenderer implementation
 
-        void ILiquidFrameworkElementRenderer.Render( ILiquidFrameworkElementRenderer baseRenderer, ILavaContext context, TextWriter writer )
+        void ILiquidFrameworkElementRenderer.Render( ILiquidFrameworkElementRenderer baseRenderer, ILavaContext context, TextWriter writer, TextEncoder encoder )
         {
             var fluidContext = ( (FluidLavaContext)context ).FluidContext;
 
             var statements = context.GetInternalFieldValue( Constants.ContextKeys.SourceTemplateStatements ) as List<Statement>;
 
-            var result = WriteToDefaultAsync( writer, HtmlEncoder.Default, fluidContext, statements );
+            var result = WriteToDefaultAsync( writer, encoder, fluidContext, statements );
         }
 
         public void OnStartup()

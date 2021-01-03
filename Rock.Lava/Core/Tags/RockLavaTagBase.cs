@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Encodings.Web;
 
 namespace Rock.Lava.Blocks
 {
@@ -46,7 +47,7 @@ namespace Rock.Lava.Blocks
             OnInitialize( tagName, markup, tokens );
         }
 
-        public void Render( ILavaContext context, TextWriter result )
+        public void Render( ILavaContext context, TextWriter result, TextEncoder encoder )
         {
             OnRender( context, result );
         }
@@ -122,7 +123,7 @@ namespace Rock.Lava.Blocks
             // By default, call the underlying engine to render this element.
             if ( _baseRenderer != null )
             {
-                _baseRenderer.Render( null, context, result );
+                _baseRenderer.Render( null, context, result, null );
             }
         }
 
@@ -154,7 +155,7 @@ namespace Rock.Lava.Blocks
         /// <param name="context"></param>
         /// <param name="result"></param>
         /// <param name="proxy"></param>
-        void ILiquidFrameworkElementRenderer.Render( ILiquidFrameworkElementRenderer baseRenderer, ILavaContext context, TextWriter result )
+        void ILiquidFrameworkElementRenderer.Render( ILiquidFrameworkElementRenderer baseRenderer, ILavaContext context, TextWriter result, TextEncoder encoder )
         {
             // If this tag was previously called with a different base renderer, exit to prevent a circular reference.
             if ( _baseRenderer != null )

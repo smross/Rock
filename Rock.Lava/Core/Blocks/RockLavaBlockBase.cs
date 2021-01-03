@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Encodings.Web;
 
 namespace Rock.Lava.Blocks
 {
@@ -114,21 +115,9 @@ namespace Rock.Lava.Blocks
             // By default, call the underlying engine to render this element.
             if ( _baseRenderer != null )
             {
-                _baseRenderer.Render( null, context, result );
+                _baseRenderer.Render( null, context, result, null );
             }
         }
-
-
-
-        /// <summary>
-        /// Parse a set of Lava tokens into a set of document nodes that can be processed by the underlying rendering framework.
-        /// </summary>
-        /// <param name="tokens"></param>
-        /// <param name="nodes"></param>
-        //public void Parse( List<string> tokens, out List<object> nodes )
-        //{
-        //    OnParsed( tokens, out nodes );
-        //}
 
         /// <summary>
         /// Override this method to perform custom actions after parsing of the block is completed.
@@ -179,12 +168,12 @@ namespace Rock.Lava.Blocks
         /// <param name="context"></param>
         /// <param name="result"></param>
         /// <param name="proxy"></param>
-        void ILiquidFrameworkElementRenderer.Render( ILiquidFrameworkElementRenderer baseRenderer, ILavaContext context, TextWriter result )
+        void ILiquidFrameworkElementRenderer.Render( ILiquidFrameworkElementRenderer baseRenderer, ILavaContext context, TextWriter result, TextEncoder encoder )
         {
             // If this block was previously called with a different base renderer, exit to prevent a circular reference.
             if ( _baseRenderer != null )
             {
-                baseRenderer.Render( null, context, result );
+                baseRenderer.Render( null, context, result, encoder );
                 return;
             }
 

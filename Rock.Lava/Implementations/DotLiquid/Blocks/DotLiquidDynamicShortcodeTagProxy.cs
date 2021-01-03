@@ -24,6 +24,7 @@ using DotLiquid;
 
 using Rock.Lava.Utility;
 using Rock.Common;
+using System.Text.Encodings.Web;
 //using DotLiquid;
 
 //using Rock.Model;
@@ -265,7 +266,7 @@ namespace Rock.Lava.DotLiquid
 
         #region ILiquidFrameworkRenderer implementation
 
-        void ILiquidFrameworkElementRenderer.Render( ILiquidFrameworkElementRenderer baseRenderer, ILavaContext context, TextWriter result )
+        void ILiquidFrameworkElementRenderer.Render( ILiquidFrameworkElementRenderer baseRenderer, ILavaContext context, TextWriter result, TextEncoder encoder )
         {
             // Call the default DotLiquid renderer.
             var dotLiquidContext = ( (DotLiquidLavaContext)context ).DotLiquidContext;

@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Encodings.Web;
 
 namespace Rock.Lava
 {
@@ -117,7 +118,7 @@ namespace Rock.Lava
             // By default, call the underlying engine to render this element.
             if ( _baseRenderer != null )
             {
-                _baseRenderer.Render( null, context, result );
+                _baseRenderer.Render( null, context, result, null );
             }
         }
 
@@ -173,7 +174,7 @@ namespace Rock.Lava
         /// <param name="context"></param>
         /// <param name="result"></param>
         /// <param name="proxy"></param>
-        void ILiquidFrameworkElementRenderer.Render( ILiquidFrameworkElementRenderer baseRenderer, ILavaContext context, TextWriter result )
+        void ILiquidFrameworkElementRenderer.Render( ILiquidFrameworkElementRenderer baseRenderer, ILavaContext context, TextWriter result, TextEncoder encoder )
         {
             _baseRenderer = baseRenderer;
 

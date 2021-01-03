@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Text.RegularExpressions;
 using DotLiquid;
 
@@ -159,7 +160,7 @@ namespace Rock.Lava.DotLiquid
             }
 
             // Call the renderer implemented by the wrapped Lava block.
-            block.Render( this, lavaContext, result );
+            block.Render( this, lavaContext, result, null );
         }
 
         /// <summary>
@@ -186,7 +187,7 @@ namespace Rock.Lava.DotLiquid
 
         #region ILiquidFrameworkRenderer implementation
 
-        void ILiquidFrameworkElementRenderer.Render( ILiquidFrameworkElementRenderer baseRenderer, ILavaContext context, TextWriter result )
+        void ILiquidFrameworkElementRenderer.Render( ILiquidFrameworkElementRenderer baseRenderer, ILavaContext context, TextWriter result, TextEncoder encoder )
         {
             // Call the default DotLiquid renderer.
             var dotLiquidContext = ( (DotLiquidLavaContext)context ).DotLiquidContext;

@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Encodings.Web;
 
 namespace Rock.Lava
 {
@@ -25,7 +26,7 @@ namespace Rock.Lava
     /// </summary>
     internal interface ILiquidFrameworkElementRenderer
     {
-        void Render( ILiquidFrameworkElementRenderer baseRenderer, ILavaContext context, TextWriter writer );
+        void Render( ILiquidFrameworkElementRenderer baseRenderer, ILavaContext context, TextWriter writer, TextEncoder encoder );
 
         [Obsolete]
         void Parse( ILiquidFrameworkElementRenderer baseRenderer, List<string> tokens, out List<object> nodes );

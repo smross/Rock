@@ -125,7 +125,7 @@ namespace Rock.Lava.Fluid
             }
 
             // Call the renderer implemented by the wrapped Lava block.
-            tag.Render( this, lavaContext, writer );
+            tag.Render( this, lavaContext, writer, encoder );
 
             return new ValueTask<Completion>( Completion.Normal );
         }
@@ -134,11 +134,11 @@ namespace Rock.Lava.Fluid
 
         #region IRockLavaTag implementation
 
-        void ILiquidFrameworkElementRenderer.Render( ILiquidFrameworkElementRenderer baseRenderer, ILavaContext context, TextWriter result )
+        void ILiquidFrameworkElementRenderer.Render( ILiquidFrameworkElementRenderer baseRenderer, ILavaContext context, TextWriter result, TextEncoder encoder )
         {
             var fluidContext = ( (FluidLavaContext)context ).FluidContext;
 
-            this.WriteToAsync( result, HtmlEncoder.Default, fluidContext );
+            this.WriteToAsync( result, encoder, fluidContext );
         }
 
         public void OnStartup()

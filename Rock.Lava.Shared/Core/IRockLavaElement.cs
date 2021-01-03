@@ -16,6 +16,7 @@
 //
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Encodings.Web;
 
 namespace Rock.Lava
 {
@@ -31,7 +32,7 @@ namespace Rock.Lava
 
         /// <summary>
         /// The name by which this element is identified in a Liquid-compliant version of the Lava document.
-        /// For example, a Lava shortcode tag "{[ myshortcode ]} may be replaced by a Liquid block tag with a prefix "{{ sc_myshortcode }}"
+        /// For example, a Lava shortcode tag "{[ myshortcode ]} may be replaced by a Liquid block tag with a suffix "{{ myshortcode_sc }}"
         /// </summary>
         string InternalElementName
         {

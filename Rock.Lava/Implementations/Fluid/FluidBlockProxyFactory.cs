@@ -290,7 +290,7 @@ namespace Rock.Lava.Fluid
 
             _lavaBlock.OnParsed( tokens );
 
-            elementRenderer.Render( this, lavaContext, writer );
+            elementRenderer.Render( this, lavaContext, writer, encoder );
 
             return new ValueTask<Completion>( Completion.Normal );
         }
@@ -317,7 +317,7 @@ namespace Rock.Lava.Fluid
 
         #region ILiquidFrameworkRenderer implementation
 
-        void ILiquidFrameworkElementRenderer.Render( ILiquidFrameworkElementRenderer baseRenderer, ILavaContext context, TextWriter writer )
+        void ILiquidFrameworkElementRenderer.Render( ILiquidFrameworkElementRenderer baseRenderer, ILavaContext context, TextWriter writer, TextEncoder encoder )
         {
             var fluidContext = ( (FluidLavaContext)context ).FluidContext;
 
