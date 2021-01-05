@@ -78,6 +78,10 @@ namespace Rock.Lava
             // otherwise return the first value in the property dictionary.
             if ( _instance != null )
             {
+                if ( _instance == this )
+                {
+                    return null;
+                }
                 return _instance.ToString();
             }
 
@@ -124,7 +128,7 @@ namespace Rock.Lava
             {
                 try
                 {
-                    bool result = SetProperty( this, binder.Name, value );
+                    bool result = SetProperty( binder.Name, value );
                     if ( result )
                     {
                         return true;
@@ -162,7 +166,6 @@ namespace Rock.Lava
             var propPath = propertyPathName.Split( new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries ).ToList<string>();
 
             object obj = rootObj;
-            Type objType = rootObj.GetType();
 
             while ( propPath.Any() && obj != null )
             {
@@ -218,13 +221,8 @@ namespace Rock.Lava
         /// <param name="name">The name.</param>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        protected bool SetProperty( object instance, string name, object value )
+        protected bool SetProperty( string name, object value )
         {
-            if ( instance == null )
-            {
-                instance = this;
-            }
-
             if ( name == null )
             {
                 return false;
@@ -289,7 +287,7 @@ namespace Rock.Lava
 
                     if ( prop != null )
                     {
-                        SetProperty( _instance, key, value );
+                        SetProperty( key, value );
                     }
                     else
                     {
@@ -353,8 +351,6 @@ namespace Rock.Lava
         /// </returns>
         public virtual bool TryGetMember( string memberName, out object result )
         {
-            result = null;
-
             // first check the dictionary for member
             if ( _members.Keys.Contains( memberName ) )
             {
@@ -377,6 +373,7 @@ namespace Rock.Lava
         }
 
         #region ILiquid Implementation
+
         /// <summary>
         /// Gets the available keys (for debugging info).
         /// </summary>
@@ -432,17 +429,7 @@ namespace Rock.Lava
         }
 
         /// <summary>
-        /// Returns a Liquid framework compatible representation of the object.
-        /// </summary>
-        /// <returns></returns>
-        //public object ToLiquid()
-        //{
-        //    //if ( )
-        //    return AsDictionary();
-        //}
-
-        /// <summary>
-        /// Determines whether the specified key contains key.
+        /// Determines whether the object property dictionary contains the specified key.
         /// </summary>
         /// <param name="key">The key.</param>
         /// <returns></returns>
@@ -617,6 +604,5 @@ namespace Rock.Lava
         }
 
         #endregion
-
     }
 }
