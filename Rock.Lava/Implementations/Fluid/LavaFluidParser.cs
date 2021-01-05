@@ -213,7 +213,15 @@ namespace Rock.Lava.Fluid
                         if ( start != previous )
                         {
                             // Consume current Text statement
-                            ConsumeTextStatement( segment, previous, start, trimAfter, trimBefore, stripEmptyLines );
+                            if ( _context.CurrentBlock?.Tag?.Term?.Name == "case" )
+                            {
+                                // Ignore whitespace inside a case block.
+                                ConsumeTextStatement( segment, previous, start, trimAfter, trimBefore, stripEmptyLines: true );
+                            }
+                            else
+                            {
+                                ConsumeTextStatement( segment, previous, start, trimAfter, trimBefore, stripEmptyLines );
+                            }
                         }
 
                         trimAfter = segment.Index( end - 2 ) == '-';
