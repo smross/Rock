@@ -85,6 +85,49 @@ Panel 3 - Panel 3 content.
             _helper.AssertTemplateOutput( expectedOutput, input, null, ignoreWhiteSpace: true );
         }
 
+        [TestMethod]
+        public void ShortcodeBlock_WithParameters_CanResolveParameters()
+        {
+            var shortcodeTemplate = @"
+Input Speed: {{ speed }}
+{% assign speed = speed | AsInteger %}
+Assign Speed #1: {{ speed }}
+{% if speed > 0 -%}
+    {% assign speed = speed | Times:'.01' -%}
+    {% assign speed = speed | Plus:'1' -%}
+{% elseif speed == 0 -%}
+    {% assign speed = 46 -%}
+{% else -%}
+    {% assign speed = speed | Times:'.02' -%}
+    {% assign speed = speed | Plus:'1' -%}
+{% endif -%}
+Speed = {{ speed }}
+";
+
+            // Create a new test shortcode.
+            var shortcodeDefinition = new DynamicShortcodeDefinition();
+
+            shortcodeDefinition.ElementType = LavaShortcodeTypeSpecifier.Block;
+            shortcodeDefinition.TemplateMarkup = shortcodeTemplate;
+            shortcodeDefinition.Name = "shortcodetest";
+            shortcodeDefinition.Parameters = new Dictionary<string, string> { { "speed", "10" } };
+
+            _helper.LavaEngine.RegisterDynamicShortcode( shortcodeDefinition.Name, ( shortcodeName ) => { return shortcodeDefinition; } );
+
+            var input = @"
+{[ shortcodetest speed:'50' ]}
+{[ endshortcodetest ]}
+";
+
+            var expectedOutput = @"
+Speed = 1.5
+";
+
+            expectedOutput = expectedOutput.Replace( "``", @"""" );
+
+            _helper.AssertTemplateOutput( expectedOutput, input, null, ignoreWhiteSpace: true );
+        }
+
         #region Accordion
 
         [TestMethod]
@@ -631,13 +674,13 @@ This is a super simple panel.
         public void ParallaxShortcode_DefaultOptions_EmitsCorrectHtml()
         {
             var input = @"
-{[ parallax image:'http://cdn.wonderfulengineering.com/wp-content/uploads/2014/09/star-wars-wallpaper-4.jpg' contentpadding:'20px' ]}
+{[ parallax image:'http://cdn.wonderfulengineering.com/wp-content/uploads/2014/09/star-wars-wallpaper-4.jpg' contentpadding:'20px' speed:'75' ]}
     <h1>Hello World</h1>
 {[ endparallax ]}
 ";
 
             var expectedOutput = @"
-<div id=``id-<<guid>>`` data-jarallax class=``jarallax`` data-type=``scroll`` data-speed=``1.50`` data-img-position=```` data-object-position=```` data-background-position=```` data-zindex=``2`` data-no-android=```` data-no-ios=``false``>
+<div id=``id-<<guid>>`` data-jarallax class=``jarallax`` data-type=``scroll`` data-speed=``1.75`` data-img-position=```` data-object-position=```` data-background-position=```` data-zindex=``2`` data-no-android=```` data-no-ios=``false``>
         <img class=``jarallax-img`` src=``http://cdn.wonderfulengineering.com/wp-content/uploads/2014/09/star-wars-wallpaper-4.jpg`` alt=````>
 
                     <div class=``parallax-content``>
@@ -688,7 +731,7 @@ This is a super simple panel.
         #region Sparkline Chart
 
         [TestMethod]
-        public void SparklineShortcode_DefaultOptions_EmitsHtmlWithDefaultSettings()
+        public void SparklineShortcodeTag_DefaultOptions_EmitsHtmlWithDefaultSettings()
         {
             var input = @"
 {[ sparkline type:'line' data:'5,6,7,9,9,5,3,2,2,4,6,7' ]}

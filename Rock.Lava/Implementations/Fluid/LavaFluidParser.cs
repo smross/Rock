@@ -40,47 +40,6 @@ namespace Fluid.Tags
 
 namespace Rock.Lava.Fluid
 {
-
-    /*
-        public class LavaFluidParserXX : DefaultFluidParser
-        {
-
-
-            public LavaFluidParser( LanguageData languageData, Dictionary<string, ITag> tags, Dictionary<string, ITag> blocks )
-                : base( languageData, tags, blocks )
-            {
-                //
-            }
-
-            public override Statement BuildTagStatement( ParseTreeNode node )
-            {
-                var tag = node.ChildNodes[0];
-
-                var tagName = tag.Term.Name;
-
-                if ( tagName == "elseif" )
-                {
-                    //public void EnterElsifSection( ParseTreeNode tag )
-                    //{
-                        _context.EnterBlockSection( "elsif", new ElseIfStatement( BuildExpression( tag.ChildNodes[0] ), new List<Statement>() ) );
-                    //}
-
-
-                    //EnterElsifSection( tag );
-
-                    return null;
-                }
-                else
-                {
-                    return base.BuildTagStatement( node );
-                }
-            }
-
-
-        }
-
-    */
-
     /// <summary>
     /// An extension of the Fluid BlockContext that allows storing additional context information.
     /// </summary>
@@ -139,7 +98,40 @@ namespace Rock.Lava.Fluid
         public string CloseTag { get; set; }
     }
 
-    public class LavaFluidParser : IFluidParser, IFluidParserEx
+    /// <summary>
+    /// An extended implementation of the Fluid Liquid parser that allows parsing of Lava templates.
+    /// </summary>
+    public class LavaFluidParser : FluidParserEx
+    {
+        public LavaFluidParser( LanguageData languageData, Dictionary<string, ITag> tags, Dictionary<string, ITag> blocks )
+            : base( languageData, tags, blocks )
+        {
+        }
+
+        public override Statement BuildTagStatement( ParseTreeNode node, StringSegment segment, int start, int end )
+        {
+            var nodeName = node.ChildNodes[0].Term.Name;
+
+            // Convert Lava alternate syntax "elseif" --> "elsif".
+            //if ( nodeName == "elseif" )
+            //{
+            //    //var tag = node.ChildNodes[0];
+
+            //    base.EnterElsifSection( node.ChildNodes[0] );
+
+            //    return null;
+            //    //node.ChildNodes[0].Term.Name = "elsif";
+            //}
+            
+            return base.BuildTagStatement( node, segment, start, end );
+        }
+    }
+
+        /// <summary>
+        /// An extended implementation of the Fluid Liquid parser.
+        /// This implementation adds the ability to capture the source text of tokens as they are processed.
+        /// </summary>
+        public class FluidParserEx : IFluidParser, IFluidParserEx
     {
         protected bool _isComment; // true when the current block is a comment
         protected bool _isRaw; // true when the current block is raw
@@ -153,7 +145,7 @@ namespace Rock.Lava.Fluid
         public event EventHandler<FluidElementParseEventArgs> ElementParsing;
         public event EventHandler<FluidElementParseEventArgs> ElementParsed;
 
-        public LavaFluidParser( LanguageData languageData, Dictionary<string, ITag> tags, Dictionary<string, ITag> blocks )
+        public FluidParserEx( LanguageData languageData, Dictionary<string, ITag> tags, Dictionary<string, ITag> blocks )
         {
             _languageData = languageData;
             _tags = tags;
@@ -278,7 +270,7 @@ namespace Rock.Lava.Fluid
 
                             return false;
                         }
-
+                        
                         switch ( tree.Root.Term.Name )
                         {
                             case "output":

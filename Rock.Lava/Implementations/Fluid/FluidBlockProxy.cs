@@ -127,6 +127,7 @@ namespace Rock.Lava.Fluid
 
             _lavaBlock = factoryMethod( blockName );
 
+            // Get the markup for the block attributes.
             var argsNode = context.CurrentBlock.Tag.ChildNodes[0].ChildNodes[0];
 
             var blockAttributesMarkup = argsNode.FindTokenAndGetText().Trim();
@@ -155,20 +156,17 @@ namespace Rock.Lava.Fluid
                 throw new Exception( "Block proxy cannot be rendered." );
             }
 
+            // Initialize the block, then allow it to post-process the tokens parsed from the source template.
             lavaBlock.OnInitialize( blockName, blockAttributesMarkup, tokens );
 
             lavaBlock.OnParsed( tokens );
 
+            // Store the Fluid Statements required to render the block in the template context.
             lavaContext.SetInternalFieldValue( Constants.ContextKeys.SourceTemplateStatements, statements );
 
-            if (encoder == null )
-            {
-                encoder = HtmlEncoder.Default;
-            }
-
+            // Execute the block rendering process.
             elementRenderer.Render( this, lavaContext, writer, encoder );
 
-            //return WriteToDefaultAsync( writer, encoder, context, statements );
             return new ValueTask<Completion>( Completion.Normal );
         }
 
@@ -182,6 +180,7 @@ namespace Rock.Lava.Fluid
             {
                 encoder = global::Fluid.NullEncoder.Default;
             }
+
             foreach ( var statement in statements )
             {
                 completion = await statement.WriteToAsync( writer, encoder, context );

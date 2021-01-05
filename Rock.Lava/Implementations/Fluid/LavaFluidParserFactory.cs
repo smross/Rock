@@ -31,7 +31,15 @@ namespace Rock.Lava.Fluid
 
             Elseif.Rule = ToTerm("elseif") + Expression;
 
-            KnownTags.Rule |= Elseif; 
+            KnownTags.Rule |= Elseif;
+
+
+            //Elsif.Rule |= ToTerm( "elseif" ) + Expression;
+
+            MarkPunctuation( Elseif );
+
+            //FilterArguments.Rule |= MakeListRule( FilterArguments, ToTerm( " " ), FilterArgument );
+
         }
     }
 

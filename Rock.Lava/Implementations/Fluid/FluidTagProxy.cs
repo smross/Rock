@@ -82,8 +82,13 @@ namespace Rock.Lava.Fluid
 
             _lavaTag = factoryMethod( tagName );
 
+            // Get the markup for the tag attributes.
+            //var argsNode = context.CurrentBlock.Tag.ChildNodes[0].ChildNodes[0];
+
+            var attributesMarkup = node.FindTokenAndGetText().Trim();
+
             // When this element is rendered, write the content to the output stream.
-            return new DelegateStatement( WriteToAsync );
+            return new DelegateStatement( ( writer, encoder, ctx ) => WriteToAsync( writer, encoder, ctx, _lavaTag, tagName, attributesMarkup ) );
         }
 
         /// <summary>
@@ -113,19 +118,30 @@ namespace Rock.Lava.Fluid
         //    return grammar.Empty | grammar.FilterArguments.Rule;
         //}
 
-        public ValueTask<Completion> WriteToAsync( TextWriter writer, TextEncoder encoder, TemplateContext context )
+        public ValueTask<Completion> WriteToAsync( TextWriter writer, TextEncoder encoder, TemplateContext context, IRockLavaTag lavaTag, string tagName, string tagAttributesMarkup )
         {
             var lavaContext = new FluidLavaContext( context );
 
-            var tag = _lavaTag as ILiquidFrameworkElementRenderer;
+            var elementRenderer = _lavaTag as ILiquidFrameworkElementRenderer;
 
-            if ( tag == null )
+            if ( elementRenderer == null )
             {
                 throw new Exception( "Tag proxy cannot be rendered." );
             }
 
-            // Call the renderer implemented by the wrapped Lava block.
-            tag.Render( this, lavaContext, writer, encoder );
+            // Initialize the tag, and execute post-processing for the parsing phase.
+            // This is to ensure consistency with block element processing, even though the tag does not have any additional tokens.
+            var tokens = new List<string>();
+
+            lavaTag.OnInitialize( tagName, tagAttributesMarkup, new List<string>() );
+
+            lavaTag.OnParsed( tokens );
+
+            // Store the Fluid Statements required to render the tag in the template context.
+            //lavaContext.SetInternalFieldValue( Constants.ContextKeys.SourceTemplateStatements, statements );
+
+            // Execute the tag rendering process.
+            elementRenderer.Render( this, lavaContext, writer, encoder );
 
             return new ValueTask<Completion>( Completion.Normal );
         }
@@ -136,9 +152,11 @@ namespace Rock.Lava.Fluid
 
         void ILiquidFrameworkElementRenderer.Render( ILiquidFrameworkElementRenderer baseRenderer, ILavaContext context, TextWriter result, TextEncoder encoder )
         {
-            var fluidContext = ( (FluidLavaContext)context ).FluidContext;
+            // By default, rendering a custom tag does not produce any output.
 
-            this.WriteToAsync( result, encoder, fluidContext );
+            //var fluidContext = ( (FluidLavaContext)context ).FluidContext;
+            //throw new NotImplementedException();
+            //this.WriteToAsync( result, encoder, fluidContext );
         }
 
         public void OnStartup()

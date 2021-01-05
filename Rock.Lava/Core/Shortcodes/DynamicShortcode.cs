@@ -183,7 +183,9 @@ namespace Rock.Lava.Shortcodes
                 }
             }
 
-            if ( !endTagFound )
+            // If this is a block, we need a closing tag.
+            if ( this.ElementType == LavaShortcodeTypeSpecifier.Block
+                 && !endTagFound )
             {
                 AssertMissingDelimitation();
             }
@@ -202,7 +204,7 @@ namespace Rock.Lava.Shortcodes
                 result.Write( $"An error occurred while processing the {0} shortcode.", _tagName );
             }
             
-            // Get shortcode parameter default settings.
+            // Get the default settings for the shortcode, then apply the specified parameters.
             var parms = new Dictionary<string, object>();
 
             foreach ( var shortcodeParm in _shortcode.Parameters )
@@ -210,36 +212,48 @@ namespace Rock.Lava.Shortcodes
                 parms.AddOrReplace( shortcodeParm.Key, shortcodeParm.Value );
             }
 
-            // Apply the merge fields in the block context.
-            LoadBlockMergeFields( context, parms );
-
             SetParametersFromElementAttributes( parms, _elementAttributesMarkup, context );
 
-            // add a unique id so shortcodes have easy access to one
+            // Set a unique id for the shortcode.
             parms.AddOrReplace( "uniqueid", "id-" + Guid.NewGuid().ToString() );
 
-            // keep track of the recursion depth
-            int currentRecurrsionDepth = 0;
+            // Apply the merge fields in the block context.
+            var _internalMergeFields = context.GetMergeFields();
+            // new Dictionary<string, object>();
+
+            foreach ( var item in parms )
+                // context.GetMergeFields() )
+            {
+                _internalMergeFields.AddOrReplace( item.Key, item.Value );
+                 //parms.AddOrReplace( item.Key, item.Value );
+            }
+
+            //LoadBlockMergeFields( context, parms );            
+
+            // Keep track of the recursion depth.
+            int currentRecursionDepth = 0;
+
             if ( parms.ContainsKey( "RecursionDepth" ) )
             {
-                currentRecurrsionDepth = parms["RecursionDepth"].ToString().AsInteger() + 1;
+                currentRecursionDepth = parms["RecursionDepth"].ToString().AsInteger() + 1;
 
-                if ( currentRecurrsionDepth > _maxRecursionDepth )
+                if ( currentRecursionDepth > _maxRecursionDepth )
                 {
                     result.Write( "A recursive loop was detected and processing of this shortcode has stopped." );
                     return;
                 }
             }
-            parms.AddOrReplace( "RecursionDepth", currentRecurrsionDepth );
+
+            parms.AddOrReplace( "RecursionDepth", currentRecursionDepth );
 
             // Resolve any merge fields in the block content.
             // The block content will then be merged into the shortcode template to produce the final output.
             var blockMarkup = context.ResolveMergeFields( _blockMarkup.ToString(), _internalMergeFields );
 
-            // Extract any child parameters from the block content.
+            // Extract any child elements from the block content.
             Dictionary<string, object> childParameters;
 
-            blockMarkup = GetChildParameters( blockMarkup, out childParameters );
+            blockMarkup = ExtractShortcodeBlockChildElements( blockMarkup, out childParameters );
 
             foreach ( var item in childParameters )
             {
@@ -303,12 +317,12 @@ namespace Rock.Lava.Shortcodes
         }
 
         /// <summary>
-        /// Gets the child parameters.
+        /// Extracts the child elements from the content of a shortcode block.
         /// </summary>
         /// <param name="blockContent">Content of the block.</param>
         /// <param name="childParameters">The child parameters.</param>
         /// <returns></returns>
-        private string GetChildParameters( string blockContent, out Dictionary<string, object> childParameters )
+        private string ExtractShortcodeBlockChildElements( string blockContent, out Dictionary<string, object> childParameters )
         {
             childParameters = new Dictionary<string, object>();
 
@@ -366,7 +380,7 @@ namespace Rock.Lava.Shortcodes
                                 }
                             }
 
-                            // add new parm to a collection of parms and as a single parm id none exist
+                            // add new parm to a collection of parms and as a single parm if none exist
                             if ( childParameters.ContainsKey( parmName + "s" ) )
                             {
                                 var parmList = (List<object>)childParameters[parmName + "s"];

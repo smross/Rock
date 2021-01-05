@@ -31,6 +31,8 @@ namespace Rock.Lava.Fluid
         {
             base.OnGrammarDataConstructed( language );
 
+            Elsif.Rule |= ToTerm( "elseif" ) + Expression;
+
             FilterArguments.Rule |= MakeListRule( FilterArguments, ToTerm(" "), FilterArgument );
         }
     }
