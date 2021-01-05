@@ -382,9 +382,8 @@ namespace Rock.Lava.Fluid
             IEnumerable<string> errors;
             LavaFluidTemplate template;
 
-            liquidTemplate = ReplaceTemplateShortcodes( lavaTemplate );
+            liquidTemplate = ConvertToLiquid( lavaTemplate );
 
-            //var isValidTemplate = LavaFluidTemplate.TryParse( liquidTemplate, out template, out errors );
             var isValidTemplate = TryParse( liquidTemplate, out template, out errors );
 
             if ( !isValidTemplate )
@@ -400,7 +399,6 @@ namespace Rock.Lava.Fluid
         private bool TryParse( string template, out LavaFluidTemplate result, out IEnumerable<string> errors )
         {
             // This is a replacement for the BaseFluidTemplate.TryParse() method, which allows us to use a modified parser.
-            //IFluidParser parser = new FluidParserFactory().CreateParser();
             var parser = _parserFactory.CreateParser() as LavaFluidParser;
 
             var elements = new List<FluidParsedTemplateElement>();
@@ -409,8 +407,6 @@ namespace Rock.Lava.Fluid
             {
                 elements.Add( new FluidParsedTemplateElement { ElementId = e.ElementId, Statement = e.Statement, Node = e.ElementText, StartIndex = e.StartIndex, EndIndex = e.EndIndex } );
             };
-
-            //List<FluidParsedTemplateElement> elements;
 
             List <global::Fluid.Ast.Statement> statements;
 
@@ -430,25 +426,6 @@ namespace Rock.Lava.Fluid
                 result = new LavaFluidTemplate();
                 return false;
             }
-        }
-
-        internal static readonly Regex FullShortCodeToken = new Regex( @"{\[\s*(\w+)\s*([^\]}]*)?\]}", RegexOptions.Compiled );
-
-        //public static string ShortcodeNamePrefix = "@";
-        //public static string ShortcodeNameSuffix = "_sc";
-
-        private string ReplaceTemplateShortcodes( string inputTemplate )
-        {
-            /* The Lava shortcode syntax is not recognized as a document element by Fluid, and at present there is no way to intercept or replace the Fluid parser.
-             * As a workaround, we pre-process the template to replace the Lava shortcode token "{[ ]}" with the Liquid tag token "{% %}" and add a prefix to avoid naming collisions with existing standard tags.
-             * The shortcode can then be processed as a regular custom block by the Fluid templating engine.
-             * As a future improvement, we could look at submitting a pull request to the Fluid project to add support for custom parsers.
-             */
-            var newBlockName = "{% $1<suffix> $2 %}".Replace( "<suffix>", LavaEngine.ShortcodeInternalNameSuffix );
-
-            inputTemplate = FullShortCodeToken.Replace( inputTemplate, newBlockName );
-
-            return inputTemplate;
         }
 
         public override bool TryRender( string inputTemplate, out string output, ILavaContext context )
@@ -476,13 +453,6 @@ namespace Rock.Lava.Fluid
                  * the information necessary to render their output. For this reason, we need to store the source in the context so that it can be passed
                  * to the Lava custom components when they are rendered.
                  */
-                //templateContext.SetInternalValue( Constants.ContextKeys.SourceTemplateText, liquidTemplate );
-
-                //if ( templateContext.GetInternalValue( Constants.ContextKeys.SourceTemplateElements ) != null )
-                //{
-                //    int i = 0;
-                //}
-
                 templateContext.SetInternalFieldValue( Constants.ContextKeys.SourceTemplateElements, template.Elements );
 
                 templateContext.FluidContext.ParserFactory = _parserFactory;
@@ -526,8 +496,7 @@ namespace Rock.Lava.Fluid
             // Register the proxy for the specified tag name.
             var proxyInstance = new FluidTagProxy();
 
-            _parserFactory.RegisterTag( name, proxyInstance ); // <FluidTagProxy>( name );
-            //LavaFluidTemplate.Factory.RegisterTag<FluidTagProxy>( name );
+            _parserFactory.RegisterTag( name, proxyInstance );
         }
 
         public override void RegisterBlock( string name, Func<string, IRockLavaBlock> factoryMethod )
@@ -547,7 +516,7 @@ namespace Rock.Lava.Fluid
 
             var proxyInstance = new FluidBlockProxy();
 
-            _parserFactory.RegisterBlock( name, proxyInstance ); // (<FluidBlockProxy>( name );
+            _parserFactory.RegisterBlock( name, proxyInstance );
         }
 
         public override ILavaTemplate ParseTemplate( string lavaTemplate )

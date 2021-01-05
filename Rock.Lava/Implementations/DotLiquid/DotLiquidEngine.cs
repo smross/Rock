@@ -16,7 +16,6 @@
 //
 using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using DotLiquid;
 using Rock.Lava.Filters;
 
@@ -146,15 +145,13 @@ namespace Rock.Lava.DotLiquid
                         return ( (Rock.Lava.ILavaDataObjectSource)x ).GetLavaDataObject();
                     } );
             }
-            else if ( typeof( Rock.Lava.ILavaDataObject ).IsAssignableFrom( type ) ) 
+            else if ( typeof( Rock.Lava.ILavaDataObject ).IsAssignableFrom( type ) )
             {
                 Template.RegisterSafeType( typeof( Rock.Lava.ILavaDataObject ),
                     ( x ) =>
                     {
                         var dataObject = new LavaDataObject( x );
                         return dataObject;
-                        //var wrapper = new DotLiquidLavaDataObjectProxy( (Rock.Lava.ILavaDataObject)x );
-                        //return wrapper;
                     } );
             }
             else
@@ -165,8 +162,6 @@ namespace Rock.Lava.DotLiquid
                     {
                         var dataObject = new LavaDataObject( x );
                         return dataObject;
-                        //var wrapper = new DotLiquidLavaDataObjectProxy( dynamicObject );
-                        //return wrapper;
                     } );
             }
         }
@@ -286,9 +281,9 @@ namespace Rock.Lava.DotLiquid
 
         private Template CreateNewDotLiquidTemplate( string inputTemplate )
         {
-            var formattedInput = ReplaceTemplateShortcodes( inputTemplate );
+            var liquidTemplate = ConvertToLiquid( inputTemplate );
 
-            var template = Template.Parse( formattedInput );
+            var template = Template.Parse( liquidTemplate );
 
             /* 
              * 2/19/2020 - JPH
@@ -302,24 +297,6 @@ namespace Rock.Lava.DotLiquid
             template.MakeThreadSafe();
 
             return template;
-        }
-
-        internal static readonly Regex FullShortCodeToken = new Regex( @"{\[\s*(\w+)\s*([^\]}]*)?\]}", RegexOptions.Compiled );
-
-        //public static string ShortcodeNameSuffix = "_sc";
-
-        private string ReplaceTemplateShortcodes( string inputTemplate )
-        {
-            /* The Lava shortcode syntax is not recognized by standard Liquid parsers, and there is no way to intercept or replace the parser component.
-             * Prior to Rock v13, we forked the DotLiquid library to include this functionality - but in doing so the library became very difficult to maintain or replace. 
-             * As of v13, we pre-process the template to replace the Lava shortcode token "{[ ]}" with the Liquid tag token "{% %}" and add a prefix to avoid naming collisions with existing standard tags.
-             * The shortcode can then be processed as a regular custom block by the DotLiquid templating engine.
-             */
-            var newBlockName = "{% $1<suffix> $2 %}".Replace( "<suffix>", LavaEngine.ShortcodeInternalNameSuffix );
-
-            inputTemplate = FullShortCodeToken.Replace( inputTemplate, newBlockName );
-
-            return inputTemplate;
         }
     }
 }

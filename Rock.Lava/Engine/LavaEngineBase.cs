@@ -16,6 +16,7 @@
 //
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using Rock.Lava.Shortcodes;
 
 namespace Rock.Lava
@@ -76,18 +77,18 @@ namespace Rock.Lava
             {
                 var tagFactoryMethod = shortcodeFactoryMethod as Func<string, IRockLavaTag>;
 
-                this.RegisterTag( registrationKey, tagFactoryMethod );
+                RegisterTag( registrationKey, tagFactoryMethod );
             }
             else
             {
-                this.RegisterBlock( registrationKey,  ( blockName ) =>
-                {
+                RegisterBlock( registrationKey, ( blockName ) =>
+               {
                     // Get a shortcode instance using the provided shortcut factory.
                     var shortcode = shortcodeFactoryMethod( registrationKey );
 
                     // Return the shortcode instance as a RockLavaBlock
                     return shortcode as IRockLavaBlock;
-                } );
+               } );
                 ;
             }
         }
@@ -121,7 +122,7 @@ namespace Rock.Lava
                 // Register the shortcode as a custom tag, but use a decorated registration name that will not collide with a regular element name.
                 var registrationKey = LavaUtilityHelper.GetLiquidElementNameFromShortcodeName( name );
 
-                this.RegisterTag( registrationKey, tagFactoryMethod );
+                RegisterTag( registrationKey, tagFactoryMethod );
             }
             else
             {
@@ -142,7 +143,7 @@ namespace Rock.Lava
                 // Register the shortcode as a custom block, but use a decorated registration name that will not collide with a regular element name.
                 var registrationKey = LavaUtilityHelper.GetLiquidElementNameFromShortcodeName( name );
 
-                this.RegisterBlock( registrationKey, blockFactoryMethod );
+                RegisterBlock( registrationKey, blockFactoryMethod );
             }
         }
 
@@ -181,48 +182,12 @@ namespace Rock.Lava
         public abstract void UnregisterShortcode( string name );
 
         public abstract bool AreEqualValue( object left, object right );
-        //
-
-/*
-        /// <summary>
-        /// Method that will be run at Rock startup
-        /// </summary>
-        public void OnStartup()
-        {
-            RegisterLavaShortcodeBlocks();
-        }
-
-        private void RegisterLavaShortcodeBlocks()
-        {
-            // get all the block dynamic shortcodes and register them
-            //var blockShortCodes = LavaShortcodeCache.All().Where( s => s.TagType == TagType.Block );
-
-            //foreach ( var shortcode in blockShortCodes )
-            //{
-            //    // register this shortcode
-            //    Template.RegisterShortcode<DynamicShortcodeBlock>( shortcode.TagName );
-            //}
-
-        }
-
-        private void RegisterLavaShortCodeInlineTags()
-        {
-            // get all the block dynamic shortcodes and register them
-            //var blockShortCodes = LavaShortcodeCache.All().Where( s => s.TagType == TagType.in.Block );
-
-            //foreach ( var shortcode in blockShortCodes )
-            //{
-            //    // register this shortcode
-            //    Template.RegisterShortcode<DynamicShortcodeBlock>( shortcode.TagName );
-            //}
-        }
-*/
 
         public bool TryParseTemplate( string inputTemplate, out ILavaTemplate template )
         {
             try
             {
-                template = this.ParseTemplate( inputTemplate );
+                template = ParseTemplate( inputTemplate );
                 return true;
             }
             catch
@@ -250,7 +215,7 @@ namespace Rock.Lava
             }
 
             return tags;
-        }    
+        }
 
         #region Tags
 
@@ -354,9 +319,68 @@ namespace Rock.Lava
             else
             {
                 throw ex;
-            }            
+            }
         }
 
         public ExceptionHandlingStrategySpecifier ExceptionHandlingStrategy { get; set; } = ExceptionHandlingStrategySpecifier.RenderToOutput;
+
+        /// <summary>
+        /// Convert a Lava template to a Liquid-compatible template by replacing Lava-specific syntax and keywords.
+        /// </summary>
+        /// <param name="lavaTemplateText"></param>
+        /// <returns></returns>
+        public string ConvertToLiquid( string lavaTemplateText )
+        {
+            var converter = new LavaToLiquidTemplateConverter();
+
+            return converter.ConvertToLiquid( lavaTemplateText );
+        }
+    }
+
+    public class LavaToLiquidTemplateConverter
+    {
+        /// <summary>
+        /// Convert a Lava template to a Liquid-compatible template by replacing Lava-specific syntax and keywords.
+        /// </summary>
+        /// <param name="lavaTemplateText"></param>
+        /// <returns></returns>
+        public string ConvertToLiquid( string lavaTemplateText )
+        {
+            string liquidTemplateText;
+
+            liquidTemplateText = ReplaceTemplateShortcodes( lavaTemplateText );
+            liquidTemplateText = ReplaceElseIfKeyword( liquidTemplateText );
+
+            return liquidTemplateText;
+        }
+
+        internal static readonly Regex FullShortCodeToken = new Regex( @"{\[\s*(\w+)\s*([^\]}]*)?\]}", RegexOptions.Compiled );
+
+        public string ReplaceTemplateShortcodes( string inputTemplate )
+        {
+            /* The Lava shortcode syntax is not recognized as a document element by Fluid, and at present there is no way to intercept or replace the Fluid parser.
+             * As a workaround, we pre-process the template to replace the Lava shortcode token "{[ ]}" with the Liquid tag token "{% %}" and add a prefix to avoid naming collisions with existing standard tags.
+             * The shortcode can then be processed as a regular custom block by the Fluid templating engine.
+             * As a future improvement, we could look at submitting a pull request to the Fluid project to add support for custom parsers.
+             */
+            var newBlockName = "{% $1<suffix> $2 %}".Replace( "<suffix>", LavaEngine.ShortcodeInternalNameSuffix );
+
+            inputTemplate = FullShortCodeToken.Replace( inputTemplate, newBlockName );
+
+            return inputTemplate;
+        }
+
+        internal static readonly Regex ElseIfToken = new Regex( @"{\%(.*?\s?)elseif(\s?.*?)\%}", RegexOptions.Compiled );
+
+        public string ReplaceElseIfKeyword( string inputTemplate )
+        {
+            // "elseif" is not a recognized keyword, because Liquid implements the less obvious variant "elsif".
+            // This keyword forms part of a stateful construct (if/then/else) that is processed internally by the Liquid engine,
+            // so the most portable method of processing this alternative is to replace it with the recognized Liquid keyword.            
+            inputTemplate = ElseIfToken.Replace( inputTemplate, "{%$1elsif$2%}" );
+
+            return inputTemplate;
+        }
+
     }
 }
