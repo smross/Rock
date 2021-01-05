@@ -21,28 +21,6 @@ using Irony.Parsing;
 
 namespace Rock.Lava.Fluid
 {
-    public class LavaFluidGrammar : FluidGrammar
-    {
-        public NonTerminal Elseif = new NonTerminal( "elseif" );
-
-        public LavaFluidGrammar()
-        {
-            //Elsif.Rule |= ToTerm( "elseif" ) + Expression;
-
-            Elseif.Rule = ToTerm("elseif") + Expression;
-
-            KnownTags.Rule |= Elseif;
-
-
-            //Elsif.Rule |= ToTerm( "elseif" ) + Expression;
-
-            MarkPunctuation( Elseif );
-
-            //FilterArguments.Rule |= MakeListRule( FilterArguments, ToTerm( " " ), FilterArgument );
-
-        }
-    }
-
     public class LavaFluidParserFactory : FluidParserFactoryBase
     {
         protected override IFluidParser OnCreateParser( LanguageData languageData, Dictionary<string, ITag> tags, Dictionary<string, ITag> blocks )

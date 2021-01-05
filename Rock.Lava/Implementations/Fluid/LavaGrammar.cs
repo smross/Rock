@@ -14,26 +14,31 @@
 // limitations under the License.
 // </copyright>
 //
+using System;
 using Fluid;
 using Irony.Parsing;
 
 namespace Rock.Lava.Fluid
 {
     /// <summary>
-    /// A wrapper for a Lava Block that can be rendered by the Fluid templating engine.
+    /// An implementation of the Fluid Grammar definition that is modified to include Lava syntax variations.
     /// </summary>
-    /// <remarks>
-
-
-    public class LavaGrammar : FluidGrammar
+    public class LavaFluidGrammar : FluidGrammar
     {
-        public override void OnGrammarDataConstructed( LanguageData language )
+        public LavaFluidGrammar()
         {
-            base.OnGrammarDataConstructed( language );
+            // Redefine the format of string literal terms to prevent the backslash ("\") from being interpreted as an escape character.
+            // This is necessary to ensure that arguments passed to the RegexMatch filters include the literal backslash as expected.
+            var stringLiteralSingle = new StringLiteral( "string1", "'", StringOptions.AllowsDoubledQuote | StringOptions.NoEscapes | StringOptions.AllowsLineBreak );
+            var stringLiteralDouble = new StringLiteral( "string2", "\"", StringOptions.AllowsDoubledQuote | StringOptions.NoEscapes | StringOptions.AllowsLineBreak );
 
-            Elsif.Rule |= ToTerm( "elseif" ) + Expression;
+            var number = new NumberLiteral( "number", NumberOptions.AllowSign )
+            {
+                DefaultIntTypes = new TypeCode[] { TypeCode.Decimal },
+                DefaultFloatType = TypeCode.Decimal
+            };
 
-            FilterArguments.Rule |= MakeListRule( FilterArguments, ToTerm(" "), FilterArgument );
+            Term.Rule = MemberAccess | stringLiteralSingle | stringLiteralDouble | number | Boolean;
         }
     }
 }
