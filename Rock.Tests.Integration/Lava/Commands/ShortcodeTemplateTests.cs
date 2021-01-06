@@ -89,19 +89,9 @@ Panel 3 - Panel 3 content.
         public void ShortcodeBlock_WithParameters_CanResolveParameters()
         {
             var shortcodeTemplate = @"
-Input Speed: {{ speed }}
-{% assign speed = speed | AsInteger %}
-Assign Speed #1: {{ speed }}
-{% if speed > 0 -%}
-    {% assign speed = speed | Times:'.01' -%}
-    {% assign speed = speed | Plus:'1' -%}
-{% elseif speed == 0 -%}
-    {% assign speed = 46 -%}
-{% else -%}
-    {% assign speed = speed | Times:'.02' -%}
-    {% assign speed = speed | Plus:'1' -%}
-{% endif -%}
-Speed = {{ speed }}
+Font Name: {{ fontname }}
+Font Size: {{ fontsize }}
+Font Bold: {{ fontbold }}
 ";
 
             // Create a new test shortcode.
@@ -115,12 +105,14 @@ Speed = {{ speed }}
             _helper.LavaEngine.RegisterDynamicShortcode( shortcodeDefinition.Name, ( shortcodeName ) => { return shortcodeDefinition; } );
 
             var input = @"
-{[ shortcodetest speed:'50' ]}
+{[ shortcodetest fontname:'Arial' fontsize:'14' fontbold:'true' ]}
 {[ endshortcodetest ]}
 ";
 
             var expectedOutput = @"
-Speed = 1.5
+Font Name: Arial
+Font Size: 14
+Font Bold: true
 ";
 
             expectedOutput = expectedOutput.Replace( "``", @"""" );
@@ -130,6 +122,53 @@ Speed = 1.5
 
         #region Accordion
 
+        [TestMethod]
+        public void ShortcodeBlock_RepeatedShortcodeBlock_ProducesExpectedOutput()
+        {
+            var shortcodeTemplate = @"
+Font Name: {{ fontname }}
+Font Size: {{ fontsize }}
+Font Bold: {{ fontbold }}
+";
+
+            // Create a new test shortcode.
+            var shortcode1 = new DynamicShortcodeDefinition();
+
+            shortcode1.ElementType = LavaShortcodeTypeSpecifier.Block;
+            shortcode1.TemplateMarkup = shortcodeTemplate;
+            shortcode1.Name = "shortcodetest1";
+
+            _helper.LavaEngine.RegisterDynamicShortcode( shortcode1.Name, ( shortcodeName ) => { return shortcode1; } );
+
+            var shortcode2 = new DynamicShortcodeDefinition();
+
+            shortcode2.ElementType = LavaShortcodeTypeSpecifier.Block;
+            shortcode2.TemplateMarkup = shortcodeTemplate;
+            shortcode2.Name = "shortcodetest2";
+
+            _helper.LavaEngine.RegisterDynamicShortcode( shortcode2.Name, ( shortcodeName ) => { return shortcode2; } );
+
+            var input = @"
+{[ shortcodetest1 fontname:'Arial' fontsize:'14' fontbold:'true' ]}
+{[ endshortcodetest1 ]}
+
+{[ shortcodetest2 fontname:'Courier' fontsize:'16' fontbold:'false' ]}
+{[ endshortcodetest2 ]}
+";
+
+            var expectedOutput = @"
+Font Name: Arial
+Font Size: 14
+Font Bold: true
+Font Name: Courier
+Font Size: 16
+Font Bold: false
+";
+
+            expectedOutput = expectedOutput.Replace( "``", @"""" );
+
+            _helper.AssertTemplateOutput( expectedOutput, input, null, ignoreWhiteSpace: true );
+        }
         [TestMethod]
         public void AccordionShortcodeBlock_DefaultOptions_EmitsCorrectHtml()
         {

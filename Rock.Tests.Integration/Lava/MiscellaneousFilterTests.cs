@@ -92,7 +92,9 @@ namespace Rock.Tests.Integration.Lava
 
             var output = template.ResolveMergeFields( null );
 
-            Assert.That.AreProximate( expectedValue, output.AsDateTime(), new System.TimeSpan( 0, 0, 30 ) );
+            var actualDateTime = output.AsDateTime();
+
+            Assert.That.AreProximate( expectedValue, actualDateTime, new System.TimeSpan( 0, 0, 30 ) );
         }
 
         [TestMethod]
