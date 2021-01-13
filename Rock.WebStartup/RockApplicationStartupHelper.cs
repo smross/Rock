@@ -155,8 +155,9 @@ namespace Rock.WebStartup
 
             RegisterHttpModules();
 
-            // Get Lava set up
+            // Initialize the Lava engine.
             InitializeLava();
+            ShowDebugTimingMessage( $"Initialize Lava Engine ({LavaEngine.CurrentEngine.EngineName})" );
 
             ShowDebugTimingMessage( "Startup Components" );
 
@@ -592,6 +593,7 @@ namespace Rock.WebStartup
         /// </summary>
         private static void InitializeLava()
         {
+            // Get the Lava Engine configuration settings.
             var liquidEngineTypeValue = System.Configuration.ConfigurationManager.AppSettings["LavaEngineType"];
 
             LavaEngineTypeSpecifier engineType;
@@ -613,6 +615,7 @@ namespace Rock.WebStartup
                 throw new RockStartupException( string.Format( "Invalid Lava Engine Type. The LavaEngineType configuration parameter \"{0}\" is not valid.", liquidEngineTypeValue ) );
             }
 
+            // Initialize the Lava engine.
             var engineOptions = new LavaEngineConfigurationOptions
             {
                 FileSystem = new WebsiteLavaFileSystem(),
@@ -622,6 +625,7 @@ namespace Rock.WebStartup
 
             LavaEngine.Initialize( engineType, engineOptions );
 
+            // Initialize Lava extensions.
             var engine = LavaEngine.CurrentEngine;
 
             InitializeLavaShortcodes( engine );

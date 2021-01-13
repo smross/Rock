@@ -14,11 +14,7 @@
 // limitations under the License.
 // </copyright>
 //
-using System;
-using System.Collections.Generic;
 using Rock.Lava.DotLiquid;
-using Rock.Lava.Blocks;
-using System.IO;
 using Rock.Lava.Fluid;
 
 namespace Rock.Lava
@@ -37,27 +33,12 @@ namespace Rock.Lava
         private static ILavaEngine _instance = null;
         private static LavaEngineTypeSpecifier _liquidFramework = LavaEngineTypeSpecifier.DotLiquid;
 
-        public static LavaEngineTypeSpecifier LiquidFramework
-        {
-            get
-            {
-                return _liquidFramework;
-            }
-            set
-            {
-                if ( _liquidFramework != value )
-                {
-                    _liquidFramework = value;
-
-                    // Reset the existing instance so it can be re-created on next access.
-                    _instance = null;
-                }
-            }
-        }
-
-        //public static void Initialize( LavaEngineTypeSpecifier? engineType, ILavaFileSystem fileSystem = null, IList<Type> filterImplementationTypes = null )
+        /// <summary>
+        /// Initialize the Lava Engine with the specified configuration options.
+        /// </summary>
+        /// <param name="engineType"></param>
+        /// <param name="options"></param>
         public static void Initialize( LavaEngineTypeSpecifier? engineType, LavaEngineConfigurationOptions options )
-        // LavaEngineTypeSpecifier? engineType, ILavaFileSystem fileSystem = null, IList<Type> filterImplementationTypes = null )
         {
             _liquidFramework = engineType ?? LavaEngineTypeSpecifier.DotLiquid;
 
@@ -96,7 +77,7 @@ namespace Rock.Lava
                 if ( _instance == null )
                 {
                     // Initialize a default instance.
-                    Initialize( _liquidFramework , new LavaEngineConfigurationOptions() );
+                    Initialize( _liquidFramework, new LavaEngineConfigurationOptions() );
                 }
 
                 return _instance;
