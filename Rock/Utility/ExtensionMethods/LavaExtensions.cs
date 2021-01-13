@@ -48,7 +48,7 @@ namespace Rock
             //
             // Register any 3rd party library classes that are safe to use.
             //
-            LavaEngine.Instance.RegisterSafeType( typeof( Common.Mobile.DeviceData ), typeof( Common.Mobile.DeviceData ).GetProperties().Select( p => p.Name ).ToArray() );
+            LavaEngine.CurrentEngine.RegisterSafeType( typeof( Common.Mobile.DeviceData ), typeof( Common.Mobile.DeviceData ).GetProperties().Select( p => p.Name ).ToArray() );
         }
 
         #endregion
@@ -555,7 +555,7 @@ namespace Rock
                     enabledLavaCommands = GlobalAttributesCache.Value( "DefaultEnabledLavaCommands" );
                 }
 
-                var context = LavaEngine.Instance.NewContext();
+                var context = LavaEngine.CurrentEngine.NewContext();
 
                 context.SetEnabledCommands( enabledLavaCommands, "," );
 

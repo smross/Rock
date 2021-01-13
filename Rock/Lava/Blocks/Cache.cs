@@ -306,7 +306,7 @@ namespace Rock.Lava.Blocks
             string output = null;
 
             // Resolve the Lava template contained in this block in a new context.
-            var newContext = LavaEngine.Instance.NewContext();
+            var newContext = LavaEngine.CurrentEngine.NewContext();
 
             // Copy the merge fields from the supplied context.
 
@@ -318,7 +318,7 @@ namespace Rock.Lava.Blocks
             // Resolve the inner template using a new scope.
             //context.ExecuteInChildScope( ( newContext ) => LavaEngine.Instance.TryRender( lavaTemplate, out output, newContext ) );
 
-            LavaEngine.Instance.TryRender( lavaTemplate, out output, newContext );
+            LavaEngine.CurrentEngine.TryRender( lavaTemplate, out output, newContext );
 
             return output;
 

@@ -43,7 +43,7 @@ namespace Rock.Tests.Integration.Lava
 
             global::Rock.Lava.LavaEngine.Initialize( engineType, engineOptions );
 
-            var engine = global::Rock.Lava.LavaEngine.Instance;
+            var engine = global::Rock.Lava.LavaEngine.CurrentEngine;
 
             engine.ExceptionHandlingStrategy = ExceptionHandlingStrategySpecifier.RenderToOutput;
 
@@ -214,7 +214,7 @@ namespace Rock.Tests.Integration.Lava
         {
             get
             {
-                return global::Rock.Lava.LavaEngine.Instance;
+                return global::Rock.Lava.LavaEngine.CurrentEngine;
             }
         }
 
@@ -229,7 +229,7 @@ namespace Rock.Tests.Integration.Lava
 
             inputTemplate = inputTemplate ?? string.Empty;
 
-            global::Rock.Lava.LavaEngine.Instance.TryRender( inputTemplate.Trim(), out outputString, mergeValues );
+            global::Rock.Lava.LavaEngine.CurrentEngine.TryRender( inputTemplate.Trim(), out outputString, mergeValues );
 
             return outputString;
         }
@@ -245,7 +245,7 @@ namespace Rock.Tests.Integration.Lava
 
             inputTemplate = inputTemplate ?? string.Empty;
 
-            var isValidTemplate = global::Rock.Lava.LavaEngine.Instance.TryRender( inputTemplate.Trim(), out outputString, context );
+            var isValidTemplate = global::Rock.Lava.LavaEngine.CurrentEngine.TryRender( inputTemplate.Trim(), out outputString, context );
 
             //Assert.That.True( isValidTemplate, "Lava Template is invalid." );
 
@@ -302,7 +302,7 @@ namespace Rock.Tests.Integration.Lava
 
             inputTemplate = inputTemplate ?? string.Empty;
 
-            var isValid = global::Rock.Lava.LavaEngine.Instance.TryRender( inputTemplate.Trim(), out outputString, mergeValues );
+            var isValid = global::Rock.Lava.LavaEngine.CurrentEngine.TryRender( inputTemplate.Trim(), out outputString, mergeValues );
 
             Assert.That.IsFalse(isValid, "Invalid template expected." );
         }
@@ -313,7 +313,7 @@ namespace Rock.Tests.Integration.Lava
         /// <param name="outputString"></param>
         public void WriteTemplateRenderToDebug( string inputString, string outputString )
         {
-            var engineName = global::Rock.Lava.LavaEngine.Instance.EngineName;
+            var engineName = global::Rock.Lava.LavaEngine.CurrentEngine.EngineName;
 
             Debug.Print( $"\n**\n** Template Input:\n**\n{inputString}" );
             Debug.Print( $"\n**\n** Template Output ({engineName}):\n**\n{outputString}" );

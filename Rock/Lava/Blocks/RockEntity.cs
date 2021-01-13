@@ -507,7 +507,7 @@ namespace Rock.Lava.Blocks
             var entityTypes = EntityTypeCache.All();
 
             // register a business entity
-            LavaEngine.Instance.RegisterBlock( "business", ( name ) => { return new RockEntity(); } );
+            LavaEngine.CurrentEngine.RegisterBlock( "business", ( name ) => { return new RockEntity(); } );
 
             // Register the core models first
             foreach ( var entityType in entityTypes
@@ -542,7 +542,7 @@ namespace Rock.Lava.Blocks
 
                 // if entity name is already registered, use the full class name with namespace
 
-                var lavaEngine = LavaEngine.Instance;
+                var lavaEngine = LavaEngine.CurrentEngine;
 
                 if ( lavaEngine.GetRegisteredElements().ContainsKey( entityName ) )
                 {

@@ -86,8 +86,10 @@ namespace Rock.Lava
             _instance = engine;
         }
 
-        [Obsolete("Rename as Current")]
-        public static ILavaEngine Instance
+        /// <summary>
+        /// Returns the current instance of the Lava Engine.
+        /// </summary>
+        public static ILavaEngine CurrentEngine
         {
             get
             {

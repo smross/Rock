@@ -622,7 +622,7 @@ namespace Rock.WebStartup
 
             LavaEngine.Initialize( engineType, engineOptions );
 
-            var engine = LavaEngine.Instance;
+            var engine = LavaEngine.CurrentEngine;
 
             InitializeLavaShortcodes( engine );
             InitializeLavaBlocks( engine );

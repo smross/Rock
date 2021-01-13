@@ -49,7 +49,7 @@ namespace Rock.Tests.UnitTests.Lava
         {
             get
             {
-                return global::Rock.Lava.LavaEngine.Instance;
+                return global::Rock.Lava.LavaEngine.CurrentEngine;
             }
         }
 
@@ -64,7 +64,7 @@ namespace Rock.Tests.UnitTests.Lava
 
             inputTemplate = inputTemplate ?? string.Empty;
 
-            bool isValidTemplate = global::Rock.Lava.LavaEngine.Instance.TryRender( inputTemplate.Trim(), out outputString, mergeValues );
+            bool isValidTemplate = global::Rock.Lava.LavaEngine.CurrentEngine.TryRender( inputTemplate.Trim(), out outputString, mergeValues );
 
             Assert.That.True( isValidTemplate, "Lava Template is invalid." );
 
@@ -161,7 +161,7 @@ namespace Rock.Tests.UnitTests.Lava
         /// <param name="outputString"></param>
         private void WriteOutputToDebug( string outputString )
         {
-            var engineName = global::Rock.Lava.LavaEngine.Instance.EngineName;
+            var engineName = global::Rock.Lava.LavaEngine.CurrentEngine.EngineName;
 
             Debug.Print( $"\n**\n** Template Output ({engineName}):\n**\n{outputString}" );
         }

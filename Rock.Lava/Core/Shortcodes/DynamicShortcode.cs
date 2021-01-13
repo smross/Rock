@@ -324,7 +324,7 @@ namespace Rock.Lava.Shortcodes
 
                 string results;
 
-                LavaEngine.Instance.TryRender( lavaTemplate, out results, new LavaDictionary( parms ) );
+                LavaEngine.CurrentEngine.TryRender( lavaTemplate, out results, new LavaDictionary( parms ) );
 
                 var expectedOutput = @"
 Parameter 1: value1

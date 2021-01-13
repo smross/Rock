@@ -140,7 +140,7 @@ namespace Rock.Web.Cache
 
             ILavaTemplate template;
 
-            LavaEngine.Instance.TryParseTemplate( content, out template );
+            LavaEngine.CurrentEngine.TryParseTemplate( content, out template );
 
             var lavaTemplate = new LavaTemplateCache { Template = template };
 
