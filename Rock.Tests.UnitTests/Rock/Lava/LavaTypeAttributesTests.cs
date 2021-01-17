@@ -22,7 +22,7 @@ using Rock.Data;
 namespace Rock.Tests.UnitTests.Lava
 {
     [TestClass]
-    public class LavaAttributesTests : LavaUnitTestBase
+    public class LavaTypeAttributesTests : LavaUnitTestBase
     {
         #region Constructors
 
@@ -35,7 +35,7 @@ namespace Rock.Tests.UnitTests.Lava
 
         #endregion
 
-        #region LavaTypeAtttribute
+        #region LavaTypeAttribute
 
         /// <summary>
         /// Referencing a non-existent property of an input object should return an empty string.
