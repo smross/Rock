@@ -11,9 +11,12 @@ namespace Rock.Lava
     }
 
     /// <summary>
-    /// A case-insensitive dictionary implementation for storing variables used to resolve Lava templates.
+    /// A case-insensitive dictionary implementation for storing and retrieving variables used to resolve Lava templates.
     /// </summary>
-    [Obsolete("Is this necessary now? Seems to be functionally equivalent to LavaDataObject which also supports IDictionary?")]
+    /// <remarks>
+    /// The Lava Engine is able to work with any Type that can provide a set of values accessible through the IDictionary<string, object> interface.
+    /// This class provides a basic implementation of that interface, with the addition of case-insensitivity and lazy-loading of values.
+    /// </remarks>
     public class LavaDictionary : IDictionary<string, object>, IDictionary, ILavaDataObject
     {
         #region Fields

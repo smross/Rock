@@ -46,30 +46,6 @@ namespace Rock.Lava.DotLiquid
             }
         }
 
-        //public override IList<LavaDictionary> GetEnvironments()
-        //{
-        //    var environments = new List<LavaDictionary>();
-
-        //    foreach ( var hash in _context.Environments )
-        //    {
-        //        environments.Add( new LavaDictionary( hash ) );
-        //    }
-
-        //    return environments;
-        //}
-
-        //public override IList<LavaDictionary> GetScopes()
-        //{
-        //    var environments = new List<LavaDictionary>();
-
-        //    foreach ( var hash in _context.Scopes )
-        //    {
-        //        environments.Add( new LavaDictionary( hash ) );
-        //    }
-
-        //    return environments;
-        //}
-
         public override void SetEnabledCommands( IEnumerable<string> commands )
         {
             if ( commands == null )
@@ -140,30 +116,6 @@ namespace Rock.Lava.DotLiquid
             return _context[key];
         }
 
-        /// <summary>
-        /// Get a dictionary of field values that are accessible for merging in to a template.
-        /// </summary>
-        //public override LavaDictionary GetMergeFields()
-        //{
-        //    var dictionary = new LavaDictionary();
-
-        //    // TODO: Do we also need to merge in the Environment values stack here?
-
-        //    // Get a flattened set of values from all Scopes in the current context.
-        //    // Scopes are listed from innermost to outermost, and therefore need to be collated from outermost to innermost.
-        //    for ( int i = _context.Scopes.Count - 1; i >= 0; i-- )
-        //    {
-        //        var scope = _context.Scopes[i];
-
-        //        foreach (var kvp in scope )
-        //        {
-        //            dictionary[kvp.Key] = kvp.Value;
-        //        }
-        //    }
-
-        //    return dictionary;
-        //}
-
         public override string ResolveMergeFields( string content, IDictionary<string, object> mergeObjects, string enabledLavaCommands = null, bool encodeStrings = false, bool throwExceptionOnErrors = false )
         {
             try
@@ -199,14 +151,6 @@ namespace Rock.Lava.DotLiquid
             }
         }
 
-        //public override void SetMergeFieldValue( string key, object value )
-        //{
-        //    var fieldValue = GetDotLiquidCompatibleValue( value );
-
-        //    // Use the default implementation to set a variable in the current scope.
-        //    _context[key] = fieldValue;
-        //}
-
         public override void SetMergeFieldValue( string key, object value, string scopeReference )
         {
             int? scopeIndex;
@@ -217,6 +161,7 @@ namespace Rock.Lava.DotLiquid
             }
             else
             { 
+                // Scopes are ordered with the current level first.
                 scopeReference = scopeReference.Trim().ToLower();
 
                 if ( scopeReference == "root" )
@@ -249,103 +194,13 @@ namespace Rock.Lava.DotLiquid
         }
 
         /// <summary>
-        /// Uses Lava to resolve any merge codes within the content using the values in the merge objects.
-        /// </summary>
-        /// <param name="content">The content.</param>
-        /// <param name="mergeObjects">The merge objects.</param>
-        /// <param name="enabledLavaCommands">The enabled lava commands.</param>
-        /// <param name="encodeStrings">if set to <c>true</c> [encode strings].</param>
-        /// <param name="throwExceptionOnErrors">if set to <c>true</c> [throw exception on errors].</param>
-        /// <returns></returns>
-        //public string ResolveMergeFields( this string content, IDictionary<string, object> mergeObjects, string enabledLavaCommands, bool encodeStrings = false, bool throwExceptionOnErrors = false )
-        //{
-        //    try
-        //    {
-        //        if ( !content.HasMergeFields() )
-        //        {
-        //            return content ?? string.Empty;
-        //        }
-
-        //        if ( GlobalAttributesCache.Get().LavaSupportLevel == Lava.LavaSupportLevel.LegacyWithWarning && mergeObjects.ContainsKey( "GlobalAttribute" ) )
-        //        {
-        //            if ( hasLegacyGlobalAttributeLavaMergeFields.IsMatch( content ) )
-        //            {
-        //                Rock.Model.ExceptionLogService.LogException( new Rock.Lava.LegacyLavaSyntaxDetectedException( "GlobalAttribute", "" ), System.Web.HttpContext.Current );
-        //            }
-        //        }
-
-        //        Template template = GetTemplate( content );
-        //        template.Registers.AddOrReplace( "EnabledCommands", enabledLavaCommands );
-
-        //        string result;
-
-        //        if ( encodeStrings )
-        //        {
-        //            // if encodeStrings = true, we want any string values to be XML Encoded ( 
-        //            RenderParameters renderParameters = new RenderParameters();
-        //            renderParameters.LocalVariables = Hash.FromDictionary( mergeObjects );
-        //            renderParameters.ValueTypeTransformers = new Dictionary<Type, Func<object, object>>();
-        //            renderParameters.ValueTypeTransformers[typeof( string )] = EncodeStringTransformer;
-        //            result = template.Render( renderParameters );
-        //        }
-        //        else
-        //        {
-        //            result = template.Render( Hash.FromDictionary( mergeObjects ) );
-        //        }
-
-        //        if ( throwExceptionOnErrors && template.Errors.Any() )
-        //        {
-        //            if ( template.Errors.Count == 1 )
-        //            {
-        //                throw template.Errors[0];
-        //            }
-        //            else
-        //            {
-        //                throw new AggregateException( template.Errors );
-        //            }
-        //        }
-
-        //        return result;
-        //    }
-        //    catch ( System.Threading.ThreadAbortException )
-        //    {
-        //        // Do nothing...it's just a Lava PageRedirect that just happened.
-        //        return string.Empty;
-        //    }
-        //    catch ( Exception ex )
-        //    {
-        //        if ( throwExceptionOnErrors )
-        //        {
-        //            throw;
-        //        }
-        //        else
-        //        {
-        //            //ExceptionLogService.LogException( ex, System.Web.HttpContext.Current );
-        //            return "Error resolving Lava merge fields: " + ex.Message;
-        //        }
-        //    }
-        //}
-
-        /// <summary>
-        /// Looks for a parsed template in cache (if the content is 100 characters or less).
+        /// Create a compiled DotLiquid template object from source text.
         /// </summary>
         /// <param name="content">The content.</param>
         /// <returns></returns>
         private Template GetTemplate( string content )
         {
-            // Do not cache any content over 100 characters in length
-            //if ( content?.Length > 100 )
-            //{
             return Template.Parse( content );
-            //}
-
-            // Get template from cache
-            //var template = LavaTemplateCache.Get( content ).Template;
-
-            // Clear any previous errors
-            //template.Errors.Clear();
-
-            //return template;
         }
 
         public void ClearValues()

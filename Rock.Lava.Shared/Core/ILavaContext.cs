@@ -101,6 +101,7 @@ namespace Rock.Lava
         /// <param name="defaultValue"></param>
         /// <param name="scopeSelector>"root|parent|current", or the index number of a scope in the current stack.</param>
         /// <returns></returns>
+        [Obsolete("Use SetMergeFieldValue without the scopeSelector parameter.")]
         void SetMergeFieldValue( string key, object value, string scopeSelector );
 
         /// <summary>
