@@ -22,7 +22,7 @@ using Rock.Lava.DotLiquid;
 namespace Rock.Lava
 {
     /// <summary>
-    /// Wraps a LavaFileSystem component so that it can be used as a file provider for the DotLiquid framework.
+    /// A facade for a LavaFileSystem component that allows it to be used as a file provider for the DotLiquid framework.
     /// </summary>
     internal class DotLiquidFileSystem : ILavaFileSystem, IFileSystem
     {

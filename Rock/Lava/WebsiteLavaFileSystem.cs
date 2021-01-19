@@ -23,20 +23,17 @@ using Rock.Web.Cache;
 namespace Rock.Lava
 {
     /// <summary>
-    /// The file system used to retrieve Lava templates referenced by an include tag.
+    /// A file system used by the Lava Engine in a website environment to locate and load templates referenced by an include tag.
     /// </summary>
     public class WebsiteLavaFileSystem : ILavaFileSystem
     {
         /// <summary>
-        /// Gets or sets the root.
+        /// Gets or sets the root directory of the file system.
         /// </summary>
-        /// <value>
-        /// The root.
-        /// </value>
         public string Root { get; set; }
 
         /// <summary>
-        /// 
+        /// Check if the specified file exists in the file system.
         /// </summary>
         /// <param name="filePath"></param>
         /// <returns></returns>
@@ -48,16 +45,14 @@ namespace Rock.Lava
         }
 
         /// <summary>
-        /// Called by Liquid to retrieve a template file
+        /// Load the contents of a template file.
         /// </summary>
         /// <param name="context"></param>
-        /// <param name="templateName"></param>
+        /// <param name="templatePath"></param>
         /// <returns></returns>
         /// <exception cref="LavaException">LavaFileSystem Template Not Found</exception>
-        public string ReadTemplateFile( ILavaContext context, string templateName )
+        public string ReadTemplateFile( ILavaContext context, string templatePath )
         {
-            string templatePath = (string)context[templateName];
-
             // Try to find exact file specified
             var resolvedPath = ResolveTemplatePath( templatePath );
 
@@ -105,16 +100,12 @@ namespace Rock.Lava
 
         private string GetMatchingFileFromPath( string fullFilePath )
         {
-            //string templatePath = (string)context[templateName];
-
             // Try to find exact file specified
-            //var resolvedPath = ResolveTemplatePath( templatePath );
-
             var file = new FileInfo( fullFilePath );
 
             if ( file.Exists )
             {
-                return file.FullName; // File.ReadAllText( file.FullName );
+                return file.FullName;
             }
 
             // If requested template file does not include an extension
@@ -124,14 +115,14 @@ namespace Rock.Lava
                 string filePath = file.FullName + ".lava";
                 if ( File.Exists( filePath ) )
                 {
-                    return filePath; // return File.ReadAllText( filePath );
+                    return filePath;
                 }
 
                 // Try to find file with .liquid extension
                 filePath = file.FullName + ".liquid";
                 if ( File.Exists( filePath ) )
                 {
-                    return filePath; // return File.ReadAllText( filePath );
+                    return filePath;
                 }
 
                 // If file still not found, try prefixing filename with an underscore
@@ -140,20 +131,17 @@ namespace Rock.Lava
                     filePath = Path.Combine( file.DirectoryName, string.Format( "_{0}.lava", file.Name ) );
                     if ( File.Exists( filePath ) )
                     {
-                        return filePath; // return File.ReadAllText( filePath );
-                        //return File.ReadAllText( filePath );
+                        return filePath;
                     }
                     filePath = Path.Combine( file.DirectoryName, string.Format( "_{0}.liquid", file.Name ) );
                     if ( File.Exists( filePath ) )
                     {
-                        return filePath; // return File.ReadAllText( filePath );
-                        return File.ReadAllText( filePath );
+                        return filePath;
                     }
                 }
             }
 
             return null;
-
         }
 
         /// <summary>
