@@ -41,21 +41,27 @@ Slow
 ";
             var expectedOutput = @"Moderate";
 
-            TestHelper.AssertTemplateOutput( expectedOutput, input, context:null, ignoreWhiteSpace:true );
+            TestHelper.AssertTemplateOutput( expectedOutput, input, context: null, ignoreWhiteSpace: true );
         }
 
         /// <summary>
         /// The double-ampersand (&&) boolean comparison syntax for "and" is not recognized Liquid syntax.
-        /// It is also not part of the documented Lava syntax, but has been found in some existing core templates.
+        /// It is also not part of the documented Lava syntax, but it is supported by the DotLiquid framework and has been found in some existing core templates.
         /// This test ensures that the documented behavior is enforced and the invalid syntax produces an error.
         /// </summary>
         [TestMethod]
         public void Parsing_ConditionalExpressionUsingDoubleAmpersand_EmitsErrorMessage()
         {
+            // This test does not apply to the DotLiquid framework.
+            if ( TestHelper.LavaEngine.EngineType == LavaEngineTypeSpecifier.DotLiquid )
+            {
+                return;
+            };
+
             var input = @"
 {% assign speed = 50 %}
 {% if speed > 40 && speed < 60 -%}
-    Illegal Boolean Operator!
+Illegal Boolean Operator!
 {% endif -%}
 ";
 

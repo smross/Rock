@@ -45,8 +45,8 @@ namespace Rock.Tests.Integration.Lava
 
             var values = new LavaDictionary { { "Person", tedDeckerPerson } };
 
-            TestHelper.AssertTemplateOutput("xyz",
-                "{{ Person | Attribute:'BaptismDate' }}",
+            TestHelper.AssertTemplateOutput("2001-09-13",
+                "{{ Person | Attribute:'BaptismDate' | Date:'yyyy-MM-dd' }}",
                 values );
         }
 
