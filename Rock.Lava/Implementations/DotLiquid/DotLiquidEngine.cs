@@ -16,6 +16,8 @@
 //
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using DotLiquid;
 using Rock.Lava.Filters;
 
@@ -90,10 +92,16 @@ namespace Rock.Lava.DotLiquid
             Template.RegisterSafeType( typeof( Enum ), o => o.ToString() );
             Template.RegisterSafeType( typeof( DBNull ), o => null );
 
-            Template.RegisterFilter( typeof( TemplateFilters ) );
-            Template.RegisterFilter( typeof( DotLiquidFilters ) );
+            RegisterFilters( options.FilterImplementationTypes );
 
+            // Register all Types that implement ILavaDataObject as safe to render.
+            RegisterSafeType( typeof( Rock.Lava.ILavaDataObject ) );
+        }
+
+        private void RegisterFilters( IEnumerable<Type> filterImplementationTypes )
+        {
             Template.FilterContextParameterType = typeof( ILavaContext );
+
             Template.FilterContextParameterTransformer = ( context ) =>
             {
                 // Wrap the DotLiquid context in a framework-agnostic Lava context.
@@ -101,39 +109,156 @@ namespace Rock.Lava.DotLiquid
             };
 
             // Register custom filters last, so they can override built-in filters of the same name.
-            if ( options.FilterImplementationTypes != null )
+            if ( filterImplementationTypes != null )
             {
-                foreach ( var filterImplementationType in options.FilterImplementationTypes )
+                foreach ( var filterImplementationType in filterImplementationTypes )
                 {
-                    Template.RegisterFilter( filterImplementationType );
+                    var methodsGroupedByName = filterImplementationType.GetMethods( BindingFlags.Public | BindingFlags.Static ).AsQueryable().GroupBy( k => k.Name, v => v );
+
+                    foreach (var methodGroup in methodsGroupedByName )
+                    {
+                        var filterName = methodGroup.Key;
+                        var filterMethodInfos = methodGroup.OrderBy( m => m.GetParameters().Length ).ToList();
+
+                        // Define the DotLiquid-compatible function that will wrap the Lava filter.
+                        // When the wrapper function is executed by DotLiquid, it performs some necessary pre-processing before executing the Lava filter.
+                        Func<Context, List<object>, object> filterFunctionWrapper = ( Context context, List<object> args ) =>
+                        {
+                            // Get the filter method that best matches the provided argument list.
+                            MethodInfo filterMethodInfo = null;
+
+                            if ( filterMethodInfos.Count == 1 )
+
+                            {
+                                filterMethodInfo = filterMethodInfos.First();
+                            }
+                            else
+                            {
+                                // Find the method that best matches the provided list of arguments.                                
+                                filterMethodInfo = GetMatchedFilterFunction( filterMethodInfos, args.Count );
+                            }
+
+                            var parameterInfos = filterMethodInfo.GetParameters();
+
+                            GetLavaFilterCompatibleArguments( filterName, args, parameterInfos, context );
+
+                            // Execute the static filter function and return the result.
+                            var result = filterMethodInfo.Invoke( null, args.ToArray() );
+
+                            return result;
+                        };
+
+                        // Register the set of filters for each method name.                
+                        Strainer.RegisterFilter( methodGroup.Key, filterFunctionWrapper );
+                    }
                 }
             }
-
-            // Register all Types that implement ILavaDataObject as safe to render.
-            RegisterSafeType( typeof( Rock.Lava.ILavaDataObject ) );
         }
 
-        public class LiquidizableObjectProxy : ILiquidizable
+        /// <summary>
+        /// Translate a set of DotLiquid filter arguments to a set of arguments that are compatible with a Lava filter.
+        /// </summary>
+        private void GetLavaFilterCompatibleArguments( string filterName, List<object> args, ParameterInfo[] lavaFilterFunctionParams, Context dotLiquidContext )
         {
-            public object this[object key] => throw new NotImplementedException();
-
-            public List<string> AvailableKeys => throw new NotImplementedException();
-
-            public bool ContainsKey( object key )
+            // Add the DotLiquid Context wrapped in a LavaContext.
+            if ( lavaFilterFunctionParams.Length > 0 && lavaFilterFunctionParams[0].ParameterType == typeof( ILavaContext ) )
             {
-                throw new NotImplementedException();
+                args.Insert( 0, new DotLiquidLavaContext( dotLiquidContext ) );
             }
 
-            public object ToLiquid()
+            // Unwrap DotLiquidLavaDataObjectProxy objects
+            for ( int i = 0; i < args.Count; i ++ )
             {
-                throw new NotImplementedException();
+                if ( ( args[i] is ILavaDataObjectSource ) ) //.GetType() == typeof( DotLiquidLavaDataObjectProxy ) )
+                {
+                    args[i] = ( (ILavaDataObjectSource)args[i] ).GetLavaDataObject();
+                }
+
+                if ( args[i] is DropProxy )
+                {
+                    args[i] = ( (DropProxy)args[i] ).ConvertToValueType();
+                }
+
+            }
+            // Add in any missing parameters with the default values defined for the filter method.
+            if ( lavaFilterFunctionParams.Length > args.Count )
+            {
+                for ( int i = args.Count; i < lavaFilterFunctionParams.Length; ++i )
+                {
+                    if ( ( lavaFilterFunctionParams[i].Attributes & ParameterAttributes.HasDefault ) != ParameterAttributes.HasDefault )
+                    {
+                        throw new LavaException( "Error - Filter '{0}' does not have a default value for '{1}' and no value was supplied", filterName, lavaFilterFunctionParams[i].Name );
+                    }
+                    args.Add( lavaFilterFunctionParams[i].DefaultValue );
+                }
             }
         }
 
-        //public override Type GetShortcodeType( string name )
-        //{
-        //    throw new NotImplementedException();
-        //}
+        /// <summary>
+        /// Get the filter method that best matches the supplied argument list.
+        /// </summary>
+        /// <param name="method"></param>
+        /// <param name="suppliedArgsCount"></param>
+        /// <returns></returns>
+        private MethodInfo GetMatchedFilterFunction( List<MethodInfo> candidateMethodInfoList, int suppliedArgsCount )
+        {
+            // Subtract the mandatory input object from the count of supplied filter arguments.
+            if ( suppliedArgsCount > 0 )
+            {
+                suppliedArgsCount--;
+            }
+
+            foreach ( var methodInfo in candidateMethodInfoList )
+            {
+                bool isMatch = true;
+
+                var parameterInfos = methodInfo.GetParameters();
+
+                // Remove the input object that the filter is being applied to and the optional Lava context parameter from the count of required user-supplied arguments.
+                var functionArgumentOffset = 1;
+
+                var filterArgumentCount = parameterInfos.Length - 1;
+
+                // If the filter accepts a context, it must be the first argument.
+                if ( filterArgumentCount > 0 && parameterInfos[0].ParameterType == typeof( ILavaContext ) )
+                {
+                    filterArgumentCount--;
+                    functionArgumentOffset++;
+                }
+
+                //
+                if ( filterArgumentCount < suppliedArgsCount )
+                {
+                    continue;
+                }
+                else if ( filterArgumentCount == suppliedArgsCount )
+                {
+                    return methodInfo;
+                }
+                else
+                {
+                    // Number of filter arguments exceeds supplied arguments, so check if the additional parameters have default values.
+                    for ( int i = suppliedArgsCount + functionArgumentOffset - 1; i < filterArgumentCount + functionArgumentOffset; i++ )
+                    {
+                        if ( ( parameterInfos[i].Attributes & ParameterAttributes.HasDefault ) != ParameterAttributes.HasDefault )
+                        {
+                            // No match
+                            isMatch = false;
+                            break;
+                        }
+                    }
+
+                    if ( isMatch )
+                    {
+                        return methodInfo;
+                    }
+                }
+
+            }
+
+            // If an exact match could not be found, take the function with the most parameters and try to fill in the remainder with default values.
+            return candidateMethodInfoList.LastOrDefault();
+        }
 
         public override void RegisterSafeType( Type type, string[] allowedMembers = null )
         {
@@ -150,8 +275,9 @@ namespace Rock.Lava.DotLiquid
                 Template.RegisterSafeType( typeof( Rock.Lava.ILavaDataObject ),
                     ( x ) =>
                     {
-                        var dataObject = new LavaDataObject( x );
-                        return dataObject;
+                        //var dataObject = new LavaDataObject( x );
+                        return new DotLiquidLavaDataObjectProxy( x as ILavaDataObject );
+                        //return dataObject;
                     } );
             }
             else
