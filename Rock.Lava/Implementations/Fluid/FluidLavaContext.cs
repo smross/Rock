@@ -169,59 +169,59 @@ namespace Rock.Lava.Fluid
         /// <param name="encodeStrings"></param>
         /// <param name="throwExceptionOnErrors"></param>
         /// <returns></returns>
-        public override string ResolveMergeFields( string content, IDictionary<string, object> mergeObjects, string enabledLavaCommands = null, bool encodeStrings = false, bool throwExceptionOnErrors = false )
-        {
-            try
-            {
-                // 7-9-2020 JME  / NA
-                // We decided to remove the check for lava merge fields here as this method is specifically
-                // made to resolve them. The performance increase for text without lava is acceptable as in
-                // a vast majority of cases the string will have lava (that's what this method is for). In
-                // these cases there is a performance tax (though small) on the vast majority of calls.
+        //public override string ResolveMergeFields( string content, IDictionary<string, object> mergeObjects, string enabledLavaCommands = null, bool encodeStrings = false, bool throwExceptionOnErrors = false )
+        //{
+        //    try
+        //    {
+        //        // 7-9-2020 JME  / NA
+        //        // We decided to remove the check for lava merge fields here as this method is specifically
+        //        // made to resolve them. The performance increase for text without lava is acceptable as in
+        //        // a vast majority of cases the string will have lava (that's what this method is for). In
+        //        // these cases there is a performance tax (though small) on the vast majority of calls.
 
-                // If there have not been any EnabledLavaCommands explicitly set, then use the global defaults.
-                if ( enabledLavaCommands == null )
-                {
-                    // TODO:    
-                    //enabledLavaCommands = GlobalAttributesCache.Value( "DefaultEnabledLavaCommands" );
-                }
+        //        // If there have not been any EnabledLavaCommands explicitly set, then use the global defaults.
+        //        if ( enabledLavaCommands == null )
+        //        {
+        //            // TODO:    
+        //            //enabledLavaCommands = GlobalAttributesCache.Value( "DefaultEnabledLavaCommands" );
+        //        }
 
-                var fluidTemplate = GetTemplate( content );
+        //        var fluidTemplate = GetTemplate( content );
 
-                //var context = new TemplateContext();
+        //        //var context = new TemplateContext();
 
-                // Add the merge objects to the context.
-                if ( mergeObjects != null )
-                {
-                    foreach ( var key in mergeObjects.Keys )
-                    {
-                        _context.LocalScope.SetValue( key, mergeObjects[key] );
-                    }
-                }
+        //        // Add the merge objects to the context.
+        //        if ( mergeObjects != null )
+        //        {
+        //            foreach ( var key in mergeObjects.Keys )
+        //            {
+        //                _context.LocalScope.SetValue( key, mergeObjects[key] );
+        //            }
+        //        }
 
-                _context.LocalScope.SetValue( "EnabledCommands", enabledLavaCommands );
+        //        _context.LocalScope.SetValue( "EnabledCommands", enabledLavaCommands );
 
 
-                //context.AmbientValues = new Dictionary<string, object>( mergeObjects );
-                //template.InstanceAssigns.AddOrReplace( "CurrentPerson", currentPersonOverride );
+        //        //context.AmbientValues = new Dictionary<string, object>( mergeObjects );
+        //        //template.InstanceAssigns.AddOrReplace( "CurrentPerson", currentPersonOverride );
 
-                //context.Model = mergeObjects;
+        //        //context.Model = mergeObjects;
 
-                //var scope = context.LocalScope;
+        //        //var scope = context.LocalScope;
 
-                //context.SetValue()
+        //        //context.SetValue()
 
-                var output = fluidTemplate.Render( _context );
+        //        var output = fluidTemplate.Render( _context );
 
-                return output;
-            }
-            catch ( Exception ex )
-            {
-                throw ex;
-                //ExceptionLogService.LogException( ex, System.Web.HttpContext.Current );
-                //return "Error resolving Lava merge fields: " + ex.Message;
-            }
-        }
+        //        return output;
+        //    }
+        //    catch ( Exception ex )
+        //    {
+        //        throw ex;
+        //        //ExceptionLogService.LogException( ex, System.Web.HttpContext.Current );
+        //        //return "Error resolving Lava merge fields: " + ex.Message;
+        //    }
+        //}
 
         //public override string ResolveMergeFields( string content, IDictionary<string, object> mergeObjects )
         //{
@@ -287,64 +287,17 @@ namespace Rock.Lava.Fluid
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <param name="scopeReference">root|parent|current</param>
-        public override void SetMergeFieldValue( string key, object value, string scopeReference )
+        public override void SetMergeFieldValue( string key, object value, LavaContextRelativeScopeSpecifier scope = LavaContextRelativeScopeSpecifier.Current )
         {
-            //int? scopeIndex = null;
-
-            if ( string.IsNullOrWhiteSpace( scopeReference ) )
+            if ( scope == LavaContextRelativeScopeSpecifier.Current )
             {
-                scopeReference = "current";
-            }
-
-            scopeReference = scopeReference.Trim().ToLower();
-
-            if ( scopeReference == "root" )
-            {
-                //var scope = GetRootScope( _context.LocalScope );
-                //scope.SetValue( key, value );
-
-                _context.SetValue( key, value );
-            }
-            //else if ( scopeReference == "parent" )
-            //{
-            //    scopeIndex = null; // 1;
-            //}
-            else if ( scopeReference == "current" || scopeReference == "0" )
-            {
-                //scopeIndex = 0;
                 _context.SetValue( key, value );
             }
             else
             {
-                throw new LavaException( $"SetMergeFieldValue failed. Scope reference \"{ scopeReference }\" is invalid." );
-                //scopeIndex = scopeReference.AsIntegerOrNull();
+                throw new LavaException( $"SetMergeFieldValue failed. Scope reference \"{ scope }\" is invalid." );
             }
-
-            //if ( scopeIndex == null )
-            //{
-            //    throw new LavaException( $"SetMergeFieldValue failed. Scope reference \"{ scopeReference }\" is invalid." );
-            //}
-            //else if ( scopeIndex == 0 )
-            //{
-            //    _context.SetValue( key, value );
-            //}
-
-            //var fieldValue = GetDotLiquidCompatibleValue( value );
-
-            // Set the variable in the specified scope.
-
-
-            //_context.Scopes[scopeIndex.Value][key] = fieldValue;
         }
-        //public void SetMergeFieldValues( LavaDictionary values )
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //public override void SetMergeFieldValues( LavaDictionary values )
-        //{
-        //    throw new NotImplementedException();
-        //}
 
         /// <summary>
         /// Sets a named value that is for internal use only. Internal values are not available to be resolved in the Lava Template.

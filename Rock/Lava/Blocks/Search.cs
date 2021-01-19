@@ -173,7 +173,7 @@ namespace Rock.Lava.Blocks
 
             var results = client.Search( query, searchType, entityIds, fieldCriteria, limit, offset );
 
-            context.SetMergeFieldValue( parms["iterator"], results, "root" );
+            context.SetMergeFieldValue( parms["iterator"], results, LavaContextRelativeScopeSpecifier.Root );
 
             base.OnRender( context, result );
         }

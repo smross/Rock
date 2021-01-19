@@ -173,7 +173,12 @@ namespace Rock.Lava.DotLiquid
                 }
                 parms.AddOrReplace( "RecursionDepth", currentRecurrsionDepth );
 
-                var results = lavaContext.ResolveMergeFields( _shortcodeMarkup, parms, _shortcodeEnabledLavaCommands );
+                string results;
+
+                lavaContext.SetEnabledCommands( _shortcodeEnabledLavaCommands );
+                lavaContext.SetMergeFieldValues( parms );
+
+                LavaEngine.CurrentEngine.TryRender( _shortcodeMarkup, out results, lavaContext );
 
                 result.Write( results );
             }
@@ -194,16 +199,16 @@ namespace Rock.Lava.DotLiquid
         private Dictionary<string, object> ParseMarkup( string markup, ILavaContext context )
         {
             // first run lava across the inputted markup
-            var _internalMergeFields = context.GetMergeFields();
-
             var parms = new Dictionary<string, object>();
 
-            foreach ( var item in _internalMergeFields )
+            foreach ( var item in context.GetMergeFields() )
             {
                 parms.AddOrReplace( item.Key, item.Value );
             }
 
-            var resolvedMarkup = context.ResolveMergeFields( markup, _internalMergeFields );
+            string resolvedMarkup;
+
+            LavaEngine.CurrentEngine.TryRender( markup, out resolvedMarkup, context );
 
             // create all the parameters from the shortcode with their default values
             var shortcodeParms = RockSerializableDictionary.FromUriEncodedString( _shortcodeParameters );

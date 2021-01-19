@@ -83,7 +83,7 @@ namespace Rock.Lava.Blocks
                     case "select":
                         var results = DbService.GetDataSet( sql.ToString(), CommandType.Text, parms.ToDictionary( i => i.Key, i => ( object ) i.Value ), sqlTimeout );
 
-                        context.SetMergeFieldValue( parms["return"], results.Tables[0].ToDynamic(), "root"  );
+                        context.SetMergeFieldValue( parms["return"], results.Tables[0].ToDynamic(), LavaContextRelativeScopeSpecifier.Root );
                         break;
                     case "command":
                         var sqlParameters = new List<System.Data.SqlClient.SqlParameter>();
@@ -101,7 +101,7 @@ namespace Rock.Lava.Blocks
                             }
                             int numOfRowsAffected = rockContext.Database.ExecuteSqlCommand( sql.ToString(), sqlParameters.ToArray() );
 
-                            context.SetMergeFieldValue( parms["return"], numOfRowsAffected, "root" );
+                            context.SetMergeFieldValue( parms["return"], numOfRowsAffected, LavaContextRelativeScopeSpecifier.Root );
                         }
                         break;
                     default:

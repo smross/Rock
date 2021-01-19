@@ -171,7 +171,7 @@ namespace Rock.Lava.Blocks
                     throw;
                 }
 
-                context.SetMergeFieldValue( parms["return"], responseData, "root" );
+                context.SetMergeFieldValue( parms["return"], responseData, LavaContextRelativeScopeSpecifier.Root );
             }
             else {
                 result.Write( "No url parameter was found." );

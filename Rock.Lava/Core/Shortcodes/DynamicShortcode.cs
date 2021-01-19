@@ -268,7 +268,9 @@ namespace Rock.Lava.Shortcodes
 
             // Resolve any merge fields in the block content.
             // The block content will then be merged into the shortcode template to produce the final output.
-            var blockMarkup = context.ResolveMergeFields( _blockMarkup.ToString(), internalMergeFields );
+            string blockMarkup;
+
+            LavaEngine.CurrentEngine.TryRender( _blockMarkup.ToString(), out blockMarkup, internalMergeFields );
 
             // Extract any child elements from the block content.
             Dictionary<string, object> childParameters;
@@ -300,7 +302,9 @@ namespace Rock.Lava.Shortcodes
             // Now ensure there aren't any entity commands in the block that are not allowed.
             // This is necessary because the shortcode may be configured to allow more entities for processing
             // than the source block, template, action, etc. permits.
-            var securityCheck = context.ResolveMergeFields( blockMarkup, new Dictionary<string, object>() );
+            string securityCheck;
+
+            LavaEngine.CurrentEngine.TryRender( blockMarkup, out securityCheck, context );
 
             Regex securityPattern = new Regex( string.Format( Constants.Messages.NotAuthorizedMessage, ".*" ) );
             Match securityMatch = securityPattern.Match( securityCheck );
@@ -460,15 +464,17 @@ Panel 3 - Panel 3 content.
         }
 
         /// <summary>
-        /// Parses the markup.
+        /// Parses the element attributes markup to collate parameter settings for the shortcode.
         /// </summary>
         /// <param name="elementAttributesMarkup">The markup.</param>
         /// <param name="context">The context.</param>
         /// <returns></returns>
         private void SetParametersFromElementAttributes( Dictionary<string, object> parameters, string elementAttributesMarkup, ILavaContext context )
         {
-            // first run lava across the inputted markup
-            var resolvedMarkup = context.ResolveMergeFields( elementAttributesMarkup, _internalMergeFields );
+            // Resolve any Lava merge fields in the element attributes markup.
+            string resolvedMarkup;
+
+            LavaEngine.CurrentEngine.TryRender( elementAttributesMarkup, out resolvedMarkup, context );
 
             var markupItems = Regex.Matches( resolvedMarkup, @"(\S*?:'[^']+')" )
                 .Cast<Match>()
@@ -478,6 +484,7 @@ Panel 3 - Panel 3 content.
             foreach ( var item in markupItems )
             {
                 var itemParts = item.ToString().Split( new char[] { ':' }, 2 );
+
                 if ( itemParts.Length > 1 )
                 {
                     parameters.AddOrReplace( itemParts[0].Trim().ToLower(), itemParts[1].Trim().Substring( 1, itemParts[1].Length - 2 ) );

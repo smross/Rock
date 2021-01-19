@@ -116,81 +116,70 @@ namespace Rock.Lava.DotLiquid
             return _context[key];
         }
 
-        public override string ResolveMergeFields( string content, IDictionary<string, object> mergeObjects, string enabledLavaCommands = null, bool encodeStrings = false, bool throwExceptionOnErrors = false )
+        //public override string ResolveMergeFields( string content, IDictionary<string, object> mergeObjects, string enabledLavaCommands = null, bool encodeStrings = false, bool throwExceptionOnErrors = false )
+        //{
+        //    try
+        //    {
+        //        // 7-9-2020 JME / NA
+        //        // We decided to remove the check for lava merge fields here as this method is specifically
+        //        // made to resolve them. The performance increase for text without lava is acceptable as in
+        //        // a vast majority of cases the string will have lava (that's what this method is for). In
+        //        // these cases there is a performance tax (though small) on the vast majority of calls.
+
+        //        // If there have not been any EnabledLavaCommands explicitly set, then use the global defaults.
+        //        if ( enabledLavaCommands == null )
+        //        {
+        //            // TODO:    
+        //            //enabledLavaCommands = GlobalAttributesCache.Value( "DefaultEnabledLavaCommands" );
+        //        }
+
+        //        var dotLiquidTemplate = GetTemplate( content );
+
+        //        dotLiquidTemplate.Registers.AddOrReplace( "EnabledCommands", enabledLavaCommands );
+
+        //        string output;
+
+        //        if ( mergeObjects == null )
+        //        {
+        //            output = dotLiquidTemplate.Render();
+        //        }
+        //        else
+        //        {
+        //            output = dotLiquidTemplate.Render( Hash.FromDictionary( mergeObjects ) );
+        //        }
+
+        //        return output;
+        //    }
+        //    catch ( Exception ex )
+        //    {
+        //        throw ex;
+        //        //ExceptionLogService.LogException( ex, System.Web.HttpContext.Current );
+        //        //return "Error resolving Lava merge fields: " + ex.Message;
+        //    }
+        //}
+
+        public override void SetMergeFieldValue( string key, object value, LavaContextRelativeScopeSpecifier scope = LavaContextRelativeScopeSpecifier.Current )
         {
-            try
+            int scopeIndex;
+
+            // Scopes are ordered with the current level first.
+            if ( scope == LavaContextRelativeScopeSpecifier.Root )
             {
-                // 7-9-2020 JME / NA
-                // We decided to remove the check for lava merge fields here as this method is specifically
-                // made to resolve them. The performance increase for text without lava is acceptable as in
-                // a vast majority of cases the string will have lava (that's what this method is for). In
-                // these cases there is a performance tax (though small) on the vast majority of calls.
-
-                // If there have not been any EnabledLavaCommands explicitly set, then use the global defaults.
-                if ( enabledLavaCommands == null )
-                {
-                    // TODO:    
-                    //enabledLavaCommands = GlobalAttributesCache.Value( "DefaultEnabledLavaCommands" );
-                }
-
-                var dotLiquidTemplate = GetTemplate( content );
-
-                dotLiquidTemplate.Registers.AddOrReplace( "EnabledCommands", enabledLavaCommands );
-
-                var output = dotLiquidTemplate.Render( Hash.FromDictionary( mergeObjects ) );
-
-                //template.InstanceAssigns.AddOrReplace( "CurrentPerson", currentPersonOverride );
-
-                return output;
+                scopeIndex = _context.Scopes.Count - 1;
             }
-            catch ( Exception ex )
+            else if ( scope == LavaContextRelativeScopeSpecifier.Parent )
             {
-                throw ex;
-                //ExceptionLogService.LogException( ex, System.Web.HttpContext.Current );
-                //return "Error resolving Lava merge fields: " + ex.Message;
-            }
-        }
-
-        public override void SetMergeFieldValue( string key, object value, string scopeReference )
-        {
-            int? scopeIndex;
-
-            if ( string.IsNullOrWhiteSpace( scopeReference ) )
-            {
-                scopeIndex = 0;
+                scopeIndex = 1;
             }
             else
-            { 
-                // Scopes are ordered with the current level first.
-                scopeReference = scopeReference.Trim().ToLower();
-
-                if ( scopeReference == "root" )
-                {
-                    scopeIndex = _context.Scopes.Count - 1;
-                }
-                else if ( scopeReference == "parent" )
-                {
-                    scopeIndex = 1;
-                }
-                else if ( scopeReference == "current" )
-                {
-                    scopeIndex = 0;
-                }
-                else
-                {
-                    scopeIndex = scopeReference.AsIntegerOrNull();
-                }
-            }
-
-            if ( scopeIndex == null )
             {
-                throw new Exception( $"SetMergeFieldValue failed. Scope reference \"{ scopeReference }\" is invalid." );
+                scopeIndex = 0;
             }
 
             var fieldValue = GetDotLiquidCompatibleValue( value );
 
             // Set the variable in the specified scope.
-            _context.Scopes[scopeIndex.Value][key] = fieldValue;
+            _context.Scopes[scopeIndex][key] = fieldValue;
         }
 
         /// <summary>

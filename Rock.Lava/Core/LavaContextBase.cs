@@ -36,18 +36,13 @@ namespace Rock.Lava
         }
 
         public abstract List<string> GetEnabledCommands();
-        //public abstract IList<LavaDictionary> GetEnvironments();
-        //public abstract LavaDictionary GetMergeFieldsInLocalScope();
-        //public abstract IDictionary<string, object> GetMergeFieldsInContainerScope();
-        //public abstract IDictionary<string, object> GetMergeFieldsInScope();
 
         public abstract object GetMergeFieldValue( string key, object defaultValue = null );
 
         public abstract LavaDictionary GetMergeFields();
-        //public abstract IList<LavaDictionary> GetScopes();
 
-        public abstract string ResolveMergeFields( string content, IDictionary<string, object> mergeObjects, string enabledLavaCommands = null, bool encodeStrings = false, bool throwExceptionOnErrors = false );
         public abstract void SetEnabledCommands( IEnumerable<string> commands );
+
         public void SetEnabledCommands( string commandList, string delimiter = "," )
         {
             var commands = commandList.SplitDelimitedValues( delimiter );
@@ -60,12 +55,8 @@ namespace Rock.Lava
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        public void SetMergeFieldValue( string key, object value )
-        {
-            SetMergeFieldValue( key, value, null );
-        }
-
-        public abstract void SetMergeFieldValue( string key, object value, string scopeSelector );
+        /// <param name="scope"></param>
+        public abstract void SetMergeFieldValue( string key, object value, LavaContextRelativeScopeSpecifier scope = LavaContextRelativeScopeSpecifier.Current );
 
         public void SetMergeFieldValues( LavaDictionary values )
         {

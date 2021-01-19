@@ -24,7 +24,7 @@ namespace Rock.Lava.DotLiquid
     /// <summary>
     /// An implementation of a Lava Data Object that can be used by the DotLiquid Templating Framework.
     /// </summary>
-    internal class DotLiquidLavaDataObjectProxy : ILiquidizable, IIndexable, IValueTypeConvertible, ILavaDataObject, IDictionary<string, object>
+    internal class DotLiquidLavaDataObjectProxy : ILiquidizable, IIndexable, IValueTypeConvertible, IDictionary<string, object>, ILavaDataObjectSource // ILavaDataObject
     {
         private ILavaDataObject _dataObject = null;
 
@@ -254,11 +254,6 @@ namespace Rock.Lava.DotLiquid
             return GetEnumerator();
         }
 
-        //public Dictionary<string, object> ToDictionary()
-        //{
-        //    return _dataObject.ToDictionary();
-        //}
-
         ICollection<string> IDictionary<string, object>.Keys
         {
             get
@@ -345,6 +340,14 @@ namespace Rock.Lava.DotLiquid
             }
         }
 */
+
+        #endregion
+
+        #region ILavaDataObjectSource
+        public ILavaDataObject GetLavaDataObject()
+        {
+            return _dataObject;
+        }
 
         #endregion
     }

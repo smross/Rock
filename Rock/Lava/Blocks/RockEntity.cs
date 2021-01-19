@@ -350,7 +350,7 @@ namespace Rock.Lava.Blocks
                         if ( parms.GetValueOrNull( "count" ).AsBoolean() )
                         {
                             int countResult = queryResult.Count();
-                            context.SetMergeFieldValue( "count", countResult, "root" );
+                            context.SetMergeFieldValue( "count", countResult, LavaContextRelativeScopeSpecifier.Root );
                         }
                         else
                         {
@@ -426,10 +426,10 @@ namespace Rock.Lava.Blocks
                             // if there is only one item to return set an alternative non-array based variable
                             if ( resultList.Count == 1 )
                             {
-                                context.SetMergeFieldValue( EntityName, resultList.FirstOrDefault(), "root" );
+                                context.SetMergeFieldValue( EntityName, resultList.FirstOrDefault(), LavaContextRelativeScopeSpecifier.Root );
                             }
 
-                            context.SetMergeFieldValue( parms["iterator"], resultList, "root" );
+                            context.SetMergeFieldValue( parms["iterator"], resultList, LavaContextRelativeScopeSpecifier.Root );
                         }
                     }
                 }

@@ -21,6 +21,16 @@ using System.Collections.Generic;
 namespace Rock.Lava
 {
     /// <summary>
+    /// Specifies the scope of a variable relative to the current Lava context.
+    /// </summary>
+    public enum LavaContextRelativeScopeSpecifier
+    {
+        Current = 0,
+        Parent = 1,
+        Root = 2
+    }
+
+    /// <summary>
     /// Represents the configuration and data used by the Lava Engine to resolve a Lava template.
     /// </summary>
     public interface ILavaContext
@@ -90,19 +100,18 @@ namespace Rock.Lava
         /// Sets the value of a field that is accessible for merging into a template.
         /// </summary>
         /// <param name="key"></param>
-        /// <param name="defaultValue"></param>
+        /// <param name="value"></param>
         /// <returns></returns>
-        void SetMergeFieldValue( string key, object value );
+        //void SetMergeFieldValue( string key, object value );
 
         /// <summary>
         /// Sets the value of a field that is accessible for merging into a template.
         /// </summary>
         /// <param name="key"></param>
-        /// <param name="defaultValue"></param>
-        /// <param name="scopeSelector>"root|parent|current", or the index number of a scope in the current stack.</param>
+        /// <param name="value"></param>
+        /// <param name="scope"></param>
         /// <returns></returns>
-        [Obsolete("Use SetMergeFieldValue without the scopeSelector parameter.")]
-        void SetMergeFieldValue( string key, object value, string scopeSelector );
+        void SetMergeFieldValue( string key, object value, LavaContextRelativeScopeSpecifier scope = LavaContextRelativeScopeSpecifier.Current );
 
         /// <summary>
         /// Sets a collection of user-defined variables in the current context that are internally available to custom filters and tags.
@@ -133,18 +142,5 @@ namespace Rock.Lava
         /// Exits the current scope that has been created by <see cref="EnterChildScope" />
         /// </summary>
         void ExitChildScope();
-
-        /// <summary>
-        /// Use the information in this context to resolve the specified Lava template.
-        /// </summary>
-        /// <param name="content"></param>
-        /// <param name="mergeObjects"></param>
-        /// <param name="enabledLavaCommands"></param>
-        /// <param name="encodeStrings"></param>
-        /// <param name="throwExceptionOnErrors"></param>
-        /// <returns></returns>
-[Obsolete("Should use LavaEngine.TryRender instead?")]
-        string ResolveMergeFields( string content, IDictionary<string, object> mergeObjects, string enabledLavaCommands = null, bool encodeStrings = false, bool throwExceptionOnErrors = false );
-
     }
 }

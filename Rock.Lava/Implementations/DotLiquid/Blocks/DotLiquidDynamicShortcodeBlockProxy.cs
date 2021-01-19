@@ -225,7 +225,13 @@ namespace Rock.Lava.DotLiquid
                 parms.AddOrReplace( "RecursionDepth", currentRecurrsionDepth );
 
                 var lavaTemplate = _shortcodeMarkup;
-                var blockMarkup = lavaContext.ResolveMergeFields( _blockMarkup.ToString(), _internalMergeFields, _enabledSecurityCommands );
+
+                string blockMarkup;
+
+                lavaContext.SetEnabledCommands( _enabledSecurityCommands, "," );
+                lavaContext.SetMergeFieldValues( _internalMergeFields );
+
+                LavaEngine.CurrentEngine.TryRender( _blockMarkup.ToString(), out blockMarkup, lavaContext );
 
                 // pull child parameters from block content
                 Dictionary<string, object> childParamters;
@@ -255,7 +261,9 @@ namespace Rock.Lava.DotLiquid
                 // next ensure they did not use any entity commands in the block that are not allowed
                 // this is needed as the shortcode it configured to allow entities for processing that
                 // might allow more entities than the source block, template, action, etc allows
-                var securityCheck = lavaContext.ResolveMergeFields( blockMarkup, new Dictionary<string, object>(), _enabledSecurityCommands);
+                string securityCheck;
+
+                LavaEngine.CurrentEngine.TryRender( blockMarkup, out securityCheck, lavaContext );
 
                 Regex securityPattern = new Regex( string.Format( Constants.Messages.NotAuthorizedMessage, ".*" ) );
                 Match securityMatch = securityPattern.Match( securityCheck );
@@ -271,8 +279,14 @@ namespace Rock.Lava.DotLiquid
                         _enabledSecurityCommands = _shortcodeEnabledLavaCommands;
                     }
 
-                    var results = lavaContext.ResolveMergeFields( lavaTemplate, parms, _enabledSecurityCommands );
+                    lavaContext.SetMergeFieldValues( parms );
+
+                    string results;
+
+                    LavaEngine.CurrentEngine.TryRender( lavaTemplate, out results, lavaContext );
+
                     result.Write( results.Trim() );
+
                     base.Render( context, result );
                 }
             }
@@ -412,7 +426,11 @@ namespace Rock.Lava.DotLiquid
             }
 
             // first run lava across the inputted markup
-            var resolvedMarkup = context.ResolveMergeFields( markup, _internalMergeFields );
+            string resolvedMarkup;
+
+            context.SetMergeFieldValues( _internalMergeFields );
+
+            LavaEngine.CurrentEngine.TryRender( markup, out resolvedMarkup, context );
 
             var markupItems = Regex.Matches( resolvedMarkup, @"(\S*?:'[^']+')" )
                 .Cast<Match>()
