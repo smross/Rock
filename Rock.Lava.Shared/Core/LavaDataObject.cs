@@ -29,7 +29,7 @@ namespace Rock.Lava
     /// It can also be used to create a Lava Proxy for C# objects that cannot directly inherit from this class.
     /// </summary>
     /// <seealso cref="System.Dynamic.DynamicObject" />
-    public class LavaDataObject : DynamicObject, ILavaDataObject, IDictionary<string, object>
+    public class LavaDataObject : DynamicObject, ILavaDataDictionary, IDictionary<string, object>
     {
         private Dictionary<string, object> _members = new Dictionary<string, object>();
 

@@ -28,7 +28,7 @@ namespace Rock.CheckIn
     /// A schedule options for the current check-in
     /// </summary>
     [DataContract]
-    public class CheckInSchedule : ILavaDataObject
+    public class CheckInSchedule : ILavaDataDictionary
     {
         /// <summary>
         /// Gets or sets the schedule.

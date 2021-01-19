@@ -80,7 +80,7 @@ namespace Rock.Lava.Fluid
             }
 
             // Register all Types that implement ILavaDataObject as safe to render.
-            RegisterSafeType( typeof( Rock.Lava.ILavaDataObject ) );
+            RegisterSafeType( typeof( Rock.Lava.ILavaDataDictionary ) );
 
             // Set the file provider to resolve included file references.
             if ( options.FileSystem == null )

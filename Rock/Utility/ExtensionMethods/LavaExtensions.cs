@@ -125,9 +125,9 @@ namespace Rock
             }
 
             // If the object is liquidable, get the object return by its ToLiquid() method.
-            if ( myObject is ILavaDataObjectSource )
+            if ( myObject is ILavaDataDictionarySource )
             {
-                myObject = ( (ILavaDataObjectSource)myObject ).GetLavaDataObject();
+                myObject = ( (ILavaDataDictionarySource)myObject ).GetLavaDataDictionary();
             }
 
             // If the object is null, return an empty string
@@ -206,9 +206,9 @@ namespace Rock
             }
 
             // If the object is a Rock Liquidizable object, call the object's AvailableKeys method to determine the properties available.
-            if ( myObject is ILavaDataObject )
+            if ( myObject is ILavaDataDictionary )
             {
-                var liquidObject = (ILavaDataObject)myObject;
+                var liquidObject = (ILavaDataDictionary)myObject;
 
                 var result = new Dictionary<string, object>();
 

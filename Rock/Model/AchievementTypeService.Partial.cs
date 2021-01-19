@@ -320,7 +320,7 @@ namespace Rock.Model
     /// <summary>
     /// Statement of Progress for an Achievement Type
     /// </summary>
-    public class ProgressStatement: ILavaDataObject
+    public class ProgressStatement: ILavaDataDictionary
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ProgressStatement" /> class.

@@ -23,7 +23,7 @@ namespace Rock.Store
     /// <summary>
     /// Base model class for the store 
     /// </summary>
-    public class StoreModel : ILavaDataObjectSource
+    public class StoreModel : ILavaDataDictionarySource
     {
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace Rock.Store
         /// </summary>
         public StoreModel() { }
 
-        public ILavaDataObject GetLavaDataObject()
+        public ILavaDataDictionary GetLavaDataDictionary()
         {
             var dictionary = this.ToLiquid( false ) as Dictionary<string, object>;
 
@@ -69,9 +69,9 @@ namespace Rock.Store
                     propValue = ((Guid)propValue).ToString();
                 }
 
-                if ( debug && propValue is ILavaDataObjectSource )
+                if ( debug && propValue is ILavaDataDictionarySource )
                 {
-                    dictionary.Add( propInfo.Name, ((ILavaDataObjectSource)propValue).GetLavaDataObject() );
+                    dictionary.Add( propInfo.Name, ((ILavaDataDictionarySource)propValue).GetLavaDataDictionary() );
                 }
                 else
                 {

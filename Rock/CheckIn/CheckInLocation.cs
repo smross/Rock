@@ -28,7 +28,7 @@ namespace Rock.CheckIn
     /// A location option for the current check-in
     /// </summary>
     [DataContract]
-    public class CheckInLocation : ILavaDataObject
+    public class CheckInLocation : ILavaDataDictionary
     {
         /// <summary>
         /// Gets or sets the location.

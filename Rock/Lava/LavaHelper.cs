@@ -96,7 +96,7 @@ namespace Rock.Lava
                 foreach ( var contextEntityType in rockPage.GetContextEntityTypes() )
                 {
                     var contextEntity = rockPage.GetCurrentContext( contextEntityType );
-                    if ( contextEntity != null && contextEntity is ILavaDataObject )
+                    if ( contextEntity != null && contextEntity is ILavaDataDictionary )
                     {
                         var type = Type.GetType( contextEntityType.AssemblyName ?? contextEntityType.Name );
                         if ( type != null )

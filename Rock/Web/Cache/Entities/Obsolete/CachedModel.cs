@@ -36,7 +36,7 @@ namespace Rock.Web.Cache
     [DataContract]
     [RockObsolete( "1.8" )]
     [Obsolete( "Use ModelCache instead", true )]
-    public abstract class CachedModel<T> : CachedEntity<T>, ISecured, Rock.Attribute.IHasAttributes, ILavaDataObject
+    public abstract class CachedModel<T> : CachedEntity<T>, ISecured, Rock.Attribute.IHasAttributes, ILavaDataDictionary
         where T : Rock.Data.Entity<T>, ISecured, Rock.Attribute.IHasAttributes, new()
     {
         /// <summary>

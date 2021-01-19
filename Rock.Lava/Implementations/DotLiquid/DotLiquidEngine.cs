@@ -95,7 +95,7 @@ namespace Rock.Lava.DotLiquid
             RegisterFilters( options.FilterImplementationTypes );
 
             // Register all Types that implement ILavaDataObject as safe to render.
-            RegisterSafeType( typeof( Rock.Lava.ILavaDataObject ) );
+            RegisterSafeType( typeof( Rock.Lava.ILavaDataDictionary ) );
         }
 
         private void RegisterFilters( IEnumerable<Type> filterImplementationTypes )
@@ -169,9 +169,9 @@ namespace Rock.Lava.DotLiquid
             // Unwrap DotLiquidLavaDataObjectProxy objects
             for ( int i = 0; i < args.Count; i ++ )
             {
-                if ( ( args[i] is ILavaDataObjectSource ) ) //.GetType() == typeof( DotLiquidLavaDataObjectProxy ) )
+                if ( ( args[i] is ILavaDataDictionarySource ) ) //.GetType() == typeof( DotLiquidLavaDataObjectProxy ) )
                 {
-                    args[i] = ( (ILavaDataObjectSource)args[i] ).GetLavaDataObject();
+                    args[i] = ( (ILavaDataDictionarySource)args[i] ).GetLavaDataDictionary();
                 }
 
                 if ( args[i] is DropProxy )
@@ -262,21 +262,21 @@ namespace Rock.Lava.DotLiquid
 
         public override void RegisterSafeType( Type type, string[] allowedMembers = null )
         {
-            if ( typeof( Rock.Lava.ILavaDataObjectSource ).IsAssignableFrom( type ) )
+            if ( typeof( Rock.Lava.ILavaDataDictionarySource ).IsAssignableFrom( type ) )
             {
                 Template.RegisterSafeType( type,
                     ( x ) =>
                     {
-                        return ( (Rock.Lava.ILavaDataObjectSource)x ).GetLavaDataObject();
+                        return ( (Rock.Lava.ILavaDataDictionarySource)x ).GetLavaDataDictionary();
                     } );
             }
-            else if ( typeof( Rock.Lava.ILavaDataObject ).IsAssignableFrom( type ) )
+            else if ( typeof( Rock.Lava.ILavaDataDictionary ).IsAssignableFrom( type ) )
             {
-                Template.RegisterSafeType( typeof( Rock.Lava.ILavaDataObject ),
+                Template.RegisterSafeType( typeof( Rock.Lava.ILavaDataDictionary ),
                     ( x ) =>
                     {
                         //var dataObject = new LavaDataObject( x );
-                        return new DotLiquidLavaDataObjectProxy( x as ILavaDataObject );
+                        return new DotLiquidLavaDataObjectProxy( x as ILavaDataDictionary );
                         //return dataObject;
                     } );
             }

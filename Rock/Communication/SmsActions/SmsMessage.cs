@@ -26,7 +26,7 @@ namespace Rock.Communication.SmsActions
     /// 
     /// </summary>
     /// <seealso cref="Rock.ILavaDataObject" />
-    public class SmsMessage : ILavaDataObject
+    public class SmsMessage : ILavaDataDictionary
     {
         /// <summary>
         /// Gets or sets the number the message was sent to.

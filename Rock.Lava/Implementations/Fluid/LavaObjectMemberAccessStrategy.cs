@@ -79,8 +79,8 @@ namespace Rock.Lava.Fluid
             }
 
             // Check for ILavaDataObject implementation.
-            if ( typeof( ILavaDataObjectSource ).IsAssignableFrom( type )
-                 || typeof( ILavaDataObject ).IsAssignableFrom( type ) )
+            if ( typeof( ILavaDataDictionarySource ).IsAssignableFrom( type )
+                 || typeof( ILavaDataDictionary ).IsAssignableFrom( type ) )
             {
                 return _lavaDataSourceMemberAccessor;
             }
@@ -180,15 +180,15 @@ namespace Rock.Lava.Fluid
     {
         public object Get( object obj, string name, TemplateContext ctx )
         {
-            ILavaDataObject lavaObject;
+            ILavaDataDictionary lavaObject;
 
-            if ( obj is Rock.Lava.ILavaDataObjectSource lavaSource )
+            if ( obj is Rock.Lava.ILavaDataDictionarySource lavaSource )
             {
-                lavaObject = lavaSource.GetLavaDataObject();
+                lavaObject = lavaSource.GetLavaDataDictionary();
             }
             else
             {
-                lavaObject = (ILavaDataObject)obj;
+                lavaObject = (ILavaDataDictionary)obj;
             }
 
             return lavaObject.GetValue( name );

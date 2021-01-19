@@ -22,8 +22,7 @@ namespace Rock.Lava
     /// <summary>
     /// Represents an object that can be accessed as a dictionary of values by the Lava Engine.
     /// </summary>
-    [Obsolete("Rename to LavaDataDictionary?")]
-    public interface ILavaDataObject
+    public interface ILavaDataDictionary
     {
         /// <summary>
         /// Returns the data value associated with the specified key.

@@ -32,7 +32,7 @@ namespace Rock.UniversalSearch.IndexModels
     /// Base Index Model
     /// </summary>
     /// <seealso cref="System.Dynamic.DynamicObject" />
-    public class IndexModelBase : DynamicObject, ILavaDataObject
+    public class IndexModelBase : DynamicObject, ILavaDataDictionary
     {
         private Dictionary<string, object> _members = new Dictionary<string, object>();
         object Instance;

@@ -25,7 +25,7 @@ namespace Rock.CheckIn
     /// </summary>
     /// <seealso cref="Rock.ILavaDataObject" />
     [DataContract]
-    public class CheckInMessage : ILavaDataObject
+    public class CheckInMessage : ILavaDataDictionary
     {
         /// <summary>
         /// Gets or sets the message text.

@@ -27,7 +27,7 @@ namespace Rock.CheckIn
     /// A group option for the current check-in
     /// </summary>
     [DataContract]
-    public class CheckInGroup : ILavaDataObject
+    public class CheckInGroup : ILavaDataDictionary
     {
         /// <summary>
         /// Gets or sets the group.

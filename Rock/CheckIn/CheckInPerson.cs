@@ -29,7 +29,7 @@ namespace Rock.CheckIn
     /// A person option for the current check-in
     /// </summary>
     [DataContract]
-    public class CheckInPerson : ILavaDataObject, IHasAttributesWrapper
+    public class CheckInPerson : ILavaDataDictionary, IHasAttributesWrapper
     {
         /// <summary>
         /// Gets or sets the person.
