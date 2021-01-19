@@ -19,12 +19,26 @@ using System.Collections.Generic;
 
 namespace Rock.Lava
 {
+    /// <summary>
+    /// Configuration options used to initialize the Lava Engine.
+    /// </summary>
     public class LavaEngineConfigurationOptions
     {
+        /// <summary>
+        /// Gets or sets the component that provides environment-specific caching for the Lava Engine.
+        /// </summary>
         public ILavaTemplateCacheService CacheService { get; set; }
 
+        /// <summary>
+        /// Gets or sets the component that provides environment-specific file access for the Lava Engine.
+        /// The file system is required to locate aand load templates reference by the {% include %} command.
+        /// </summary>
         public ILavaFileSystem FileSystem { get; set; }
 
-        public IList<Type> FilterImplementationTypes { get; set; }
+        /// <summary>
+        /// Gets or sets the collection of Types that define custom Lava filter functions.
+        /// By convention, filters are declared as public static methods of a class Type.
+        /// </summary>
+        public IEnumerable<Type> FilterImplementationTypes { get; set; }
     }
 }
