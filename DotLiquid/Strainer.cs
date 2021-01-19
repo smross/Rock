@@ -12,9 +12,21 @@ namespace DotLiquid
 	/// 
 	/// One of the strainer's responsibilities is to keep malicious method calls out
 	/// </summary>
+    /// <remarks>
+    /// This version of the Strainer has been modified to allow specific filter functions to be added, in addition to filters contained in declaring types.
+    /// This supports boxing and unboxing of filter parameters to replace DotLiquid types with Lava types.
+    /// </remarks>
 	public class Strainer
 	{
-		private static readonly Dictionary<string, Type> Filters = new Dictionary<string, Type>();
+        private static readonly Dictionary<string, Type> Filters = new Dictionary<string, Type>();
+
+        private static readonly Dictionary<string, Func<Context, List<object>, object>> _filterFunctions = new Dictionary<string, Func<Context, List<object>, object>>();
+
+        // Register a single filter method.
+        public static void RegisterFilter( string filterName, Func<Context, List<object>, object> filterFunction )
+        {
+            _filterFunctions.Add( filterName, filterFunction );
+        }
 
 		public static void GlobalFilter(Type filter)
 		{
@@ -26,13 +38,16 @@ namespace DotLiquid
 			Strainer strainer = new Strainer(context);
 			foreach (var keyValue in Filters)
 				strainer.Extend(keyValue.Value);
-			return strainer;
+            foreach ( var keyValue in _filterFunctions )
+                strainer.Extend( keyValue.Key, keyValue.Value );
+            return strainer;
 		}
 
 		private readonly Context _context;
 		private readonly Dictionary<string, IList<MethodInfo>> _methods = new Dictionary<string, IList<MethodInfo>>();
+        private readonly Dictionary<string, IList<Func<Context, List<object>, object>>> _functions = new Dictionary<string, IList<Func<Context, List<object>, object>>>();
 
-		public IEnumerable<MethodInfo> Methods
+        public IEnumerable<MethodInfo> Methods
 		{
 			get { return _methods.Values.SelectMany(m => m); }
 		}
@@ -42,12 +57,28 @@ namespace DotLiquid
 			_context = context;
 		}
 
-		/// <summary>
-		/// In this C# implementation, we can't use mixins. So we grab all the static
-		/// methods from the specified type and use them instead.
-		/// </summary>
-		/// <param name="type"></param>
-		public void Extend(Type type)
+        /// <summary>
+        /// Add a specific filter function.
+        /// </summary>
+        /// <param name="type"></param>
+        public void Extend( string filterName, Func<Context, List<object>, object> filterFunction )
+        {
+            var name = Template.NamingConvention.GetMemberName( filterName );
+
+            if ( !_functions.ContainsKey( name ) )
+            {
+                _functions[name] = new List<Func<Context, List<object>, object>>();
+            }
+
+            _functions[name].Add( filterFunction );
+        }
+
+        /// <summary>
+        /// In this C# implementation, we can't use mixins. So we grab all the static
+        /// methods from the specified type and use them instead.
+        /// </summary>
+        /// <param name="type"></param>
+        public void Extend(Type type)
 		{
 			// From what I can tell, calls to Extend should replace existing filters. So be it.
 			var methods = type.GetMethods(BindingFlags.Public | BindingFlags.Static);
@@ -68,14 +99,29 @@ namespace DotLiquid
 
 		public bool RespondTo(string method)
 		{
-			return _methods.ContainsKey(method);
+			return _methods.ContainsKey(method) || _functions.ContainsKey(method);
 		}
 
 		public object Invoke(string method, List<object> args, Type filterContextParameterType = null, Func<Context, object> filterContextParameterTransformer = null )
 		{
-            if (filterContextParameterType == null)
+            if ( filterContextParameterType == null )
             {
                 filterContextParameterType = typeof(Context);
+            }
+
+            // If a specific function is registered for the filter name, prefer it.
+            if ( _functions.ContainsKey( method ) )
+            {
+                var filterFunction = _functions[method].FirstOrDefault();
+
+                try
+                {
+                    return filterFunction( _context, args );
+                }
+                catch ( TargetInvocationException ex )
+                {
+                    throw ex.InnerException;
+                }
             }
 
             ParameterInfo[] parameterInfos = null;
