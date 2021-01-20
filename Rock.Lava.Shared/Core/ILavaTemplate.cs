@@ -26,13 +26,6 @@ namespace Rock.Lava
     public interface ILavaTemplate
     {
         /// <summary>
-        /// Set a value that will be used when rendering this template.
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        //void SetContextValue( string key, object value );
-
-        /// <summary>
         /// Try to render the template.
         /// Errors will be included in the rendered output.
         /// </summary>
@@ -45,27 +38,38 @@ namespace Rock.Lava
         /// </summary>
         /// <param name="values"></param>
         /// <returns></returns>        
-        [Obsolete("Use TryRender instead")]
         string Render( IDictionary<string, object> values );
 
         /// <summary>
         /// Try to render the template using the provided context values.
         /// </summary>
-        /// <param name="inputTemplate"></param>
+        /// <param name="values"></param>
         /// <param name="output"></param>
+        /// <param name="errors"></param>
         /// <returns></returns>
         bool TryRender( IDictionary<string, object> values, out string output, out IList<Exception> errors );
 
-        [Obsolete("Use TryRender( ILavaContext... ) instead. Should LavaParameters include Context rather than Registers, etc.?")]
-        bool TryRender( LavaRenderParameters parameters, out string output, out IList<Exception> errors );
-
+        /// <summary>
+        /// Try to render the template using the provided context values.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="output"></param>
+        /// <param name="errors"></param>
+        /// <returns></returns>
         bool TryRender( ILavaContext context, out string output, out IList<Exception> errors );
+
+        /// <summary>
+        /// Try to render the template using the provided render parameters.
+        /// </summary>
+        /// <param name="parameters"></param>
+        /// <param name="output"></param>
+        /// <param name="errors"></param>
+        /// <returns></returns>
+        bool TryRender( LavaRenderParameters parameters, out string output, out IList<Exception> errors );
 
         /// <summary>
         /// The set of Lava commands permitted for this template.
         /// </summary>
         IList<string> EnabledCommands { get; set; }
-
-        //ILavaEngine LavaEngine { get;  }
     }
 }

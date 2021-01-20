@@ -31,6 +31,7 @@ namespace Rock.Lava.Fluid
     /// <remarks>
     /// This class should exist in the Rock.Lava.Fluid library.
     /// </remarks>
+    [Obsolete]
     public class FluidTemplateProxy : LavaTemplateBase
     {
         #region Constructors
@@ -69,7 +70,7 @@ namespace Rock.Lava.Fluid
         //{
         //    throw new NotImplementedException();
         //}
-
+/*
         protected override bool OnTryRender( ILavaContext context, out string output, out IList<Exception> errors )
         {
             output = null;
@@ -107,36 +108,36 @@ namespace Rock.Lava.Fluid
 
             return true;
         }
+*/
+        //protected override bool OnTryRender( LavaRenderParameters parameters, out string output, out IList<Exception> errors )
+        //{
+        //    output = null;
+        //    errors = new List<Exception>();
 
-        protected override bool OnTryRender( LavaRenderParameters parameters, out string output, out IList<Exception> errors )
-        {
-            output = null;
-            errors = new List<Exception>();
+        //    var templateContext = new TemplateContext();
 
-            var templateContext = new TemplateContext();
+        //    // Copy the local variables into the Fluid Template context.
+        //    // TODO: What about InstanceAssigns and Registers?
+        //    if ( parameters.LocalVariables != null )
+        //    {
+        //        foreach ( var p in parameters.LocalVariables )
+        //        {
+        //            templateContext.SetValue( p.Key, p.Value );
+        //        }
+        //    }
 
-            // Copy the local variables into the Fluid Template context.
-            // TODO: What about InstanceAssigns and Registers?
-            if ( parameters.LocalVariables != null )
-            {
-                foreach ( var p in parameters.LocalVariables )
-                {
-                    templateContext.SetValue( p.Key, p.Value );
-                }
-            }
+        //    try
+        //    {
+        //        output = _template.Render( templateContext );
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        errors.Add( ex );
 
-            try
-            {
-                output = _template.Render( templateContext );
-            }
-            catch (Exception ex)
-            {
-                errors.Add( ex );
-
-                return false;
-            }
+        //        return false;
+        //    }
             
-            return true;
-        }
+        //    return true;
+        //}
     }
 }

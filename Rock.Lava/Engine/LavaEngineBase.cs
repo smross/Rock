@@ -27,9 +27,6 @@ namespace Rock.Lava
     {
         /// <summary>
         /// Initializes the Lava engine.
-        /// Doing this in startup will force the static Liquid class to get instantiated
-        /// so that the standard filters are loaded prior to the custom RockFilter.
-        /// This is to allow the custom 'Date' filter to replace the standard Date filter.
         /// </summary>
         public void Initialize( LavaEngineConfigurationOptions options )
         {
@@ -49,9 +46,17 @@ namespace Rock.Lava
         /// <param name="options"></param>
         public abstract void OnSetConfiguration( LavaEngineConfigurationOptions options );
 
+        /// <summary>
+        /// Gets the descriptive name of the current Liquid engine that is providing template parsing and rendering functionality for the Lava library.
+        /// </summary>
         public abstract string EngineName { get; }
 
-        public abstract ILavaContext NewContext();
+        /// <summary>
+        /// Create a new template context and add the specified merge fields.
+        /// </summary>
+        /// <param name="mergeFields"></param>
+        /// <returns></returns>
+        public abstract ILavaContext NewContext( IDictionary<string, object> mergeFields = null );
 
         private ILavaTemplateCacheService _cacheService;
 
@@ -254,7 +259,9 @@ namespace Rock.Lava
                     context = NewContext();
                 }
 
-                return OnTryRender( template, out output, context );
+                var parameters = new LavaRenderParameters { LavaContext = context };
+
+                return OnTryRender( template, parameters, out output );
             }
             catch ( Exception ex )
             {
@@ -267,14 +274,16 @@ namespace Rock.Lava
         }
 
         /// <summary>
-        /// Override this method to render the Lava template using the underlying rendering engine.
+        /// Try to render the specified Lava template using the specified parameters.
         /// </summary>
         /// <param name="inputTemplate"></param>
+        /// <param name="parameters"></param>
         /// <param name="output"></param>
-        /// <param name="context"></param>
         /// <returns></returns>
-        [Obsolete("Use OnTryRender( ILavaTemplate... ) instead.")]
-        protected abstract bool OnTryRender( string inputTemplate, out string output, ILavaContext context );
+        public bool TryRender( ILavaTemplate inputTemplate, LavaRenderParameters parameters, out string output )
+        {
+            return OnTryRender( inputTemplate, parameters, out output );
+        }
 
         /// <summary>
         /// Override this method to render the Lava template using the underlying rendering engine.
@@ -283,7 +292,7 @@ namespace Rock.Lava
         /// <param name="output"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        protected abstract bool OnTryRender( ILavaTemplate inputTemplate, out string output, ILavaContext context );
+        protected abstract bool OnTryRender( ILavaTemplate inputTemplate, LavaRenderParameters parameters, out string output );
 
         public abstract bool AreEqualValue( object left, object right );
 

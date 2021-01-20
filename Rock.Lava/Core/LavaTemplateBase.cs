@@ -24,12 +24,10 @@ namespace Rock.Lava
     /// </summary>
     public abstract class LavaTemplateBase : ILavaTemplate
     {
-        //public abstract ILavaEngine LavaEngine { get; }
-
         /// <summary>
         /// The set of Lava commands permitted for this template.
         /// </summary>
-        [Obsolete("Do Lava Commands need to be enabled (and cached) for a Template, or only at the context level?")]
+        [Obsolete( "Do Lava Commands need to be enabled (and cached) for a Template, or only at the context level?" )]
         public IList<string> EnabledCommands { get; set; }
 
         /// <summary>
@@ -60,33 +58,51 @@ namespace Rock.Lava
                 // Append error messages to the output.
                 foreach ( var error in errors )
                 {
-                    output += "\nLiquid Error: " + error.Message;
+                    output += "\nLava Error: " + error.Message;
                 }
             }
 
-            return output;           
+            return output;
         }
 
-        //[Obsolete("Not used?")]
-        //public abstract void SetContextValue( string key, object value );
-
+        /// <summary>
+        /// Try to render the template using the provided merge fields.
+        /// </summary>
+        /// <param name="values"></param>
+        /// <param name="output"></param>
+        /// <param name="errors"></param>
+        /// <returns></returns>
         public bool TryRender( IDictionary<string, object> values, out string output, out IList<Exception> errors )
         {
-            if ( values == null )
-            {
-                values = new Dictionary<string, object>();
-            }
+            var context = LavaEngine.CurrentEngine.NewContext( values );
 
-            // Add the EnabledCommands setting to the context.
-            values["EnabledCommands"] = this.EnabledCommands;
+            // Set the EnabledCommands for this template.
+            context.SetEnabledCommands( this.EnabledCommands );
 
-            var parameters = new LavaRenderParameters();
-
-            parameters.LocalVariables = values;
-
-            return OnTryRender( parameters, out output, out errors );
+            return TryRender( context, out output, out errors );
         }
 
+        /// <summary>
+        /// Try to render the template using the provided context.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="output"></param>
+        /// <param name="errors"></param>
+        /// <returns></returns>
+        public bool TryRender( ILavaContext context, out string output, out IList<Exception> errors )
+        {
+            var parameters = new LavaRenderParameters { LavaContext = context };
+
+            return TryRender( parameters, out output, out errors );
+        }
+
+        /// <summary>
+        /// Try to render the template using the provided settings.
+        /// </summary>
+        /// <param name="parameters"></param>
+        /// <param name="output"></param>
+        /// <param name="errors"></param>
+        /// <returns></returns>
         public bool TryRender( LavaRenderParameters parameters, out string output, out IList<Exception> errors )
         {
             if ( parameters == null )
@@ -94,28 +110,23 @@ namespace Rock.Lava
                 parameters = new LavaRenderParameters();
             }
 
-            return OnTryRender( parameters, out output, out errors );
-        }
-
-        public bool TryRender( ILavaContext context, out string output, out IList<Exception> errors )
-        {
-            //if ( parameters == null )
-            //{
-            //    parameters = new LavaRenderParameters();
-            //}
-
-            return OnTryRender( context, out output, out errors );
+            return TryRenderInternal( parameters, out output, out errors );
         }
 
         /// <summary>
-        /// Override this method to implement the rendering using a Liquid rendering engine implementation.
+        /// Render the template using the Lava Engine.
         /// </summary>
         /// <param name="parameters"></param>
         /// <param name="output"></param>
         /// <param name="errors"></param>
         /// <returns></returns>
-        protected abstract bool OnTryRender( LavaRenderParameters parameters, out string output, out IList<Exception> errors );
-        protected abstract bool OnTryRender( ILavaContext context, out string output, out IList<Exception> errors );
+        private bool TryRenderInternal( LavaRenderParameters parameters, out string output, out IList<Exception> errors )
+        {
+            errors = new List<Exception>();
 
+            var success = LavaEngine.CurrentEngine.TryRender( this, parameters, out output );
+
+            return success;
+        }
     }
 }

@@ -19,7 +19,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using DotLiquid;
-using Rock.Lava.Filters;
+using Rock.Common;
 
 namespace Rock.Lava.DotLiquid
 {
@@ -44,7 +44,7 @@ namespace Rock.Lava.DotLiquid
             }
         }
 
-        public override ILavaContext NewContext()
+        public override ILavaContext NewContext( IDictionary<string, object> mergeFields = null )
         {
             var dotLiquidContext = new global::DotLiquid.Context();
 
@@ -54,7 +54,11 @@ namespace Rock.Lava.DotLiquid
             dotLiquidContext.FilterContextParameterType = Template.FilterContextParameterType;
             dotLiquidContext.FilterContextParameterTransformer = Template.FilterContextParameterTransformer;
 
-            return new DotLiquidLavaContext( dotLiquidContext );
+            var context = new DotLiquidLavaContext( dotLiquidContext );
+
+            context.SetMergeFieldValues( mergeFields );
+
+            return context;
         }
 
         /// <summary>
@@ -358,49 +362,73 @@ namespace Rock.Lava.DotLiquid
             renderSettings.Context = dotLiquidContext;
 
             // Store the EnabledCommands setting in the DotLiquid Registers.
-            renderSettings.Context.Registers["EnabledCommands"] = string.Join( ",", context.GetEnabledCommands() );
+            //renderSettings.Context.Registers["EnabledCommands"] = string.Join( ",", context.GetEnabledCommands() );
 
             return renderSettings;
         }
 
-        protected override bool OnTryRender( ILavaTemplate template, out string output, ILavaContext context )
+        protected override bool OnTryRender( ILavaTemplate template, LavaRenderParameters parameters, out string output )
         {
+        //    try
+        //    {
+        //        //var template = CreateNewDotLiquidTemplate( inputTemplate );
+        //        var liquidTemplate = template as DotLiquidTemplateProxy;
+
+        //        //liquidTemplate.
+        //        //var renderSettings = GetDotLiquidRenderParametersFromLavaContext( context );
+        //        IList<Exception> errors;
+
+        //        var success = template.TryRender( context, out output, out errors ); // renderSettings );
+
+        //        if ( !success )
+        //        {
+        //            // Process the first error.
+        //            ProcessException( new LavaException("Rendering error", errors[0] ) );
+        //        }
+
+        //        return success;
+        //    }
+        //    catch ( Exception ex )
+        //    {
+        //        ProcessException( ex, out output );
+
+        //        return false;
+        //    }
+        //}
+
+        //protected override bool OnTryRender( string inputTemplate, out string output, ILavaContext context )
+        //{
             try
             {
-                //var template = CreateNewDotLiquidTemplate( inputTemplate );
-                var liquidTemplate = template as DotLiquidTemplateProxy;
+                var renderSettings = new RenderParameters();
 
-                //liquidTemplate.
-                //var renderSettings = GetDotLiquidRenderParametersFromLavaContext( context );
-                IList<Exception> errors;
+                var templateContext = parameters.LavaContext as DotLiquidLavaContext;
 
-                var success = template.TryRender( context, out output, out errors ); // renderSettings );
-
-                if ( !success )
+                if ( templateContext == null )
                 {
-                    // Process the first error.
-                    ProcessException( new LavaException("Rendering error", errors[0] ) );
+                    throw new LavaException( "Invalid LavaContext parameter. This context type is not compatible with the DotLiquid templating engine." );
                 }
 
-                return success;
-            }
-            catch ( Exception ex )
-            {
-                ProcessException( ex, out output );
+                var dotLiquidContext = templateContext.DotLiquidContext;
 
-                return false;
-            }
-        }
+                // Set the transformation function for converting a DotLiquid Context to a Lava Context.
+                // This tranformation allows the context to be injected into a filter in a way that is independent
+                // of the underlying rendering framework.
+                dotLiquidContext.FilterContextParameterType = Template.FilterContextParameterType;
+                dotLiquidContext.FilterContextParameterTransformer = Template.FilterContextParameterTransformer;
 
-        protected override bool OnTryRender( string inputTemplate, out string output, ILavaContext context )
-        {
-            try
-            {
-                var template = CreateNewDotLiquidTemplate( inputTemplate );
+                renderSettings.Context = dotLiquidContext;
 
-                var renderSettings = GetDotLiquidRenderParametersFromLavaContext( context );
+                if ( parameters.ShouldEncodeStringsAsXml )
+                {
+                    renderSettings.ValueTypeTransformers = new Dictionary<Type, Func<object, object>>();
+                    renderSettings.ValueTypeTransformers.Add( typeof( string ), EncodeStringTransformer );
+                }
 
-                output = template.Render( renderSettings );
+                // Call the Render method of the underlying DotLiquid template.
+                var templateProxy = template as DotLiquidTemplateProxy;
+
+                output = templateProxy.DotLiquidTemplate.Render( renderSettings );
 
                 return true;
             }
@@ -409,6 +437,25 @@ namespace Rock.Lava.DotLiquid
                 ProcessException( ex, out output );
 
                 return false;
+            }
+        }
+
+        /// <summary>
+        /// Encodes string values that are processed by a lava filter
+        /// </summary>
+        /// <param name="s">The s.</param>
+        /// <returns></returns>
+        private static object EncodeStringTransformer( object s )
+        {
+            string val = ( s as string );
+
+            if ( !string.IsNullOrEmpty( val ) )
+            {
+                return val.EncodeXml();
+            }
+            else
+            {
+                return s;
             }
         }
 

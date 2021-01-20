@@ -30,7 +30,7 @@ namespace Rock.Lava
     }
 
     /// <summary>
-    /// Represents a Lava Template.
+    /// Represents the Lava Engine that is responsible for compiling and rendering templates.
     /// </summary>
     public interface ILavaEngine
     {
@@ -44,7 +44,6 @@ namespace Rock.Lava
         /// </summary>
         /// <param name="options"></param>
         void Initialize( LavaEngineConfigurationOptions options = null );
-        //void Initialize( ILavaFileSystem fileSystem, IList<Type> filterImplementationTypes = null );
 
         /// <summary>
         /// The descriptive name of the templating framework on which Lava is currently operating.
@@ -57,21 +56,40 @@ namespace Rock.Lava
         LavaEngineTypeSpecifier EngineType { get; }
 
         /// <summary>
-        /// Get a new context instance.
+        /// Get a new context instance containing the specified merge values.
         /// </summary>
+        /// <param name="values"></param>
         /// <returns></returns>
-        ILavaContext NewContext();
+        ILavaContext NewContext( IDictionary<string, object> values = null );
 
+        /// <summary>
+        /// Register a Lava Tag elemennt.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="factoryMethod"></param>
         void RegisterTag( string name, Func<string, IRockLavaTag> factoryMethod );
+
+        /// <summary>
+        /// Register a Lava Block element.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="factoryMethod"></param>
         void RegisterBlock( string name, Func<string, IRockLavaBlock> factoryMethod );
 
         /// <summary>
         /// Registers a shortcode with a factory method that provides the definition of the shortcode at runtime.
+        /// A dynamic shortcode is defined in the active Rock database, and its associated template can be modified at runtime.
         /// </summary>
         /// <param name="name"></param>
         /// <param name="factoryMethod"></param>
         void RegisterDynamicShortcode( string name, Func<string, DynamicShortcodeDefinition> factoryMethod );
 
+        /// <summary>
+        /// Registers a static shortcode with a factory method that provides the shortcode definition.
+        /// A static shortcode is defined by a Lava Library component and its associated template cannot be changed.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="factoryMethod"></param>
         void RegisterStaticShortcode( string name, Func<string, IRockShortcode> factoryMethod );
 
         /// <summary>
@@ -80,34 +98,61 @@ namespace Rock.Lava
         /// <param name="factoryMethod"></param>
         void RegisterStaticShortcode( Func<string, IRockShortcode> factoryMethod );
 
+        /// <summary>
+        /// Gets the collection of all registered Lava document elements.
+        /// </summary>
+        /// <returns></returns>
         Dictionary<string, ILavaElementInfo> GetRegisteredElements();
 
-        //void UnregisterShortcode( string name );
-
-        //Type GetShortcodeType( string name );
-
         /// <summary>
-        /// Try to render the provided template
+        /// Try to render the provided template.
         /// </summary>
         /// <param name="inputTemplate"></param>
         /// <param name="output"></param>
         /// <returns></returns>
         bool TryRender( string inputTemplate, out string output );
 
+        /// <summary>
+        /// Try to render the provided template with the specified merge fields.
+        /// </summary>
+        /// <param name="inputTemplate"></param>
+        /// <param name="output"></param>
+        /// <param name="mergeValues"></param>
+        /// <returns></returns>
         bool TryRender( string inputTemplate, out string output, LavaDictionary mergeValues );
 
-        bool TryRender( string inputTemplate, out string output, ILavaContext context );
-        
         /// <summary>
-        /// 
+        /// Try to render the provided template in the specified context.
+        /// </summary>
+        /// <param name="inputTemplate"></param>
+        /// <param name="output"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        bool TryRender( string inputTemplate, out string output, ILavaContext context );
+
+        /// <summary>
+        /// Try to render a compiled Lava template using the specified parameters.
+        /// </summary>
+        /// <param name="inputTemplate"></param>
+        /// <param name="parameters"></param>
+        /// <param name="output"></param>
+        /// <returns></returns>
+        bool TryRender( ILavaTemplate inputTemplate, LavaRenderParameters parameters, out string output );
+
+        /// <summary>
+        /// Register a type that can be referenced in a template during the rendering process.
         /// </summary>
         /// <param name="type"></param>
         /// <param name="allowedMembers"></param>
         void RegisterSafeType( Type type, string[] allowedMembers = null );
 
+        /// <summary>
+        /// Try to parse the provided template .
+        /// </summary>
+        /// <param name="inputTemplate"></param>
+        /// <param name="template"></param>
+        /// <returns></returns>
         bool TryParseTemplate( string inputTemplate, out ILavaTemplate template );
-
-        //ILavaTemplate ParseTemplate( string inputTemplate );
 
         /// <summary>
         /// Compare two objects for equivalence according to the applicable Lava equality rules for the input object types.
@@ -123,6 +168,9 @@ namespace Rock.Lava
         ExceptionHandlingStrategySpecifier ExceptionHandlingStrategy { get; set; }
     }
 
+    /// <summary>
+    /// Specifies a strategy for handling exceptions encountered during the template rendering process.
+    /// </summary>
     public enum ExceptionHandlingStrategySpecifier
     {
         Throw = 0,

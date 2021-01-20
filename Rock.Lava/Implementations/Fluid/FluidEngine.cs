@@ -45,13 +45,17 @@ namespace Rock.Lava.Fluid
             }
         }
 
-        public override ILavaContext NewContext()
+        public override ILavaContext NewContext( IDictionary<string, object> mergeFields = null )
         {
             var fluidContext = new global::Fluid.TemplateContext();
 
             fluidContext.ParserFactory = _parserFactory;
 
-            return new FluidLavaContext( fluidContext );
+            var context = new FluidLavaContext( fluidContext );
+
+            context.SetMergeFieldValues( mergeFields );
+
+            return context;
         }
 
         /// <summary>
@@ -429,19 +433,18 @@ namespace Rock.Lava.Fluid
             }
         }
 
-        protected override bool OnTryRender( ILavaTemplate inputTemplate, out string output, ILavaContext context )
+        protected override bool OnTryRender( ILavaTemplate inputTemplate, LavaRenderParameters parameters, out string output )
         {
             var templateProxy = inputTemplate as FluidTemplateProxy;
 
             var fluidTemplate = templateProxy?.FluidTemplate;
 
-            return TryRenderInternal( fluidTemplate, out output, context );
+            return TryRenderInternal( fluidTemplate, parameters, out output );
         }
 
-        private bool TryRenderInternal( LavaFluidTemplate template, out string output, ILavaContext context )
+        private bool TryRenderInternal( LavaFluidTemplate template, LavaRenderParameters parameters, out string output)
         {
-
-            var templateContext = context as FluidLavaContext;
+            var templateContext = parameters.LavaContext as FluidLavaContext;
 
             if ( templateContext == null )
             {
@@ -472,51 +475,51 @@ namespace Rock.Lava.Fluid
 
 }
 
-        protected override bool OnTryRender( string inputTemplate, out string output, ILavaContext context )
-        {
-            //            try
-            //            {
-            string liquidTemplate;
+        //protected override bool OnTryRender( string inputTemplate, out string output, ILavaContext context )
+        //{
+        //    //            try
+        //    //            {
+        //    string liquidTemplate;
 
-            var template = CreateNewFluidTemplate( inputTemplate, out liquidTemplate );
+        //    var template = CreateNewFluidTemplate( inputTemplate, out liquidTemplate );
 
-            if ( context == null )
-            {
-                context = NewContext();
-            }
+        //    if ( context == null )
+        //    {
+        //        context = NewContext();
+        //    }
 
-            return TryRenderInternal( template, out output, context );
+        //    return TryRenderInternal( template, out output, context );
 
-            /*
-                            var templateContext = context as FluidLavaContext;
+        //    /*
+        //                    var templateContext = context as FluidLavaContext;
 
-                            if ( templateContext == null )
-                            {
-                                throw new LavaException( "Invalid LavaContext parameter. This context type is not compatible with the Fluid templating engine." );
-                            }
+        //                    if ( templateContext == null )
+        //                    {
+        //                        throw new LavaException( "Invalid LavaContext parameter. This context type is not compatible with the Fluid templating engine." );
+        //                    }
 
-                            /* The Fluid framework parses the input template into a set of executable statements that can be rendered.
-                             * To remain independent of a specific framework, custom Lava tags and blocks parse the original source template text to extract
-                             * the information necessary to render their output. For this reason, we need to store the source in the context so that it can be passed
-                             * to the Lava custom components when they are rendered.
-                             */
-            /*
-                            templateContext.SetInternalFieldValue( Constants.ContextKeys.SourceTemplateElements, template.Elements );
+        //                    /* The Fluid framework parses the input template into a set of executable statements that can be rendered.
+        //                     * To remain independent of a specific framework, custom Lava tags and blocks parse the original source template text to extract
+        //                     * the information necessary to render their output. For this reason, we need to store the source in the context so that it can be passed
+        //                     * to the Lava custom components when they are rendered.
+        //                     */
+        //    /*
+        //                    templateContext.SetInternalFieldValue( Constants.ContextKeys.SourceTemplateElements, template.Elements );
 
-                            templateContext.FluidContext.ParserFactory = _parserFactory;
+        //                    templateContext.FluidContext.ParserFactory = _parserFactory;
 
-                            output = template.Render( templateContext.FluidContext );
+        //                    output = template.Render( templateContext.FluidContext );
 
-                            return true;
-                        }
-                        catch ( Exception ex )
-                        {
-                            ProcessException( ex, out output );
+        //                    return true;
+        //                }
+        //                catch ( Exception ex )
+        //                {
+        //                    ProcessException( ex, out output );
 
-                            return false;
-                        }
-            */
-        }
+        //                    return false;
+        //                }
+        //    */
+        //}
 
         //public override void UnregisterShortcode( string name )
         //{
