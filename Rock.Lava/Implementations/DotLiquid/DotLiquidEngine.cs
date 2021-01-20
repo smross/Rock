@@ -48,12 +48,6 @@ namespace Rock.Lava.DotLiquid
         {
             var dotLiquidContext = new global::DotLiquid.Context();
 
-            // Set the transformation function for converting a Lava Context to a DotLiquid Context.
-            // This is needed to allow the Lava context parameter in a filter function to be identified and 
-            // injected in a way that is framework-agnostic.
-            dotLiquidContext.FilterContextParameterType = Template.FilterContextParameterType;
-            dotLiquidContext.FilterContextParameterTransformer = Template.FilterContextParameterTransformer;
-
             var context = new DotLiquidLavaContext( dotLiquidContext );
 
             context.SetMergeFieldValues( mergeFields );
@@ -119,7 +113,7 @@ namespace Rock.Lava.DotLiquid
                 {
                     var methodsGroupedByName = filterImplementationType.GetMethods( BindingFlags.Public | BindingFlags.Static ).AsQueryable().GroupBy( k => k.Name, v => v );
 
-                    foreach (var methodGroup in methodsGroupedByName )
+                    foreach ( var methodGroup in methodsGroupedByName )
                     {
                         var filterName = methodGroup.Key;
                         var filterMethodInfos = methodGroup.OrderBy( m => m.GetParameters().Length ).ToList();
@@ -132,7 +126,6 @@ namespace Rock.Lava.DotLiquid
                             MethodInfo filterMethodInfo = null;
 
                             if ( filterMethodInfos.Count == 1 )
-
                             {
                                 filterMethodInfo = filterMethodInfos.First();
                             }
@@ -170,10 +163,10 @@ namespace Rock.Lava.DotLiquid
                 args.Insert( 0, new DotLiquidLavaContext( dotLiquidContext ) );
             }
 
-            // Unwrap DotLiquidLavaDataObjectProxy objects
-            for ( int i = 0; i < args.Count; i ++ )
+            // Unwrap proxy objects.
+            for ( int i = 0; i < args.Count; i++ )
             {
-                if ( ( args[i] is ILavaDataDictionarySource ) ) //.GetType() == typeof( DotLiquidLavaDataObjectProxy ) )
+                if ( ( args[i] is ILavaDataDictionarySource ) )
                 {
                     args[i] = ( (ILavaDataDictionarySource)args[i] ).GetLavaDataDictionary();
                 }
@@ -184,6 +177,7 @@ namespace Rock.Lava.DotLiquid
                 }
 
             }
+
             // Add in any missing parameters with the default values defined for the filter method.
             if ( lavaFilterFunctionParams.Length > args.Count )
             {
@@ -330,74 +324,8 @@ namespace Rock.Lava.DotLiquid
             Template.RegisterTag<DotLiquidBlockProxy>( name );
         }
 
-        /// <summary>
-        /// Convert a LavaContext to a DotLiquid RenderParameters object. 
-        /// </summary>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        private RenderParameters GetDotLiquidRenderParametersFromLavaContext( ILavaContext context )
-        {
-            var renderSettings = new RenderParameters();
-
-            if ( context == null )
-            {
-                context = NewContext();
-            }
-
-            var templateContext = context as DotLiquidLavaContext;
-
-            if ( templateContext == null )
-            {
-                throw new LavaException( "Invalid LavaContext parameter. This context type is not compatible with the DotLiquid templating engine." );
-            }
-
-            var dotLiquidContext = templateContext.DotLiquidContext;
-
-            // Set the transformation function for converting a DotLiquid Context to a Lava Context.
-            // This tranformation allows the context to be injected into a filter in a way that is independent
-            // of the underlying rendering framework.
-            dotLiquidContext.FilterContextParameterType = Template.FilterContextParameterType;
-            dotLiquidContext.FilterContextParameterTransformer = Template.FilterContextParameterTransformer;
-
-            renderSettings.Context = dotLiquidContext;
-
-            // Store the EnabledCommands setting in the DotLiquid Registers.
-            //renderSettings.Context.Registers["EnabledCommands"] = string.Join( ",", context.GetEnabledCommands() );
-
-            return renderSettings;
-        }
-
         protected override bool OnTryRender( ILavaTemplate template, LavaRenderParameters parameters, out string output )
         {
-        //    try
-        //    {
-        //        //var template = CreateNewDotLiquidTemplate( inputTemplate );
-        //        var liquidTemplate = template as DotLiquidTemplateProxy;
-
-        //        //liquidTemplate.
-        //        //var renderSettings = GetDotLiquidRenderParametersFromLavaContext( context );
-        //        IList<Exception> errors;
-
-        //        var success = template.TryRender( context, out output, out errors ); // renderSettings );
-
-        //        if ( !success )
-        //        {
-        //            // Process the first error.
-        //            ProcessException( new LavaException("Rendering error", errors[0] ) );
-        //        }
-
-        //        return success;
-        //    }
-        //    catch ( Exception ex )
-        //    {
-        //        ProcessException( ex, out output );
-
-        //        return false;
-        //    }
-        //}
-
-        //protected override bool OnTryRender( string inputTemplate, out string output, ILavaContext context )
-        //{
             try
             {
                 var renderSettings = new RenderParameters();
@@ -410,12 +338,6 @@ namespace Rock.Lava.DotLiquid
                 }
 
                 var dotLiquidContext = templateContext.DotLiquidContext;
-
-                // Set the transformation function for converting a DotLiquid Context to a Lava Context.
-                // This tranformation allows the context to be injected into a filter in a way that is independent
-                // of the underlying rendering framework.
-                dotLiquidContext.FilterContextParameterType = Template.FilterContextParameterType;
-                dotLiquidContext.FilterContextParameterTransformer = Template.FilterContextParameterTransformer;
 
                 renderSettings.Context = dotLiquidContext;
 

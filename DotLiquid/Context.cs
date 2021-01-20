@@ -119,8 +119,8 @@ namespace DotLiquid
 
 		public object Invoke(string method, List<object> args)
 		{
-            if (Strainer.RespondTo(method))
-                return Strainer.Invoke(method, args, this.FilterContextParameterType, this.FilterContextParameterTransformer);
+            if ( Strainer.RespondTo( method ) )
+                return Strainer.Invoke( method, args );
 
             return args.First();
 			//throw new FilterNotFoundException("Filter not found: '{0}'", method);

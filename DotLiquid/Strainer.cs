@@ -102,13 +102,8 @@ namespace DotLiquid
 			return _methods.ContainsKey(method) || _functions.ContainsKey(method);
 		}
 
-		public object Invoke(string method, List<object> args, Type filterContextParameterType = null, Func<Context, object> filterContextParameterTransformer = null )
+		public object Invoke(string method, List<object> args)
 		{
-            if ( filterContextParameterType == null )
-            {
-                filterContextParameterType = typeof(Context);
-            }
-
             // If a specific function is registered for the filter name, prefer it.
             if ( _functions.ContainsKey( method ) )
             {
@@ -132,7 +127,7 @@ namespace DotLiquid
             {
                 // If this method's first parameter is a context, ignore this method for now
                 parameterInfos = methodInfo.GetParameters();
-                if ( parameterInfos.Length > 0 && parameterInfos[0].ParameterType == filterContextParameterType )
+                if ( parameterInfos.Length > 0 && parameterInfos[0].ParameterType == typeof(Context) )
                 {
                     methodInfo = null;
                 }
@@ -146,7 +141,7 @@ namespace DotLiquid
                 {
                     // If this method's first parameter is NOT a context, ignore this method for now
                     parameterInfos = methodInfo.GetParameters();
-                    if ( parameterInfos.Length <= 0 || parameterInfos[0].ParameterType != filterContextParameterType )
+                    if ( parameterInfos.Length <= 0 || parameterInfos[0].ParameterType != typeof( Context ) )
                     {
                         methodInfo = null;
                     }
@@ -163,20 +158,9 @@ namespace DotLiquid
             }
 
             // If first parameter is Context, send in actual context.
-            if ( parameterInfos.Length > 0 && parameterInfos[0].ParameterType == filterContextParameterType )
+            if ( parameterInfos.Length > 0 && parameterInfos[0].ParameterType == typeof( Context ) )
             {
-                object context;
-
-                if ( filterContextParameterTransformer != null )
-                {
-                    context = filterContextParameterTransformer( _context );
-                }
-                else
-                {
-                    context = _context;
-                }
-
-                args.Insert( 0, context );
+                args.Insert( 0, _context );
             }
 
             // Add in any default parameters - .NET won't do this for us.
