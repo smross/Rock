@@ -37,7 +37,14 @@ namespace Rock.Lava
         /// <summary>
         /// Gets or sets a flag to determine if compiled Lava templates can be cached and reused.
         /// </summary>
-        bool TemplateCachingIsEnabled { get; set; }
+        //bool TemplateCachingIsEnabled { get; set; }
+
+        /// <summary>
+        /// Remove all items from the template cache.
+        /// </summary>
+        void ClearTemplateCache();
+
+        ILavaTemplateCacheService TemplateCacheService { get; }
 
         /// <summary>
         /// Set configuration options for the Lava engine.
@@ -77,7 +84,7 @@ namespace Rock.Lava
         void RegisterBlock( string name, Func<string, IRockLavaBlock> factoryMethod );
 
         /// <summary>
-        /// Registers a shortcode with a factory method that provides the definition of the shortcode at runtime.
+        /// Registers a shortcode with a factory method that provides the definition of the shortcode on demand.
         /// A dynamic shortcode is defined in the active Rock database, and its associated template can be modified at runtime.
         /// </summary>
         /// <param name="name"></param>
@@ -86,17 +93,23 @@ namespace Rock.Lava
 
         /// <summary>
         /// Registers a static shortcode with a factory method that provides the shortcode definition.
-        /// A static shortcode is defined by a Lava Library component and its associated template cannot be changed.
+        /// A static shortcode is defined by a code component and its associated template cannot be modified at runtime.
         /// </summary>
         /// <param name="name"></param>
         /// <param name="factoryMethod"></param>
         void RegisterStaticShortcode( string name, Func<string, IRockShortcode> factoryMethod );
 
         /// <summary>
-        /// Registers a shortcode with a factory method that provides the name andd definition of the shortcode dynamically.
+        /// Registers a shortcode with a factory method that provides the name and definition of the shortcode dynamically.
         /// </summary>
         /// <param name="factoryMethod"></param>
-        void RegisterStaticShortcode( Func<string, IRockShortcode> factoryMethod );
+        //void RegisterStaticShortcode( Func<string, IRockShortcode> factoryMethod );
+
+        /// <summary>
+        /// Deregister a shortcode.
+        /// </summary>
+        /// <param name="name"></param>
+        void UnregisterShortcode( string name );
 
         /// <summary>
         /// Gets the collection of all registered Lava document elements.
@@ -147,12 +160,19 @@ namespace Rock.Lava
         void RegisterSafeType( Type type, string[] allowedMembers = null );
 
         /// <summary>
-        /// Try to parse the provided template .
+        /// Try to parse the provided template.
         /// </summary>
         /// <param name="inputTemplate"></param>
         /// <param name="template"></param>
         /// <returns></returns>
         bool TryParseTemplate( string inputTemplate, out ILavaTemplate template );
+
+        /// <summary>
+        /// Parse the provided template.
+        /// </summary>
+        /// <param name="inputTemplate"></param>
+        /// <returns>A compiled template object.</returns>
+        ILavaTemplate ParseTemplate( string inputTemplate );
 
         /// <summary>
         /// Compare two objects for equivalence according to the applicable Lava equality rules for the input object types.

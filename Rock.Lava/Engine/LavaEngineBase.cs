@@ -468,5 +468,49 @@ namespace Rock.Lava
 
             return converter.ConvertToLiquid( lavaTemplateText );
         }
+
+        /// <summary>
+        /// Remove all entries from the template cache.
+        /// </summary>
+        public void ClearTemplateCache()
+        {
+            if ( _cacheService != null )
+            {
+                _cacheService.ClearCache();
+            }
+        }
+
+        /// <summary>
+        /// Remove the registration entry for the shortcode with the specified name.
+        /// </summary>
+        /// <param name="name"></param>
+        public void UnregisterShortcode( string name )
+        {
+            var registrationKey = LavaUtilityHelper.GetLiquidElementNameFromShortcodeName( name );
+
+            if ( _lavaElements.ContainsKey( registrationKey ) )
+            {
+                _lavaElements.Remove( registrationKey );
+            }
+        }
+
+        /// <summary>
+        /// Parse the input text into a compiled Lava template.
+        /// </summary>
+        /// <param name="inputTemplate"></param>
+        /// <returns></returns>
+        public ILavaTemplate ParseTemplate( string inputTemplate )
+        {
+            ILavaTemplate template;
+
+            var isValid = TryParseTemplate( inputTemplate, out template );
+
+            if ( !isValid )
+            {
+                throw new LavaException( "ParseTemplate failed. The Lava template is invalid." );
+            }
+
+            return template;
+        }
     }
 }

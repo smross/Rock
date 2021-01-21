@@ -104,5 +104,12 @@ namespace Rock.Lava
             return ( template != null );
         }
 
+        /// <summary>
+        /// Remove all entries from the cache.
+        /// </summary>
+        public void ClearCache()
+        {
+            LavaTemplateCache.Clear();
+        }
     }
 }

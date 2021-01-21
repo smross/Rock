@@ -45,7 +45,7 @@ namespace Rock.WebStartup
     /// <summary>
     /// Helper that manages startup operations that need to run prior to RockWeb startup
     /// </summary>
-    public static class RockApplicationStartupHelper
+    public static partial class RockApplicationStartupHelper
     {
         #region Constants
 
@@ -635,48 +635,48 @@ namespace Rock.WebStartup
         private static void InitializeLavaShortcodes( ILavaEngine engine )
         {
             // Register dynamic shortcodes with a factory method to ensure that the latest definition is retrieved
-            // from the global cache when a new instance of the shortcode is created.
-            Func<string, DynamicShortcodeDefinition> shortCodeFactory = ( shortcodeName ) =>
-            {
-                DynamicShortcodeDefinition newShortcode = null;
+            // from the global cache when a new instance of the shortcode is requested.
+            //Func<string, DynamicShortcodeDefinition> shortCodeFactory = ( shortcodeName ) =>
+            //{
+            //    DynamicShortcodeDefinition newShortcode = null;
 
-                var shortcodeDefinition = LavaShortcodeCache.All().Where( c => c.TagName == shortcodeName ).FirstOrDefault();
+            //    var shortcodeDefinition = LavaShortcodeCache.All().Where( c => c.TagName == shortcodeName ).FirstOrDefault();
 
-                if ( shortcodeDefinition != null )
-                {
-                    newShortcode = new DynamicShortcodeDefinition();
+            //    if ( shortcodeDefinition != null )
+            //    {
+            //        newShortcode = new DynamicShortcodeDefinition();
 
-                    newShortcode.Name = shortcodeDefinition.Name;
-                    newShortcode.TemplateMarkup = shortcodeDefinition.Markup;
+            //        newShortcode.Name = shortcodeDefinition.Name;
+            //        newShortcode.TemplateMarkup = shortcodeDefinition.Markup;
 
-                    var parameters = RockSerializableDictionary.FromUriEncodedString( shortcodeDefinition.Parameters );
+            //        var parameters = RockSerializableDictionary.FromUriEncodedString( shortcodeDefinition.Parameters );
 
-                    newShortcode.Parameters = new Dictionary<string, string>( parameters.Dictionary );
+            //        newShortcode.Parameters = new Dictionary<string, string>( parameters.Dictionary );
 
-                    newShortcode.EnabledLavaCommands = shortcodeDefinition.EnabledLavaCommands.SplitDelimitedValues( "," ).ToList();
+            //        newShortcode.EnabledLavaCommands = shortcodeDefinition.EnabledLavaCommands.SplitDelimitedValues( "," ).ToList();
 
-                    if ( shortcodeDefinition.TagType == TagType.Block )
-                    {
-                        newShortcode.ElementType = LavaShortcodeTypeSpecifier.Block;
-                    }
-                    else
-                    {
-                        newShortcode.ElementType = LavaShortcodeTypeSpecifier.Inline;
-                    }
-                }
+            //        if ( shortcodeDefinition.TagType == TagType.Block )
+            //        {
+            //            newShortcode.ElementType = LavaShortcodeTypeSpecifier.Block;
+            //        }
+            //        else
+            //        {
+            //            newShortcode.ElementType = LavaShortcodeTypeSpecifier.Inline;
+            //        }
+            //    }
 
-                return newShortcode;
-            };
+            //    return newShortcode;
+            //};
 
             // Register all of the shortcodes defined in the current database.
             var shortCodes = LavaShortcodeCache.All();
 
             foreach ( var shortcode in shortCodes )
             {
-                engine.RegisterDynamicShortcode( shortcode.TagName, shortCodeFactory );
+                engine.RegisterDynamicShortcode( shortcode.TagName, ( shortcodeName ) => WebsiteLavaShortcodeProvider.GetShortcodeDefinition( shortcodeName ) );
+                // ; shortcodeFactory );
             }
         }
-
         private static void InitializeLavaBlocks( ILavaEngine engine )
         {
             // Get all blocks and call OnStartup methods

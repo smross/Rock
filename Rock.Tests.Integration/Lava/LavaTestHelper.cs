@@ -153,7 +153,7 @@ namespace Rock.Tests.Integration.Lava
 
                 foreach ( var shortcodeType in shortcodeTypes )
                 {
-                    engine.RegisterStaticShortcode( ( shortcodeName ) =>
+                    engine.RegisterStaticShortcode( shortcodeType.Name, ( shortcodeName ) =>
                     { 
                         var shortcode = Activator.CreateInstance( shortcodeType ) as IRockShortcode;
 
