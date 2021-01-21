@@ -890,7 +890,7 @@ $(document).ready(function() {
 
                 if ( template == null )
                 {
-                    template = LavaEngine.Instance.ParseTemplate( GetAttributeValue( AttributeKey.Template ) );
+                    template = LavaEngine.CurrentEngine.ParseTemplate( GetAttributeValue( AttributeKey.Template ) );
 
                     if ( ItemCacheDuration.HasValue && ItemCacheDuration.Value > 0 )
                     {
@@ -903,7 +903,7 @@ $(document).ready(function() {
             }
             catch ( Exception ex )
             {
-                template = LavaEngine.Instance.ParseTemplate( string.Format( "Lava error: {0}", ex.Message ) );
+                template = LavaEngine.CurrentEngine.ParseTemplate( string.Format( "Lava error: {0}", ex.Message ) );
             }
 
             return template;

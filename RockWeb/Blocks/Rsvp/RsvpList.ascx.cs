@@ -27,7 +27,7 @@ using Rock.Web;
 using Rock.Web.UI;
 using Rock.Web.UI.Controls;
 using System.Data.Entity;
-using Rock.Lava;
+using Rock.Utility;
 
 namespace RockWeb.Blocks.RSVP
 {

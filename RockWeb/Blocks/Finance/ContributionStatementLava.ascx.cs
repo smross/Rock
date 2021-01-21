@@ -30,7 +30,7 @@ using Rock.Web.UI.Controls;
 using Rock.Attribute;
 using System.Data.Entity;
 using Rock.Security;
-using Rock.Lava;
+using Rock.Utility;
 
 namespace RockWeb.Blocks.Finance
 {

@@ -24,9 +24,9 @@ using System.Web.UI.WebControls;
 using Rock;
 using Rock.Attribute;
 using Rock.Data;
-using Rock.Lava;
 using Rock.Model;
 using Rock.Web.UI;
+using Rock.Utility;
 
 namespace RockWeb.Blocks.Reporting
 {
@@ -272,7 +272,7 @@ namespace RockWeb.Blocks.Reporting
         /// <summary>
         /// POCO class for return interaction counts
         /// </summary>
-        class InteractionCount : RockDynamic, Rock.Lava.ILiquidizable
+        class InteractionCount : RockDynamic
         {
             /// <summary>
             /// Gets or sets the component identifier.

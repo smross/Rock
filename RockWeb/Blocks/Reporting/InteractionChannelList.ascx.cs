@@ -214,7 +214,7 @@ namespace RockWeb.Blocks.Reporting
                 }
 
                 // Parse the default template so that it does not need to be parsed multiple times
-                var defaultTemplate = LavaEngine.Instance.ParseTemplate( GetAttributeValue( "DefaultTemplate" ) );
+                var defaultTemplate = LavaEngine.CurrentEngine.ParseTemplate( GetAttributeValue( "DefaultTemplate" ) );
                 var options = new Rock.Lava.CommonMergeFieldsOptions();
                 options.GetPageContext = false;
                 options.GetLegacyGlobalMergeFields = false;

@@ -1083,7 +1083,7 @@ namespace RockWeb.Blocks.Groups
                 // If a map is to be shown
                 if ( showMap && groups.Any() )
                 {
-                    var template = LavaEngine.Instance.ParseTemplate( GetAttributeValue( "MapInfo" ) );
+                    var template = LavaEngine.CurrentEngine.ParseTemplate( GetAttributeValue( "MapInfo" ) );
 
                     // Add mapitems for all the remaining valid group locations
                     var groupMapItems = new List<MapItem>();

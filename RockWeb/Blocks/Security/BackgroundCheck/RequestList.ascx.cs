@@ -25,10 +25,10 @@ using System.Web.UI.WebControls;
 using Rock;
 using Rock.Attribute;
 using Rock.Data;
-using Rock.Lava;
 using Rock.Model;
 using Rock.Web.UI;
 using Rock.Web.UI.Controls;
+using Rock.Utility;
 
 namespace RockWeb.Blocks.Security.BackgroundCheck
 {
