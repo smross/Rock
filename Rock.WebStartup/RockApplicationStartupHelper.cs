@@ -594,25 +594,29 @@ namespace Rock.WebStartup
         private static void InitializeLava()
         {
             // Get the Lava Engine configuration settings.
-            var liquidEngineTypeValue = System.Configuration.ConfigurationManager.AppSettings["LavaEngineType"];
+            LavaEngineTypeSpecifier? engineType = null;
 
-            LavaEngineTypeSpecifier engineType;
-            bool isValid;
+            var liquidEngineTypeValue = GlobalAttributesCache.Value( "LavaRenderingEngine" ).ToLower();
 
-            if ( string.IsNullOrWhiteSpace( liquidEngineTypeValue ) )
+            if ( string.IsNullOrWhiteSpace( liquidEngineTypeValue ) || liquidEngineTypeValue == "default" )
             {
                 // If no engine specified, use default.
                 engineType = LavaEngineTypeSpecifier.DotLiquid;
-                isValid = true;
             }
-            else
+            else if ( liquidEngineTypeValue == "dotliquid")
             {
-                isValid = Enum.TryParse( liquidEngineTypeValue, true, out engineType );
+                engineType = LavaEngineTypeSpecifier.DotLiquid;
+            }
+            else if ( liquidEngineTypeValue == "fluid" )
+            {
+                engineType = LavaEngineTypeSpecifier.Fluid;
             }
 
-            if ( !isValid )
-            {
-                throw new RockStartupException( string.Format( "Invalid Lava Engine Type. The LavaEngineType configuration parameter \"{0}\" is not valid.", liquidEngineTypeValue ) );
+            if ( engineType == null )
+            { 
+                // Log an error for the invalid configuration setting, and continue with the default value.
+                ExceptionLogService.LogException( $"Invalid Lava Engine Type. The value \"{liquidEngineTypeValue}\" is not valid, must be [default|dotliquid|fluid]." );
+                engineType = LavaEngineTypeSpecifier.DotLiquid;
             }
 
             // Initialize the Lava engine.

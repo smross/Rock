@@ -64,6 +64,11 @@ namespace Rock.SystemGuid
         public const string GLOBAL_PUBLIC_APPLICATION_ROOT = "49AD7AD6-9BAC-4743-B1E8-B917F6271924";
 
         /// <summary>
+        /// The Liquid Framework used to parse and render Lava.
+        /// </summary>
+        public const string GLOBAL_LAVA_LIQUID_FRAMEWORK = "E64A9519-2263-455E-A224-5406CCDA52A4";
+
+        /// <summary>
         /// The Facebook link attribute
         /// </summary>
         public const string PERSON_FACEBOOK = "2B8A03D3-B7DC-4DA3-A31E-826D655435D5";
