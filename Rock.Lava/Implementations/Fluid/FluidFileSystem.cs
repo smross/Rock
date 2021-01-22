@@ -62,7 +62,7 @@ namespace Rock.Lava
 
         public string ReadTemplateFile( ILavaContext context, string templateName )
         {
-            throw new NotImplementedException();
+            return _fileSystem.ReadTemplateFile( context, templateName );
         }
 
         public IChangeToken Watch( string filter )

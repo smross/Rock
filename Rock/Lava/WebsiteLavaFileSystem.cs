@@ -98,10 +98,12 @@ namespace Rock.Lava
             throw new LavaException( $"LavaFileSystem Template Not Found. The file \"{templatePath}\" does not exist." );
         }
 
-        private string GetMatchingFileFromPath( string fullFilePath )
+        private string GetMatchingFileFromPath( string templateFilePath )
         {
+            var resolvedPath = ResolveTemplatePath( templateFilePath );
+
             // Try to find exact file specified
-            var file = new FileInfo( fullFilePath );
+            var file = new FileInfo( resolvedPath );
 
             if ( file.Exists )
             {
