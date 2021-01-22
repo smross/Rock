@@ -125,6 +125,27 @@ namespace Rock.Lava
         Dictionary<string, ILavaElementInfo> GetRegisteredElements();
 
         /// <summary>
+        /// Render the provided template.
+        /// </summary>
+        /// <param name="inputTemplate"></param>
+        /// <returns>
+        /// The rendered output of the template.
+        /// If the template is invalid, returns an error message or an empty string according to the current ExceptionHandlingStrategy setting.
+        /// </returns>
+        string RenderTemplate( string inputTemplate );
+
+        /// <summary>
+        /// Render the provided template in the specified context.
+        /// </summary>
+        /// <param name="inputTemplate"></param>
+        /// <param name="context"></param>
+        /// <returns>
+        /// The rendered output of the template.
+        /// If the template is invalid, returns an error message or an empty string according to the current ExceptionHandlingStrategy setting.
+        /// </returns>
+        string RenderTemplate( string inputTemplate, ILavaContext context );
+
+        /// <summary>
         /// Try to render the provided template.
         /// </summary>
         /// <param name="inputTemplate"></param>

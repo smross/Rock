@@ -197,6 +197,24 @@ namespace Rock.Lava
             return shortcodeInstance;
         }
 
+        public string RenderTemplate( string inputTemplate )
+        {
+            string output;
+
+            TryRender( inputTemplate, out output, mergeValues: null );
+
+            return output;
+        }
+
+        public string RenderTemplate( string inputTemplate, ILavaContext context )
+        {
+            string output;
+
+            TryRender( inputTemplate, out output, context );
+
+            return output;
+        }
+
         public bool TryRender( string inputTemplate, out string output )
         {
             return TryRender( inputTemplate, out output, mergeValues: null );
