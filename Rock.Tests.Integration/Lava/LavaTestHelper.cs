@@ -37,7 +37,6 @@ namespace Rock.Tests.Integration.Lava
             var engineOptions = new LavaEngineConfigurationOptions
             {
                 FileSystem = new MockFileProvider(),
-                FilterImplementationTypes = new List<Type> { typeof( Rock.Lava.RockFilters ) },
                 CacheService = new WebsiteLavaTemplateCacheService()
             };
 
@@ -46,6 +45,8 @@ namespace Rock.Tests.Integration.Lava
             var engine = global::Rock.Lava.LavaEngine.CurrentEngine;
 
             engine.ExceptionHandlingStrategy = ExceptionHandlingStrategySpecifier.RenderToOutput;
+
+            engine.RegisterFilters( typeof( Rock.Lava.RockFilters ) );
 
             RegisterBlocks( engine );
             RegisterTags( engine );

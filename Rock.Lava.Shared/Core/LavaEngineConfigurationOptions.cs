@@ -15,7 +15,6 @@
 // </copyright>
 //
 using System;
-using System.Collections.Generic;
 
 namespace Rock.Lava
 {
@@ -34,11 +33,5 @@ namespace Rock.Lava
         /// The file system is required to locate aand load templates reference by the {% include %} command.
         /// </summary>
         public ILavaFileSystem FileSystem { get; set; }
-
-        /// <summary>
-        /// Gets or sets the collection of Types that define custom Lava filter functions.
-        /// By convention, filters are declared as public static methods of a class Type.
-        /// </summary>
-        public IEnumerable<Type> FilterImplementationTypes { get; set; }
     }
 }

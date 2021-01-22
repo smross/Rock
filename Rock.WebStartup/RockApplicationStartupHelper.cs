@@ -619,7 +619,6 @@ namespace Rock.WebStartup
             var engineOptions = new LavaEngineConfigurationOptions
             {
                 FileSystem = new WebsiteLavaFileSystem(),
-                FilterImplementationTypes = new List<Type> { typeof( Rock.Lava.RockFilters ) },
                 CacheService = new WebsiteLavaTemplateCacheService()
             };
 
@@ -627,6 +626,8 @@ namespace Rock.WebStartup
 
             // Initialize Lava extensions.
             var engine = LavaEngine.CurrentEngine;
+
+            engine.RegisterFilters( typeof( Rock.Lava.RockFilters ) );
 
             InitializeLavaShortcodes( engine );
             InitializeLavaBlocks( engine );

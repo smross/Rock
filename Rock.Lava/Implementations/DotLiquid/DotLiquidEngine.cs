@@ -90,65 +90,48 @@ namespace Rock.Lava.DotLiquid
             Template.RegisterSafeType( typeof( Enum ), o => o.ToString() );
             Template.RegisterSafeType( typeof( DBNull ), o => null );
 
-            RegisterFilters( options.FilterImplementationTypes );
-
             // Register all Types that implement ILavaDataObject as safe to render.
             RegisterSafeType( typeof( Rock.Lava.ILavaDataDictionary ) );
         }
 
-        private void RegisterFilters( IEnumerable<Type> filterImplementationTypes )
+        protected override void OnRegisterFilters( Type implementingType )
         {
-            Template.FilterContextParameterType = typeof( ILavaContext );
+            var methodsGroupedByName = implementingType.GetMethods( BindingFlags.Public | BindingFlags.Static ).AsQueryable().GroupBy( k => k.Name, v => v );
 
-            Template.FilterContextParameterTransformer = ( context ) =>
+            foreach ( var methodGroup in methodsGroupedByName )
             {
-                // Wrap the DotLiquid context in a framework-agnostic Lava context.
-                return new DotLiquidLavaContext( context );
-            };
+                var filterName = methodGroup.Key;
+                var filterMethodInfos = methodGroup.OrderBy( m => m.GetParameters().Length ).ToList();
 
-            // Register custom filters last, so they can override built-in filters of the same name.
-            if ( filterImplementationTypes != null )
-            {
-                foreach ( var filterImplementationType in filterImplementationTypes )
+                // Define the DotLiquid-compatible function that will wrap the Lava filter.
+                // When the wrapper function is executed by DotLiquid, it performs some necessary pre-processing before executing the Lava filter.
+                Func<Context, List<object>, object> filterFunctionWrapper = ( Context context, List<object> args ) =>
                 {
-                    var methodsGroupedByName = filterImplementationType.GetMethods( BindingFlags.Public | BindingFlags.Static ).AsQueryable().GroupBy( k => k.Name, v => v );
+                    // Get the filter method that best matches the provided argument list.
+                    MethodInfo filterMethodInfo = null;
 
-                    foreach ( var methodGroup in methodsGroupedByName )
+                    if ( filterMethodInfos.Count == 1 )
                     {
-                        var filterName = methodGroup.Key;
-                        var filterMethodInfos = methodGroup.OrderBy( m => m.GetParameters().Length ).ToList();
-
-                        // Define the DotLiquid-compatible function that will wrap the Lava filter.
-                        // When the wrapper function is executed by DotLiquid, it performs some necessary pre-processing before executing the Lava filter.
-                        Func<Context, List<object>, object> filterFunctionWrapper = ( Context context, List<object> args ) =>
-                        {
-                            // Get the filter method that best matches the provided argument list.
-                            MethodInfo filterMethodInfo = null;
-
-                            if ( filterMethodInfos.Count == 1 )
-                            {
-                                filterMethodInfo = filterMethodInfos.First();
-                            }
-                            else
-                            {
-                                // Find the method that best matches the provided list of arguments.                                
-                                filterMethodInfo = GetMatchedFilterFunction( filterMethodInfos, args.Count );
-                            }
-
-                            var parameterInfos = filterMethodInfo.GetParameters();
-
-                            GetLavaFilterCompatibleArguments( filterName, args, parameterInfos, context );
-
-                            // Execute the static filter function and return the result.
-                            var result = filterMethodInfo.Invoke( null, args.ToArray() );
-
-                            return result;
-                        };
-
-                        // Register the set of filters for each method name.                
-                        Strainer.RegisterFilter( methodGroup.Key, filterFunctionWrapper );
+                        filterMethodInfo = filterMethodInfos.First();
                     }
-                }
+                    else
+                    {
+                        // Find the method that best matches the provided list of arguments.                                
+                        filterMethodInfo = GetMatchedFilterFunction( filterMethodInfos, args.Count );
+                    }
+
+                    var parameterInfos = filterMethodInfo.GetParameters();
+
+                    GetLavaFilterCompatibleArguments( filterName, args, parameterInfos, context );
+
+                    // Execute the static filter function and return the result.
+                    var result = filterMethodInfo.Invoke( null, args.ToArray() );
+
+                    return result;
+                };
+
+                // Register the set of filters for each method name.                
+                Strainer.RegisterFilter( methodGroup.Key, filterFunctionWrapper );
             }
         }
 

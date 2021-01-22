@@ -429,6 +429,26 @@ namespace Rock.Lava
 
         #endregion
 
+        #region Filters
+
+        /// <summary>
+        /// Register one or more filter functions that are implemented by the supplied Type.
+        /// A filter must be defined as a public static function that returns a string.
+        /// </summary>
+        /// <param name="implementingType"></param>
+        public void RegisterFilters( Type implementingType )
+        {
+            OnRegisterFilters( implementingType );
+        }
+
+        /// <summary>
+        /// Override this method to register the filters defined by the provided Type with the underlying Liquid procesing framework.
+        /// </summary>
+        /// <param name="implementingType"></param>
+        protected abstract void OnRegisterFilters( Type implementingType );
+
+        #endregion
+
         protected void ProcessException( Exception ex )
         {
             string discardedOutput;

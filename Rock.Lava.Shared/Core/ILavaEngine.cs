@@ -70,6 +70,13 @@ namespace Rock.Lava
         ILavaContext NewContext( IDictionary<string, object> values = null );
 
         /// <summary>
+        /// Register one or more filter functions that are implemented by the supplied Type.
+        /// A filter must be defined as a public static function that returns a string.
+        /// </summary>
+        /// <param name="implementingType"></param>
+        void RegisterFilters( Type implementingType );
+
+        /// <summary>
         /// Register a Lava Tag elemennt.
         /// </summary>
         /// <param name="name"></param>

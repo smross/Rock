@@ -74,15 +74,6 @@ namespace Rock.Lava.Fluid
             // the ability to resolve properties of nested anonymous Types using Reflection.
             TemplateContext.GlobalMemberAccessStrategy = new LavaObjectMemberAccessStrategy();
 
-            // Register custom filters last, so they can override built-in filters of the same name.
-            if ( options.FilterImplementationTypes != null )
-            {
-                foreach ( var filterImplementationType in options.FilterImplementationTypes )
-                {
-                    RegisterLavaFiltersFromImplementingType( filterImplementationType );
-                }
-            }
-
             // Register all Types that implement ILavaDataObject as safe to render.
             RegisterSafeType( typeof( Rock.Lava.ILavaDataDictionary ) );
 
@@ -93,7 +84,6 @@ namespace Rock.Lava.Fluid
             }
 
             TemplateContext.GlobalFileProvider = new FluidFileSystem( options.FileSystem );
-
         }
 
         /// <summary>
@@ -214,13 +204,13 @@ namespace Rock.Lava.Fluid
         /// The original filters are wrapped in a function with a Fluid-compatible signature so they can be called by Fluid.
         /// </summary>
         /// <param name="type">The type that contains the Liquid filter functions.</param>
-        public static void RegisterLavaFiltersFromImplementingType( Type type )
+        protected override void OnRegisterFilters( Type implementingType )
         {
             // Get the filter methods ordered by name and parameter count.
             // Fluid only allows one registered method for each filter name, so use the overload with the most parameters.
             // This addresses the vast majority of use cases, but we could modify our Fluid filter function wrapper to
             // distinguish different method signatures if necessary.
-            var lavaFilterMethods = type.GetMethods( System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public )
+            var lavaFilterMethods = implementingType.GetMethods( System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public )
                 .ToList()
                 .OrderBy( x => x.Name )
                 .ThenByDescending( x => x.GetParameters().Count() );
