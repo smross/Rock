@@ -68,7 +68,7 @@ Font Bold: true
 
             Parallel.For( 1, 100000, parallelOptions, ( x ) =>
             {
-                var context = new LavaDictionary()
+                var context = new LavaDataDictionary()
                 {
                     { "fontsize", x },
                 };
@@ -139,7 +139,7 @@ Panel 3 - Panel 3 content.
 
             Parallel.For( 0, 100000, parallelOptions, ( x ) =>
             {
-                var context = new LavaDictionary();
+                var context = new LavaDataDictionary();
                 context["iteration"] = x;
                 TestHelper.AssertTemplateOutputWithWildcard( expectedOutput, input, context, ignoreWhiteSpace: true, wildCard: "<?>" );
             } );

@@ -220,7 +220,7 @@ namespace Rock.Lava
             return TryRender( inputTemplate, out output, mergeValues: null );
         }
 
-        public bool TryRender( string inputTemplate, out string output, LavaDictionary mergeValues )
+        public bool TryRender( string inputTemplate, out string output, LavaDataDictionary mergeValues )
         {
             ILavaContext context;
 

@@ -43,7 +43,7 @@ namespace Rock.Tests.Integration.Lava
 
             var tedDeckerPerson = new PersonService( rockContext ).Queryable().First( x => x.Guid == tedDeckerGuid );
 
-            var values = new LavaDictionary { { "Person", tedDeckerPerson } };
+            var values = new LavaDataDictionary { { "Person", tedDeckerPerson } };
 
             TestHelper.AssertTemplateOutput("2001-09-13",
                 "{{ Person | Attribute:'BaptismDate' | Date:'yyyy-MM-dd' }}",

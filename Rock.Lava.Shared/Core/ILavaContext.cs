@@ -44,7 +44,7 @@ namespace Rock.Lava
         /// <summary>
         /// Gets the collection of variables defined for internal use only.  Internal values are not available to be resolved in the Lava Template.
         /// </summary>
-        LavaDictionary GetInternalFields();
+        LavaDataDictionary GetInternalFields();
 
         /// <summary>
         /// Sets a named value that is for internal use only. Internal values are not available to be resolved in the Lava Template.
@@ -63,7 +63,7 @@ namespace Rock.Lava
         /// Sets a collection of named values for internal use only. Internal values are not available to be resolved in the Lava Template.
         /// </summary>
         /// <param name="values"></param>
-        void SetInternalFieldValues( LavaDictionary values );
+        void SetInternalFieldValues( LavaDataDictionary values );
 
         /// <summary>
         /// The set of Lava Commands that are enabled for this context.
@@ -94,7 +94,7 @@ namespace Rock.Lava
         /// <summary>
         /// Gets the collection of user-defined variables in the current context that are accessible in a template.
         /// </summary>
-        LavaDictionary GetMergeFields();
+        LavaDataDictionary GetMergeFields();
 
         /// <summary>
         /// Sets the value of a field that is accessible for merging into a template.

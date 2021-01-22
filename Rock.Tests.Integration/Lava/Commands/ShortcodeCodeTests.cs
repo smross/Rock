@@ -56,7 +56,7 @@ Font Bold: true
 
             expectedOutput = expectedOutput.Replace( "``", @"""" );
 
-             var context = new LavaDictionary() { { "fontsize", 99 }  };
+             var context = new LavaDataDictionary() { { "fontsize", 99 }  };
 
             TestHelper.AssertTemplateOutputWithWildcard( expectedOutput, input, context, ignoreWhiteSpace: true, wildCard: "<?>" );
         }

@@ -46,7 +46,7 @@ namespace Rock.Tests.UnitTests.Lava
         {
             System.Diagnostics.Debug.Print( TestHelper.GetTestPersonTedDecker().ToString() );
 
-            var mergeValues = new LavaDictionary { { "CurrentPerson", TestHelper.GetTestPersonTedDecker() } };
+            var mergeValues = new LavaDataDictionary { { "CurrentPerson", TestHelper.GetTestPersonTedDecker() } };
 
             TestHelper.AssertTemplateOutput( "Decker", "{{ CurrentPerson.LastName }}", mergeValues );
         }
@@ -57,7 +57,7 @@ namespace Rock.Tests.UnitTests.Lava
         [TestMethod]
         public void RockDynamicType_DotNotationNestedPropertyAccess_ReturnsPropertyValue()
         {
-            var mergeValues = new LavaDictionary { { "CurrentPerson", TestHelper.GetTestPersonTedDecker() } };
+            var mergeValues = new LavaDataDictionary { { "CurrentPerson", TestHelper.GetTestPersonTedDecker() } };
 
             TestHelper.AssertTemplateOutput( "North Campus", "{{ CurrentPerson.Campus.Name }}", mergeValues );
         }
@@ -68,7 +68,7 @@ namespace Rock.Tests.UnitTests.Lava
         [TestMethod]
         public void RockDynamicType_DotNotationInvalidPropertyName_ReturnsEmptyString()
         {
-            var mergeValues = new LavaDictionary { { "CurrentPerson", TestHelper.GetTestPersonTedDecker() } };
+            var mergeValues = new LavaDataDictionary { { "CurrentPerson", TestHelper.GetTestPersonTedDecker() } };
 
             TestHelper.AssertTemplateOutput( string.Empty, "{{ CurrentPerson.NonexistentProperty }}", mergeValues );
         }
@@ -86,7 +86,7 @@ namespace Rock.Tests.UnitTests.Lava
                 Person = new { FirstName = "Alex", LastName = "Andrews", Address = new { Street = "1 Main St", City = "MyTown" } }
             };
 
-            var mergeValues = new LavaDictionary { { "GroupMember", groupMember } };
+            var mergeValues = new LavaDataDictionary { { "GroupMember", groupMember } };
 
             TestHelper.AssertTemplateOutput( "Group 1: Andrews, Alex (1 Main St)",
                 "{{ GroupMember.GroupName }}: {{ GroupMember.Person.LastName }}, {{ GroupMember.Person.FirstName }} ({{ GroupMember.Person.Address.Street }})",

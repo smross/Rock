@@ -5,11 +5,6 @@ using System.Reflection;
 
 namespace Rock.Lava
 {
-    public interface ILavaDictionary
-    {
-        
-    }
-
     /// <summary>
     /// A case-insensitive dictionary implementation for storing and retrieving variables used to resolve Lava templates.
     /// </summary>
@@ -17,32 +12,32 @@ namespace Rock.Lava
     /// The Lava Engine is able to work with any Type that can provide a set of values accessible through the IDictionary<string, object> interface.
     /// This class provides a basic implementation of that interface, with the addition of case-insensitivity and lazy-loading of values.
     /// </remarks>
-    public class LavaDictionary : IDictionary<string, object>, IDictionary, ILavaDataDictionary
+    public class LavaDataDictionary : IDictionary<string, object>, IDictionary, ILavaDataDictionary
     {
         #region Fields
 
-        private readonly Func<LavaDictionary, string, object> _lambda;
+        private readonly Func<LavaDataDictionary, string, object> _lambda;
         private readonly Dictionary<string, object> _nestedDictionary = new Dictionary<string, object>( StringComparer.OrdinalIgnoreCase );
         
         #endregion
 
         #region Static construction methods
 
-        public static LavaDictionary FromAnonymousObject( object anonymousObject )
+        public static LavaDataDictionary FromAnonymousObject( object anonymousObject )
         {
-            return new LavaDictionary( anonymousObject );
+            return new LavaDataDictionary( anonymousObject );
         }
 
-        public static LavaDictionary FromDictionary( IDictionary<string, object> dictionary )
+        public static LavaDataDictionary FromDictionary( IDictionary<string, object> dictionary )
         {
-            return new LavaDictionary( dictionary );
+            return new LavaDataDictionary( dictionary );
         }
 
         #endregion
 
         #region Constructors
 
-        public LavaDictionary( object anonymousObject )
+        public LavaDataDictionary( object anonymousObject )
         {
             if ( anonymousObject == null )
             {
@@ -55,7 +50,7 @@ namespace Rock.Lava
             }
         }
 
-        public LavaDictionary( IDictionary<string, object> dictionary )
+        public LavaDataDictionary( IDictionary<string, object> dictionary )
         {
             foreach ( var keyValue in dictionary )
             {
@@ -63,13 +58,13 @@ namespace Rock.Lava
             }
         }
 
-        public LavaDictionary( Func<LavaDictionary, string, object> lambda )
+        public LavaDataDictionary( Func<LavaDataDictionary, string, object> lambda )
             : this()
         {
             _lambda = lambda;
         }
 
-        public LavaDictionary()
+        public LavaDataDictionary()
         {
         }
 

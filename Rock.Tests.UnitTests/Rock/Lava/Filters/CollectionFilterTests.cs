@@ -42,7 +42,7 @@ namespace Rock.Tests.UnitTests.Lava
         [DataRow( "Zak", false )]
         public void Contains_SearchStringValuesReturnCorrectMatchIndicators( string searchValue, bool isFound )
         {
-            var mergeValues = new LavaDictionary { { "TestList", _TestNameList } };
+            var mergeValues = new LavaDataDictionary { { "TestList", _TestNameList } };
 
             var lavaTemplate = "{{ TestList | Contains:'<searchValue>' }}";
             lavaTemplate = lavaTemplate.Replace( "<searchValue>", searchValue );
@@ -61,7 +61,7 @@ namespace Rock.Tests.UnitTests.Lava
         [DataRow( 2, "Item 3" )]
         public void Index_IndexReferencesReturnExpectedItems( int index, string expectedValue )
         {
-            var mergeValues = new LavaDictionary { { "TestList", _TestOrderedList } };
+            var mergeValues = new LavaDataDictionary { { "TestList", _TestOrderedList } };
 
             var lavaTemplate = "{{ TestList | Index:<index> }}";
             lavaTemplate = lavaTemplate.Replace( "<index>", index.ToString() );
@@ -76,7 +76,7 @@ namespace Rock.Tests.UnitTests.Lava
         [TestMethod]
         public void Index_IndexExceedsItemCount_ProducesEmptyString()
         {
-            var mergeValues = new LavaDictionary { { "TestList", _TestNameList } };
+            var mergeValues = new LavaDataDictionary { { "TestList", _TestNameList } };
 
             TestHelper.AssertTemplateOutput( "", "{{ TestList | Index:999 }}", mergeValues );
         }
@@ -109,7 +109,7 @@ namespace Rock.Tests.UnitTests.Lava
                 Person = new { FirstName = "Cindy" }
             } );
 
-            var mergeValues = new LavaDictionary { { "Members", members } };
+            var mergeValues = new LavaDataDictionary { { "Members", members } };
 
             TestHelper.AssertTemplateOutput( "Ted;Alex;Cindy;",
                 "{% assign items = Members | OrderBy:'GroupRole.IsLeader desc,Person.FirstName' %}{% for item in items %}{{ item.Person.FirstName }};{% endfor %}",
@@ -122,7 +122,7 @@ namespace Rock.Tests.UnitTests.Lava
         [TestMethod]
         public void OrderBy_ExpandoObjectList_CanSortByIntegerPropertyAscending()
         {
-            var mergeValues = new LavaDictionary { { "Items", GetOrderByTestCollection() } } ;
+            var mergeValues = new LavaDataDictionary { { "Items", GetOrderByTestCollection() } } ;
 
             TestHelper.AssertTemplateOutput( "A;B;C;D;",
                 "{% assign items = Items | OrderBy:'Order' %}{% for item in items %}{{ item.Title }};{% endfor %}",
@@ -135,7 +135,7 @@ namespace Rock.Tests.UnitTests.Lava
         [TestMethod]
         public void OrderBy_ExpandoObjectList_CanSortByIntegerPropertyDescending()
         {
-            var mergeValues = new LavaDictionary { { "Items", GetOrderByTestCollection() } };
+            var mergeValues = new LavaDataDictionary { { "Items", GetOrderByTestCollection() } };
 
             TestHelper.AssertTemplateOutput( "D;C;B;A;",
                 "{% assign items = Items | OrderBy:'Order DESC' %}{% for item in items %}{{ item.Title }};{% endfor %}",
@@ -148,7 +148,7 @@ namespace Rock.Tests.UnitTests.Lava
         [TestMethod]
         public void OrderBy_ExpandoObjectList_CanSortByMultipleObjectProperties()
         {
-            var mergeValues = new LavaDictionary { { "Items", GetOrderByTestCollection() } };
+            var mergeValues = new LavaDataDictionary { { "Items", GetOrderByTestCollection() } };
 
             TestHelper.AssertTemplateOutput( "A;B;C;D;",
                 "{% assign items = Items | OrderBy:'Order, SecondOrder DESC' %}{% for item in items %}{{ item.Title }};{% endfor %}",
@@ -161,7 +161,7 @@ namespace Rock.Tests.UnitTests.Lava
         [TestMethod]
         public void OrderBy_ExpandoObjectList_CanSortByNestedObjectProperty()
         {
-            var mergeValues = new LavaDictionary { { "Items", GetOrderByTestCollection() } };
+            var mergeValues = new LavaDataDictionary { { "Items", GetOrderByTestCollection() } };
 
             TestHelper.AssertTemplateOutput( "A;B;C;D;",
                 "{% assign items = Items | OrderBy:'Order, Nested.Order DESC' %}{% for item in items %}{{ item.Title }};{% endfor %}",
@@ -191,7 +191,7 @@ namespace Rock.Tests.UnitTests.Lava
         [TestMethod]
         public void Shuffle_AppliedToOrderedList_ReturnsUnorderedList()
         {
-            var mergeValues = new LavaDictionary { { "OrderedList", _TestOrderedList } };
+            var mergeValues = new LavaDataDictionary { { "OrderedList", _TestOrderedList } };
 
             var orderedOutput = _TestOrderedList.JoinStrings( ";" ) + ";";
 
@@ -228,7 +228,7 @@ namespace Rock.Tests.UnitTests.Lava
         {
             var personList = TestHelper.GetTestPersonCollectionForDecker();
 
-            var mergeValues = new LavaDictionary { { "People", personList } };
+            var mergeValues = new LavaDataDictionary { { "People", personList } };
 
             TestHelper.AssertTemplateOutput( "Edward;Cindy;Noah;Alex;",
                 "{% assign names = People | Select:'FirstName' %}{% for name in names %}{{ name }};{% endfor %}",
@@ -241,7 +241,7 @@ namespace Rock.Tests.UnitTests.Lava
         [TestMethod]
         public void Size_ForArrayTarget_ReturnsItemCount()
         {
-            var mergeValues = new LavaDictionary { { "TestList", _TestNameList } };
+            var mergeValues = new LavaDataDictionary { { "TestList", _TestNameList } };
 
             TestHelper.AssertTemplateOutput( _TestNameList.Count.ToString(), "{{ TestList | Size }}", mergeValues );
         }
@@ -254,7 +254,7 @@ namespace Rock.Tests.UnitTests.Lava
         {
             var testString = "123456789";
 
-            var mergeValues = new LavaDictionary { { "TestString", testString } };
+            var mergeValues = new LavaDataDictionary { { "TestString", testString } };
 
             TestHelper.AssertTemplateOutput( testString.Length.ToString(), "{{ TestString | Size }}", mergeValues );
         }

@@ -59,7 +59,7 @@ namespace Rock.Tests.UnitTests.Lava
         /// </summary>
         /// <param name="inputTemplate"></param>
         /// <returns></returns>
-        public string GetTemplateOutput( string inputTemplate, LavaDictionary mergeValues = null )
+        public string GetTemplateOutput( string inputTemplate, LavaDataDictionary mergeValues = null )
         {
             string outputString;
 
@@ -77,7 +77,7 @@ namespace Rock.Tests.UnitTests.Lava
         /// </summary>
         /// <param name="expectedOutput"></param>
         /// <param name="inputTemplate"></param>
-        public void AssertTemplateOutput( string expectedOutput, string inputTemplate, LavaDictionary mergeValues = null, bool ignoreWhitespace = false )
+        public void AssertTemplateOutput( string expectedOutput, string inputTemplate, LavaDataDictionary mergeValues = null, bool ignoreWhitespace = false )
         {
             var outputString = GetTemplateOutput( inputTemplate, mergeValues );
 
@@ -101,7 +101,7 @@ namespace Rock.Tests.UnitTests.Lava
         /// </summary>
         /// <param name="expectedOutputRegex"></param>
         /// <param name="inputTemplate"></param>
-        public void AssertTemplateOutputRegex( string expectedOutputRegex, string inputTemplate, LavaDictionary mergeValues = null )
+        public void AssertTemplateOutputRegex( string expectedOutputRegex, string inputTemplate, LavaDataDictionary mergeValues = null )
         {
             var outputString = GetTemplateOutput( inputTemplate, mergeValues );
 

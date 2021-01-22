@@ -39,7 +39,7 @@ namespace Rock.Lava
 
         public abstract object GetMergeFieldValue( string key, object defaultValue = null );
 
-        public abstract LavaDictionary GetMergeFields();
+        public abstract LavaDataDictionary GetMergeFields();
 
         public abstract void SetEnabledCommands( IEnumerable<string> commands );
 
@@ -58,7 +58,7 @@ namespace Rock.Lava
         /// <param name="scope"></param>
         public abstract void SetMergeFieldValue( string key, object value, LavaContextRelativeScopeSpecifier scope = LavaContextRelativeScopeSpecifier.Current );
 
-        public void SetMergeFieldValues( LavaDictionary values )
+        public void SetMergeFieldValues( LavaDataDictionary values )
         {
             SetMergeFieldValues( values as IDictionary<string, object> );
         }
@@ -85,7 +85,7 @@ namespace Rock.Lava
         /// <summary>
         /// Gets the collection of variables defined for internal use only.  Internal values are not available to be resolved in the Lava Template.
         /// </summary>
-        public abstract LavaDictionary GetInternalFields();
+        public abstract LavaDataDictionary GetInternalFields();
 
         /// <summary>
         /// Sets a named value that is for internal use only. Internal values are not available to be resolved in the Lava Template.
@@ -94,7 +94,7 @@ namespace Rock.Lava
         /// <param name="value"></param>
         public abstract void SetInternalFieldValue( string key, object value );
 
-        public void SetInternalFieldValues( LavaDictionary values )
+        public void SetInternalFieldValues( LavaDataDictionary values )
         {
             SetInternalFieldValues( values as IDictionary<string, object> );
         }

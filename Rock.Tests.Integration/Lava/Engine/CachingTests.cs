@@ -80,7 +80,7 @@ namespace Rock.Tests.Integration.Lava
 
             rockContext.SaveChanges();
 
-            ?? FlushCache here ?;
+            LavaEngine.CurrentEngine.ClearTemplateCache();
 
             TestHelper.AssertTemplateOutput( "Goodbye!", "{[ testshortcode1 ]}" );
             //LavaEngine.CurrentEngine.TryRender( "{[ testshortcode1 ]}", out templateOutput );

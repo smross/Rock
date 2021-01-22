@@ -35,7 +35,7 @@ namespace Rock.Store
         {
             var dictionary = this.ToLiquid( false ) as Dictionary<string, object>;
 
-            return new LavaDictionary( dictionary );
+            return new LavaDataDictionary( dictionary );
         }
 
         /// <summary>

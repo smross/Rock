@@ -89,7 +89,7 @@
     <Compile Include="Core\IRockLavaElement.cs" />
     <Compile Include="Core\IRockLavaTag.cs" />
     <Compile Include="Core\IRockLavaBlock.cs" />
-    <Compile Include="Core\LavaDictionary.cs" />
+    <Compile Include="Core\LavaDataDictionary.cs" />
     <Compile Include="Core\LavaEngineConfigurationOptions.cs" />
     <Compile Include="Core\LavaIgnoreAttribute.cs" />
     <Compile Include="Core\LavaIncludeAttribute.cs" />

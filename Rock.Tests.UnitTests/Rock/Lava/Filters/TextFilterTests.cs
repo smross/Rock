@@ -38,7 +38,7 @@ namespace Rock.Tests.UnitTests.Lava
         {
             var person = TestHelper.GetTestPersonAlishaMarble();
 
-            var mergeValues = new LavaDictionary { { "CurrentPerson", person } };
+            var mergeValues = new LavaDataDictionary { { "CurrentPerson", person } };
 
             TestHelper.AssertTemplateOutput( "Alisha Marble", "{{ CurrentPerson | AsString }}", mergeValues );
         }

@@ -72,7 +72,7 @@ namespace Rock.Model
 
         public ILavaDataDictionary GetLavaDataDictionary()
         {
-            return new LavaDictionary( LocationTypeValue );
+            return new LavaDataDictionary( LocationTypeValue );
         }
 
         /// <summary>

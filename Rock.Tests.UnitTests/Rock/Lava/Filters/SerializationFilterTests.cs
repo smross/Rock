@@ -32,7 +32,7 @@ namespace Rock.Tests.UnitTests.Lava
         {
             var person = TestHelper.GetTestPersonTedDecker();
 
-            var mergeValues = new LavaDictionary { { "CurrentPerson", person } };
+            var mergeValues = new LavaDataDictionary { { "CurrentPerson", person } };
 
             var personJson = person.ToJson( Formatting.Indented );
 
@@ -47,7 +47,7 @@ namespace Rock.Tests.UnitTests.Lava
         {
             var numbers = new int[] { 1, 2, 3 };
 
-            var mergeValues = new LavaDictionary { { "Numbers", numbers } };
+            var mergeValues = new LavaDataDictionary { { "Numbers", numbers } };
 
             var numbersJson = numbers.ToJson( Formatting.Indented );
 
@@ -64,7 +64,7 @@ namespace Rock.Tests.UnitTests.Lava
 
             var jsonString = person.ToJson();
 
-            var mergeValues = new LavaDictionary { { "JsonString", jsonString } };
+            var mergeValues = new LavaDataDictionary { { "JsonString", jsonString } };
 
             TestHelper.AssertTemplateOutput( "Ted Decker - North Campus",
                 "{% assign jsonObject = JsonString | FromJSON %}{{ jsonObject.NickName }} {{ jsonObject.LastName }} - {{ jsonObject.Campus.Name }}",
@@ -83,7 +83,7 @@ namespace Rock.Tests.UnitTests.Lava
                 { "LastName", "Decker" }
             };
 
-            var mergeValues = new LavaDictionary { { "Dictionary", dictionary } };
+            var mergeValues = new LavaDataDictionary { { "Dictionary", dictionary } };
 
             var dictionaryJson = dictionary.ToJson( Formatting.Indented );
 

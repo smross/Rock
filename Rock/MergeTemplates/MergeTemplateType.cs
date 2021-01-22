@@ -82,7 +82,7 @@ namespace Rock.MergeTemplates
         /// <returns></returns>
         public static string GetDefaultLavaDebugInfo( List<object> mergeObjectList, Dictionary<string, object> globalMergeFields, string preText = null )
         {
-            var debugMergeFields = new LavaDictionary();
+            var debugMergeFields = new LavaDataDictionary();
 
             if ( mergeObjectList.Count >= 1 )
             {

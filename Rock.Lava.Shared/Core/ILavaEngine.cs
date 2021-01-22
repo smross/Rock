@@ -160,7 +160,7 @@ namespace Rock.Lava
         /// <param name="output"></param>
         /// <param name="mergeValues"></param>
         /// <returns></returns>
-        bool TryRender( string inputTemplate, out string output, LavaDictionary mergeValues );
+        bool TryRender( string inputTemplate, out string output, LavaDataDictionary mergeValues );
 
         /// <summary>
         /// Try to render the provided template in the specified context.

@@ -45,7 +45,7 @@ namespace Rock.Tests.UnitTests.Lava
         {
             var testObject = new TestLavaTypeAttributeWithoutNamedPropertiesClass();
 
-            var mergeValues = new LavaDictionary { { "PersonInfo", testObject } };
+            var mergeValues = new LavaDataDictionary { { "PersonInfo", testObject } };
 
             var template = @"
 Name: {{ PersonInfo.Name }}
@@ -70,7 +70,7 @@ Email: tdecker@rocksolidchurch.com
         {
             var testObject = new TestLavaTypeAttributeWithNamedPropertiesClass();
 
-            var mergeValues = new LavaDictionary { { "PersonInfo", testObject } };
+            var mergeValues = new LavaDataDictionary { { "PersonInfo", testObject } };
 
             var template = @"
 Name: {{ PersonInfo.Name }}
@@ -96,7 +96,7 @@ Date of Birth:
         {
             var testObject = new TestLavaTypeAttributeWithNamedPropertiesClass();
 
-            var mergeValues = new LavaDictionary { { "PersonInfo", testObject } };
+            var mergeValues = new LavaDataDictionary { { "PersonInfo", testObject } };
 
             var template = @"
 Name: {{ PersonInfo.Name }}
@@ -126,7 +126,7 @@ Password:
         {
             var testObject = new TestLavaTypeAttributeOnIndividualProperty();
 
-            var mergeValues = new LavaDictionary { { "PersonInfo", testObject } };
+            var mergeValues = new LavaDataDictionary { { "PersonInfo", testObject } };
 
             var template = @"
 Name: {{ PersonInfo.Name }}
@@ -150,7 +150,7 @@ Name: Ted Decker
         {
             var testObject = new TestLavaTypeAttributeOnIndividualProperty();
 
-            var mergeValues = new LavaDictionary { { "PersonInfo", testObject } };
+            var mergeValues = new LavaDataDictionary { { "PersonInfo", testObject } };
 
             var template = @"
 Name: {{ PersonInfo.Name }}

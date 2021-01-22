@@ -153,9 +153,9 @@ namespace Rock.Lava.Fluid
 
         }
 
-        public override LavaDictionary GetMergeFields()
+        public override LavaDataDictionary GetMergeFields()
         {
-            var dictionary = new LavaDictionary( this.GetScopeAggregatedValues( _context.LocalScope ) );
+            var dictionary = new LavaDataDictionary( this.GetScopeAggregatedValues( _context.LocalScope ) );
 
             return dictionary;
         }
@@ -336,9 +336,9 @@ namespace Rock.Lava.Fluid
 
             return defaultValue;
         }
-        public override LavaDictionary GetInternalFields()
+        public override LavaDataDictionary GetInternalFields()
         {
-            var values = new LavaDictionary();
+            var values = new LavaDataDictionary();
 
             foreach ( var item in _context.AmbientValues )
             {
