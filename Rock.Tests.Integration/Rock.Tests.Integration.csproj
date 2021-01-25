@@ -153,8 +153,8 @@
     <Compile Include="Lava\Engine\ScopeTests.cs" />
     <Compile Include="Lava\Engine\ParallelExecutionTests.cs" />
     <Compile Include="Lava\Filters\AttributeFilterTests.cs" />
-    <Compile Include="Lava\HttpFilterTests.cs" />
-    <Compile Include="Lava\MiscellaneousFilterTests.cs" />
+    <Compile Include="Lava\Filters\HttpFilterTests.cs" />
+    <Compile Include="Lava\Filters\MiscellaneousFilterTests.cs" />
     <Compile Include="Lava\EventScheduledInstanceCommandTests.cs" />
     <Compile Include="Lava\CalendarEventsCommandTests.cs" />
     <Compile Include="Lava\Engine\LavaCommentsTests.cs" />
