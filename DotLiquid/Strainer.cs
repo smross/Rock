@@ -25,7 +25,7 @@ namespace DotLiquid
         // Register a single filter method.
         public static void RegisterFilter( string filterName, Func<Context, List<object>, object> filterFunction )
         {
-            _filterFunctions.Add( filterName, filterFunction );
+            _filterFunctions[filterName] = filterFunction;
         }
 
 		public static void GlobalFilter(Type filter)
