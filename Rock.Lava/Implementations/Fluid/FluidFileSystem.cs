@@ -32,8 +32,8 @@ namespace Rock.Lava
 
         public IFileInfo GetFileInfo( string subpath )
         {
-            // The Fluid framework appends a ".liquid" extension to the file path if it does not exist.
-            // If the file cannot be found, remove the appended extension and try again.
+            // The Fluid framework forces a ".liquid" extension in the file path.
+            // Most Lava template files use a ".lava" file type, so remove the ".liquid" extension and retry.
             bool exists = false;
 
             if ( subpath.EndsWith(".liquid") )

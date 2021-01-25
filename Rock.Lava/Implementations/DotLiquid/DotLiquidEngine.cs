@@ -130,7 +130,7 @@ namespace Rock.Lava.DotLiquid
                     return result;
                 };
 
-                // Register the set of filters for each method name.                
+                // Register the set of filters for each method name.
                 Strainer.RegisterFilter( methodGroup.Key, filterFunctionWrapper );
             }
         }
