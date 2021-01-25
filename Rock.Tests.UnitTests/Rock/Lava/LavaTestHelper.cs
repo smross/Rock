@@ -40,6 +40,7 @@ namespace Rock.Tests.UnitTests.Lava
             var engine = global::Rock.Lava.LavaEngine.CurrentEngine;
 
             engine.RegisterFilters( typeof( global::Rock.Lava.RockFilters ) );
+            engine.RegisterFilters( typeof( global::Rock.Lava.BlueBoxMoonLavaFilters ) );
 
             var helper = new LavaTestHelper();
 
@@ -187,8 +188,20 @@ namespace Rock.Tests.UnitTests.Lava
         /// <returns></returns>
         public TestPerson GetTestPersonAlishaMarble()
         {
-            var campus = new TestCampus { Name = "South Campus", Id = 2 };
+            var campus = new TestCampus { Name = "South Campus", Id = 102 };
             var person = new TestPerson { FirstName = "Alisha", NickName = "Alisha", LastName = "Marble", Campus = campus, Id = 2 };
+
+            return person;
+        }
+
+        /// <summary>
+        /// Return an initialized Person object for test subject Alisha Marble.
+        /// </summary>
+        /// <returns></returns>
+        public TestPerson GetTestPersonBillMarble()
+        {
+            var campus = new TestCampus { Name = "South Campus", Id = 101 };
+            var person = new TestPerson { FirstName = "William", NickName = "Bill", LastName = "Marble", Campus = campus, Id = 2 };
 
             return person;
         }
@@ -205,6 +218,25 @@ namespace Rock.Tests.UnitTests.Lava
             personList.Add( new TestPerson { FirstName = "Cindy", LastName = "Decker", Id = 2 } );
             personList.Add( new TestPerson { FirstName = "Noah", LastName = "Decker", Id = 3 } );
             personList.Add( new TestPerson { FirstName = "Alex", LastName = "Decker", Id = 4 } );
+
+            return personList;
+        }
+
+        /// <summary>
+        /// Return a collection of initialized Person objects for the Decker family.
+        /// </summary>
+        /// <returns></returns>
+        public List<TestPerson> GetTestPersonCollectionForDeckerAndMarble()
+        {
+            var personList = new List<TestPerson>();
+
+            personList.Add( GetTestPersonTedDecker() );
+            personList.Add( new TestPerson { FirstName = "Cindy", LastName = "Decker", Id = 2 } );
+            personList.Add( new TestPerson { FirstName = "Noah", LastName = "Decker", Id = 3 } );
+            personList.Add( new TestPerson { FirstName = "Alex", LastName = "Decker", Id = 4 } );
+
+            personList.Add( GetTestPersonBillMarble() );
+            personList.Add( GetTestPersonAlishaMarble() );
 
             return personList;
         }

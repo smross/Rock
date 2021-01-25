@@ -31,6 +31,15 @@ namespace Rock.Tests.UnitTests.Lava
         }
 
         /// <summary>
+        /// Ensure that a Base64 encoded string is decoded correctly.
+        /// </summary>
+        [TestMethod]
+        public void FromBase64_DecodeBase64ToString_IsDecoded()
+        {
+            TestHelper.AssertTemplateOutput( "hello", "{{ 'aGVsbG8=' | FromBase64:true }}" );
+        }
+
+        /// <summary>
         /// Ensure that a plain text string encoded using the HmacSha1 scheme is encoded correctly.
         /// </summary>
         [TestMethod]

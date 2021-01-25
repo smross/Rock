@@ -5772,17 +5772,22 @@ namespace Rock.Lava
         }
 
         /// <summary>
-        /// Converts a string into a Base64 encoding.
+        /// Converts a string or byte array into a Base64 encoded string.
         /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
+        /// <param name="input">The string or byte array to be converted.</param>
+        /// <example><![CDATA[
+        /// {{ 'hello' | ToBase64 }}
+        /// ]]></example>
         public static string Base64( object input )
         {
-            var bytes = System.Text.Encoding.UTF8.GetBytes( input.ToStringSafe() );
-
-            var result = System.Convert.ToBase64String( bytes );
-
-            return result;
+            if ( input is ICollection<byte> )
+            {
+                return Convert.ToBase64String( ( input as ICollection<byte> ).ToArray() );
+            }
+            else
+            {
+                return Convert.ToBase64String( System.Text.Encoding.UTF8.GetBytes( input.ToString() ) );
+            }
         }
 
         /// <summary>

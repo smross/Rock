@@ -28,7 +28,7 @@ using Rock;
 using Rock.Common;
 //using Rock.Utility;
 
-namespace Rock.Lava.Filters
+namespace Rock.Lava
 {
     /// <summary>
     /// A set of functions that can be used to perform filter and transformation operations on a text stream.
@@ -83,46 +83,46 @@ namespace Rock.Lava.Filters
         /// <param name="obj">The object whose property value we want.</param>
         /// <param name="propertyPath">The path to the property.</param>
         /// <returns>The value at the given path or null.</returns>
-        private static object GetPropertyValue( object obj, string propertyPath )
-        {
-            if ( string.IsNullOrWhiteSpace( propertyPath ) )
-            {
-                return obj;
-            }
+        //private static object GetPropertyValue( object obj, string propertyPath )
+        //{
+        //    if ( string.IsNullOrWhiteSpace( propertyPath ) )
+        //    {
+        //        return obj;
+        //    }
 
-            var properties = propertyPath.Split( new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries ).ToList();
+        //    var properties = propertyPath.Split( new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries ).ToList();
 
-            while ( properties.Any() && obj != null )
-            {
-                if ( obj is Drop )
-                {
-                    obj = ( (Drop)obj ).InvokeDrop( properties.First() );
-                }
-                else if ( obj is IDictionary )
-                {
-                    obj = ( (IDictionary)obj )[properties.First()];
-                }
-                else if ( obj is IDictionary<string, object> )
-                {
-                    obj = ( (IDictionary<string, object>)obj )[properties.First()];
-                }
-                else
-                {
-                    var property = obj.GetType().GetProperty( properties.First() );
-                    obj = property != null ? property.GetValue( obj ) : null;
-                }
+        //    while ( properties.Any() && obj != null )
+        //    {
+        //        if ( obj is Drop )
+        //        {
+        //            obj = ( (Drop)obj ).InvokeDrop( properties.First() );
+        //        }
+        //        else if ( obj is IDictionary )
+        //        {
+        //            obj = ( (IDictionary)obj )[properties.First()];
+        //        }
+        //        else if ( obj is IDictionary<string, object> )
+        //        {
+        //            obj = ( (IDictionary<string, object>)obj )[properties.First()];
+        //        }
+        //        else
+        //        {
+        //            var property = obj.GetType().GetProperty( properties.First() );
+        //            obj = property != null ? property.GetValue( obj ) : null;
+        //        }
 
-                properties = properties.Skip( 1 ).ToList();
-            }
+        //        properties = properties.Skip( 1 ).ToList();
+        //    }
 
-            return obj;
-        }
+        //    return obj;
+        //}
 
-        /// <summary>
-        /// Converts the given value to a dictionary.
-        /// </summary>
-        /// <param name="input">The value to be converted.</param>
-        /// <returns>An IDictionary&lt;string, object&gt; that represents the value.</returns>
+        ///// <summary>
+        ///// Converts the given value to a dictionary.
+        ///// </summary>
+        ///// <param name="input">The value to be converted.</param>
+        ///// <returns>An IDictionary&lt;string, object&gt; that represents the value.</returns>
         private static IDictionary<string, object> AsDictionary( object input )
         {
             IDictionary<string, object> dict = new Dictionary<string, object>();
@@ -154,6 +154,7 @@ namespace Rock.Lava.Filters
 
         #region Arrays
 
+/*
         /// <summary>
         /// Orders a collection of elements by the specified property (or properties)
         /// and returns a new collection in that order.
@@ -191,11 +192,11 @@ namespace Rock.Lava.Filters
             IOrderedQueryable<object> qry;
             if ( orderBy[0].Descending )
             {
-                qry = e.Cast<object>().AsQueryable().OrderByDescending( d => GetPropertyValue( d, orderBy[0].Property ) );
+                qry = e.Cast<object>().AsQueryable().OrderByDescending( d => d.GetPropertyValue( orderBy[0].Property ) );
             }
             else
             {
-                qry = e.Cast<object>().AsQueryable().OrderBy( d => GetPropertyValue( d, orderBy[0].Property ) );
+                qry = e.Cast<object>().AsQueryable().OrderBy( d => d.GetPropertyValue( orderBy[0].Property ) );
             }
 
             //
@@ -205,17 +206,18 @@ namespace Rock.Lava.Filters
             {
                 if ( orderBy[i].Descending )
                 {
-                    qry = qry.ThenByDescending( d => GetPropertyValue( d, orderBy[i].Property ) );
+                    qry = qry.ThenByDescending( d => d.GetPropertyValue( orderBy[i].Property ) );
                 }
                 else
                 {
                     var prop = orderBy[i].Property;
-                    qry = qry.ThenBy( d => GetPropertyValue( d, prop ) );
+                    qry = qry.ThenBy( d => d.GetPropertyValue( prop ) );
                 }
             }
 
             return qry;
         }
+*/
 
         /// <summary>
         /// Takes a collection and returns distinct values in that collection.
@@ -227,7 +229,6 @@ namespace Rock.Lava.Filters
         /// </example>
         public static IEnumerable Distinct( object input )
         {
-            //IEnumerable e = input is IEnumerable ? input as IEnumerable : new List<object>( new[] { input } );
             IEnumerable<object> e = input is IEnumerable<object> ? input as IEnumerable<object> : new List<object>( new[] { input } );
 
             if ( !e.Any() )
@@ -260,7 +261,7 @@ namespace Rock.Lava.Filters
                 return e;
             }
 
-            return e.GroupBy( d => GetPropertyValue( d, property ) ).Select( x => x.FirstOrDefault() );
+            return e.GroupBy( d => d.GetPropertyValue( property ) ).Select( x => x.FirstOrDefault() );
             //return e.AsQueryable().DistinctBy( d => GetPropertyValue( d, property ) );
         }
 
@@ -299,7 +300,7 @@ namespace Rock.Lava.Filters
             }
 
             return e.AsQueryable()
-                .GroupBy( x => GetPropertyValue( x, property ) )
+                .GroupBy( x => x.GetPropertyValue( property ) )
                 .ToDictionary( g => g.Key != null ? g.Key.ToString() : string.Empty, g => (object)g.ToList() );
         }
 
@@ -575,6 +576,7 @@ namespace Rock.Lava.Filters
             response.Headers.Add( elements[0].Trim(), elements[1].Trim() );
         }
 
+/*
         /// <summary>
         /// Convert the given string or byte array into a base64 string.
         /// </summary>
@@ -593,6 +595,7 @@ namespace Rock.Lava.Filters
                 return Convert.ToBase64String( System.Text.Encoding.UTF8.GetBytes( input.ToString() ) );
             }
         }
+*/
 
         /// <summary>
         /// Convert the given string or byte array into a base64 string.
@@ -622,7 +625,7 @@ namespace Rock.Lava.Filters
         /// <summary>
         /// Contains information about a matched group in a regular expression.
         /// </summary>
-        public class RegexGroup : ILavaDataDictionarySource // ILiquidizable
+        public class RegexGroup : ILavaDataDictionarySource
         {
             public int Index { get; set; }
 

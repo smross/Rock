@@ -31,6 +31,154 @@ namespace Rock.Tests.UnitTests.Lava
     {
         List<string> _TestNameList = new List<string>() { "Ted", "Alisha", "Cynthia", "Brian" };
         List<string> _TestOrderedList = new List<string>() { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+        List<string> _TestDuplicateStringList = new List<string>() { "Item 1", "Item 2 (duplicate)", "Item 2 (duplicate)", "Item 3" };
+
+        #region Filter Tests: Distinct
+
+        [TestMethod]
+        public void Distinct_OnStringCollectionWithDuplicates_RemovesDuplicates()
+        {
+            var mergeValues = new LavaDataDictionary { { "TestList", _TestDuplicateStringList } };
+
+            var lavaTemplate = "{{ TestList | Distinct | Join:',' }}";
+
+            TestHelper.AssertTemplateOutput( "hello,test,one,two,three", lavaTemplate, mergeValues );
+        }
+
+        [TestMethod]
+        public void DistinctBy_OnObjectPropertyWithMultipleValues_ReturnsFirstValueOnly()
+        {
+            var personList = TestHelper.GetTestPersonCollectionForDeckerAndMarble();
+            var mergeValues = new LavaDataDictionary { { "PersonList", personList } };
+
+            var lavaTemplate = @"
+{% assign distinctPersonList = PersonList | DistinctBy:'LastName' %}
+{% for person in distinctPersonList %}
+{{ person.NickName }} {{ person.LastName }}<br>
+{% endfor %}
+";
+
+            lavaTemplate = lavaTemplate.Replace( "`", "\"" );
+
+            // Only the first person of each family in the collection should be returned.
+            TestHelper.AssertTemplateOutput( "TedDecker<br>BillMarble<br>", lavaTemplate, mergeValues, ignoreWhitespace:true );
+        }
+
+        #endregion
+
+        #region Filter: GroupBy
+
+        [TestMethod]
+        public void GroupBy_OnStringCollectionWithDuplicates_RemovesDuplicates()
+        {
+            var personList = TestHelper.GetTestPersonCollectionForDeckerAndMarble();
+            var mergeValues = new LavaDataDictionary { { "PersonList", personList } };
+
+            var lavaTemplate = @"
+{% assign groupedPersonList = PersonList | GroupBy:'LastName' %}
+{% for member in groupedPersonList %}
+    {% assign parts = member | PropertyToKeyValue %}
+    <li>{{ parts.Key }}</li>
+    <ul>
+        {% for m in parts.Value %}
+            {{ m.FirstName }}<br>
+        {% endfor %}
+    </ul>
+{% endfor %}
+";
+
+            lavaTemplate = lavaTemplate.Replace( "`", "\"" );
+
+            TestHelper.AssertTemplateOutput( "<li>Decker</li><ul>Edward<br>Cindy<br>Noah<br>Alex<br></ul><li>Marble</li><ul>William<br>Alisha<br></ul>", lavaTemplate, mergeValues, ignoreWhitespace: true );
+        }
+
+        [TestMethod]
+        public void AddToArray_AddToStringCollection_AppendsNewItem()
+        {
+            var mergeValues = new LavaDataDictionary { { "TestList", _TestDuplicateStringList } };
+
+            var lavaTemplate = @"
+        {% assign array = '' | AddToArray:'one' %}
+        {% assign array = array | AddToArray:'two' | AddToArray:'three' %}
+        {% for item in array %}
+            {{ item }}<br>
+        {% endfor %}
+";
+
+            lavaTemplate = lavaTemplate.Replace( "`", "\"" );
+
+            TestHelper.AssertTemplateOutput( "one<br>two<br>three<br>", lavaTemplate, mergeValues, ignoreWhitespace: true );
+        }
+
+        [TestMethod]
+        public void RemoveFromArray_RemoveDuplicateEntriesInStringCollection_RemovesAllMatchingEntries()
+        {
+            var mergeValues = new LavaDataDictionary { { "TestList", _TestDuplicateStringList } };
+
+            var lavaTemplate = @"
+        {% assign array = TestList | RemoveFromArray:'Item 2 (duplicate)' %}
+        {% for item in array %}
+            {{ item }}<br>
+        {% endfor %}
+"; 
+
+            lavaTemplate = lavaTemplate.Replace( "`", "\"" );
+
+            TestHelper.AssertTemplateOutput( "Item 1<br>Item 3<br>", lavaTemplate, mergeValues, ignoreWhitespace: true );
+        }
+
+        [TestMethod]
+        public void Sum_AppliedToArrayOfIntegers_ReturnsSumOfIntegers()
+        {
+            var lavaTemplate = @"
+Total: {{ '3,5,7' | Split:',' | Sum }}
+";
+
+            lavaTemplate = lavaTemplate.Replace( "`", "\"" );
+
+            TestHelper.AssertTemplateOutput( "Total:15", lavaTemplate, null, ignoreWhitespace: true );
+        }
+
+        #endregion
+
+        #region Filter Tests: Dictionaries
+
+        [TestMethod]
+        public void AddToDictionary_AddMultipleKeyValuePairs_ReturnsUpdatedDictionary()
+        {
+            var lavaTemplate = @"
+        {% assign dict = '' | AddToDictionary:'key1','value2' %}
+        {% assign dict = dict | AddToDictionary:'key2','value2' | AddToDictionary:'key3','value3' %}
+        {{ dict | AllKeysFromDictionary }}
+";
+
+            TestHelper.AssertTemplateOutput( "key1key2key3", lavaTemplate, null, ignoreWhitespace: true );
+        }
+
+        [TestMethod]
+        public void RemoveFromDictionary_AppliedToArrayOfIntegers_ReturnsCorrectSum()
+        {
+            var lavaTemplate = @"
+{% assign dict = '' | AddToDictionary:'key1','value2' | AddToDictionary:'key2','value2' | AddToDictionary:'key3','value3' %}
+{% assign dict = dict | RemoveFromDictionary:'key2' %}
+{{ dict | AllKeysFromDictionary }}
+";
+
+            TestHelper.AssertTemplateOutput( "key1key3", lavaTemplate, null, ignoreWhitespace: true );
+        }
+
+        [TestMethod]
+        public void AllKeysFromDictionary_AppliedToDictionary_ReturnsArrayOfKeys()
+        {
+            var lavaTemplate = @"
+{% assign dict = '' | AddToDictionary:'key1','value2' | AddToDictionary:'key2','value2' | AddToDictionary:'key3','value3' %}
+{{ dict | AllKeysFromDictionary }}
+";
+
+            TestHelper.AssertTemplateOutput( "key1key2key3", lavaTemplate, null, ignoreWhitespace: true );
+        }
+
+        #endregion
 
         /// <summary>
         /// Searching for strings in a collection returns correct match indicators.
