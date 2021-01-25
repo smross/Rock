@@ -23,13 +23,13 @@ using Rock.Tests.Shared;
 namespace Rock.Tests.Integration.Lava
 {
     /// <summary>
-    /// Tests for Lava Filters.
+    /// Tests for Lava Filters related to Http Requests and Responses.
     /// </summary>
     /// <remarks>
     /// These tests exist in the integration tests project because they require a configured Lava Engine to operate correctly.
     /// </remarks>
     [TestClass]
-    public class LavaFilterTests
+    public class HttpFilterTests
     {
         #region Initialization
 
@@ -41,6 +41,28 @@ namespace Rock.Tests.Integration.Lava
             Template.NamingConvention = new DotLiquid.NamingConventions.CSharpNamingConvention();
 
             Template.RegisterFilter( typeof( Rock.Lava.RockFilters ) );
+        }
+
+        #endregion
+
+        #region AddResponseHeader
+
+        [TestMethod]
+        [Ignore("This test is invalid. The HttpResponse.Headers collection is not available to be read when using HttpSimulator (v2.3.0).")]
+        public void AddResponseHeader_ForExistingCookie_RendersCookieValue()
+        {
+            var template = @"{{ 'public, max-age=120' | AddResponseHeader:'cache-control' }}";
+
+            var simulator = new Http.TestLibrary.HttpSimulator();
+
+            using ( simulator.SimulateRequest() )
+            {
+                var output = template.ResolveMergeFields( null );
+
+                var header = simulator.Context.Response.Headers.Get( "cache-control" );
+
+                Assert.That.AreEqual( "public, max-age=120", header );
+            }
         }
 
         #endregion
