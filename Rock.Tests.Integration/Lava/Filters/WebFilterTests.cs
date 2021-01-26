@@ -23,13 +23,10 @@ using Rock.Tests.Shared;
 namespace Rock.Tests.Integration.Lava
 {
     /// <summary>
-    /// Tests for Lava Filters related to Http Requests and Responses.
+    /// Tests for Lava Filters related to operations that are only available in the Rock Web application.
     /// </summary>
-    /// <remarks>
-    /// These tests exist in the integration tests project because they require a configured Lava Engine to operate correctly.
-    /// </remarks>
     [TestClass]
-    public class HttpFilterTests
+    public class WebSiteFilterTests : LavaIntegrationTestBase
     {
         #region Initialization
 
@@ -48,7 +45,7 @@ namespace Rock.Tests.Integration.Lava
         #region AddResponseHeader
 
         [TestMethod]
-        [Ignore("This test is invalid. The HttpResponse.Headers collection is not available to be read when using HttpSimulator (v2.3.0).")]
+        [Ignore( "This test is invalid. The HttpResponse.Headers collection is not available to be read when using HttpSimulator (v2.3.0)." )]
         public void AddResponseHeader_ForExistingCookie_RendersCookieValue()
         {
             var template = @"{{ 'public, max-age=120' | AddResponseHeader:'cache-control' }}";
@@ -186,6 +183,82 @@ namespace Rock.Tests.Integration.Lava
             Assert.That.IsTrue( simulator.Context.Response.Cookies.AllKeys.Contains( key ), "Cookie not found." );
 
             return simulator.Context.Response.Cookies[key];
+        }
+
+        #endregion
+
+        #region PageRoute
+
+        [TestMethod]
+        public void PageRoute_ForPageNumber_EmitsUrl()
+        {
+            var simulator = new Http.TestLibrary.HttpSimulator();
+
+            using ( simulator.SimulateRequest() )
+            {
+                TestHelper.AssertTemplateOutput( "/page/12", "{{ 12 | PageRoute }}" );
+            }
+        }
+
+        [TestMethod]
+        public void PageRoute_WithQueryParameter_EmitsUrlWithQueryString()
+        {
+            var simulator = new Http.TestLibrary.HttpSimulator();
+
+            using ( simulator.SimulateRequest() )
+            {
+                TestHelper.AssertTemplateOutput( "/page/12?PersonID=10&GroupId=20", "{{ '12' | PageRoute:'PersonID=10^GroupId=20' }}" );
+            }
+        }
+
+        #endregion
+
+        #region Web Cache
+
+        [TestMethod]
+        public void GetCache_CacheValueDoesNotExist_EmitsDefaultValue()
+        {
+            var template = @"
+{{ '' | SetCache:'SelectedCampus' }}
+{{ 'SelectedCampus' | GetCache:'West Valley' }}
+";
+
+            TestHelper.AssertTemplateOutput( "West Valley", template, null, ignoreWhitespace: true );
+        }
+
+        [TestMethod]
+        public void GetCache_CacheValueExists_EmitsCacheValue()
+        {
+            var template = @"
+{{ 'East Valley' | SetCache:'SelectedCampus' }}
+{{ 'SelectedCampus' | GetCache:'West Valley' }}
+";
+
+            TestHelper.AssertTemplateOutput( "East Valley", template, null, ignoreWhitespace: true );
+        }
+
+        [TestMethod]
+        public void SetCache_CacheValueExists_ExistingValueIsOverwritten()
+        {
+            var template = @"
+{{ 'East Valley' | SetCache:'SelectedCampus' }}
+Cached Campus: {{ 'SelectedCampus' | GetCache }}<br>
+{{ 'West Valley' | SetCache:'SelectedCampus' }}
+Cached Campus: {{ 'SelectedCampus' | GetCache }}<br>
+";
+
+            TestHelper.AssertTemplateOutput( "CachedCampus:EastValley<br>CachedCampus:WestValley<br>", template, null, ignoreWhitespace: true );
+        }
+
+        [TestMethod]
+        public void SetCache_WithQueryParameter_EmitsUrlWithQueryString()
+        {
+            var simulator = new Http.TestLibrary.HttpSimulator();
+
+            using ( simulator.SimulateRequest() )
+            {
+                TestHelper.AssertTemplateOutput( "/page/12?PersonID=10&GroupId=20", "{{ '12' | PageRoute:'PersonID=10^GroupId=20' }}" );
+            }
         }
 
         #endregion

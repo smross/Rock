@@ -915,6 +915,8 @@ namespace Rock.Lava
             return UnescapeDataString( input );
         }
 
+        #region Regular Expressions
+
         /// <summary>
         /// Tests if the inputted string matches the regex
         /// </summary>
@@ -961,12 +963,40 @@ namespace Rock.Lava
         /// <returns></returns>
         public static List<string> RegExMatchValues( string input, string expression )
         {
+            return RegExMatchValues( input, expression, options: null );
+        }
+
+        /// <summary>
+        /// Returns matched RegEx list of strings from inputted string
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <param name="expression">The regex expression.</param>
+        /// <param name="options">Option flags that affect the match type. [m=multiline, i=ignore case]</param>
+        /// <returns></returns>
+        public static List<string> RegExMatchValues( string input, string expression, string options )
+        {
             if ( input == null )
             {
                 return null;
             }
 
-            Regex regex = new Regex( expression );
+            RegexOptions regexOptions = RegexOptions.None;
+            var inputString = input.ToString();
+
+            options = options ?? string.Empty;
+
+            if ( options.Contains( 'm' ) )
+            {
+                regexOptions |= RegexOptions.Multiline;
+            }
+
+            if ( options.Contains( 'i' ) )
+            {
+                regexOptions |= RegexOptions.IgnoreCase;
+            }
+
+            var regex = new Regex( expression, regexOptions );
+
             var matches = regex.Matches( input );
 
             // Flatten all matches to single list
@@ -979,6 +1009,39 @@ namespace Rock.Lava
 
             return captured.ToList();
         }
+
+        /// <summary>
+        /// Run RegEx replacing on a string.
+        /// </summary>
+        /// <param name="input">The lava source to process.</param>
+        /// <param name="pattern">The regex pattern to use when matching.</param>
+        /// <param name="replacement">The string to use when doing replacement.</param>
+        /// <param name="options">The regex options to modify the matching.</param>
+        /// <example><![CDATA[
+        /// {{ 'The Rock is awesome.' | RegExReplace:'the rock','Rock','i' }}
+        /// {{ 'Hello Ted, how are you?' | RegExReplace:'[Hh]ello (\w+)','Greetings $1' }}
+        /// ]]></example>
+        public static object RegExReplace( object input, object pattern, object replacement, string options = null )
+        {
+            RegexOptions regexOptions = RegexOptions.None;
+            var inputString = input.ToString();
+
+            options = options ?? string.Empty;
+
+            if ( options.Contains( 'm' ) )
+            {
+                regexOptions |= RegexOptions.Multiline;
+            }
+
+            if ( options.Contains( 'i' ) )
+            {
+                regexOptions |= RegexOptions.IgnoreCase;
+            }
+
+            return Regex.Replace( inputString, pattern.ToString(), replacement.ToString(), regexOptions );
+        }
+
+        #endregion
 
         /// <summary>
         /// The slice filter returns a substring, starting at the specified index.
@@ -6072,6 +6135,170 @@ namespace Rock.Lava
 
         #endregion Color Filters
 
+        /// <summary>
+        /// Get the page route for the specified page Id or Guid.
+        /// </summary>
+        /// <param name="input">The page (and optional route) we are interested in.</param>
+        /// <param name="parameters">Any parameters that should be included in the route URL.</param>
+        /// <example><![CDATA[
+        /// {{ 12 | PageRoute }}
+        /// {{ '12' | PageRoute:'PersonID=10^GroupId=20' }}
+        /// {{ 'Global' | Attribute:'PageAttrib','RawValue' | Pageroute:'PersonId=10' }}
+        /// ]]></example>
+        public static string PageRoute( object input, object parameters = null )
+        {
+            int pageId = 0;
+            int routeId = 0;
+            var parms = new Dictionary<string, string>();
+
+            if ( input is int )
+            {
+                //
+                // We were given a simple page Id number.
+                //
+                pageId = (int)input;
+            }
+            else
+            {
+                //
+                // We have a string, it could be a page Id number as a string or a "Guid[,Guid]"
+                // style page reference.
+                //
+                var pageString = input.ToString();
+
+                if ( pageString.Contains( "," ) )
+                {
+                    //
+                    // "Guid,Guid" style page reference.
+                    //
+                    var segments = pageString.Split( ',' );
+
+                    var page = Rock.Web.Cache.PageCache.Get( segments[0].AsGuid() );
+
+                    if ( page == null )
+                    {
+                        throw new Exception( "Page not found." );
+                    }
+
+                    pageId = page.Id;
+
+                    var routeGuid = segments[1].AsGuid();
+                    var route = page.PageRoutes.Where( r => r.Guid == routeGuid ).FirstOrDefault();
+
+                    if ( route != null )
+                    {
+                        routeId = route.Id;
+                    }
+                }
+                else
+                {
+                    //
+                    // "Guid" or "int" style page reference.
+                    //
+                    var pageGuid = pageString.AsGuidOrNull();
+
+                    if ( pageGuid.HasValue )
+                    {
+                        var page = Rock.Web.Cache.PageCache.Get( pageGuid.Value );
+
+                        if ( page == null )
+                        {
+                            throw new Exception( "Page not found." );
+                        }
+
+                        pageId = page.Id;
+                    }
+                    else
+                    {
+                        pageId = pageString.AsInteger();
+                    }
+                }
+            }
+
+            //
+            // Parse the parameters. They will either be a "key=value^key2=value2" style string
+            // or a dictionary collection of key value pairs.
+            //
+            if ( parameters is string && !string.IsNullOrEmpty( (string)parameters ) )
+            {
+                var segments = parameters.ToString().Split( '^' );
+
+                foreach ( string segment in segments )
+                {
+                    var kv = segment.Split( '=' );
+
+                    if ( kv.Length == 2 )
+                    {
+                        parms.Add( kv[0], kv[1] );
+                    }
+                    else
+                    {
+                        throw new Exception( "Invalid page parameter specified." );
+                    }
+                }
+            }
+            else if ( parameters is IDictionary )
+            {
+                foreach ( DictionaryEntry kvp in (IDictionary)parameters )
+                {
+                    parms.Add( kvp.Key.ToString(), kvp.Value.ToString() );
+                }
+            }
+
+            var pageReference = new Rock.Web.PageReference( pageId, routeId, parms );
+
+            return pageReference.BuildUrl();
+        }
+
+        #region Caching
+
+        /// <summary>
+        /// Get a previously cached value from the memory cache.
+        /// </summary>
+        /// <param name="input">The cache key the value was stored in.</param>
+        /// <param name="defaultValue">The optional value to return if no cached value was found.</param>
+        /// <example><![CDATA[
+        /// {{ 'SelectedCampus' | GetCache:'West Valley' }}
+        /// ]]></example>
+        public static object GetCache( object input, object defaultValue = null )
+        {
+            return Rock.Web.Cache.RockCache.Get( $"LavaCache.{input}" ) ?? defaultValue;
+        }
+
+        /// <summary>
+        /// Store a value into the memory cache. This filter always returns the input object.
+        /// </summary>
+        /// <param name="input">The object value to store in the cache. Can pass null to remove any existing cached item.</param>
+        /// <param name="cacheKey">The cache key the value is to be stored in.</param>
+        /// <param name="cacheDuration">The number of seconds to cache the value for. If not specified or 0 then the item is cached until removed.</param>
+        /// <example><![CDATA[
+        /// {{ 'West Valley' | SetCache:'SelectedCampus' }}
+        /// ]]></example>
+        public static void SetCache( object input, object cacheKey, object cacheDuration = null )
+        {
+            var key = $"LavaCache.{cacheKey}";
+
+            int? cacheTime = cacheDuration.ToStringSafe().AsIntegerOrNull();
+
+            if ( string.IsNullOrEmpty( input as string ) )
+            {
+                Rock.Web.Cache.RockCache.Remove( key );
+            }
+            else
+            {
+                if ( cacheTime != null )
+                {
+                    Rock.Web.Cache.RockCache.AddOrUpdate( key, string.Empty, input, RockDateTime.Now.AddSeconds( cacheTime.Value ) );
+                }
+                else
+                {
+                    Rock.Web.Cache.RockCache.AddOrUpdate( key, string.Empty, input );
+                }
+            }
+        }
+
+        #endregion
+
         #region POCOs
         /// <summary>
         /// POCO to translate an HTTP cookie in to a Liquidizable form
@@ -6260,164 +6487,5 @@ namespace Rock.Lava
         }
 
         #endregion Private Methods
-
-        #region Blue Box Moon Filters
-
-        /// <summary>
-        /// Get the page route for the specified page Id or Guid.
-        /// </summary>
-        /// <param name="input">The page (and optional route) we are interested in.</param>
-        /// <param name="parameters">Any parameters that should be included in the route URL.</param>
-        /// <example><![CDATA[
-        /// {{ 12 | PageRoute }}
-        /// {{ '12' | PageRoute:'PersonID=10^GroupId=20' }}
-        /// {{ 'Global' | Attribute:'PageAttrib','RawValue' | Pageroute:'PersonId=10' }}
-        /// ]]></example>
-        public static string PageRoute( object input, object parameters = null )
-        {
-            int pageId = 0;
-            int routeId = 0;
-            var parms = new Dictionary<string, string>();
-
-            if ( input is int )
-            {
-                //
-                // We were given a simple page Id number.
-                //
-                pageId = (int)input;
-            }
-            else
-            {
-                //
-                // We have a string, it could be a page Id number as a string or a "Guid[,Guid]"
-                // style page reference.
-                //
-                var pageString = input.ToString();
-
-                if ( pageString.Contains( "," ) )
-                {
-                    //
-                    // "Guid,Guid" style page reference.
-                    //
-                    var segments = pageString.Split( ',' );
-
-                    var page = Rock.Web.Cache.PageCache.Get( segments[0].AsGuid() );
-
-                    if ( page == null )
-                    {
-                        throw new Exception( "Page not found." );
-                    }
-
-                    pageId = page.Id;
-
-                    var routeGuid = segments[1].AsGuid();
-                    var route = page.PageRoutes.Where( r => r.Guid == routeGuid ).FirstOrDefault();
-
-                    if ( route != null )
-                    {
-                        routeId = route.Id;
-                    }
-                }
-                else
-                {
-                    //
-                    // "Guid" or "int" style page reference.
-                    //
-                    var pageGuid = pageString.AsGuidOrNull();
-
-                    if ( pageGuid.HasValue )
-                    {
-                        var page = Rock.Web.Cache.PageCache.Get( pageGuid.Value );
-
-                        if ( page == null )
-                        {
-                            throw new Exception( "Page not found." );
-                        }
-
-                        pageId = page.Id;
-                    }
-                    else
-                    {
-                        pageId = pageString.AsInteger();
-                    }
-                }
-            }
-
-            //
-            // Parse the parameters. They will either be a "key=value^key2=value2" style string
-            // or a dictionary collection of key value pairs.
-            //
-            if ( parameters is string && !string.IsNullOrEmpty( (string)parameters ) )
-            {
-                var segments = parameters.ToString().Split( '^' );
-
-                foreach ( string segment in segments )
-                {
-                    var kv = segment.Split( '=' );
-
-                    if ( kv.Length == 2 )
-                    {
-                        parms.Add( kv[0], kv[1] );
-                    }
-                    else
-                    {
-                        throw new Exception( "Invalid page parameter specified." );
-                    }
-                }
-            }
-            else if ( parameters is IDictionary )
-            {
-                foreach ( DictionaryEntry kvp in (IDictionary)parameters )
-                {
-                    parms.Add( kvp.Key.ToString(), kvp.Value.ToString() );
-                }
-            }
-
-            var pageReference = new Rock.Web.PageReference( pageId, routeId, parms );
-
-            return pageReference.BuildUrl();
-        }
-
-        /// <summary>
-        /// Get a previously cached value from the memory cache.
-        /// </summary>
-        /// <param name="input">The cache key the value was stored in.</param>
-        /// <param name="defaultValue">The optional value to return if no cached value was found.</param>
-        /// <example><![CDATA[
-        /// {{ 'SelectedCampus' | GetCache:'West Valley' }}
-        /// ]]></example>
-        public static object GetCache( object input, object defaultValue = null )
-        {
-            return Rock.Web.Cache.RockCache.Get( $"LavaCache.{input}" ) ?? defaultValue;
-        }
-
-        /// <summary>
-        /// Store a value into the memory cache. This filter always returns the input object.
-        /// </summary>
-        /// <param name="input">The object value to store in the cache. Can pass null to remove any existing cached item.</param>
-        /// <param name="cacheKey">The cache key the value is to be stored in.</param>
-        /// <param name="cacheDuration">The number of seconds to cache the value for. If not specified or 0 then the item is cached until removed.</param>
-        /// <example><![CDATA[
-        /// {{ 'SelectedCampus' | GetCache:'West Valley' }}
-        /// ]]></example>
-        public static object SetCache( object input, object cacheKey, object cacheDuration = null )
-        {
-            var key = $"LavaCache.{cacheKey}";
-
-            int? cacheTime = cacheDuration.ToStringSafe().AsIntegerOrNull();
-
-            if ( input == null )
-            {
-                Rock.Web.Cache.RockCache.Remove( key );
-            }
-            else
-            {
-                Rock.Web.Cache.RockCache.AddOrUpdate( key, string.Empty, input, RockDateTime.Now.AddSeconds( cacheTime.Value ) );
-            }
-
-            return input;
-        }
-
-        #endregion
     }
 }

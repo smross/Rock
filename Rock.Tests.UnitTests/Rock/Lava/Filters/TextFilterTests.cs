@@ -266,6 +266,8 @@ namespace Rock.Tests.UnitTests.Lava
 
         #endregion
 
+        #region Filter Tests: Regular Expressions
+
         /// <summary>
         /// Various email address formats can be matched using a regular expression.
         /// </summary>
@@ -311,6 +313,28 @@ namespace Rock.Tests.UnitTests.Lava
 
             TestHelper.AssertTemplateOutput( "Saturday,Sunday,Monday,", template );
         }
+
+        [TestMethod]
+        public void RegExReplace_WithIgnoreCaseOption_ReplacesAllCases()
+        {
+            var template = @"
+{{ 'Testing: one, two, One, two, ONE, two...' | RegExReplace:'one','ONE','i' }}
+";
+
+            TestHelper.AssertTemplateOutput( "Testing: ONE, two, ONE, two, ONE, two...", template );
+        }
+
+        [TestMethod]
+        public void RegExReplace_WithCaptureGroup_EmitsExpectedOutput()
+        {
+            var template = @"
+{{ 'Hello Ted, how are you?' | RegExReplace:'[Hh]ello (\w+)','Greetings $1' }}
+";
+
+            TestHelper.AssertTemplateOutput( "Greetings Ted, how are you?", template );
+        }
+
+        #endregion
 
         /// <summary>
         /// Last instance of search string should be replaced with replacement string.

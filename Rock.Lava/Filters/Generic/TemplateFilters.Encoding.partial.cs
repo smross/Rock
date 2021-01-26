@@ -15,6 +15,7 @@
 // </copyright>
 //
 
+using System;
 using Rock.Common;
 
 namespace Rock.Lava.Filters
@@ -33,6 +34,27 @@ namespace Rock.Lava.Filters
             var result = System.Convert.ToBase64String( bytes );
 
             return result;
+        }
+
+        /// <summary>
+        /// Convert the given string or byte array into a base64 string.
+        /// </summary>
+        /// <param name="input">The string or byte array to be converted.</param>
+        /// <param name="asString">If true then the returned data is cast to a string.</param>
+        /// <example><![CDATA[
+        /// {{ 'aGVsbG8=' | FromBase64:true }}
+        /// {{ 'aGVsbG8=' | FromBase64 | ComputeHash }}
+        /// ]]></example>
+        public static object FromBase64( object input, object asString = null )
+        {
+            var data = Convert.FromBase64String( input.ToString() );
+
+            if ( asString != null && asString.ToString().AsBoolean() )
+            {
+                return System.Text.Encoding.UTF8.GetString( data );
+            }
+
+            return data;
         }
 
         /// <summary>

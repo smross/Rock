@@ -222,7 +222,8 @@
     <Compile Include="Engine\LavaNullFileSystem.cs" />
     <Compile Include="Engine\LavaToLiquidTemplateConverter.cs" />
     <Compile Include="Engine\LavaUtilityHelper.cs" />
-    <Compile Include="Filters\BlueBoxMoonFilters.cs" />
+    <Compile Include="Filters\Generic\TemplateFilters.Utility.cs" />
+    <Compile Include="Filters\Generic\TemplateFilters.Dictionaries.cs" />
     <Compile Include="Implementations\Fluid\FluidBlockProxyFactory.cs" />
     <Compile Include="Implementations\Fluid\FluidFileSystem.cs" />
     <Compile Include="Engine\LavaEngine.cs" />

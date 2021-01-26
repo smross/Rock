@@ -39,8 +39,9 @@ namespace Rock.Tests.UnitTests.Lava
 
             var engine = global::Rock.Lava.LavaEngine.CurrentEngine;
 
+            // Register the common Rock.Lava filters first, then overwrite with the web-based RockFilters as needed.
+            engine.RegisterFilters( typeof( global::Rock.Lava.Filters.TemplateFilters ) );
             engine.RegisterFilters( typeof( global::Rock.Lava.RockFilters ) );
-            engine.RegisterFilters( typeof( global::Rock.Lava.BlueBoxMoonLavaFilters ) );
 
             var helper = new LavaTestHelper();
 

@@ -48,6 +48,164 @@ namespace Rock.Lava.Filters
         }
 
         /// <summary>
+        /// Takes a collection and returns distinct values in that collection.
+        /// </summary>
+        /// <param name="input">A collection of objects.</param>
+        /// <returns>A collection of objects with no repeating elements.</returns>
+        /// <example>
+        ///     {{ 'hello,test,one,hello,two,one,three' | Split:',' | Distinct | ToJSON }}    
+        /// </example>
+        public static IEnumerable Distinct( object input )
+        {
+            IEnumerable<object> e = input is IEnumerable<object> ? input as IEnumerable<object> : new List<object>( new[] { input } );
+
+            if ( !e.Any() )
+            {
+                return e;
+            }
+
+            return e.ToList().Distinct();
+        }
+
+        /// <summary>
+        /// Takes a collection and returns distinct values in that collection based on the property.
+        /// </summary>
+        /// <param name="input">A collection of objects.</param>
+        /// <returns>A collection of objects with no repeating elements.</returns>
+        /// <example><![CDATA[
+        /// {% assign items = '[{"PersonId":1,"Title":"Mr"},{"PersonId":2,"Title","Mrs"},{"PersonId":1,"Title":"Dr"}]' | FromJSON %}
+        /// {{ items | DistinctBy:'PersonId' | ToJSON }}
+        /// 
+        /// {% groupmember where:'PersonId == "1"' %}
+        ///     {{ groupmemberItems | DistinctBy:'Person.FirstName' | Select:'Id' | ToJSON }}
+        /// {% endgroupmember %}
+        /// ]]></example>
+        public static IEnumerable DistinctBy( object input, string property )
+        {
+            IEnumerable<object> e = input is IEnumerable<object> ? input as IEnumerable<object> : new List<object>( new[] { input } );
+
+            if ( !e.Any() || string.IsNullOrWhiteSpace( property ) )
+            {
+                return e;
+            }
+
+            return e.GroupBy( d => d.GetPropertyValue( property ) ).Select( x => x.FirstOrDefault() );
+        }
+
+        /// <summary>
+        /// Takes a collection and groups it by the specified property tree.
+        /// </summary>
+        /// <param name="input">A collection of objects to be grouped.</param>
+        /// <param name="property">The property to use when grouping the objects.</param>
+        /// <returns>A dictionary of group keys and value collections.</returns>
+        /// <example><![CDATA[
+        /// {% assign members = 287635 | GroupById | Property:'Members' | GroupBy:'GroupRole.Name' %}
+        /// <ul>
+        /// {% for member in members %}
+        ///     {% assign parts = member | PropertyToKeyValue %}
+        ///     <li>{{ parts.Key }}</li>
+        ///     <ul>
+        ///         {% for m in parts.Value %}
+        ///             <li>{{ m.Person.FullName }}</li>
+        ///         {% endfor %}
+        ///     </ul>
+        /// {% endfor %}
+        /// </ul>
+        /// ]]></example>
+        public static object GroupBy( object input, string property )
+        {
+            IEnumerable<object> e = input is IEnumerable<object> ? input as IEnumerable<object> : new List<object>( new[] { input } );
+
+            if ( !e.Any() )
+            {
+                return new Dictionary<string, List<object>>();
+            }
+
+            if ( string.IsNullOrWhiteSpace( property ) )
+            {
+                throw new Exception( "Must provide a property to group by." );
+            }
+
+            return e.AsQueryable()
+                .GroupBy( x => x.GetPropertyValue( property ) )
+                .ToDictionary( g => g.Key != null ? g.Key.ToString() : string.Empty, g => (object)g.ToList() );
+        }
+
+        /// <summary>
+        /// Takes an enumerable and returns a new enumerable with the object appended.
+        /// </summary>
+        /// <param name="input">The existing enumerable.</param>
+        /// <param name="newObject">The new object to append.</param>
+        /// <returns>A new enumerable that contains the old objects and the new one.</returns>
+        /// <example><![CDATA[
+        /// {% assign array = '' | AddToArray:'one' %}
+        /// {% assign array = array | AddToArray:'two' | AddToArray:'three' %}
+        /// {% assign array = array | RemoveFromArray:'one' %}
+        /// {{ array | ToJSON }}
+        /// ]]></example>
+        public static IEnumerable AddToArray( object input, object newObject )
+        {
+            List<object> array = new List<object>();
+
+            if ( input == null || ( input is string && string.IsNullOrEmpty( (string)input ) ) )
+            {
+                /* Intentionally left blank, start with empty array. */
+            }
+            else if ( input is IEnumerable )
+            {
+                foreach ( object item in input as IEnumerable )
+                {
+                    array.Add( item );
+                }
+            }
+            else
+            {
+                array.Add( input );
+            }
+
+            array.Add( newObject );
+
+            return array;
+        }
+
+        /// <summary>
+        /// Takes an enumerable and returns a new enumerable with the specified object removed.
+        /// </summary>
+        /// <param name="input">The existing enumerable.</param>
+        /// <param name="newObject">The new object to remove.</param>
+        /// <returns>A new enumerable that contains the old objects without the specified object.</returns>
+        /// <example><![CDATA[
+        /// {% assign array = '' | AddToArray:'one' %}
+        /// {% assign array = array | AddToArray:'two' | AddToArray:'three' %}
+        /// {% assign array = array | RemoveFromArray:'one' %}
+        /// {{ array | ToJSON }}
+        /// ]]></example>
+        public static IEnumerable RemoveFromArray( object input, object oldObject )
+        {
+            List<object> array = new List<object>();
+
+            if ( input == null || ( input is string && string.IsNullOrEmpty( (string)input ) ) )
+            {
+                /* Intentionally left blank, start with empty array. */
+            }
+            else if ( input is IEnumerable )
+            {
+                foreach ( object item in input as IEnumerable )
+                {
+                    array.Add( item );
+                }
+            }
+            else
+            {
+                array.Add( input );
+            }
+
+            array.Remove( oldObject );
+
+            return array;
+        }
+
+        /// <summary>
         /// Extracts a single item from an array.
         /// </summary>
         /// <param name="input">The input object to extract one element from.</param>
@@ -203,12 +361,12 @@ namespace Rock.Lava.Filters
         {
             if ( input is string )
             {
-                return ( ( string ) input ).Length;
+                return ( (string)input ).Length;
             }
 
             if ( input is IEnumerable )
             {
-                return ( ( IEnumerable ) input ).Cast<object>().Count();
+                return ( (IEnumerable)input ).Cast<object>().Count();
             }
 
             return 0;
@@ -243,6 +401,53 @@ namespace Rock.Lava.Filters
             }
 
             return inputList;
+        }
+
+        /// <summary>
+        /// Takes an enumerable and returns the sum of all the values.
+        /// </summary>
+        /// <param name="input">The existing enumerable.</param>
+        /// <returns>A sum of all values in the input.</returns>
+        /// <example><![CDATA[
+        /// Total: {{ '3,5,7' | Split:',' | Sum }}
+        /// ]]></example>
+        public static object Sum( object input )
+        {
+            IEnumerable<object> e = input is IEnumerable<object> ? input as IEnumerable<object> : new List<object>( new[] { input } );
+            var array = e.ToList();
+
+            if ( !e.Any() )
+            {
+                return 0;
+            }
+
+            bool isDouble = false;
+            array.ForEach( a => isDouble = isDouble || a is double );
+
+            bool isDecimal = false;
+            array.ForEach( a => isDecimal = isDecimal || a is decimal );
+
+            bool isInteger = false;
+            array.ForEach( a => isInteger = isInteger || a is int );
+
+            if ( isDouble )
+            {
+                return array.Select( a => Convert.ToDouble( a ) ).Sum();
+            }
+            else if ( isDecimal )
+            {
+                return array.Select( a => Convert.ToDecimal( a ) ).Sum();
+            }
+            else if ( isInteger )
+            {
+                return array.Select( a => Convert.ToInt32( a ) ).Sum();
+            }
+            else
+            {
+                var result = array.Select( a => a.ToString().AsDouble() ).Sum();
+
+                return result == Math.Truncate( result ) ? Convert.ToInt32( result ) : result;
+            }
         }
     }
 }
