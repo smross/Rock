@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Dynamic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web.UI;
@@ -28,6 +29,7 @@ using Rock.Attribute;
 using Rock.Data;
 using Rock.Lava;
 using Rock.Model;
+using Rock.Utility;
 using Rock.Web.Cache;
 using Rock.Web.UI;
 using Rock.Web.UI.Controls;
@@ -979,11 +981,11 @@ namespace RockWeb.Blocks.Reporting
                 _dataRow = dataRow;
             }
 
-            protected override bool TryGetMember( string memberName, out object result )
+            public override bool TryGetMember( GetMemberBinder binder, out object result )
             {
-                if ( _dataRow.Table.Columns.Contains( memberName ) )
+                if ( _dataRow.Table.Columns.Contains( binder.Name ) )
                 {
-                    result = _dataRow[memberName];
+                    result = _dataRow[binder.Name];
                     return true;
                 }
 

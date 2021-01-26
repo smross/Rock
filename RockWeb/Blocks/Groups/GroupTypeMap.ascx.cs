@@ -221,11 +221,11 @@ namespace RockWeb.Blocks.Groups
 
                     if ( GetAttributeValue( "ShowMapInfoWindow" ).AsBoolean() )
                     {
-                        template = LavaEngine.Instance.ParseTemplate( GetAttributeValue( "InfoWindowContents" ).Trim() );
+                        template = LavaEngine.CurrentEngine.ParseTemplate( GetAttributeValue( "InfoWindowContents" ).Trim() );
                     }
                     else
                     {
-                        template = LavaEngine.Instance.ParseTemplate( string.Empty );
+                        template = LavaEngine.CurrentEngine.ParseTemplate( string.Empty );
                     }
 
                     var groupPageRef = new PageReference( GetAttributeValue( "GroupDetailPage" ) );
