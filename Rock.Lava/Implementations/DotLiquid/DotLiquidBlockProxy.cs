@@ -79,7 +79,7 @@ namespace Rock.Lava.DotLiquid
             }
 
             // Initialize the Lava block first, because it may be called during the DotLiquid.Block initialization process.
-            var blockTokens = GetBlockTokens( tagName, tokens );
+            var blockTokens = GetBlockTokens( tagName, tokens, includeClosingTag:true );
 
             _lavaBlock.OnInitialize( tagName, markup, blockTokens );
 
@@ -88,10 +88,10 @@ namespace Rock.Lava.DotLiquid
         }
 
         /// <summary>
-        /// Gets the set of tokens contained in the current block.
+        /// Gets the set of tokens that comprise the current block.
         /// </summary>
         /// <param name="tokens">The tokens.</param>
-        private List<string> GetBlockTokens( string tagName, List<string> tokens )
+        private List<string> GetBlockTokens( string tagName, List<string> tokens, bool includeClosingTag = false )
         {
             // Get the block markup. The list of tokens contains all of the lava from the start tag to
             // the end of the template. This will pull out just the internals of the block.
@@ -132,12 +132,15 @@ namespace Rock.Lava.DotLiquid
                     }
                 }
 
+                if ( !endTagFound || includeClosingTag )
+                {
+                    blockTokens.Add( token );
+                }
+
                 if ( endTagFound )
                 {
                     break;
                 }
-
-                blockTokens.Add( token );
             }
 
             if ( !endTagFound )
