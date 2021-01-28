@@ -3589,13 +3589,13 @@ namespace Rock.Lava
         /// <returns></returns>
         private static RockContext GetRockContext( ILavaContext context )
         {
-            var rockContext = context.GetMergeFieldValue( "rock_context", null ) as RockContext;
+            var rockContext = context.GetInternalFieldValue( "rock_context", null ) as RockContext;
 
             if ( rockContext == null )
             { 
                 rockContext = new RockContext();
 
-                context.SetMergeFieldValue( "rock_context", rockContext );                
+                context.SetInternalFieldValue( "rock_context", rockContext );
             }
 
             return rockContext;
