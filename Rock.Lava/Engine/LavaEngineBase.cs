@@ -330,9 +330,20 @@ namespace Rock.Lava
             }
             catch ( Exception ex )
             {
-                ProcessException( ex );
+                string message;
 
-                template = null;
+                ProcessException( ex, out message );
+
+                if ( string.IsNullOrWhiteSpace( message ) )
+                {
+                    template = null;
+                }
+                else
+                {
+                    // If an error message is returned during the parsing process, create a new template containing the message.
+                    template = OnParseTemplate( ex.Message );
+                }
+
                 return false;
             }
         }
