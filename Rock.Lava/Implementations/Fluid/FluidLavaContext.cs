@@ -17,13 +17,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Fluid;
 using Fluid.Values;
 using Rock.Common;
-using Rock.Lava.DotLiquid;
 
 namespace Rock.Lava.Fluid
 {
+    /// <summary>
+    /// An implementation of a Lava Template Context for the Fluid framework.
+    /// </summary>
     public class FluidLavaContext : LavaContextBase
     {
         private TemplateContext _context;
@@ -41,41 +44,6 @@ namespace Rock.Lava.Fluid
             }
         }
 
-        //public object this[string key] { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-        //public IList<IDictionary<string, object>> Environments
-        //{
-        //    get
-        //    {
-        //        return null;
-        //        //var environments = new List<IDictionary<string, object>>();
-
-        //        //foreach ( var hash in _context.Environments )
-        //        //{
-        //        //    environments.Add( hash as IDictionary<string, object> );
-        //        //}
-
-        //        //return environments;
-        //    }
-        //}
-
-        //public IList<IDictionary<string, object>> Scopes
-        //{
-        //    get
-        //    {
-        //        return null;
-        //        //var environments = new List<IDictionary<string, object>>();
-
-        //        //foreach ( var hash in _context.Scopes )
-        //        //{
-        //        //    environments.Add( hash as IDictionary<string, object> );
-        //        //}
-
-        //        //return environments;
-        //    }
-
-        //}
-
         public override List<string> GetEnabledCommands()
         {
             // The set of enabled Lava Commands is stored in the Fluid AmbientValues collection.
@@ -86,61 +54,6 @@ namespace Rock.Lava.Fluid
 
             return new List<string>();
         }
-
-        //public override LavaDictionary GetMergeFieldsInLocalScope()
-        //{
-        //    var fields = new LavaDictionary();
-
-        //    // First, get all of the variables defined in the local lava context
-        //    var properties = GetScopeDefinedValues( _context.LocalScope );
-
-        //    foreach ( var item in properties )
-        //    {
-        //        //foreach ( var item in scope )
-        //        //{
-        //            fields.AddOrReplace( item.Key, item.Value );
-        //        //}
-        //    }
-
-        //    // Second, apply overrides defined by the block or container in which the template is being resolved.
-        //    //foreach ( var environment in _context.AmbientValues )
-        //    //{
-        //    foreach ( var item in _context.AmbientValues )
-        //    {
-        //        fields.AddOrReplace( item.Key, item.Value );
-        //    }
-        //    //}
-
-        //    return fields;
-        //}
-        //public override IDictionary<string, object> GetMergeFieldsInContainerScope()
-        //{
-        //    return GetMergeFieldsInLocalScope();
-        //    //throw new NotImplementedException();
-        //}
-
-        //public IDictionary<string, object> GetMergeFieldsInEnvironment()
-        //{
-        //    // TODO: Not possible in Fluid unless we use reflection???
-
-
-        //    // get merge fields loaded by the block or container
-        //    var internalMergeFields = new Dictionary<string, object>();
-
-        //    //if ( _context.LocalScope. .AmbientValues _context.AmbientValues.. .Environments.Count > 0 )
-        //    //{
-        //    //    foreach ( var item in _context.Environments[0] )
-        //    //    {
-        //    //        internalMergeFields.AddOrReplace( item.Key, item.Value );
-        //    //    }
-        //    //}
-
-        //    return internalMergeFields;
-        //}
-        //public override IDictionary<string, object> GetMergeFieldsInScope()
-        //{
-        //    return new Dictionary<string, object>( _context.AmbientValues );
-        //}
 
         public override object GetMergeFieldValue( string key, object defaultValue )
         {
@@ -160,95 +73,6 @@ namespace Rock.Lava.Fluid
             return dictionary;
         }
 
-        /// <summary>
-        /// Render a specified Lava template in the current context.
-        /// </summary>
-        /// <param name="content"></param>
-        /// <param name="mergeObjects"></param>
-        /// <param name="enabledLavaCommands"></param>
-        /// <param name="encodeStrings"></param>
-        /// <param name="throwExceptionOnErrors"></param>
-        /// <returns></returns>
-        //public override string ResolveMergeFields( string content, IDictionary<string, object> mergeObjects, string enabledLavaCommands = null, bool encodeStrings = false, bool throwExceptionOnErrors = false )
-        //{
-        //    try
-        //    {
-        //        // 7-9-2020 JME  / NA
-        //        // We decided to remove the check for lava merge fields here as this method is specifically
-        //        // made to resolve them. The performance increase for text without lava is acceptable as in
-        //        // a vast majority of cases the string will have lava (that's what this method is for). In
-        //        // these cases there is a performance tax (though small) on the vast majority of calls.
-
-        //        // If there have not been any EnabledLavaCommands explicitly set, then use the global defaults.
-        //        if ( enabledLavaCommands == null )
-        //        {
-        //            // TODO:    
-        //            //enabledLavaCommands = GlobalAttributesCache.Value( "DefaultEnabledLavaCommands" );
-        //        }
-
-        //        var fluidTemplate = GetTemplate( content );
-
-        //        //var context = new TemplateContext();
-
-        //        // Add the merge objects to the context.
-        //        if ( mergeObjects != null )
-        //        {
-        //            foreach ( var key in mergeObjects.Keys )
-        //            {
-        //                _context.LocalScope.SetValue( key, mergeObjects[key] );
-        //            }
-        //        }
-
-        //        _context.LocalScope.SetValue( "EnabledCommands", enabledLavaCommands );
-
-
-        //        //context.AmbientValues = new Dictionary<string, object>( mergeObjects );
-        //        //template.InstanceAssigns.AddOrReplace( "CurrentPerson", currentPersonOverride );
-
-        //        //context.Model = mergeObjects;
-
-        //        //var scope = context.LocalScope;
-
-        //        //context.SetValue()
-
-        //        var output = fluidTemplate.Render( _context );
-
-        //        return output;
-        //    }
-        //    catch ( Exception ex )
-        //    {
-        //        throw ex;
-        //        //ExceptionLogService.LogException( ex, System.Web.HttpContext.Current );
-        //        //return "Error resolving Lava merge fields: " + ex.Message;
-        //    }
-        //}
-
-        //public override string ResolveMergeFields( string content, IDictionary<string, object> mergeObjects )
-        //{
-        //    var enabledCommands = string.Empty; // GlobalAttributesCache.Get().GetValue( "DefaultEnabledLavaCommands" );
-        //    return ResolveMergeFields( content, mergeObjects, enabledCommands );
-        //}
-
-        //public override string ResolveMergeFields( string content, IDictionary<string, object> mergeObjects, string enabledLavaCommands, bool encodeStrings = false, bool throwExceptionOnErrors = false )
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //public override string ResolveMergeFields( string content, IDictionary<string, object> mergeObjects )
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //public void SetEnabledCommands( IEnumerable<string> commands )
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //public void SetEnabledCommands( string commandList, string delimiter = "," )
-        //{
-        //    throw new NotImplementedException();
-        //}
-
         public override void SetEnabledCommands( IEnumerable<string> commands )
         {
             if ( commands == null )
@@ -261,26 +85,6 @@ namespace Rock.Lava.Fluid
             }
         }
 
-        //public void SetMergeFieldValue( string key, object value )
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //public void SetMergeFieldValue( string key, object value, string scopeSelector )
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //public override void SetMergeFieldValue( string key, object value )
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //public override void SetMergeFieldValue( string key, object value, string scopeSelector )
-        //{
-        //    throw new NotImplementedException();
-        //}
-
         /// <summary>
         /// Set a merge field value within the specified scope.
         /// </summary>
@@ -292,6 +96,26 @@ namespace Rock.Lava.Fluid
             if ( scope == LavaContextRelativeScopeSpecifier.Current )
             {
                 _context.SetValue( key, value );
+            }
+            else if ( scope == LavaContextRelativeScopeSpecifier.Parent )
+            {
+                var parentScope = _scopeParentInternalField.GetValue( _context.LocalScope ) as Scope ?? _context.LocalScope;
+
+                parentScope.SetValue( key, value );
+            }
+            else if ( scope == LavaContextRelativeScopeSpecifier.Root )
+            {
+                var parentScope = _context.LocalScope;
+
+                var outerScope = _scopeParentInternalField.GetValue( parentScope ) as Scope;
+
+                while ( outerScope != null )
+                {
+                    parentScope = outerScope;
+                    outerScope = _scopeParentInternalField.GetValue( outerScope ) as Scope;
+                }
+
+                parentScope.SetValue( key, value );
             }
             else
             {
@@ -309,14 +133,6 @@ namespace Rock.Lava.Fluid
             // In the Fluid framework, internal values are stored in the AmbientValues collection.
             _context.AmbientValues[key] = value;
         }
-
-        //public override void SetInternalFieldValues( LavaDictionary values )
-        //{
-        //    foreach ( var kvp in values )
-        //    {
-        //        _context.AmbientValues[kvp.Key] = kvp.Value;
-        //    }
-        //}
 
         /// <summary>
         /// Gets a named value that is for internal use only. Internal values are not available to be resolved in the Lava Template.
@@ -348,62 +164,7 @@ namespace Rock.Lava.Fluid
             return values;
         }
 
-        //public void SetValue( string key, object value )
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        /// <summary>
-        /// Looks for a parsed template in cache (if the content is 100 characters or less).
-        /// </summary>
-        /// <param name="content">The content.</param>
-        /// <returns></returns>
-        private LavaFluidTemplate GetTemplate( string content )
-        {
-            var template = LavaFluidTemplate.Parse( content );
-
-            // Do not cache any content over 100 characters in length
-            //if ( content?.Length > 100 )
-            //{
-            //return template;
-            //}
-
-            // Get template from cache
-            //var template = LavaTemplateCache.Get( content ).Template;
-
-            // Clear any previous errors
-            //template.Errors.Clear();
-
-            return template;
-        }
-
-        //private Scope GetRootScope( Scope scope )
-        //{
-        //    var parentScope = GetParentScope( scope );
-
-        //    while ( parentScope != null )
-        //    {
-        //        scope = parentScope;
-
-        //        parentScope = GetParentScope( parentScope );
-        //    }
-
-        //    return scope;
-        //}
-
-        private Scope GetParentScope( Scope scope )
-        {
-            Scope parentScope = null;
-
-            var parentField = scope.GetType().GetField( "_parent", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance );
-
-            if ( parentField != null )
-            {
-                parentScope = parentField.GetValue( scope ) as Scope;
-            }
-
-            return parentScope;
-        }
+        private static FieldInfo _scopeParentInternalField = typeof( Scope ).GetField( "_parent", BindingFlags.NonPublic | BindingFlags.Instance );
 
         /// <summary>
         /// Gets an aggregated set of key/value pairs for variables in the current scope and outer scopes.
@@ -423,7 +184,7 @@ namespace Rock.Lava.Fluid
                     dictionary.AddOrIgnore( key, properties[key] );
                 }
 
-                scope = GetParentScope( scope );
+                scope = _scopeParentInternalField.GetValue( scope ) as Scope;
             }
 
             return dictionary;
