@@ -181,6 +181,41 @@ Color 4: blue
             Assert.IsTrue( output.Contains( "Cindy Decker" ), "Expected person not found." );
         }
 
+        [TestMethod]
+        public void CacheBlock_WithTwoPassOptionEnabled_EmitsCorrectOutput()
+        {
+            var input = @"
+{%- cache key:'marketing-butter-bar' duration:'1800' twopass:'true' tags:'butter-bars' -%}
+{%- assign now = 'Now' | Date:'yyyy-MM-ddTHH:mm:sszzz' | AsDateTime -%}
+{%- contentchannelitem where:'StartDateTime < `{{now}}`' limit:'50' iterator:'Items' -%}
+    {%- for item in Items -%}
+        <div id=`mbb-{{item.Id}}` data-topbar-name=`dismiss{{item.Id}}Topbar` data-topbar-value=`dismissed` class=`topbar` style=`background-color:{{ item | Attribute:'BackgroundColor' }};color:{{ item | Attribute:'ForegroundColor' }};`>
+        <a href=`{{ item | Attribute:'Link' | StripHtml }}`>
+            <span class=`topbar-text`>
+                {{ item | Attribute:'Text' }}
+            </span>
+        </a>
+        <button type=`button` class=`close` data-dismiss=`alert` aria-label=`Close`><span aria-hidden=`true`>&times;</span></button>
+        </div>
+    {%- endfor -%}
+{%- endcontentchannelitem -%}
+{%- endcache -%}
+";
+
+            input = input.Replace( "`", "\"" );
+
+            var context = TestHelper.LavaEngine.NewContext();
+
+            context.SetEnabledCommands( "Cache;RockEntity",";" );
+
+            var output = TestHelper.GetTemplateOutput( input, context );
+
+            TestHelper.WriteTemplateRenderToDebug( input, output );
+
+            //Assert.IsTrue( output.Contains( "Ted Decker" ), "Expected person not found." );
+            //Assert.IsTrue( output.Contains( "Cindy Decker" ), "Expected person not found." );
+        }
+
         #endregion
 
         #region Execute
