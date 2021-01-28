@@ -17,11 +17,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 using DotLiquid;
-using DotLiquid.Exceptions;
 
 using Rock.Common;
 using Rock.Data;
@@ -116,48 +114,6 @@ namespace Rock.Lava.DotLiquid
             return _context[key];
         }
 
-        //public override string ResolveMergeFields( string content, IDictionary<string, object> mergeObjects, string enabledLavaCommands = null, bool encodeStrings = false, bool throwExceptionOnErrors = false )
-        //{
-        //    try
-        //    {
-        //        // 7-9-2020 JME / NA
-        //        // We decided to remove the check for lava merge fields here as this method is specifically
-        //        // made to resolve them. The performance increase for text without lava is acceptable as in
-        //        // a vast majority of cases the string will have lava (that's what this method is for). In
-        //        // these cases there is a performance tax (though small) on the vast majority of calls.
-
-        //        // If there have not been any EnabledLavaCommands explicitly set, then use the global defaults.
-        //        if ( enabledLavaCommands == null )
-        //        {
-        //            // TODO:    
-        //            //enabledLavaCommands = GlobalAttributesCache.Value( "DefaultEnabledLavaCommands" );
-        //        }
-
-        //        var dotLiquidTemplate = GetTemplate( content );
-
-        //        dotLiquidTemplate.Registers.AddOrReplace( "EnabledCommands", enabledLavaCommands );
-
-        //        string output;
-
-        //        if ( mergeObjects == null )
-        //        {
-        //            output = dotLiquidTemplate.Render();
-        //        }
-        //        else
-        //        {
-        //            output = dotLiquidTemplate.Render( Hash.FromDictionary( mergeObjects ) );
-        //        }
-
-        //        return output;
-        //    }
-        //    catch ( Exception ex )
-        //    {
-        //        throw ex;
-        //        //ExceptionLogService.LogException( ex, System.Web.HttpContext.Current );
-        //        //return "Error resolving Lava merge fields: " + ex.Message;
-        //    }
-        //}
-
         public override void SetMergeFieldValue( string key, object value, LavaContextRelativeScopeSpecifier scope = LavaContextRelativeScopeSpecifier.Current )
         {
             int scopeIndex;
@@ -180,16 +136,6 @@ namespace Rock.Lava.DotLiquid
 
             // Set the variable in the specified scope.
             _context.Scopes[scopeIndex][key] = fieldValue;
-        }
-
-        /// <summary>
-        /// Create a compiled DotLiquid template object from source text.
-        /// </summary>
-        /// <param name="content">The content.</param>
-        /// <returns></returns>
-        private Template GetTemplate( string content )
-        {
-            return Template.Parse( content );
         }
 
         public void ClearValues()
@@ -238,12 +184,7 @@ namespace Rock.Lava.DotLiquid
                 var allowedProperties = GetLavaTypeAllowedProperties( valueType, attr );
 
                 return new DropProxy( value, allowedProperties );
-
-                //return GetLavaTypeProxy( valueType  new DropProxy( value, attr.AllowedMembers );
             }
-
-            // Check if any of the type properties are decorated with LavaInclude or LavaIgnore attributes.
-            //xyzzy
 
             return value;
         }
@@ -268,74 +209,7 @@ namespace Rock.Lava.DotLiquid
             var allowedProperties = includedProperties.Except( ignoredProperties ).Select( x => x.Name ).ToArray();
 
             return allowedProperties;
-
-            //var attr = (LavaTypeAttribute)valueType.GetCustomAttributes( typeof( LavaTypeAttribute ), false ).First();
-
-            //return new DropProxy( value, allowedProperties );
-
-
-            //foreach ( var includedProperty in includedProperties )
-            //{
-            //    if ( ignoredProperties.Contains( includedProperty ) )
-            //    {
-            //        continue;
-            //    }
-
-            //    var newAccessor = new LavaTypeMemberAccessor( includedProperty );
-
-            //    Register( type, includedProperty.Name, newAccessor );
-            //}
         }
-
-        //public void Register( Type type, string name, IMemberAccessor getter )
-        //{
-        //    if ( !_map.TryGetValue( type, out var typeMap ) )
-        //    {
-        //        typeMap = new Dictionary<string, IMemberAccessor>( IgnoreCasing
-        //            ? StringComparer.OrdinalIgnoreCase
-        //            : StringComparer.Ordinal );
-
-        //        _map[type] = typeMap;
-        //    }
-
-        //    typeMap[name] = getter;
-        //}
-
-        #region Unused???
-
-        //TODO: Remove this?
-        //public override IDictionary<string, object> GetMergeFieldsInContainerScope()
-        //{
-        //    // get merge fields loaded by the block or container
-        //    var internalMergeFields = new Dictionary<string, object>();
-
-        //    if ( _context.Environments.Count > 0 )
-        //    {
-        //        foreach ( var item in _context.Environments[0] )
-        //        {
-        //            internalMergeFields.AddOrReplace( item.Key, item.Value );
-        //        }
-        //    }
-
-        //    return internalMergeFields;
-        //}
-
-        // TODO: Remove this?
-        //public override IDictionary<string, object> GetMergeFieldsInScope()
-        //{
-        //    var fields = new Dictionary<string, object>();
-
-        //    // get variables defined in the lava source
-        //    foreach ( var scope in _context.Scopes )
-        //    {
-        //        foreach ( var item in scope )
-        //        {
-        //            fields.AddOrReplace( item.Key, item.Value );
-        //        }
-        //    }
-
-        //    return fields;
-        //}
 
         public override object GetInternalFieldValue( string key, object defaultValue = null )
         {
@@ -355,16 +229,6 @@ namespace Rock.Lava.DotLiquid
             {
                 values.AddOrReplace( item.Key, item.Value );
             }
-
-            // TODO: Should we merge in the Environment variables here too?
-            //var lavaMergeFields = new Dictionary<string, object>();
-            //if ( context.Environments?.Count > 0 )
-            //{
-            //    foreach ( var item in context.Environments[0] )
-            //    {
-            //        lavaMergeFields.Add( item.Key, item.Value );
-            //    }
-            //}
 
             return values;
         }
@@ -386,79 +250,5 @@ namespace Rock.Lava.DotLiquid
         {
             _context.Pop();
         }
-
-        /// <summary>
-        /// Push new local scope on the stack. use <tt>Context#stack</tt> instead
-        /// </summary>
-        /// <param name="newScope"></param>
-        //public override void Push( LavaDictionary newScope )
-        //{
-        //    if ( _context.Scopes.Count > 80 )
-        //    {
-        //        throw new StackLevelException( "ContextStackException" );
-        //    }
-
-        //    _context.Scopes.Insert( 0, newScope. Hash.FromDictionary( newScope ) );
-        //}
-
-        /// <summary>
-        /// Pop from the stack. use <tt>Context#stack</tt> instead
-        /// </summary>
-        //public override LavaDictionary Pop()
-        //{
-        //    if ( _context.Scopes.Count == 1 )
-        //    {
-        //        throw new ContextException();
-        //    }
-
-        //    var result = LavaDictionary.FromDictionary( _context.Scopes[0] );
-
-        //    _context.Scopes.RemoveAt( 0 );
-
-        //    return result;
-        //}
-
-        //public override void Stack( LavaDictionary newScope, Action callback )
-        //{
-        //    Push( newScope );
-        //    try
-        //    {
-        //        callback();
-        //    }
-        //    finally
-        //    {
-        //        Pop();
-        //    }
-        //}
-
-        /// <summary>
-        /// pushes a new local scope on the stack, pops it at the end of the block
-        /// 
-        /// Example:
-        /// 
-        /// context.stack do
-        /// context['var'] = 'hi'
-        /// end
-        /// context['var] #=> nil
-        /// </summary>
-        /// <param name="newScope"></param>
-        /// <param name="callback"></param>
-        /// <returns></returns>
-        //public override void Stack( Action callback )
-        //{
-
-        //    try
-        //    {
-        //        callback();
-        //    }
-        //    finally
-        //    {
-        //    }
-
-        //}
-
-        #endregion
-
-
     }
 }

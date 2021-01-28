@@ -88,7 +88,7 @@ namespace Rock.Lava.Fluid
         public BnfTerm GetSyntax( FluidGrammar grammar )
         {
             var blockEndTag = "%}";
-            
+
             // Lava syntax uses whitespace as a separator between arguments, which Fluid/Irony does not support.
             // Therefore we return a syntax for this element that captures the entire argument list as a single token
             // and we will then parse the arguments list later in the process.
@@ -120,10 +120,8 @@ namespace Rock.Lava.Fluid
              * 
              * The source text will be passed to the Lava block during the rendering phase so it can be parsed and rendered at the same time.
             */
-            //_rootNode = node;
-
             var blockName = node.Term.Name;
-            
+
             var factoryMethod = _factoryMethods[blockName];
 
             System.Diagnostics.Debug.Print( $"Parsing FluidBlockProxy. [Id={Id.ToString()}, BlockName={blockName}, ThreadId={System.Threading.Thread.CurrentThread.ManagedThreadId}]" );
@@ -132,8 +130,6 @@ namespace Rock.Lava.Fluid
 
             _sourceElementName = lavaBlock.SourceElementName;
 
-
-
             // Get the markup for the block attributes.
             var argsNode = context.CurrentBlock.Tag.ChildNodes[0].ChildNodes[0];
 
@@ -141,15 +137,16 @@ namespace Rock.Lava.Fluid
 
             var statements = context.CurrentBlock.Statements;
 
-            // Custom blocks expect to receive the full set of tokens for the block excluding the opening tag.
+            // Custom blocks expect to receive a set of tokens for the block that excludes the opening tag and includes the closing tag.
+            // This behavior is preserved for compatibility with prior implementations.
             var tokens = new List<string>();
-            
+
             tokens.Add( context.CurrentBlock.AdditionalData.InnerText );
             tokens.Add( context.CurrentBlock.AdditionalData.CloseTag );
-            
+
             var renderBlockDelegate = new DelegateStatement( ( writer, encoder, ctx ) => WriteToAsync( writer, encoder, ctx, lavaBlock, blockName, blockAttributesMarkup, tokens, statements ) );
 
-            return renderBlockDelegate; 
+            return renderBlockDelegate;
         }
 
         private ValueTask<Completion> WriteToAsync( TextWriter writer, TextEncoder encoder, TemplateContext context, IRockLavaBlock lavaBlock, string blockName, string blockAttributesMarkup, List<string> tokens, List<Statement> statements )
