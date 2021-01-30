@@ -22,6 +22,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Rock.Data;
 using Rock.Lava;
 using Rock.Tests.Shared;
+using Rock.Web.Cache;
 
 namespace Rock.Tests.UnitTests.Lava
 {
@@ -32,7 +33,7 @@ namespace Rock.Tests.UnitTests.Lava
             var engineOptions = new LavaEngineConfigurationOptions
             {
                 // Use the default Rock template provider for testing.
-                CacheService = new WebsiteLavaTemplateCacheService()
+                CacheService = new LavaTemplateCache()
             };
 
             global::Rock.Lava.LavaEngine.Initialize( engineType, engineOptions );

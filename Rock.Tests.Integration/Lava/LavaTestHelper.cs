@@ -37,7 +37,7 @@ namespace Rock.Tests.Integration.Lava
             var engineOptions = new LavaEngineConfigurationOptions
             {
                 FileSystem = new MockFileProvider(),
-                CacheService = new WebsiteLavaTemplateCacheService()
+                CacheService = new LavaTemplateCache()
             };
 
             global::Rock.Lava.LavaEngine.Initialize( engineType, engineOptions );

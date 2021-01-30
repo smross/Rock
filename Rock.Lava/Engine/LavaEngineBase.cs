@@ -246,16 +246,7 @@ namespace Rock.Lava
             {
                 if ( _cacheService != null && this.TemplateCachingIsEnabled )
                 {
-                    _cacheService.TryGetTemplate( inputTemplate,
-                        () =>
-                        {
-                            ILavaTemplate parsedTemplate;
-
-                            TryParseTemplate( inputTemplate, out parsedTemplate );
-
-                            return parsedTemplate;
-                        },
-                        out template );
+                    template = _cacheService.GetOrAddTemplate( inputTemplate );
                 }
                 else
                 {

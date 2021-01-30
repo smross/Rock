@@ -26,17 +26,39 @@ namespace Rock.Lava
     public interface ILavaTemplateCacheService
     {
         /// <summary>
-        /// Gets an item from cache or if it does not exist, executes the supplied itemFactory function to create the item and add it to the cache.
+        /// Gets an item from cache or adds the item to the cache if it does not already exist. if it does not exist, executes the supplied itemFactory function to create the item and add it to the cache.
         /// </summary>
-        /// <param name="content">The content.</param>
-        /// <param name="itemFactory">The item factory.</param>
-        /// <param name="template"></param>
+        /// <param name="templateContent">The template source text.</param>
         /// <returns></returns>
-        bool TryGetTemplate( string content, Func<ILavaTemplate> itemFactory, out ILavaTemplate template );
+        ILavaTemplate GetOrAddTemplate( string templateContent );
 
         /// <summary>
-        /// Remove all entries from the cache.
+        /// Remove all templates from the cache.
         /// </summary>
         void ClearCache();
+
+        /// <summary>
+        /// Gets a flag indicating if the cache contains the specified template.
+        /// </summary>
+        /// <param name="content"></param>
+        /// <returns></returns>
+        bool ContainsTemplate( string content );
+
+        /// <summary>
+        /// Removes the specified template from the cache.
+        /// </summary>
+        /// <param name="content"></param>
+        /// <returns></returns>
+        void RemoveTemplate( string content );
+
+        /// <summary>
+        /// Gets the number of times a request for a template has been satisfied from the cache.
+        /// </summary>
+        long CacheHits { get; }
+
+        /// <summary>
+        /// Gets the number of times a request for a template has required that the template be compiled and cached.
+        /// </summary>
+        long CacheMisses { get; }
     }
 }
