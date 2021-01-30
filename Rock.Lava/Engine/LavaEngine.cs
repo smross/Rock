@@ -19,19 +19,19 @@ using Rock.Lava.Fluid;
 
 namespace Rock.Lava
 {
-
     /// <summary>
     /// Provides access to core functions for the Rock Lava Engine.
     /// </summary>
-    public static partial class LavaEngine
+    public static class LavaEngine
     {
         // A suffix that is added to shortcode elements to avoid naming collisions with other tags and blocks.
-        // Note that a suffix is used because the closing tag of a Liquid language element must use the "end" prefix.
+        // Note that a suffix is used because the closing tag of a Liquid language element requires the "end" prefix.
         // Also, the suffix must match a regular expression word character, either A to Z or "_" to be compatible with the DotLiquid engine parser.
         public static string ShortcodeInternalNameSuffix = "_";
 
         private static ILavaEngine _instance = null;
         private static LavaEngineTypeSpecifier _liquidFramework = LavaEngineTypeSpecifier.DotLiquid;
+        private static object _initializationLock = new object();
 
         /// <summary>
         /// Initialize the Lava Engine with the specified configuration options.
@@ -40,31 +40,34 @@ namespace Rock.Lava
         /// <param name="options"></param>
         public static void Initialize( LavaEngineTypeSpecifier? engineType, LavaEngineConfigurationOptions options )
         {
-            _liquidFramework = engineType ?? LavaEngineTypeSpecifier.DotLiquid;
-
-            ILavaEngine engine;
-
-            if ( options == null )
+            lock ( _initializationLock )
             {
-                options = new LavaEngineConfigurationOptions();
+                _liquidFramework = engineType ?? LavaEngineTypeSpecifier.DotLiquid;
+
+                ILavaEngine engine;
+
+                if ( options == null )
+                {
+                    options = new LavaEngineConfigurationOptions();
+                }
+
+                if ( _liquidFramework == LavaEngineTypeSpecifier.Fluid )
+                {
+                    engine = new FluidEngine();
+
+                    options.FileSystem = new FluidFileSystem( options.FileSystem );
+                }
+                else
+                {
+                    engine = new DotLiquidEngine();
+
+                    options.FileSystem = new DotLiquidFileSystem( options.FileSystem );
+                }
+
+                engine.Initialize( options );
+
+                _instance = engine;
             }
-
-            if ( _liquidFramework == LavaEngineTypeSpecifier.Fluid )
-            {
-                engine = new FluidEngine();
-
-                options.FileSystem = new FluidFileSystem( options.FileSystem );
-            }
-            else
-            {
-                engine = new DotLiquidEngine();
-
-                options.FileSystem = new DotLiquidFileSystem( options.FileSystem );
-            }
-
-            engine.Initialize( options );
-
-            _instance = engine;
         }
 
         /// <summary>
@@ -74,10 +77,13 @@ namespace Rock.Lava
         {
             get
             {
-                if ( _instance == null )
+                lock ( _initializationLock )
                 {
-                    // Initialize a default instance.
-                    Initialize( _liquidFramework, new LavaEngineConfigurationOptions() );
+                    if ( _instance == null )
+                    {
+                        // Initialize a default instance.
+                        Initialize( _liquidFramework, new LavaEngineConfigurationOptions() );
+                    }
                 }
 
                 return _instance;
