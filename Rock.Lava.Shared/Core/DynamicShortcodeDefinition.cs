@@ -25,11 +25,17 @@ namespace Rock.Lava
     /// </summary>
     public class DynamicShortcodeDefinition
     {
+        #region Constructors
+
         public DynamicShortcodeDefinition()
         {
             this.Parameters = new Dictionary<string, string>();
             this.EnabledLavaCommands = new List<string>();
         }
+
+        #endregion
+
+        #region Properties
 
         /// <summary>
         /// The name of the shortcode.
@@ -37,7 +43,7 @@ namespace Rock.Lava
         public string Name { get; set; }
 
         /// <summary>
-        /// The markup that contains the template that will be substituted when this shortcode is rendered.
+        /// The markup that contains the template that will be inserted in place of the shortcode tag during the rendering process.
         /// </summary>
         public string TemplateMarkup { get; set; }
 
@@ -52,8 +58,10 @@ namespace Rock.Lava
         public List<string> EnabledLavaCommands { get; set; }
 
         /// <summary>
-        /// The type of Lava document element that this shortcode is substited for, either an inline tag or a block element.
+        /// The type of Lava document element that this shortcode is substituted for, either an inline tag or a block element.
         /// </summary>
         public LavaShortcodeTypeSpecifier ElementType { get; set; }
+
+        #endregion
     }
 }

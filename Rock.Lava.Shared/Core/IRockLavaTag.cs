@@ -17,29 +17,11 @@
 
 namespace Rock.Lava
 {
-
-
     /// <summary>
     /// Interface that classes can implement to be included when searching assemblies for custom Lava Commands.
     /// </summary>
     public interface IRockLavaTag : IRockLavaElement
     {
-        /// <summary>
-        /// The name of the tag.
-        /// </summary>
-        //string SourceElementName { get; }
-
-        /*
-        void OnInitialize( string tagName, string markup, List<string> tokens );
-
-        void OnRender( ILavaContext context, TextWriter result );
-
-        void OnParse( List<string> tokens, out List<object> nodes );
-
-        /// <summary>
-        /// Executed when the tag is first loaded during application startup.
-        /// </summary>
-        void OnStartup();
-        */
+        //
     }
 }

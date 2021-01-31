@@ -17,12 +17,12 @@
 namespace Rock.Lava
 {
     /// <summary>
-    /// Specifies that this object can provide a LavaDataDictionary, either as a representation of itself or a related object.
+    /// Specifies that this object can supply an ILavaDataDictionary, either as a representation of itself or as a related object.
     /// </summary>
     public interface ILavaDataDictionarySource
     {
         /// <summary>
-        /// Gets a LavaDataDictionary that represents the data contained in the implementing object or a related object.
+        /// Gets an ILavaDataDictionary that represents the data contained in the implementing object or a related object.
         /// </summary>
         /// <returns></returns>
         ILavaDataDictionary GetLavaDataDictionary();

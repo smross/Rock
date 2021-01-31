@@ -25,7 +25,7 @@ namespace Rock.Lava
 {
     /// <summary>
     /// Returns the definition of a specified Lava shortcode that is stored in the current Rock database.
-    /// This implementation implements a website-based data caching model.
+    /// This implementation uses a website-based data caching model.
     /// </summary>
     public static class WebsiteLavaShortcodeProvider
     {
@@ -65,6 +65,5 @@ namespace Rock.Lava
 
             return newShortcode;
         }
-
     }
 }

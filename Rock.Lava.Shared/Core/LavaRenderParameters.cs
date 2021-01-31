@@ -16,7 +16,6 @@
 //
 
 using System;
-using System.Collections.Generic;
 
 namespace Rock.Lava
 {
@@ -25,43 +24,11 @@ namespace Rock.Lava
     /// </summary>
     public class LavaRenderParameters
     {
-        //public LavaRenderParameters()
-        //{
-        //    EnabledCommands = new List<string>();
-        //}
-
         public ILavaContext LavaContext { get; set; }
 
         /// <summary>
         /// Should string values be XML encoded?
         /// </summary>
         public bool ShouldEncodeStringsAsXml { get; set; }
-
-        /// <summary>
-        /// The set of Lava commands permitted for this rendering of the template.
-        /// </summary>
-        //public List<string> EnabledCommands { get; set; }
-
-        /// <summary>
-        /// Private variable assignments that are shared with other instances of this template but are not accessible to the source template.
-        /// </summary>
-        //[Obsolete("Rename as InternalVariables?")]
-        //public IDictionary<string, object> Registers { get; set; }
-       
-        /// <summary>
-        /// Local variable assignments made while resolving this template.
-        /// </summary>
-        //[Obsolete("Not sure if this is used?")]
-        //public IDictionary<string, object> InstanceAssigns { get; set; }
-
-        /// <summary>
-        /// Local variable assignments used to resolve this template.
-        /// </summary>
-        //public IDictionary<string, object> LocalVariables { get; set; }
-
-        /// <summary>
-        /// A set of functions that transform the values supplied to the template for specific Types.
-        /// </summary>
-        //public IDictionary<Type, Func<object, object>> ValueTypeTransformers { get; set; }
     }
 }

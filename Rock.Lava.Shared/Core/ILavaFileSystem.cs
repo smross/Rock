@@ -32,7 +32,8 @@ namespace Rock.Lava
         /// <summary>
         /// Called by the Lava Engine to read the contents of a template file.
         /// </summary>
-        /// <param name="templatePath"></param>
+        /// <param name="context"></param>
+        /// <param name="templateName"></param>
         /// <returns></returns>
         string ReadTemplateFile( ILavaContext context, string templateName );
     }

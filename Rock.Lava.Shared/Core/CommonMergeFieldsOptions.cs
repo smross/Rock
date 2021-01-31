@@ -117,6 +117,4 @@ namespace Rock.Lava
         /// </value>
         public bool GetLegacyGlobalMergeFields { get; set; }
     }
-
-     
 }

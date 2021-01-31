@@ -21,29 +21,19 @@ using System.IO;
 
 namespace Rock.Lava
 {
-    public enum LavaEngineTypeSpecifier
-    {
-        // DotLiquid is an open-source implementation of the Liquid templating language. [https://github.com/dotliquid/dotliquid]
-        DotLiquid = 1,
-        // Fluid is an open-source implementation of the Liquid templating language. [https://github.com/sebastienros/fluid]
-        Fluid = 2
-    }
-
     /// <summary>
     /// Represents the Lava Engine that is responsible for compiling and rendering templates.
     /// </summary>
     public interface ILavaEngine
     {
         /// <summary>
-        /// Gets or sets a flag to determine if compiled Lava templates can be cached and reused.
-        /// </summary>
-        //bool TemplateCachingIsEnabled { get; set; }
-
-        /// <summary>
         /// Remove all items from the template cache.
         /// </summary>
         void ClearTemplateCache();
 
+        /// <summary>
+        /// Gets the component that implements template caching for the Lava Engine.
+        /// </summary>
         ILavaTemplateCacheService TemplateCacheService { get; }
 
         /// <summary>
@@ -105,12 +95,6 @@ namespace Rock.Lava
         /// <param name="name"></param>
         /// <param name="factoryMethod"></param>
         void RegisterStaticShortcode( string name, Func<string, IRockShortcode> factoryMethod );
-
-        /// <summary>
-        /// Registers a shortcode with a factory method that provides the name and definition of the shortcode dynamically.
-        /// </summary>
-        /// <param name="factoryMethod"></param>
-        //void RegisterStaticShortcode( Func<string, IRockShortcode> factoryMethod );
 
         /// <summary>
         /// Deregister a shortcode.
@@ -216,14 +200,34 @@ namespace Rock.Lava
         ExceptionHandlingStrategySpecifier ExceptionHandlingStrategy { get; set; }
     }
 
+    #region Enumerations
+
+    public enum LavaEngineTypeSpecifier
+    {
+        // DotLiquid is an open-source implementation of the Liquid templating language. [https://github.com/dotliquid/dotliquid]
+        DotLiquid = 1,
+        // Fluid is an open-source implementation of the Liquid templating language. [https://github.com/sebastienros/fluid]
+        Fluid = 2
+    }
+
     /// <summary>
     /// Specifies a strategy for handling exceptions encountered during the template rendering process.
     /// </summary>
     public enum ExceptionHandlingStrategySpecifier
     {
+        /// <summary>
+        /// Throw the exception to be handled by the caller.
+        /// </summary>
         Throw = 0,
+        /// <summary>
+        /// Render the exception message as template output.
+        /// </summary>
         RenderToOutput = 1,
+        /// <summary>
+        /// Ignore the exception and do not render any output.
+        /// </summary>
         Ignore = 2
-
     }
+
+    #endregion
 }

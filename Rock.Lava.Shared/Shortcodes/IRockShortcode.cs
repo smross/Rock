@@ -17,7 +17,6 @@
 
 namespace Rock.Lava
 {
-
     /// <summary>
     /// Determines the type of tag (inline or block). Block type requires an end tag.
     /// </summary>

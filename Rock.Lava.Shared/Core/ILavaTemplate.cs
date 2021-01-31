@@ -26,8 +26,7 @@ namespace Rock.Lava
     public interface ILavaTemplate
     {
         /// <summary>
-        /// Try to render the template.
-        /// Errors will be included in the rendered output.
+        /// Render the template output.
         /// </summary>
         /// <returns></returns>        
         string Render();

@@ -18,24 +18,29 @@ using System;
 
 namespace Rock.Lava
 {
+    /// <summary>
+    /// Marks a Type as being accessible to a Lava template during rendering.
+    /// All public properties of the associated Type will be accessible by default.
+    /// </summary>
+    [AttributeUsage( AttributeTargets.Class )]
+    public class LavaTypeAttribute : Attribute
+    {
         /// <summary>
-        /// Specifies the type is safe to be rendered by Lava.
+        /// An array of property and method names that are allowed to be called on the object.
         /// </summary>
-        [AttributeUsage( AttributeTargets.Class )]
-        public class LavaTypeAttribute : Attribute
-        {
-            /// <summary>
-            /// An array of property and method names that are allowed to be called on the object.
-            /// </summary>
-            public string[] AllowedMembers { get; private set; }
+        public string[] AllowedMembers { get; private set; }
 
-            /// <summary>
-            /// 
-            /// </summary>
-            /// <param name="allowedMembers">An array of property and method names that are allowed to be called on the object.</param>
-            public LavaTypeAttribute( params string[] allowedMembers )
-            {
-                AllowedMembers = allowedMembers;
-            }
+        #region Constructors
+
+        /// <summary>
+        /// Apply the LavaTypeAttribute with a collection of allowed members.
+        /// </summary>
+        /// <param name="allowedMembers">An array of property and method names that are allowed to be called on the object.</param>
+        public LavaTypeAttribute( params string[] allowedMembers )
+        {
+            AllowedMembers = allowedMembers;
         }
+
+        #endregion
+    }
 }

@@ -19,40 +19,53 @@ using System;
 
 namespace Rock.Lava
 {
-    public class LavaBlockInfo : ILavaElementInfo
+    internal class LavaTagInfo : ILavaElementInfo
     {
-        public LavaBlockInfo()
+        #region Constructors
+
+        public LavaTagInfo()
         {
             //
         }
 
-        public LavaBlockInfo( string name, string systemTypeName )
+        public LavaTagInfo( string name, string systemTypeName )
         {
             Name = name;
             SystemTypeName = systemTypeName;
         }
 
+        #endregion
+
+        /// <summary>
+        /// The name of the tag.
+        /// </summary>
         public string Name { get; set; }
 
+        /// <summary>
+        /// The qualified name of the System.Type that implements this tag.
+        /// </summary>
         public string SystemTypeName { get; set; }
 
         /// <summary>
-        /// The factory method used to create a new instance of this block.
+        /// The factory method used to create a new instance of this tag.
         /// </summary>
-        public Func<string, IRockLavaBlock> FactoryMethod { get; set; }
+        public Func<string, IRockLavaTag> FactoryMethod { get; set; }
 
         /// <summary>
-        /// Can the factory method successfully produce an instance of this block?
+        /// Can the factory method successfully produce an instance of this tag?
         /// </summary>
         public bool IsAvailable { get; set; }
 
-        public LavaShortcodeTypeSpecifier ElementType
-        {
-            get
-            {
-                return LavaShortcodeTypeSpecifier.Block;
-            }
-        }
+        /// <summary>
+        /// The type of tag element.
+        /// </summary>
+        //public LavaTagElementTypeSpecifier ElementType
+        //{
+        //    get
+        //    {
+        //        return LavaTagElementTypeSpecifier.Inline;
+        //    }
+        //}
 
         public override string ToString()
         {

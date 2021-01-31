@@ -213,12 +213,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants.cs" />
+    <Compile Include="Core\Blocks\LavaBlockInfo.cs" />
     <Compile Include="Core\Blocks\LavaSecurityHelper.cs" />
     <Compile Include="Core\Blocks\RockLavaBlockBase.cs" />
     <Compile Include="Core\LavaTemplateTokeniser.cs" />
     <Compile Include="Core\Shortcodes\DynamicShortcode.cs" />
     <Compile Include="Core\Shortcodes\ILiquidFrameworkElementRenderer.cs" />
     <Compile Include="Core\Shortcodes\RockLavaShortcodeBase.cs" />
+    <Compile Include="Core\Tags\LavaTagInfo.cs" />
     <Compile Include="Engine\LavaNullFileSystem.cs" />
     <Compile Include="Engine\LavaToLiquidTemplateConverter.cs" />
     <Compile Include="Engine\LavaUtilityHelper.cs" />

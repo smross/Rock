@@ -16,7 +16,6 @@
 //
 using System.Collections.Generic;
 using System.IO;
-using System.Text.Encodings.Web;
 
 namespace Rock.Lava
 {
@@ -40,12 +39,18 @@ namespace Rock.Lava
         }
 
         /// <summary>
-        /// The source text that defines this element in a Lava document.
+        /// Initialize the Lava element for the current context.
         /// </summary>
-        //string SourceText { get; }
-
+        /// <param name="elementName"></param>
+        /// <param name="attributesMarkup"></param>
+        /// <param name="tokens"></param>
         void OnInitialize( string elementName, string attributesMarkup, List<string> tokens );
 
+        /// <summary>
+        /// Render the Lava element in the current context.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="result"></param>
         void OnRender( ILavaContext context, TextWriter result );
 
         /// <summary>

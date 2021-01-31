@@ -19,40 +19,56 @@ using System;
 
 namespace Rock.Lava
 {
-    public class LavaTagInfo : ILavaElementInfo
+    /// <summary>
+    /// Represents the definition of a Lava block element.
+    /// </summary>
+    internal class LavaBlockInfo : ILavaElementInfo
     {
-        public LavaTagInfo()
+        #region Constructors
+
+        public LavaBlockInfo()
         {
             //
         }
 
-        public LavaTagInfo( string name, string systemTypeName )
+        public LavaBlockInfo( string name, string systemTypeName )
         {
             Name = name;
             SystemTypeName = systemTypeName;
         }
 
+        #endregion
+
+        /// <summary>
+        /// The name of the block.
+        /// </summary>
         public string Name { get; set; }
 
+        /// <summary>
+        /// The name of the System.Type that implements the block.
+        /// </summary>
         public string SystemTypeName { get; set; }
 
         /// <summary>
-        /// The factory method used to create a new instance of this tag.
+        /// The factory method used to create a new instance of this block.
         /// </summary>
-        public Func<string, IRockLavaTag> FactoryMethod { get; set; }
+        public Func<string, IRockLavaBlock> FactoryMethod { get; set; }
 
         /// <summary>
-        /// Can the factory method successfully produce an instance of this tag?
+        /// Can the factory method successfully produce an instance of this block?
         /// </summary>
         public bool IsAvailable { get; set; }
 
-        public LavaShortcodeTypeSpecifier ElementType
-        {
-            get
-            {
-                return LavaShortcodeTypeSpecifier.Inline;
-            }
-        }
+        /// <summary>
+        /// The type of document element this item represents.
+        /// </summary>
+        //public LavaTagElementTypeSpecifier ElementType
+        //{
+        //    get
+        //    {
+        //        return LavaTagElementTypeSpecifier.Block;
+        //    }
+        //}
 
         public override string ToString()
         {

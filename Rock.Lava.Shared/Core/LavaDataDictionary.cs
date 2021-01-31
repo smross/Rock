@@ -1,4 +1,20 @@
-﻿using System;
+﻿// <copyright>
+// Copyright by the Spark Development Network
+//
+// Licensed under the Rock Community License (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.rockrms.com/license
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+// </copyright>
+//
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
@@ -23,11 +39,21 @@ namespace Rock.Lava
 
         #region Static construction methods
 
+        /// <summary>
+        /// Create a new instance that provides Lava template access for the properties of an anonymous object.
+        /// </summary>
+        /// <param name="anonymousObject"></param>
+        /// <returns></returns>
         public static LavaDataDictionary FromAnonymousObject( object anonymousObject )
         {
             return new LavaDataDictionary( anonymousObject );
         }
 
+        /// <summary>
+        /// Create a new instance that provides Lava template access for the items in an existing .NET dictionary.
+        /// </summary>
+        /// <param name="dictionary"></param>
+        /// <returns></returns>
         public static LavaDataDictionary FromDictionary( IDictionary<string, object> dictionary )
         {
             return new LavaDataDictionary( dictionary );
@@ -70,28 +96,54 @@ namespace Rock.Lava
 
         #endregion
 
+        /// <summary>
+        /// Merge the entries from an existing dictionary.
+        /// </summary>
+        /// <param name="otherValues"></param>
         public void Merge( IDictionary<string, object> otherValues )
         {
             foreach ( string key in otherValues.Keys )
+            {
                 _nestedDictionary[key] = otherValues[key];
+            }
         }
 
+        /// <summary>
+        /// Get a value from the dictionary.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         private object GetValue( string key )
         {
             if ( _nestedDictionary.ContainsKey( key ) )
+            {
                 return _nestedDictionary[key];
+            }
 
             if ( _lambda != null )
+            {
                 return _lambda( this, key );
+            }
 
             return null;
         }
 
+        /// <summary>
+        /// Set a value in the dictionary.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
         public void SetValue( string key, object value )
         {
             _nestedDictionary[key] = value;
         }
 
+        /// <summary>
+        /// Get a strongly-typed value from the dictionary.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public T Get<T>( string key )
         {
             return (T)this[key];

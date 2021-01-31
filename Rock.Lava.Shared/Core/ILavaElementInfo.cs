@@ -18,20 +18,29 @@
 namespace Rock.Lava
 {
     /// <summary>
-    /// Represents information about a Lava template element, such as a tag or block.
+    /// Represents information about a Lava template document element, such as a tag or block.
     /// </summary>
     public interface ILavaElementInfo
     {
+        /// <summary>
+        /// The name of the element.
+        /// </summary>
         string Name { get; }
+
+        /// <summary>
+        /// The qualified name of the System.Type that implements this element.
+        /// </summary>
         string SystemTypeName { get; }
-        string ToString();
 
         /// <summary>
         /// Can the factory method successfully produce an instance of this tag?
         /// </summary>
         bool IsAvailable { get; set; }
 
-        LavaShortcodeTypeSpecifier ElementType { get; }
+        /// <summary>
+        /// A user-friendly summary of this element.
+        /// </summary>
+        /// <returns></returns>
+        string ToString();
     }
-
 }
