@@ -17,7 +17,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.RegularExpressions;
 using DotLiquid;
@@ -28,7 +27,7 @@ namespace Rock.Lava.DotLiquid
     /// Represents an implementation of a Lava Block for the DotLiquid Templating Framework.
     /// </summary>
     /// <remarks>
-    /// This class implements a Lava Block element using the DotLiquid.Block Type that can be processed by the DotLiquid framework.
+    /// This class implements a Lava Block element using the DotLiquid.Block Type for processing by the DotLiquid framework.
     /// </remarks>
     internal class DotLiquidBlockProxy : Block, ILiquidFrameworkElementRenderer
     {
@@ -36,6 +35,11 @@ namespace Rock.Lava.DotLiquid
 
         private static Dictionary<string, Func<string, IRockLavaBlock>> _factoryMethods = new Dictionary<string, Func<string, IRockLavaBlock>>( StringComparer.OrdinalIgnoreCase );
 
+        /// <summary>
+        /// Register a factory method that is capable of creating instances of the named block.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="factoryMethod"></param>
         public static void RegisterFactory( string name, Func<string, IRockLavaBlock> factoryMethod )
         {
             if ( string.IsNullOrWhiteSpace( name ) )
@@ -52,16 +56,14 @@ namespace Rock.Lava.DotLiquid
 
         private IRockLavaBlock _lavaBlock = null;
 
-        public string SourceElementName
-        {
-            get
-            {
-                return _lavaBlock.SourceElementName;
-            }
-        }
-
         #region DotLiquid Block Overrides
 
+        /// <summary>
+        /// Initialize the block to process a specific occurrence in a template.
+        /// </summary>
+        /// <param name="tagName"></param>
+        /// <param name="markup"></param>
+        /// <param name="tokens"></param>
         public override void Initialize( string tagName, string markup, List<string> tokens )
         {
             if ( !_factoryMethods.ContainsKey( tagName ) )
@@ -79,7 +81,7 @@ namespace Rock.Lava.DotLiquid
             }
 
             // Initialize the Lava block first, because it may be called during the DotLiquid.Block initialization process.
-            var blockTokens = GetBlockTokens( tagName, tokens, includeClosingTag:true );
+            var blockTokens = GetBlockTokens( tagName, tokens, includeClosingTag: true );
 
             _lavaBlock.OnInitialize( tagName, markup, blockTokens );
 
@@ -151,6 +153,11 @@ namespace Rock.Lava.DotLiquid
             return blockTokens;
         }
 
+        /// <summary>
+        /// Render a specific instance of the block in the provided context.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="result"></param>
         public override void Render( Context context, TextWriter result )
         {
             var lavaContext = new DotLiquidLavaContext( context );

@@ -95,7 +95,7 @@ namespace Rock.Lava
             return LavaSecurityHelper.IsAuthorized( context, this.SourceElementName );
         }
 
-        #region DotLiquid Block Implementation
+        #region IRockLavaElement Implementation
 
         /// <summary>
         /// Override this method to provide custom initialization for the block.
@@ -130,18 +130,18 @@ namespace Rock.Lava
         /// <param name="nodes"></param>
         public virtual void OnParsed( List<string> tokens )
         {
-            return;
+            //
         }
 
-        #endregion
-
         /// <summary>
-        /// Method that will be run at Rock startup
+        /// Executed at Rock startup to perform one-time initialization tasks for this code element.
         /// </summary>
         public virtual void OnStartup()
         {
             //
         }
+
+        #endregion
 
         protected virtual void AssertMissingDelimitation()
         {
@@ -162,6 +162,9 @@ namespace Rock.Lava
             }
         }
 
+        /// <summary>
+        /// The type of document element used by this shortcode.
+        /// </summary>
         public abstract LavaShortcodeTypeSpecifier ElementType { get; }
 
         #region ILiquidFrameworkRenderer implementation
@@ -173,7 +176,8 @@ namespace Rock.Lava
         /// </summary>
         /// <param name="context"></param>
         /// <param name="result"></param>
-        /// <param name="proxy"></param>
+        /// <param name="result"></param>
+        /// <param name="encoder"></param>
         void ILiquidFrameworkElementRenderer.Render( ILiquidFrameworkElementRenderer baseRenderer, ILavaContext context, TextWriter result, TextEncoder encoder )
         {
             _baseRenderer = baseRenderer;
@@ -195,6 +199,5 @@ namespace Rock.Lava
         }
 
         #endregion
-
     }
 }

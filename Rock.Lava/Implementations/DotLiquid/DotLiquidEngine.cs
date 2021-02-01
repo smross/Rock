@@ -28,6 +28,9 @@ namespace Rock.Lava.DotLiquid
     /// </summary>
     public partial class DotLiquidEngine : LavaEngineBase
     {
+        /// <summary>
+        /// The descriptive name of the engine.
+        /// </summary>
         public override string EngineName
         {
             get
@@ -36,6 +39,9 @@ namespace Rock.Lava.DotLiquid
             }
         }
 
+        /// <summary>
+        /// The type specifier for the framework.
+        /// </summary>
         public override LavaEngineTypeSpecifier EngineType
         {
             get
@@ -43,6 +49,12 @@ namespace Rock.Lava.DotLiquid
                 return LavaEngineTypeSpecifier.DotLiquid;
             }
         }
+
+        /// <summary>
+        /// Create a new template context and add the specified merge fields.
+        /// </summary>
+        /// <param name="mergeFields"></param>
+        /// <returns></returns>
 
         public override ILavaContext NewContext( IDictionary<string, object> mergeFields = null )
         {
@@ -56,10 +68,7 @@ namespace Rock.Lava.DotLiquid
         }
 
         /// <summary>
-        /// Initializes Rock's Lava system (which uses DotLiquid)
-        /// Doing this in startup will force the static Liquid class to get instantiated
-        /// so that the standard filters are loaded prior to the custom RockFilter.
-        /// This is to allow the custom 'Date' filter to replace the standard Date filter.
+        /// Configure the DotLiquid engine with the specified options.
         /// </summary>
         public override void OnSetConfiguration( LavaEngineConfigurationOptions options )
         {
@@ -94,6 +103,10 @@ namespace Rock.Lava.DotLiquid
             RegisterSafeType( typeof( Rock.Lava.ILavaDataDictionary ) );
         }
 
+        /// <summary>
+        /// Register the filters implemented by the provided System.Type entries so they can be used to resolve templates.
+        /// </summary>
+        /// <param name="implementingType"></param>
         protected override void OnRegisterFilters( Type implementingType )
         {
             var methodsGroupedByName = implementingType.GetMethods( BindingFlags.Public | BindingFlags.Static ).AsQueryable().GroupBy( k => k.Name, v => v );
@@ -241,6 +254,11 @@ namespace Rock.Lava.DotLiquid
             return candidateMethodInfoList.LastOrDefault();
         }
 
+        /// <summary>
+        /// Register a specific System.Type as available for referencing in a Lava template.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="allowedMembers"></param>
         public override void RegisterSafeType( Type type, string[] allowedMembers = null )
         {
             if ( typeof( Rock.Lava.ILavaDataDictionarySource ).IsAssignableFrom( type ) )
@@ -256,9 +274,7 @@ namespace Rock.Lava.DotLiquid
                 Template.RegisterSafeType( typeof( Rock.Lava.ILavaDataDictionary ),
                     ( x ) =>
                     {
-                        //var dataObject = new LavaDataObject( x );
                         return new DotLiquidLavaDataObjectProxy( x as ILavaDataDictionary );
-                        //return dataObject;
                     } );
             }
             else
@@ -273,6 +289,11 @@ namespace Rock.Lava.DotLiquid
             }
         }
 
+        /// <summary>
+        /// Register a Lava Tag element.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="factoryMethod"></param>
         public override void RegisterTag( string name, Func<string, IRockLavaTag> factoryMethod )
         {
             if ( name == null )
@@ -290,6 +311,11 @@ namespace Rock.Lava.DotLiquid
             Template.RegisterTag<DotLiquidTagProxy>( name );
         }
 
+        /// <summary>
+        /// Register a Lava Block element.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="factoryMethod"></param>
         public override void RegisterBlock( string name, Func<string, IRockLavaBlock> factoryMethod )
         {
             if ( name == null )
@@ -307,6 +333,13 @@ namespace Rock.Lava.DotLiquid
             Template.RegisterTag<DotLiquidBlockProxy>( name );
         }
 
+        /// <summary>
+        /// Render the Lava template using the DotLiquid rendering engine.
+        /// </summary>
+        /// <param name="inputTemplate"></param>
+        /// <param name="output"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
         protected override bool OnTryRender( ILavaTemplate template, LavaRenderParameters parameters, out string output )
         {
             try
@@ -374,6 +407,12 @@ namespace Rock.Lava.DotLiquid
             return lavaTemplate;
         }
 
+        /// <summary>
+        /// Compare two objects for equivalence according to the applicable Lava equality rules for the input object types.
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns>True if the two objects are considered equal.</returns>
         public override bool AreEqualValue( object left, object right )
         {
             var condition = global::DotLiquid.Condition.Operators["=="];

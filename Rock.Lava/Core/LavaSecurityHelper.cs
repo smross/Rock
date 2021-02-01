@@ -15,13 +15,15 @@
 // </copyright>
 //
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 using Rock.Common;
 
 namespace Rock.Lava
 {
+    /// <summary>
+    /// A set of helper methods to implement Lava security.
+    /// </summary>
     public static class LavaSecurityHelper
     {
         /// <summary>
@@ -47,9 +49,9 @@ namespace Rock.Lava
             }
 
             if ( enabledCommands.Any() )
-            {            
+            {
                 if ( enabledCommands.Contains( "All", StringComparer.OrdinalIgnoreCase )
-                     || enabledCommands.Contains( command, StringComparer.OrdinalIgnoreCase ) )                    
+                     || enabledCommands.Contains( command, StringComparer.OrdinalIgnoreCase ) )
                 {
                     return true;
                 }

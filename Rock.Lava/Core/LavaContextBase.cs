@@ -21,34 +21,72 @@ using Rock.Common;
 
 namespace Rock.Lava
 {
+    /// <summary>
+    /// Stores the configuration and data used by the Lava Engine to resolve a Lava template.
+    /// </summary>
     public abstract class LavaContextBase : ILavaContext
     {
-        public object this[string key]
+        /// <summary>
+        /// Gets a named value that is for internal use only, by other components of the Lava engine.
+        /// Internal values are not available to be resolved in the Lava Template.
+        /// </summary>
+        /// <param name="key"></param>
+        public abstract object GetInternalFieldValue( string key, object defaultValue = null );
+
+        /// <summary>
+        /// Gets the collection of variables defined for internal use only.
+        /// Internal values are not available to be resolved in the Lava Template.
+        /// </summary>
+        public abstract LavaDataDictionary GetInternalFields();
+
+        /// <summary>
+        /// Sets a named value that is for internal use only, by other components of the Lava engine.
+        /// Internal values are not available to be resolved in the Lava Template.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        public abstract void SetInternalFieldValue( string key, object value );
+
+        /// <summary>
+        /// Sets a collection of named values for internal use only.
+        /// Internal values are not available to be resolved in the Lava Template.
+        /// </summary>
+        /// <param name="values"></param>
+        public void SetInternalFieldValues( LavaDataDictionary values )
         {
-            get
+            SetInternalFieldValues( values as IDictionary<string, object> );
+        }
+
+        /// <summary>
+        /// Sets a collection of named values for internal use only.
+        /// Internal values are not available to be resolved in the Lava Template.
+        /// </summary>
+        /// <param name="values"></param>
+        public virtual void SetInternalFieldValues( IDictionary<string, object> values )
+        {
+            if ( values == null )
             {
-                return GetMergeFieldValue( key, null );
+                return;
             }
-            set
+
+            foreach ( var kvp in values )
             {
-                SetMergeFieldValue( key, value );
+                SetInternalFieldValue( kvp.Key, kvp.Value );
             }
         }
 
-        public abstract List<string> GetEnabledCommands();
-
+        /// <summary>
+        /// Gets the value of a field that is accessible for merging into a template.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
         public abstract object GetMergeFieldValue( string key, object defaultValue = null );
 
+        /// <summary>
+        /// Gets the user-defined variables in the current context that are accessible in a template.
+        /// </summary>
         public abstract LavaDataDictionary GetMergeFields();
-
-        public abstract void SetEnabledCommands( IEnumerable<string> commands );
-
-        public void SetEnabledCommands( string commandList, string delimiter = "," )
-        {
-            var commands = commandList.SplitDelimitedValues( delimiter );
-
-            SetEnabledCommands( commands );
-        }
 
         /// <summary>
         /// Sets a named value that is available to be resolved in the Lava Template.
@@ -58,11 +96,19 @@ namespace Rock.Lava
         /// <param name="scope"></param>
         public abstract void SetMergeFieldValue( string key, object value, LavaContextRelativeScopeSpecifier scope = LavaContextRelativeScopeSpecifier.Current );
 
+        /// <summary>
+        /// Sets the user-defined variables in the current context that are internally available to custom filters and tags.
+        /// </summary>
+        /// <param name="values"></param>
         public void SetMergeFieldValues( LavaDataDictionary values )
         {
             SetMergeFieldValues( values as IDictionary<string, object> );
         }
 
+        /// <summary>
+        /// Sets the user-defined variables in the current context that are internally available to custom filters and tags.
+        /// </summary>
+        /// <param name="values"></param>
         public virtual void SetMergeFieldValues( IDictionary<string, object> values )
         {
             if ( values == null )
@@ -77,41 +123,49 @@ namespace Rock.Lava
         }
 
         /// <summary>
-        /// Gets a named value that is for internal use only. Internal values are not available to be resolved in the Lava Template.
+        /// Get or set the value of a field that is accessible for merging into a template.
         /// </summary>
         /// <param name="key"></param>
-        public abstract object GetInternalFieldValue( string key, object defaultValue = null );
-
-        /// <summary>
-        /// Gets the collection of variables defined for internal use only.  Internal values are not available to be resolved in the Lava Template.
-        /// </summary>
-        public abstract LavaDataDictionary GetInternalFields();
-
-        /// <summary>
-        /// Sets a named value that is for internal use only. Internal values are not available to be resolved in the Lava Template.
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        public abstract void SetInternalFieldValue( string key, object value );
-
-        public void SetInternalFieldValues( LavaDataDictionary values )
+        /// <returns></returns>
+        public object this[string key]
         {
-            SetInternalFieldValues( values as IDictionary<string, object> );
-        }
-
-        public virtual void SetInternalFieldValues( IDictionary<string, object> values )
-        {
-            if ( values == null )
+            get
             {
-                return;
+                return GetMergeFieldValue( key, null );
             }
-
-            foreach ( var kvp in values )
+            set
             {
-                SetInternalFieldValue( kvp.Key, kvp.Value );
+                SetMergeFieldValue( key, value );
             }
         }
 
+        /// <summary>
+        /// Gets the Lava Commands that are enabled for this context.
+        /// </summary>
+        public abstract List<string> GetEnabledCommands();
+
+        /// <summary>
+        /// Sets the Lava commands enabled for this template.
+        /// </summary>
+        /// <param name="commands"></param>
+        public abstract void SetEnabledCommands( IEnumerable<string> commands );
+
+        /// <summary>
+        /// Sets the Lava commands enabled for this template.
+        /// </summary>
+        /// <param name="commandList">A delimited list of command names.</param>
+        /// <param name="delimiter">The list delimiter.</param>
+        public void SetEnabledCommands( string commandList, string delimiter = "," )
+        {
+            var commands = commandList.SplitDelimitedValues( delimiter );
+
+            SetEnabledCommands( commands );
+        }
+
+        /// <summary>
+        /// Executes the specified action in a new child scope.
+        /// </summary>
+        /// <param name="callback"></param>
         public void ExecuteInChildScope( Action<ILavaContext> callback )
         {
             EnterChildScope();
@@ -124,7 +178,16 @@ namespace Rock.Lava
                 ExitChildScope();
             }
         }
+
+        /// <summary>
+        /// Creates a new child scope. Values added to the child scope will be released once <see cref="ExitChildScope" /> is called.
+        /// Values in the parent scope remain available to the child scope.
+        /// </summary>
         public abstract void EnterChildScope();
+
+        /// <summary>
+        /// Exits the current scope that has been created by <see cref="EnterChildScope" />.
+        /// </summary>
         public abstract void ExitChildScope();
     }
 }

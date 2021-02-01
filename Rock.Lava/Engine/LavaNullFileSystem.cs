@@ -32,6 +32,12 @@ namespace Rock.Lava
             return false;
         }
 
+        /// <summary>
+        /// Called by the Lava Engine to read the contents of a template file.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="templateName"></param>
+        /// <returns></returns>
         public string ReadTemplateFile( ILavaContext context, string templateName )
         {
             throw new LavaException( "Lava File System error. No file system is configured for the current Lava Engine." );

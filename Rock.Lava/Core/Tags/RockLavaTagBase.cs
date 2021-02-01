@@ -30,6 +30,11 @@ namespace Rock.Lava.Blocks
         private string _attributesMarkup;
 
         /// <summary>
+        /// The text that defines this element in the Lava source document.
+        /// </summary>
+        public string SourceText { get; set; }
+
+        /// <summary>
         /// The raw markup for any additional Attributes contained in the element source tag.
         /// </summary>
         public string ElementAttributesMarkup
@@ -39,25 +44,8 @@ namespace Rock.Lava.Blocks
                 return _attributesMarkup;
             }
         }
-        public void Initialize( string tagName, string markup, List<string> tokens )
-        {
-            _sourceElementName = tagName;
-            _attributesMarkup = markup;
 
-            OnInitialize( tagName, markup, tokens );
-        }
-
-        public void Render( ILavaContext context, TextWriter result, TextEncoder encoder )
-        {
-            OnRender( context, result );
-        }
-
-        //public void Parse( List<string> tokens, out List<object> nodes )
-        //{
-        //    OnParsed( tokens, out nodes );
-        //}
-
-        #region IRockLavaElement implementation
+        #region IRockLavaTag/IRockLavaElement implementation
 
         /// <summary>
         /// The name of the tag.
@@ -94,23 +82,24 @@ namespace Rock.Lava.Blocks
             }
         }
 
-        /// <summary>
-        /// The text that defines this element in the Lava source document.
-        /// </summary>
-        public string SourceText { get; set; }
-
-        #endregion
-
-        #region Customisation methods.
-
         public virtual void OnStartup()
         {
-            //throw new System.NotImplementedException();
+            //
         }
 
         public virtual void OnInitialize( string tagName, string markup, List<string> tokens )
         {
             //
+        }
+
+        /// <summary>
+        /// Parse a set of Lava tokens into a set of document nodes that can be processed by the underlying rendering framework.
+        /// </summary>
+        /// <param name="tokens"></param>
+        /// <param name="nodes"></param>
+        public virtual void OnParsed( List<string> tokens )
+        {
+            return;
         }
 
         /// <summary>
@@ -127,23 +116,7 @@ namespace Rock.Lava.Blocks
             }
         }
 
-        /// <summary>
-        /// Parse a set of Lava tokens into a set of document nodes that can be processed by the underlying rendering framework.
-        /// </summary>
-        /// <param name="tokens"></param>
-        /// <param name="nodes"></param>
-        public virtual void OnParsed( List<string> tokens )
-        {
-            return;
-        }
-
         #endregion
-
-        [Obsolete( "???" )]
-        internal void RenderInternal( ILavaContext context, TextWriter result, IRockLavaTag proxy )
-        {
-            this.OnRender( context, result );
-        }
 
         #region ILiquidFrameworkRenderer implementation
 

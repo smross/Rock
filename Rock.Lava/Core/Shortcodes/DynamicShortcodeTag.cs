@@ -14,17 +14,27 @@
 // limitations under the License.
 // </copyright>
 //
-namespace Rock.Lava.DotLiquid
+
+namespace Rock.Lava.Shortcodes
 {
     /// <summary>
-    /// A set of Lava filters that can be used with the DotLiquid templating framework.
+    /// An implementation of a shortcode that takes the form of an inline Liquid tag element.
     /// </summary>
-    /// <remarks>
-    /// Where possible, filters are implemented as a wrapper around an equivalent function that is independent of any specific templating framework.
-    /// The purpose of this approach is to allow the core filter functionality to be more easily reimplemented and re-used with other templating frameworks such as Liquid or Razor.
-    /// </remarks>
-    public static partial class DotLiquidFilters
+    public class DynamicShortcodeTag : DynamicShortcode, IRockLavaTag
     {
-        //
+        #region Constructors
+
+        public DynamicShortcodeTag()
+        {
+            //
+        }
+
+        public DynamicShortcodeTag( DynamicShortcodeDefinition definition )
+            : base ( definition )
+        {
+            //
+        }
+
+        #endregion
     }
 }

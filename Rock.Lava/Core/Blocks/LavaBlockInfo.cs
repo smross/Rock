@@ -14,7 +14,6 @@
 // limitations under the License.
 // </copyright>
 //
-
 using System;
 
 namespace Rock.Lava
@@ -59,21 +58,9 @@ namespace Rock.Lava
         /// </summary>
         public bool IsAvailable { get; set; }
 
-        /// <summary>
-        /// The type of document element this item represents.
-        /// </summary>
-        //public LavaTagElementTypeSpecifier ElementType
-        //{
-        //    get
-        //    {
-        //        return LavaTagElementTypeSpecifier.Block;
-        //    }
-        //}
-
         public override string ToString()
         {
             return string.Format( "{0} [{1}]", Name, SystemTypeName );
         }
     }
-
 }

@@ -123,7 +123,8 @@ namespace Rock.Lava
         {
             // Remove comments from the content.
             var lavaWithoutComments = _lavaCommentMatchGroupsRegex.Replace( lavaTemplate,
-                me => {
+                me =>
+                {
                     // If the match group is a line comment, retain the end-of-line marker.
                     if ( me.Value.StartsWith( LavaTokenBlockCommentStart ) || me.Value.StartsWith( LavaTokenLineComment ) )
                     {

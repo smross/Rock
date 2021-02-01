@@ -14,38 +14,27 @@
 // limitations under the License.
 // </copyright>
 //
-using System;
 
-namespace Rock.Lava.Fluid
+namespace Rock.Lava.Shortcodes
 {
     /// <summary>
-    /// A wrapper for a Fluid Template for use with the Rock Lava library.
+    /// An implementation of a shortcode in the form of a Liquid block element.
     /// </summary>
-    /// <remarks>
-    /// This class should exist in the Rock.Lava.Fluid library.
-    /// </remarks>
-    [Obsolete]
-    public class FluidTemplateProxy : LavaTemplateBase
+    public class DynamicShortcodeBlock: DynamicShortcode, IRockLavaBlock
     {
         #region Constructors
 
-        private LavaFluidTemplate _template;
-
-        //public override ILavaEngine LavaEngine => throw new NotImplementedException();
-
-        public FluidTemplateProxy( LavaFluidTemplate template )
+        public DynamicShortcodeBlock()
         {
-            _template = template;
+            //
+        }
+
+        public DynamicShortcodeBlock( DynamicShortcodeDefinition definition )
+            : base( definition )
+        {
+            //
         }
 
         #endregion
-
-        public LavaFluidTemplate FluidTemplate
-        {
-            get
-            {
-                return _template;
-            }
-        }
     }
 }

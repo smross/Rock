@@ -22,12 +22,25 @@ using System.Text.Encodings.Web;
 namespace Rock.Lava
 {
     /// <summary>
-    /// A component that can parse and render a Lava document element using a Liquid templating framework.
+    /// A component that parses and renders a Lava document element by interacting with a Liquid templating framework.
     /// </summary>
     internal interface ILiquidFrameworkElementRenderer
     {
+        /// <summary>
+        /// Render the text output for this document element.
+        /// </summary>
+        /// <param name="baseRenderer"></param>
+        /// <param name="context"></param>
+        /// <param name="writer"></param>
+        /// <param name="encoder"></param>
         void Render( ILiquidFrameworkElementRenderer baseRenderer, ILavaContext context, TextWriter writer, TextEncoder encoder );
 
+        /// <summary>
+        /// Parse the source text for this document element.
+        /// </summary>
+        /// <param name="baseRenderer"></param>
+        /// <param name="tokens"></param>
+        /// <param name="nodes"></param>
         [Obsolete]
         void Parse( ILiquidFrameworkElementRenderer baseRenderer, List<string> tokens, out List<object> nodes );
     }

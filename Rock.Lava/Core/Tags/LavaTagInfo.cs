@@ -19,6 +19,9 @@ using System;
 
 namespace Rock.Lava
 {
+    /// <summary>
+    /// Represents the definition of a Lava tag element.
+    /// </summary>
     internal class LavaTagInfo : ILavaElementInfo
     {
         #region Constructors
@@ -55,18 +58,6 @@ namespace Rock.Lava
         /// Can the factory method successfully produce an instance of this tag?
         /// </summary>
         public bool IsAvailable { get; set; }
-
-        /// <summary>
-        /// The type of tag element.
-        /// </summary>
-        //public LavaTagElementTypeSpecifier ElementType
-        //{
-        //    get
-        //    {
-        //        return LavaTagElementTypeSpecifier.Inline;
-        //    }
-        //}
-
         public override string ToString()
         {
             return string.Format( "{0} [{1}]", Name, SystemTypeName );

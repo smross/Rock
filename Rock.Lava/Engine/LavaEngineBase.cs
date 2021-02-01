@@ -26,7 +26,7 @@ namespace Rock.Lava
     public abstract class LavaEngineBase : ILavaEngine
     {
         /// <summary>
-        /// Initializes the Lava engine.
+        /// Initializes the Lava engine with the specified options.
         /// </summary>
         public void Initialize( LavaEngineConfigurationOptions options )
         {
@@ -60,6 +60,10 @@ namespace Rock.Lava
 
         private ILavaTemplateCacheService _cacheService;
 
+        /// <summary>
+        /// Gets the current cache service for the Lava Engine.
+        /// </summary>
+        /// <returns>A reference to the current caching service, or null if caching is not configured.</returns>
         public ILavaTemplateCacheService TemplateCacheService
         {
             get
@@ -68,10 +72,16 @@ namespace Rock.Lava
             }
         }
 
+        /// <summary>
+        /// Gets the type of third-party framework used to render and parse Lava/Liquid documents.
+        /// </summary>
         public abstract LavaEngineTypeSpecifier EngineType { get; }
 
-        //public abstract Type GetShortcodeType( string name );
-
+        /// <summary>
+        /// Register a specific System.Type as available for referencing in a Lava template.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="allowedMembers"></param>
         public abstract void RegisterSafeType( Type type, string[] allowedMembers = null );
 
         /// <summary>
@@ -197,6 +207,14 @@ namespace Rock.Lava
             return shortcodeInstance;
         }
 
+        /// <summary>
+        /// Render the provided template.
+        /// </summary>
+        /// <param name="inputTemplate"></param>
+        /// <returns>
+        /// The rendered output of the template.
+        /// If the template is invalid, returns an error message or an empty string according to the current ExceptionHandlingStrategy setting.
+        /// </returns>
         public string RenderTemplate( string inputTemplate )
         {
             string output;
@@ -206,6 +224,15 @@ namespace Rock.Lava
             return output;
         }
 
+        /// <summary>
+        /// Render the provided template in the specified context.
+        /// </summary>
+        /// <param name="inputTemplate"></param>
+        /// <param name="context"></param>
+        /// <returns>
+        /// The rendered output of the template.
+        /// If the template is invalid, returns an error message or an empty string according to the current ExceptionHandlingStrategy setting.
+        /// </returns>
         public string RenderTemplate( string inputTemplate, ILavaContext context )
         {
             string output;
@@ -215,11 +242,24 @@ namespace Rock.Lava
             return output;
         }
 
+        /// <summary>
+        /// Try to render the provided template.
+        /// </summary>
+        /// <param name="inputTemplate"></param>
+        /// <param name="output"></param>
+        /// <returns></returns>
         public bool TryRender( string inputTemplate, out string output )
         {
             return TryRender( inputTemplate, out output, mergeValues: null );
         }
 
+        /// <summary>
+        /// Try to render the provided template with the specified merge fields.
+        /// </summary>
+        /// <param name="inputTemplate"></param>
+        /// <param name="output"></param>
+        /// <param name="mergeValues"></param>
+        /// <returns></returns>
         public bool TryRender( string inputTemplate, out string output, LavaDataDictionary mergeValues )
         {
             ILavaContext context;
@@ -238,13 +278,20 @@ namespace Rock.Lava
             return TryRender( inputTemplate, out output, context );
         }
 
+        /// <summary>
+        /// Try to render the provided template in the specified context.
+        /// </summary>
+        /// <param name="inputTemplate"></param>
+        /// <param name="output"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public bool TryRender( string inputTemplate, out string output, ILavaContext context )
         {
             ILavaTemplate template;
 
             try
             {
-                if ( _cacheService != null && this.TemplateCachingIsEnabled )
+                if ( _cacheService != null )
                 {
                     template = _cacheService.GetOrAddTemplate( inputTemplate );
                 }
@@ -303,6 +350,12 @@ namespace Rock.Lava
         /// <returns></returns>
         protected abstract bool OnTryRender( ILavaTemplate inputTemplate, LavaRenderParameters parameters, out string output );
 
+        /// <summary>
+        /// Compare two objects for equivalence according to the applicable Lava equality rules for the input object types.
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns>True if the two objects are considered equal.</returns>
         public abstract bool AreEqualValue( object left, object right );
 
         /// <summary>
@@ -372,6 +425,11 @@ namespace Rock.Lava
 
         private static Dictionary<string, ILavaElementInfo> _lavaElements = new Dictionary<string, ILavaElementInfo>( StringComparer.OrdinalIgnoreCase );
 
+        /// <summary>
+        /// Register a Lava Tag element.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="factoryMethod"></param>
         public virtual void RegisterTag( string name, Func<string, IRockLavaTag> factoryMethod )
         {
             if ( string.IsNullOrWhiteSpace( name ) )
@@ -398,6 +456,11 @@ namespace Rock.Lava
             _lavaElements[name] = tagInfo;
         }
 
+        /// <summary>
+        /// Register a Lava Block element.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="factoryMethod"></param>
         public virtual void RegisterBlock( string name, Func<string, IRockLavaBlock> factoryMethod )
         {
             if ( string.IsNullOrWhiteSpace( name ) )
@@ -422,29 +485,6 @@ namespace Rock.Lava
             }
 
             _lavaElements[name] = blockInfo;
-        }
-
-        public bool TryGetTagInstance( string tagName, out IRockLavaTag tagInstance )
-        {
-            tagInstance = null;
-
-            if ( !_lavaElements.ContainsKey( tagName ) )
-            {
-                return false;
-            }
-
-            var tag = _lavaElements[tagName] as LavaTagInfo;
-
-            if ( tag == null )
-            {
-                return false;
-            }
-
-            var factoryMethod = tag.FactoryMethod;
-
-            tagInstance = factoryMethod( tagName );
-
-            return true;
         }
 
         #endregion
@@ -493,9 +533,10 @@ namespace Rock.Lava
             }
         }
 
+        /// <summary>
+        /// Gets or sets the strategy for handling exceptions encountered during the rendering process.
+        /// </summary>
         public ExceptionHandlingStrategySpecifier ExceptionHandlingStrategy { get; set; } = ExceptionHandlingStrategySpecifier.RenderToOutput;
-
-        public bool TemplateCachingIsEnabled { get; set; } = true;
 
         /// <summary>
         /// Convert a Lava template to a Liquid-compatible template by replacing Lava-specific syntax and keywords.

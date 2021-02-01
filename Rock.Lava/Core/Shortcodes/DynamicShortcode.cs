@@ -23,44 +23,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 using Rock.Common;
-using Rock.Lava.Utility;
 
 namespace Rock.Lava.Shortcodes
 {
-    /// <summary>
-    /// An implementation of a shortcode in the form of a Liquid block element.
-    /// </summary>
-    public class DynamicShortcodeBlock: DynamicShortcode, IRockLavaBlock
-    {
-        public DynamicShortcodeBlock()
-        {
-            //
-        }
-
-        public DynamicShortcodeBlock( DynamicShortcodeDefinition definition )
-            : base( definition )
-        {
-            //
-        }
-    }
-
-    /// <summary>
-    /// An implementation of a shortcode that takes the form of an inline Liquid tag element.
-    /// </summary>
-    public class DynamicShortcodeTag : DynamicShortcode, IRockLavaTag
-    {
-        public DynamicShortcodeTag()
-        {
-            //
-        }
-
-        public DynamicShortcodeTag( DynamicShortcodeDefinition definition )
-            : base ( definition )
-        {
-            //
-        }
-    }
-
     /// <summary>
     /// A shortcode that uses a parameterized Lava template supplied at runtime to dynamically generate a block or tag element in a Lava source document.
     /// </summary>
@@ -69,10 +34,11 @@ namespace Rock.Lava.Shortcodes
         string _elementAttributesMarkup = string.Empty;
         string _tagName = string.Empty;
         DynamicShortcodeDefinition _shortcode = null;
-        private Dictionary<string, object> _internalMergeFields;
         StringBuilder _blockMarkup = new StringBuilder();
 
         const int _maxRecursionDepth = 10;
+
+        #region Constructors
 
         /// <summary>
         /// Default constructor required for internal use.
@@ -90,6 +56,12 @@ namespace Rock.Lava.Shortcodes
             AssertShortcodeIsInitialized();
         }
 
+        #endregion
+
+        /// <summary>
+        ///  Initialize this shortcode instance with metadata provided by a shortcode definition.
+        /// </summary>
+        /// <param name="definition"></param>
         public void Initialize( DynamicShortcodeDefinition definition )
         {
             if ( _shortcode != null )
@@ -100,6 +72,9 @@ namespace Rock.Lava.Shortcodes
             _shortcode = definition;
         }
 
+        /// <summary>
+        /// Gets the type of this shortcode element.
+        /// </summary>
         public override LavaShortcodeTypeSpecifier ElementType
         {
             get
@@ -107,6 +82,8 @@ namespace Rock.Lava.Shortcodes
                 return _shortcode.ElementType;
             }
         }
+
+        #region Overrides
 
         /// <summary>
         /// Initializes the specified tag name.
@@ -123,25 +100,9 @@ namespace Rock.Lava.Shortcodes
             base.OnInitialize( tagName, markup, tokens );
         }
 
-        private void AssertShortcodeIsInitialized()
-        {
-            if ( _shortcode == null )
-            {
-                throw new Exception( $"Shortcode configuration error. \"{_tagName}\" is not initialized." );
-            }
-        }
-
         public override void OnParsed( List<string> tokens )
         {
             _blockMarkup = new StringBuilder();
-
-            //if ( !string.IsNullOrWhiteSpace( _blockMarkup.ToString() ) )
-            //{
-            //    //TODO :This should not be populated yet.
-            //    int i = 0;
-            //}
-
-            var tokensCopy = new List<string>( tokens );
 
             // Get the block markup. The list of tokens contains all of the lava from the start tag to
             // the end of the template. This will pull out just the internals of the block.
@@ -164,11 +125,6 @@ namespace Rock.Lava.Shortcodes
             string token;
             while ( ( token = tokens.Shift() ) != null )
             {
-                if ( Regex.Matches( _blockMarkup.ToString(), "Panel 1 content" ).Count > 1 )
-                {
-                    int i = 0;
-                }
-
                 Match startTagMatch = regExStart.Match( token );
                 if ( startTagMatch.Success )
                 {
@@ -216,14 +172,13 @@ namespace Rock.Lava.Shortcodes
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="result">The result.</param>
-        //public override void Render( Context context, TextWriter result )
         public override void OnRender( ILavaContext context, TextWriter result )
         {
             if ( _shortcode == null )
             {
                 result.Write( $"An error occurred while processing the {0} shortcode.", _tagName );
             }
-            
+
             // Get the default settings for the shortcode, then apply the specified parameters.
             var parms = new Dictionary<string, object>();
 
@@ -239,16 +194,11 @@ namespace Rock.Lava.Shortcodes
 
             // Apply the merge fields in the block context.
             var internalMergeFields = context.GetMergeFields();
-            // new Dictionary<string, object>();
 
             foreach ( var item in parms )
-                // context.GetMergeFields() )
             {
                 internalMergeFields.AddOrReplace( item.Key, item.Value );
-                 //parms.AddOrReplace( item.Key, item.Value );
             }
-
-            //LoadBlockMergeFields( context, parms );            
 
             // Keep track of the recursion depth.
             int currentRecursionDepth = 0;
@@ -330,29 +280,14 @@ namespace Rock.Lava.Shortcodes
 
                 LavaEngine.CurrentEngine.TryRender( lavaTemplate, out results, new LavaDataDictionary( parms ) );
 
-                var expectedOutput = @"
-Parameter 1: value1
-Parameter 2: value2
-Items:
-Panel 1 - Panel 1 content.
-Panel 2 - Panel 2 content.
-Panel 3 - Panel 3 content.
-";
-
-            if ( results.RemoveSpaces() != expectedOutput.RemoveSpaces() )
-            {
-                    int i = 0;
-            }
-
                 result.Write( results.Trim() );
 
                 // Revert the enabled commands to those of the block.
                 context.SetEnabledCommands( blockCommands );
-
-                // TODO: Removed 5/12/2020.
-                //base.OnRender( context, result );
             }
         }
+
+        #endregion
 
         /// <summary>
         /// Extracts the child elements from the content of a shortcode block.
@@ -511,36 +446,17 @@ Panel 3 - Panel 3 content.
                         parameters.AddOrReplace( itemParts[0].Trim().ToLower(), scopeObject );
                         break;
                     }
-
-                    // context.Scopes is a weird beast can't find a cleaner way to get the object than to iterate over it
-                    //foreach ( var scopeItem in context.GetScopes() )
-                    //{
-                    //    var scopeObject = scopeItem.Where( x => x.Key == scopeKey ).FirstOrDefault();
-
-                    //    if ( scopeObject.Value != null )
-                    //    {
-                    //        parms.AddOrReplace( itemParts[0].Trim().ToLower(), scopeObject.Value );
-                    //        break;
-                    //    }
-                    //}
                 }
             }
         }
 
-        /// <summary>
-        /// Loads the block merge fields.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="parms">The parms.</param>
-        private void LoadBlockMergeFields( ILavaContext context, Dictionary<string, object> parms )
+        private void AssertShortcodeIsInitialized()
         {
-            _internalMergeFields = new Dictionary<string, object>();
-
-            foreach ( var item in context.GetMergeFields() )
+            if ( _shortcode == null )
             {
-                _internalMergeFields.AddOrReplace( item.Key, item.Value );
-                parms.AddOrReplace( item.Key, item.Value );
+                throw new Exception( $"Shortcode configuration error. \"{_tagName}\" is not initialized." );
             }
         }
+
     }
 }

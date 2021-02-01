@@ -61,11 +61,6 @@ namespace Rock.Lava.Blocks
         }
 
         /// <summary>
-        /// The text that defines this element in the Lava source document.
-        /// </summary>
-        //public string SourceText { get; set; }
-
-        /// <summary>
         /// Determines if this block is authorized in the specified Lava context.
         /// </summary>
         /// <param name="context">The context.</param>
@@ -95,14 +90,8 @@ namespace Rock.Lava.Blocks
         /// <param name="tokens"></param>
         public virtual void OnInitialize( string tagName, string markup, List<string> tokens )
         {
-            if (_baseRenderer != null )
-            {
-                int i = 0;
-            }
-
             // Reset the base renderer.
             _baseRenderer = null;
-            //
         }
 
         /// <summary>

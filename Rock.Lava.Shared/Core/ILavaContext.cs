@@ -71,24 +71,6 @@ namespace Rock.Lava
         void SetInternalFieldValues( LavaDataDictionary values );
 
         /// <summary>
-        /// Gets the Lava Commands that are enabled for this context.
-        /// </summary>
-        List<string> GetEnabledCommands();
-
-        /// <summary>
-        /// Sets the Lava commands enabled for this template.
-        /// </summary>
-        /// <param name="commands"></param>
-        void SetEnabledCommands( IEnumerable<string> commands );
-
-        /// <summary>
-        /// Sets the Lava commands enabled for this template.
-        /// </summary>
-        /// <param name="commandList">A delimited list of command names.</param>
-        /// <param name="delimiter">The list delimiter.</param>
-        void SetEnabledCommands( string commandList, string delimiter = "," );
-
-        /// <summary>
         /// Gets the value of a field that is accessible for merging into a template.
         /// </summary>
         /// <param name="key"></param>
@@ -114,6 +96,12 @@ namespace Rock.Lava
         /// Sets the user-defined variables in the current context that are internally available to custom filters and tags.
         /// </summary>
         /// <param name="values"></param>
+        void SetMergeFieldValues( LavaDataDictionary values );
+
+        /// <summary>
+        /// Sets the user-defined variables in the current context that are internally available to custom filters and tags.
+        /// </summary>
+        /// <param name="values"></param>
         void SetMergeFieldValues( IDictionary<string, object> values );
 
         /// <summary>
@@ -122,6 +110,24 @@ namespace Rock.Lava
         /// <param name="key"></param>
         /// <returns></returns>
         object this[string key] { get; set; }
+
+        /// <summary>
+        /// Gets the Lava Commands that are enabled for this context.
+        /// </summary>
+        List<string> GetEnabledCommands();
+
+        /// <summary>
+        /// Sets the Lava commands enabled for this template.
+        /// </summary>
+        /// <param name="commands"></param>
+        void SetEnabledCommands( IEnumerable<string> commands );
+
+        /// <summary>
+        /// Sets the Lava commands enabled for this template.
+        /// </summary>
+        /// <param name="commandList">A delimited list of command names.</param>
+        /// <param name="delimiter">The list delimiter.</param>
+        void SetEnabledCommands( string commandList, string delimiter = "," );
 
         /// <summary>
         /// Executes the specified action in a new child scope.

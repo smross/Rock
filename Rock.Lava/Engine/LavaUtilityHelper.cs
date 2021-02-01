@@ -19,6 +19,12 @@ namespace Rock.Lava
 {
     public static class LavaUtilityHelper
     {
+        /// <summary>
+        /// Get a valid Liquid document element name from a Rock shortcode.
+        /// Applies decorations to the shortcode name to prevent naming collisions with other custom tags and blocks.
+        /// </summary>
+        /// <param name="shortcodeName"></param>
+        /// <returns></returns>
         public static string GetLiquidElementNameFromShortcodeName( string shortcodeName )
         {
             var internalName = shortcodeName.Trim().ToLower() + LavaEngine.ShortcodeInternalNameSuffix;
@@ -26,8 +32,14 @@ namespace Rock.Lava
             return internalName;
         }
 
+        /// <summary>
+        /// Get a valid Rock Shortcode name froom a Liquid document element name.
+        /// Removes the decoration applied to the shortcode name to prevent naming collisions with other custom tags and blocks.
+        /// </summary>
+        /// <param name="shortcodeName"></param>
+        /// <returns></returns>
         public static string GetShortcodeNameFromLiquidElementName( string shortcodeName )
-        {            
+        {
             if ( shortcodeName != null
                  && shortcodeName.EndsWith( LavaEngine.ShortcodeInternalNameSuffix ) )
             {

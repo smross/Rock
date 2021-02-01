@@ -214,11 +214,12 @@
   <ItemGroup>
     <Compile Include="Constants.cs" />
     <Compile Include="Core\Blocks\LavaBlockInfo.cs" />
-    <Compile Include="Core\Blocks\LavaSecurityHelper.cs" />
+    <Compile Include="Core\LavaSecurityHelper.cs" />
     <Compile Include="Core\Blocks\RockLavaBlockBase.cs" />
-    <Compile Include="Core\LavaTemplateTokeniser.cs" />
     <Compile Include="Core\Shortcodes\DynamicShortcode.cs" />
-    <Compile Include="Core\Shortcodes\ILiquidFrameworkElementRenderer.cs" />
+    <Compile Include="Core\ILiquidFrameworkElementRenderer.cs" />
+    <Compile Include="Core\Shortcodes\DynamicShortcodeBlock.cs" />
+    <Compile Include="Core\Shortcodes\DynamicShortcodeTag.cs" />
     <Compile Include="Core\Shortcodes\RockLavaShortcodeBase.cs" />
     <Compile Include="Core\Tags\LavaTagInfo.cs" />
     <Compile Include="Engine\LavaNullFileSystem.cs" />
@@ -252,15 +253,12 @@
     <Compile Include="Implementations\Fluid\LavaFluidParserFactory.cs" />
     <Compile Include="Implementations\Fluid\LavaFluidTemplate.cs" />
     <Compile Include="Implementations\Fluid\LavaGrammar.cs" />
-    <Compile Include="Implementations\DotLiquid\Blocks\DotLiquidDynamicShortcodeBlockProxy.cs" />
-    <Compile Include="Implementations\DotLiquid\Blocks\DotLiquidDynamicShortcodeTagProxy.cs" />
     <Compile Include="Implementations\DotLiquid\DotLiquidLavaDataObjectProxy.cs" />
     <Compile Include="Implementations\DotLiquid\DotLiquidEngine.cs" />
     <Compile Include="Implementations\DotLiquid\DotLiquidLavaContext.cs" />
     <Compile Include="Implementations\DotLiquid\DotLiquidTemplateProxy.cs" />
     <Compile Include="Implementations\DotLiquid\DotLiquidBlockProxy.cs" />
     <Compile Include="Implementations\DotLiquid\DotLiquidTagProxy.cs" />
-    <Compile Include="Implementations\DotLiquid\Filters\DotLiquidFilters.cs" />
     <Compile Include="Implementations\DotLiquid\DotLiquidFileSystem.cs" />
     <Compile Include="Core\Tags\RockLavaTagBase.cs" />
     <Compile Include="Implementations\DotLiquid\DotLiquidLavaTagBase.cs" />
@@ -268,7 +266,7 @@
     <Compile Include="Core\LavaContextBase.cs" />
     <Compile Include="Implementations\Fluid\LavaObjectMemberAccessStrategy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Shortcodes\LavaShortcodeMetaDataAttribute.cs" />
+    <Compile Include="Core\Shortcodes\LavaShortcodeMetaDataAttribute.cs" />
     <Compile Include="Utilities\ListExtensionMethods.cs" />
     <Compile Include="Utilities\RockSerializableDictionary.cs" />
   </ItemGroup>
