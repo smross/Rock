@@ -559,8 +559,8 @@ namespace Rock
 
                 context.SetEnabledCommands( enabledLavaCommands, "," );
 
-                context.SetMergeFieldValue( "CurrentPerson", currentPersonOverride );
-                context.SetMergeFieldValues( mergeObjects );
+                context.SetMergeField( "CurrentPerson", currentPersonOverride );
+                context.SetMergeFields( mergeObjects );
 
                 ILavaTemplate template;
 

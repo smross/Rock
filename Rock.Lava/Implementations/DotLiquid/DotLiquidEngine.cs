@@ -62,7 +62,7 @@ namespace Rock.Lava.DotLiquid
 
             var context = new DotLiquidLavaContext( dotLiquidContext );
 
-            context.SetMergeFieldValues( mergeFields );
+            context.SetMergeFields( mergeFields );
 
             return context;
         }

@@ -45,7 +45,7 @@ namespace Rock.Lava
 
             if ( !enabledCommands.Any() )
             {
-                enabledCommands = context.GetMergeFieldValue( "EnabledCommands", string.Empty ).ToString().SplitDelimitedValues( "," ).ToList();
+                enabledCommands = context.GetMergeField( "EnabledCommands", string.Empty ).ToString().SplitDelimitedValues( "," ).ToList();
             }
 
             if ( enabledCommands.Any() )

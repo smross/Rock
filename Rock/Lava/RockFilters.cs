@@ -3589,13 +3589,13 @@ namespace Rock.Lava
         /// <returns></returns>
         private static RockContext GetRockContext( ILavaContext context )
         {
-            var rockContext = context.GetInternalFieldValue( "rock_context", null ) as RockContext;
+            var rockContext = context.GetInternalField( "rock_context", null ) as RockContext;
 
             if ( rockContext == null )
             { 
                 rockContext = new RockContext();
 
-                context.SetInternalFieldValue( "rock_context", rockContext );
+                context.SetInternalField( "rock_context", rockContext );
             }
 
             return rockContext;
@@ -5820,7 +5820,7 @@ namespace Rock.Lava
             Person currentPerson = null;
 
             // First check for a person override value included in lava context
-            currentPerson = context.GetMergeFieldValue( "CurrentPerson", null ) as Person;
+            currentPerson = context.GetMergeField( "CurrentPerson", null ) as Person;
 
             if ( currentPerson == null )
             {

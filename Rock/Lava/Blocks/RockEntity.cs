@@ -350,7 +350,7 @@ namespace Rock.Lava.Blocks
                         if ( parms.GetValueOrNull( "count" ).AsBoolean() )
                         {
                             int countResult = queryResult.Count();
-                            context.SetMergeFieldValue( "count", countResult, LavaContextRelativeScopeSpecifier.Root );
+                            context.SetMergeField( "count", countResult, LavaContextRelativeScopeSpecifier.Root );
                         }
                         else
                         {
@@ -426,10 +426,10 @@ namespace Rock.Lava.Blocks
                             // if there is only one item to return set an alternative non-array based variable
                             if ( resultList.Count == 1 )
                             {
-                                context.SetMergeFieldValue( EntityName, resultList.FirstOrDefault(), LavaContextRelativeScopeSpecifier.Root );
+                                context.SetMergeField( EntityName, resultList.FirstOrDefault(), LavaContextRelativeScopeSpecifier.Root );
                             }
 
-                            context.SetMergeFieldValue( parms["iterator"], resultList, LavaContextRelativeScopeSpecifier.Root );
+                            context.SetMergeField( parms["iterator"], resultList, LavaContextRelativeScopeSpecifier.Root );
                         }
                     }
                 }
@@ -568,18 +568,7 @@ namespace Rock.Lava.Blocks
             Person currentPerson = null;
 
             // First check for a person override value included in lava context
-            currentPerson = context.GetMergeFieldValue( "CurrentPerson", null ) as Person;
-
-            //if ( context.GetScopes != null )
-            //{
-            //    foreach ( var scopeHash in context.GetScopes )
-            //    {
-            //        if ( scopeHash.ContainsKey( "CurrentPerson" ) )
-            //        {
-            //            currentPerson = scopeHash["CurrentPerson"] as Person;
-            //        }
-            //    }
-            //}
+            currentPerson = context.GetMergeField( "CurrentPerson", null ) as Person;
 
             if ( currentPerson == null )
             {

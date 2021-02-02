@@ -439,7 +439,7 @@ namespace Rock.Lava
                 {
                     var scopeKey = itemParts[1].Trim();
 
-                    var scopeObject = context.GetMergeFieldValue( scopeKey, null );
+                    var scopeObject = context.GetMergeField( scopeKey, null );
 
                     if ( scopeObject != null )
                     {

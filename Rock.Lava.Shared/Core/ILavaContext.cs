@@ -40,7 +40,7 @@ namespace Rock.Lava
         /// Internal values are not available to be resolved in the Lava Template.
         /// </summary>
         /// <param name="key"></param>
-        object GetInternalFieldValue( string key, object defaultValue = null );
+        object GetInternalField( string key, object defaultValue = null );
 
         /// <summary>
         /// Gets the collection of variables defined for internal use only.
@@ -54,21 +54,21 @@ namespace Rock.Lava
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        void SetInternalFieldValue( string key, object value );
+        void SetInternalField( string key, object value );
 
         /// <summary>
         /// Sets a collection of named values for internal use only.
         /// Internal values are not available to be resolved in the Lava Template.
         /// </summary>
         /// <param name="values"></param>
-        void SetInternalFieldValues( IDictionary<string, object> values );
+        void SetInternalFields( IDictionary<string, object> values );
 
         /// <summary>
         /// Sets a collection of named values for internal use only.
         /// Internal values are not available to be resolved in the Lava Template.
         /// </summary>
         /// <param name="values"></param>
-        void SetInternalFieldValues( LavaDataDictionary values );
+        void SetInternalFields( LavaDataDictionary values );
 
         /// <summary>
         /// Gets the value of a field that is accessible for merging into a template.
@@ -76,7 +76,7 @@ namespace Rock.Lava
         /// <param name="key"></param>
         /// <param name="defaultValue"></param>
         /// <returns></returns>
-        object GetMergeFieldValue( string key, object defaultValue = null );
+        object GetMergeField( string key, object defaultValue = null );
 
         /// <summary>
         /// Gets the user-defined variables in the current context that are accessible in a template.
@@ -90,19 +90,19 @@ namespace Rock.Lava
         /// <param name="value"></param>
         /// <param name="scope">Current, Parent, or Root.</param>
         /// <returns></returns>
-        void SetMergeFieldValue( string key, object value, LavaContextRelativeScopeSpecifier scope = LavaContextRelativeScopeSpecifier.Current );
+        void SetMergeField( string key, object value, LavaContextRelativeScopeSpecifier scope = LavaContextRelativeScopeSpecifier.Current );
 
         /// <summary>
         /// Sets the user-defined variables in the current context that are internally available to custom filters and tags.
         /// </summary>
         /// <param name="values"></param>
-        void SetMergeFieldValues( LavaDataDictionary values );
+        void SetMergeFields( LavaDataDictionary values );
 
         /// <summary>
         /// Sets the user-defined variables in the current context that are internally available to custom filters and tags.
         /// </summary>
         /// <param name="values"></param>
-        void SetMergeFieldValues( IDictionary<string, object> values );
+        void SetMergeFields( IDictionary<string, object> values );
 
         /// <summary>
         /// Get or set the value of a field that is accessible for merging into a template.

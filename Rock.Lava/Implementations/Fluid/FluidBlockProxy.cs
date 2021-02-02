@@ -171,7 +171,7 @@ namespace Rock.Lava.Fluid
             lavaBlock.OnParsed( parseTokens );
 
             // Store the Fluid Statements required to render the block in the template context.
-            lavaContext.SetInternalFieldValue( Constants.ContextKeys.SourceTemplateStatements, statements );
+            lavaContext.SetInternalField( Constants.ContextKeys.SourceTemplateStatements, statements );
 
             // Execute the block rendering process.
             elementRenderer.Render( this, lavaContext, writer, encoder );
@@ -210,7 +210,7 @@ namespace Rock.Lava.Fluid
         {
             var fluidContext = ( (FluidLavaContext)context ).FluidContext;
 
-            var statements = context.GetInternalFieldValue( Constants.ContextKeys.SourceTemplateStatements ) as List<Statement>;
+            var statements = context.GetInternalField( Constants.ContextKeys.SourceTemplateStatements ) as List<Statement>;
 
             var result = WriteToDefaultAsync( writer, encoder, fluidContext, statements );
         }

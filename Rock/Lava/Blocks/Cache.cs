@@ -220,8 +220,8 @@ namespace Rock.Lava.Blocks
             // Resolve the Lava template contained in this block in a new context.
             var newContext = LavaEngine.CurrentEngine.NewContext();
 
-            newContext.SetMergeFieldValues( context.GetMergeFields() );
-            newContext.SetInternalFieldValues( context.GetInternalFields() );
+            newContext.SetMergeFields( context.GetMergeFields() );
+            newContext.SetInternalFields( context.GetInternalFields() );
 
             // Resolve the inner template.
             LavaEngine.CurrentEngine.TryRender( lavaTemplate, out output, newContext );

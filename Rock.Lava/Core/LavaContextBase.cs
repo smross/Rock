@@ -31,7 +31,7 @@ namespace Rock.Lava
         /// Internal values are not available to be resolved in the Lava Template.
         /// </summary>
         /// <param name="key"></param>
-        public abstract object GetInternalFieldValue( string key, object defaultValue = null );
+        public abstract object GetInternalField( string key, object defaultValue = null );
 
         /// <summary>
         /// Gets the collection of variables defined for internal use only.
@@ -45,16 +45,16 @@ namespace Rock.Lava
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        public abstract void SetInternalFieldValue( string key, object value );
+        public abstract void SetInternalField( string key, object value );
 
         /// <summary>
         /// Sets a collection of named values for internal use only.
         /// Internal values are not available to be resolved in the Lava Template.
         /// </summary>
         /// <param name="values"></param>
-        public void SetInternalFieldValues( LavaDataDictionary values )
+        public void SetInternalFields( LavaDataDictionary values )
         {
-            SetInternalFieldValues( values as IDictionary<string, object> );
+            SetInternalFields( values as IDictionary<string, object> );
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace Rock.Lava
         /// Internal values are not available to be resolved in the Lava Template.
         /// </summary>
         /// <param name="values"></param>
-        public virtual void SetInternalFieldValues( IDictionary<string, object> values )
+        public virtual void SetInternalFields( IDictionary<string, object> values )
         {
             if ( values == null )
             {
@@ -71,7 +71,7 @@ namespace Rock.Lava
 
             foreach ( var kvp in values )
             {
-                SetInternalFieldValue( kvp.Key, kvp.Value );
+                SetInternalField( kvp.Key, kvp.Value );
             }
         }
 
@@ -81,7 +81,7 @@ namespace Rock.Lava
         /// <param name="key"></param>
         /// <param name="defaultValue"></param>
         /// <returns></returns>
-        public abstract object GetMergeFieldValue( string key, object defaultValue = null );
+        public abstract object GetMergeField( string key, object defaultValue = null );
 
         /// <summary>
         /// Gets the user-defined variables in the current context that are accessible in a template.
@@ -94,22 +94,22 @@ namespace Rock.Lava
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <param name="scope"></param>
-        public abstract void SetMergeFieldValue( string key, object value, LavaContextRelativeScopeSpecifier scope = LavaContextRelativeScopeSpecifier.Current );
+        public abstract void SetMergeField( string key, object value, LavaContextRelativeScopeSpecifier scope = LavaContextRelativeScopeSpecifier.Current );
 
         /// <summary>
         /// Sets the user-defined variables in the current context that are internally available to custom filters and tags.
         /// </summary>
         /// <param name="values"></param>
-        public void SetMergeFieldValues( LavaDataDictionary values )
+        public void SetMergeFields( LavaDataDictionary values )
         {
-            SetMergeFieldValues( values as IDictionary<string, object> );
+            SetMergeFields( values as IDictionary<string, object> );
         }
 
         /// <summary>
         /// Sets the user-defined variables in the current context that are internally available to custom filters and tags.
         /// </summary>
         /// <param name="values"></param>
-        public virtual void SetMergeFieldValues( IDictionary<string, object> values )
+        public virtual void SetMergeFields( IDictionary<string, object> values )
         {
             if ( values == null )
             {
@@ -118,7 +118,7 @@ namespace Rock.Lava
 
             foreach ( var kvp in values )
             {
-                SetMergeFieldValue( kvp.Key, kvp.Value );
+                SetMergeField( kvp.Key, kvp.Value );
             }
         }
 
@@ -131,11 +131,11 @@ namespace Rock.Lava
         {
             get
             {
-                return GetMergeFieldValue( key, null );
+                return GetMergeField( key, null );
             }
             set
             {
-                SetMergeFieldValue( key, value );
+                SetMergeField( key, value );
             }
         }
 

@@ -165,16 +165,10 @@ namespace Rock.Lava.Blocks
 
             var results = client.Search( query, searchType, entityIds, fieldCriteria, limit, offset );
 
-            context.SetMergeFieldValue( parms["iterator"], results, LavaContextRelativeScopeSpecifier.Root );
+            context.SetMergeField( parms["iterator"], results, LavaContextRelativeScopeSpecifier.Root );
 
             base.OnRender( context, result );
         }
-
-        //public override void OnParse( List<string> tokens, out List<object> nodes )
-        //{
-        //    // No action required.
-        //    nodes = null;
-        //}
 
         /// <summary>
         /// Parses the markup.

@@ -267,7 +267,7 @@ namespace Rock.Lava
             {
                 context = NewContext();
 
-                context.SetMergeFieldValues( mergeValues );
+                context.SetMergeFields( mergeValues );
             }
             else
             {

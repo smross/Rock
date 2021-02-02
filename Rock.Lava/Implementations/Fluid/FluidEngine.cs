@@ -68,7 +68,7 @@ namespace Rock.Lava.Fluid
 
             var context = new FluidLavaContext( fluidContext );
 
-            context.SetMergeFieldValues( mergeFields );
+            context.SetMergeFields( mergeFields );
 
             return context;
         }
@@ -464,7 +464,7 @@ namespace Rock.Lava.Fluid
              * the information necessary to render their output. For this reason, we need to store the source in the context so that it can be passed
              * to the Lava custom components when they are rendered.
              */
-            templateContext.SetInternalFieldValue( Constants.ContextKeys.SourceTemplateElements, template.Elements );
+            templateContext.SetInternalField( Constants.ContextKeys.SourceTemplateElements, template.Elements );
 
             templateContext.FluidContext.ParserFactory = _parserFactory;
             try
@@ -482,57 +482,6 @@ namespace Rock.Lava.Fluid
             }
 
         }
-
-        //protected override bool OnTryRender( string inputTemplate, out string output, ILavaContext context )
-        //{
-        //    //            try
-        //    //            {
-        //    string liquidTemplate;
-
-        //    var template = CreateNewFluidTemplate( inputTemplate, out liquidTemplate );
-
-        //    if ( context == null )
-        //    {
-        //        context = NewContext();
-        //    }
-
-        //    return TryRenderInternal( template, out output, context );
-
-        //    /*
-        //                    var templateContext = context as FluidLavaContext;
-
-        //                    if ( templateContext == null )
-        //                    {
-        //                        throw new LavaException( "Invalid LavaContext parameter. This context type is not compatible with the Fluid templating engine." );
-        //                    }
-
-        //                    /* The Fluid framework parses the input template into a set of executable statements that can be rendered.
-        //                     * To remain independent of a specific framework, custom Lava tags and blocks parse the original source template text to extract
-        //                     * the information necessary to render their output. For this reason, we need to store the source in the context so that it can be passed
-        //                     * to the Lava custom components when they are rendered.
-        //                     */
-        //    /*
-        //                    templateContext.SetInternalFieldValue( Constants.ContextKeys.SourceTemplateElements, template.Elements );
-
-        //                    templateContext.FluidContext.ParserFactory = _parserFactory;
-
-        //                    output = template.Render( templateContext.FluidContext );
-
-        //                    return true;
-        //                }
-        //                catch ( Exception ex )
-        //                {
-        //                    ProcessException( ex, out output );
-
-        //                    return false;
-        //                }
-        //    */
-        //}
-
-        //public override void UnregisterShortcode( string name )
-        //{
-        //    throw new NotImplementedException();
-        //}
 
         /// <summary>
         /// Register a Lava Tag element.

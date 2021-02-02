@@ -52,7 +52,7 @@ namespace Rock.Tests.Integration.Lava
 
             context.SetEnabledCommands( "execute" );
 
-            context.SetMergeFieldValue( "CurrentPerson", TestHelper.GetTestPersonTedDecker() );
+            context.SetMergeField( "CurrentPerson", TestHelper.GetTestPersonTedDecker() );
 
             TestHelper.AssertTemplateOutput( expectedOutput, input, context );
         }
@@ -91,7 +91,7 @@ Document Value (Level 1): document_2";
 
             var context = TestHelper.LavaEngine.NewContext();
 
-            context.SetMergeFieldValue( "currentBlock", "context" );
+            context.SetMergeField( "currentBlock", "context" );
 
             TestHelper.AssertTemplateOutput( expectedOutput, input, context, ignoreWhiteSpace: true );
         }

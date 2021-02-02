@@ -58,7 +58,7 @@ namespace Rock.Lava.Fluid
         /// Gets a named value that is for internal use only. Internal values are not available to be resolved in the Lava Template.
         /// </summary>
         /// <param name="key"></param>
-        public override object GetInternalFieldValue( string key, object defaultValue = null )
+        public override object GetInternalField( string key, object defaultValue = null )
         {
             // In the Fluid framework, internal values are stored in the AmbientValues collection.
             object value;
@@ -94,7 +94,7 @@ namespace Rock.Lava.Fluid
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        public override void SetInternalFieldValue( string key, object value )
+        public override void SetInternalField( string key, object value )
         {
             // In the Fluid framework, internal values are stored in the AmbientValues collection.
             _context.AmbientValues[key] = value;
@@ -106,7 +106,7 @@ namespace Rock.Lava.Fluid
         /// <param name="key"></param>
         /// <param name="defaultValue"></param>
         /// <returns></returns>
-        public override object GetMergeFieldValue( string key, object defaultValue )
+        public override object GetMergeField( string key, object defaultValue )
         {
             if ( !_context.AmbientValues.ContainsKey( key ) )
             {
@@ -134,7 +134,7 @@ namespace Rock.Lava.Fluid
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <param name="scopeReference">root|parent|current</param>
-        public override void SetMergeFieldValue( string key, object value, LavaContextRelativeScopeSpecifier scope = LavaContextRelativeScopeSpecifier.Current )
+        public override void SetMergeField( string key, object value, LavaContextRelativeScopeSpecifier scope = LavaContextRelativeScopeSpecifier.Current )
         {
             if ( scope == LavaContextRelativeScopeSpecifier.Current )
             {

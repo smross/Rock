@@ -337,7 +337,7 @@ Color 4: blue
 
             context.SetEnabledCommands( "execute" );
 
-            context.SetMergeFieldValue( "Person", TestHelper.GetTestPersonTedDecker() );
+            context.SetMergeField( "Person", TestHelper.GetTestPersonTedDecker() );
 
             TestHelper.AssertTemplateOutput( expectedOutput, input, context );
         }

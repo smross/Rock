@@ -68,7 +68,7 @@ namespace Rock.Lava.DotLiquid
         /// Internal values are not available to be resolved in the Lava Template.
         /// </summary>
         /// <param name="key"></param>
-        public override object GetInternalFieldValue( string key, object defaultValue = null )
+        public override object GetInternalField( string key, object defaultValue = null )
         {
             if ( _context.Registers.ContainsKey( key ) )
             {
@@ -100,7 +100,7 @@ namespace Rock.Lava.DotLiquid
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        public override void SetInternalFieldValue( string key, object value )
+        public override void SetInternalField( string key, object value )
         {
             _context.Registers[key] = value;
         }
@@ -111,7 +111,7 @@ namespace Rock.Lava.DotLiquid
         /// <param name="key"></param>
         /// <param name="defaultValue"></param>
         /// <returns></returns>
-        public override object GetMergeFieldValue( string key, object defaultValue = null )
+        public override object GetMergeField( string key, object defaultValue = null )
         {
             if ( !_context.HasKey( key ) )
             {
@@ -158,7 +158,7 @@ namespace Rock.Lava.DotLiquid
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <param name="scope"></param>
-        public override void SetMergeFieldValue( string key, object value, LavaContextRelativeScopeSpecifier scope = LavaContextRelativeScopeSpecifier.Current )
+        public override void SetMergeField( string key, object value, LavaContextRelativeScopeSpecifier scope = LavaContextRelativeScopeSpecifier.Current )
         {
             int scopeIndex;
 
