@@ -22,16 +22,24 @@ using Rock.Lava.DotLiquid;
 namespace Rock.Lava
 {
     /// <summary>
-    /// A facade for a LavaFileSystem component that allows it to be used as a file provider for the DotLiquid framework.
+    /// A proxy for a LavaFileSystem component that is compatible with the DotLiquid framework.
     /// </summary>
     internal class DotLiquidFileSystem : ILavaFileSystem, IFileSystem
     {
         private ILavaFileSystem _lavaFileSystem;
 
+        #region Constructors
+
+        /// <summary>
+        /// Create a new proxy for a LavaFileSystem instance.
+        /// </summary>
+        /// <param name="lavaFileSystem"></param>
         public DotLiquidFileSystem( ILavaFileSystem lavaFileSystem )
         {
             _lavaFileSystem = lavaFileSystem;
         }
+
+        #endregion
 
         #region IFileSystem implementation
 
@@ -70,6 +78,11 @@ namespace Rock.Lava
             return _lavaFileSystem.ReadTemplateFile( context, templateName );
         }
 
+        /// <summary>
+        /// Returns a flag indicating if the specified file exists.
+        /// </summary>
+        /// <param name="filePath">A relative file path.</param>
+        /// <returns></returns>
         public bool FileExists( string filePath )
         {
             return _lavaFileSystem.FileExists( filePath );

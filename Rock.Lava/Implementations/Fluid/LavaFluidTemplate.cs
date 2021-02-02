@@ -20,37 +20,19 @@ using Fluid;
 
 namespace Rock.Lava.Fluid
 {
-    //public class LavaFluidParser : DefaultFluidParser
-    //{
-    //    public LavaFluidParser( LanguageData languageData, Dictionary<string, ITag> tags, Dictionary<string, ITag> blocks )
-    //        : base( languageData, tags, blocks )
-    //    {
-    //        // refer https://github.com/sebastienros/fluid/blob/464c60768ec520a7c3d8b709ecb7037df36d543b/Fluid/DefaultFluidParser.cs
-    //    }
-    //}
-
-    public class LavaFluidTemplate : BaseFluidTemplate<LavaFluidTemplate>
+    /// <summary>
+    /// An implementation of a FluidTemplate that stores some additional information about the parsed template.
+    /// </summary>
+    internal class LavaFluidTemplate : BaseFluidTemplate<LavaFluidTemplate>
     {
         /// <summary>
         /// The text of the Lava source template.
         /// </summary>
         public string SourceDocument { get; set; }
 
+        /// <summary>
+        /// A collection of elements parsed from the source document.
+        /// </summary>
         public List<FluidParsedTemplateElement> Elements { get; set; }
-
-        static LavaFluidTemplate()
-        {
-            //Factory.RegisterTag<QuoteTag>( "quote" );
-            //Factory.RegisterBlock<RepeatBlock>( "repeat" );
-            //var parserFactory = new LavaFluidParserFactory();
-
-            //parserFactory.
-            //SetParserFactory( parserFactory );
-        }
     }
-
-
-
-    
-
 }

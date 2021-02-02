@@ -245,7 +245,6 @@
     <Compile Include="Implementations\Fluid\FluidEngine.cs" />
     <Compile Include="Implementations\Fluid\FluidExtensions.cs" />
     <Compile Include="Implementations\Fluid\FluidLavaContext.cs" />
-    <Compile Include="Implementations\Fluid\FluidLavaParser.cs" />
     <Compile Include="Implementations\Fluid\FluidTemplateProxy.cs" />
     <Compile Include="Core\LavaException.cs" />
     <Compile Include="Implementations\Fluid\LavaFluidParser.cs" />
@@ -253,7 +252,7 @@
     <Compile Include="Implementations\Fluid\LavaFluidParserFactory.cs" />
     <Compile Include="Implementations\Fluid\LavaFluidTemplate.cs" />
     <Compile Include="Implementations\Fluid\LavaGrammar.cs" />
-    <Compile Include="Implementations\DotLiquid\DotLiquidLavaDataObjectProxy.cs" />
+    <Compile Include="Implementations\DotLiquid\DotLiquidLavaDataDictionaryProxy.cs" />
     <Compile Include="Implementations\DotLiquid\DotLiquidEngine.cs" />
     <Compile Include="Implementations\DotLiquid\DotLiquidLavaContext.cs" />
     <Compile Include="Implementations\DotLiquid\DotLiquidTemplateProxy.cs" />
@@ -261,7 +260,6 @@
     <Compile Include="Implementations\DotLiquid\DotLiquidTagProxy.cs" />
     <Compile Include="Implementations\DotLiquid\DotLiquidFileSystem.cs" />
     <Compile Include="Core\Tags\RockLavaTagBase.cs" />
-    <Compile Include="Implementations\DotLiquid\DotLiquidLavaTagBase.cs" />
     <Compile Include="Core\LavaTemplateBase.cs" />
     <Compile Include="Core\LavaContextBase.cs" />
     <Compile Include="Implementations\Fluid\LavaObjectMemberAccessStrategy.cs" />

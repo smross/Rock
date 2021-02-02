@@ -28,7 +28,7 @@ namespace Rock.Lava.Fluid
     {
         protected override IFluidParser OnCreateParser( LanguageData languageData, Dictionary<string, ITag> tags, Dictionary<string, ITag> blocks )
         {
-            return new LavaFluidParser( languageData, tags, blocks );
+            return new FluidParserEx( languageData, tags, blocks );
         }
 
     }
@@ -36,6 +36,11 @@ namespace Rock.Lava.Fluid
     /// <summary>
     /// This implementation is a direct replacement for the standard FluidParserFactory, but it allows a custom parser implementation to be returned.
     /// </summary>
+    /* [2021-02-02] DJL
+ * This code is largely identical to the FluidParserFactoryBase.cs file in release 1.0.0-beta-9660.
+ * This implementation extends the factory to return a custom parser.
+ */
+    /// 
     public abstract class FluidParserFactoryBase : IFluidParserFactory
     {
         private readonly LavaFluidGrammar _grammar = new LavaFluidGrammar();

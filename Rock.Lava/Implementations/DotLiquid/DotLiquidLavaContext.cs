@@ -26,16 +26,31 @@ using Rock.Data;
 
 namespace Rock.Lava.DotLiquid
 {
-
+    /// <summary>
+    /// An implementation of a Lava Context that wraps a DotLiquid framework context.
+    /// </summary>
     public class DotLiquidLavaContext : LavaContextBase
     {
         private Context _context;
 
+        #region Constructors
+
+        /// <summary>
+        /// Create a new instance for the provided context.
+        /// </summary>
+        /// <param name="context"></param>
         public DotLiquidLavaContext( Context context )
         {
             _context = context;
         }
 
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Gets the DotLiquid context wrapped by this Lava Context.
+        /// </summary>
         public Context DotLiquidContext
         {
             get
@@ -44,27 +59,66 @@ namespace Rock.Lava.DotLiquid
             }
         }
 
-        public override void SetEnabledCommands( IEnumerable<string> commands )
+        #endregion
+
+        #region Public Methods
+
+        /// <summary>
+        /// Gets a named value that is for internal use only, by other components of the Lava engine.
+        /// Internal values are not available to be resolved in the Lava Template.
+        /// </summary>
+        /// <param name="key"></param>
+        public override object GetInternalFieldValue( string key, object defaultValue = null )
         {
-            if ( commands == null )
+            if ( _context.Registers.ContainsKey( key ) )
             {
-                _context.Registers["EnabledCommands"] = string.Empty;
+                return _context.Registers[key];
             }
-            else
-            {
-                _context.Registers["EnabledCommands"] = commands.JoinStrings( "," );
-            }
+
+            return defaultValue;
         }
 
-        public override List<string> GetEnabledCommands()
+        /// <summary>
+        /// Gets the collection of variables defined for internal use only.
+        /// Internal values are not available to be resolved in the Lava Template.
+        /// </summary>
+        public override LavaDataDictionary GetInternalFields()
         {
-            // The set of enabled Lava Commands is stored in the DotLiquid Registers collection.
-            if ( _context.Registers?.ContainsKey( "EnabledCommands" ) == true )
+            var values = new LavaDataDictionary();
+
+            foreach ( var item in _context.Registers )
             {
-                return _context.Registers["EnabledCommands"].ToString().Split( ",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries ).ToList();
+                values.AddOrReplace( item.Key, item.Value );
             }
 
-            return new List<string>();
+            return values;
+        }
+
+        /// <summary>
+        /// Sets a named value that is for internal use only, by other components of the Lava engine.
+        /// Internal values are not available to be resolved in the Lava Template.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        public override void SetInternalFieldValue( string key, object value )
+        {
+            _context.Registers[key] = value;
+        }
+
+        /// <summary>
+        /// Get the value of a field that is accessible for merging into a template.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
+        public override object GetMergeFieldValue( string key, object defaultValue = null )
+        {
+            if ( !_context.HasKey( key ) )
+            {
+                return defaultValue;
+            }
+
+            return _context[key];
         }
 
         /// <summary>
@@ -99,26 +153,16 @@ namespace Rock.Lava.DotLiquid
         }
 
         /// <summary>
-        /// Get the value of a field that is accessible for merging into a template.
+        /// Sets a named value that is available to be resolved in the Lava Template.
         /// </summary>
         /// <param name="key"></param>
-        /// <param name="defaultValue"></param>
-        /// <returns></returns>
-        public override object GetMergeFieldValue( string key, object defaultValue = null )
-        {
-            if ( !_context.HasKey(key) )
-            {
-                return defaultValue;
-            }
-
-            return _context[key];
-        }
-
+        /// <param name="value"></param>
+        /// <param name="scope"></param>
         public override void SetMergeFieldValue( string key, object value, LavaContextRelativeScopeSpecifier scope = LavaContextRelativeScopeSpecifier.Current )
         {
             int scopeIndex;
 
-            // Scopes are ordered with the current level first.
+            // DotLiquid Scopes are ordered with the current level first.
             if ( scope == LavaContextRelativeScopeSpecifier.Root )
             {
                 scopeIndex = _context.Scopes.Count - 1;
@@ -138,10 +182,57 @@ namespace Rock.Lava.DotLiquid
             _context.Scopes[scopeIndex][key] = fieldValue;
         }
 
-        public void ClearValues()
+        /// <summary>
+        /// Gets the Lava Commands that are enabled for this context.
+        /// </summary>
+        public override List<string> GetEnabledCommands()
         {
-            _context.ClearInstanceAssigns();
+            // The set of enabled Lava Commands is stored in the DotLiquid Registers collection.
+            if ( _context.Registers?.ContainsKey( "EnabledCommands" ) == true )
+            {
+                return _context.Registers["EnabledCommands"].ToString().Split( ",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries ).ToList();
+            }
+
+            return new List<string>();
         }
+
+        /// <summary>
+        /// Sets the Lava commands enabled for this template.
+        /// </summary>
+        /// <param name="commands"></param>
+        public override void SetEnabledCommands( IEnumerable<string> commands )
+        {
+            if ( commands == null )
+            {
+                _context.Registers["EnabledCommands"] = string.Empty;
+            }
+            else
+            {
+                _context.Registers["EnabledCommands"] = commands.JoinStrings( "," );
+            }
+        }
+
+        /// <summary>
+        /// Creates a new child scope. Values added to the child scope will be released once <see cref="ExitChildScope" /> is called.
+        /// Values in the parent scope remain available to the child scope.
+        /// </summary>
+        public override void EnterChildScope()
+        {
+            // Push a new scope onto the stack.
+            var newScope = new Hash();
+
+            _context.Push( newScope );
+        }
+
+        /// <summary>
+        /// Exits the current scope that has been created by <see cref="EnterChildScope" />.
+        /// </summary>
+        public override void ExitChildScope()
+        {
+            _context.Pop();
+        }
+
+        #endregion
 
         private object GetDotLiquidCompatibleValue( object value )
         {
@@ -209,46 +300,6 @@ namespace Rock.Lava.DotLiquid
             var allowedProperties = includedProperties.Except( ignoredProperties ).Select( x => x.Name ).ToArray();
 
             return allowedProperties;
-        }
-
-        public override object GetInternalFieldValue( string key, object defaultValue = null )
-        {
-            if ( _context.Registers.ContainsKey( key ) )
-            {
-                return _context.Registers[key];
-            }
-
-            return defaultValue;
-        }
-
-        public override LavaDataDictionary GetInternalFields()
-        {
-            var values = new LavaDataDictionary();
-
-            foreach ( var item in _context.Registers )
-            {
-                values.AddOrReplace( item.Key, item.Value );
-            }
-
-            return values;
-        }
-
-        public override void SetInternalFieldValue( string key, object value )
-        {
-            _context.Registers[key] = value;
-        }
-
-        public override void EnterChildScope()
-        {
-            // Push a new scope onto the stack.
-            var newScope = new Hash();
-
-            _context.Push( newScope );
-        }
-
-        public override void ExitChildScope()
-        {
-            _context.Pop();
         }
     }
 }

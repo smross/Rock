@@ -17,10 +17,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text.Encodings.Web;
 using DotLiquid;
-using Rock.Lava.Blocks;
 
 namespace Rock.Lava.DotLiquid
 {
@@ -35,8 +33,16 @@ namespace Rock.Lava.DotLiquid
     /// </remarks>
     internal class DotLiquidTagProxy : Tag, ILiquidFrameworkElementRenderer
     {
-        private static Dictionary<string, Func<string, IRockLavaTag>> _factoryMethods = new Dictionary<string, Func<string, IRockLavaTag>>( StringComparer.OrdinalIgnoreCase );
+        #region Static methods
 
+        private static Dictionary<string, Func<string, IRockLavaTag>> _factoryMethods = new Dictionary<string, Func<string, IRockLavaTag>>( StringComparer.OrdinalIgnoreCase );
+        private static object _factoryLock = new object();
+
+        /// <summary>
+        /// Registers a factory that is capable of creating new instances of the named tag.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="factoryMethod"></param>
         public static void RegisterFactory( string name, Func<string, IRockLavaTag> factoryMethod )
         {
             if ( string.IsNullOrWhiteSpace( name ) )
@@ -46,21 +52,24 @@ namespace Rock.Lava.DotLiquid
 
             name = name.Trim().ToLower();
 
-            _factoryMethods[name] = factoryMethod;
-        }
-
-        private IRockLavaTag _lavaElement = null;
-
-        public string SourceElementName
-        {
-            get
+            lock ( _factoryLock )
             {
-                return _lavaElement.SourceElementName;
+                _factoryMethods[name] = factoryMethod;
             }
         }
 
+        #endregion
+
+        private IRockLavaTag _lavaElement = null;
+
         #region DotLiquid Tag Overrides
 
+        /// <summary>
+        /// Initialize the tag to process a specific occurrence in a template.
+        /// </summary>
+        /// <param name="tagName"></param>
+        /// <param name="markup"></param>
+        /// <param name="tokens"></param>
         public override void Initialize( string tagName, string markup, List<string> tokens )
         {
             if ( !_factoryMethods.ContainsKey( tagName ) )
@@ -84,6 +93,11 @@ namespace Rock.Lava.DotLiquid
             base.Initialize( tagName, markup, tokens );
         }
 
+        /// <summary>
+        /// Render a specific instance of the tag in the provided context.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="result"></param>
         public override void Render( Context context, TextWriter result )
         {
             var lavaContext = new DotLiquidLavaContext( context );
@@ -108,11 +122,6 @@ namespace Rock.Lava.DotLiquid
             var dotLiquidContext = ( (DotLiquidLavaContext)context ).DotLiquidContext;
 
             base.Render( dotLiquidContext, result );
-        }
-
-        public void OnStartup()
-        {
-            throw new NotImplementedException( "The OnStartup method is not a valid operation for the DotLiquidTagProxy." );
         }
 
         void ILiquidFrameworkElementRenderer.Parse( ILiquidFrameworkElementRenderer baseRenderer, List<string> tokens, out List<object> nodes )

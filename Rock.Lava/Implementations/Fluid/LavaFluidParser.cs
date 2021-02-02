@@ -16,56 +16,30 @@
 //
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text;
 using Fluid;
 using Fluid.Ast;
-using Fluid.Tags;
-using Irony.Parsing;
-using System.Runtime.CompilerServices;
-
-using System.Linq;
-using System.Text;
 using Fluid.Ast.BinaryExpressions;
+using Fluid.Tags;
 using Fluid.Values;
+using Irony.Parsing;
 using Microsoft.Extensions.Primitives;
-using Rock.Lava.Fluid;
 
 namespace Rock.Lava.Fluid
 {
     /// <summary>
-    /// An extended implementation of the Fluid Liquid parser that allows parsing of Lava templates.
-    /// This implementation should contain any Lava-specific customisations that are not suitable as additions to the Fluid core code.
-    /// </summary>
-    public class LavaFluidParser : FluidParserEx
-    {
-        public LavaFluidParser( LanguageData languageData, Dictionary<string, ITag> tags, Dictionary<string, ITag> blocks )
-            : base( languageData, tags, blocks )
-        {
-        }
-
-        public override Statement BuildTagStatement( ParseTreeNode node, StringSegment segment, int start, int end )
-        {
-            var nodeName = node.ChildNodes[0].Term.Name;
-
-            // Convert Lava alternate syntax "elseif" --> "elsif".
-            //if ( nodeName == "elseif" )
-            //{
-            //    //var tag = node.ChildNodes[0];
-
-            //    base.EnterElsifSection( node.ChildNodes[0] );
-
-            //    return null;
-            //    //node.ChildNodes[0].Term.Name = "elsif";
-            //}
-            
-            return base.BuildTagStatement( node, segment, start, end );
-        }
-    }
-
-    /// <summary>
     /// An extended implementation of the Fluid Liquid parser.
-    /// This implementation adds the ability to capture the source text of tokens as they are processed.
     /// </summary>
-    public class FluidParserEx : IFluidParser, IFluidParserEx
+
+    /* [2021-02-02] DJL
+     * This code is largely identical to the FluidParser.cs file in release 1.0.0-beta-9660.
+     * This implementation extends the parser to capture the source text of tokens as they are processed,
+     * which is necessary for Lava to support a framework-independent implementation of custom tags and blocks.
+     * This modification should be suggested as a pull request to the Fluid project when it is proved to work correctly.
+     */
+    internal class FluidParserEx : IFluidParser, IFluidParserEx
     {
         protected bool _isComment; // true when the current block is a comment
         protected bool _isRaw; // true when the current block is raw
@@ -86,19 +60,10 @@ namespace Rock.Lava.Fluid
             _blocks = blocks;
         }
 
+        #region IFluidParser implementation
+
         public bool TryParse( string template, bool stripEmptyLines, out List<Statement> result, out IEnumerable<string> errors )
         {
-        //    List<FluidParsedTemplateElement> elements;
-
-        //    var success = TryParse( template, stripEmptyLines, out elements, out errors );
-
-        //    result = elements.Select( x => x.Statement ).ToList();
-
-        //    return success;
-        //}
-
-        //public bool TryParse( string template, bool stripEmptyLines, out List<FluidParsedTemplateElement> result, out IEnumerable<string> errors )
-        //{
             errors = Array.Empty<string>();
             var segment = new StringSegment( template );
             Parser parser = null;
@@ -212,7 +177,7 @@ namespace Rock.Lava.Fluid
 
                             return false;
                         }
-                        
+
                         switch ( tree.Root.Term.Name )
                         {
                             case "output":
@@ -243,7 +208,7 @@ namespace Rock.Lava.Fluid
                             s = new TextStatement( ConsumeTag( segment, end + 1, "endraw", out end ) );
                             index = end;
                         }
-                        
+
                         if ( s != null )
                         {
                             _context.CurrentBlock.AddStatement( s );
@@ -252,11 +217,6 @@ namespace Rock.Lava.Fluid
                         if ( ElementParsed != null )
                         {
                             var elementId = GetOrAssignNodeId( tree?.Root );
-                            
-                            if ( elementId == null )
-                            {
-                                int i = 0;
-                            }
 
                             ElementParsed.Invoke( this,
                                 new FluidElementParseEventArgs { ElementId = elementId, ElementText = tag, StartIndex = start, EndIndex = end, Statement = s } );
@@ -281,6 +241,8 @@ namespace Rock.Lava.Fluid
 
             return false;
         }
+
+        #endregion
 
         [MethodImpl( MethodImplOptions.AggressiveInlining )]
         private void ConsumeTextStatement( StringSegment segment, int start, int end, bool trimStart, bool trimEnd, bool stripEmptyLines )
@@ -791,7 +753,7 @@ namespace Rock.Lava.Fluid
                 blockData.CloseTag = blockData.OpenTag;
 
                 blockData.EndPosition = tagEndPosition;
-                 
+
                 return blockEx.Parse( node, _context );
             }
             else
@@ -1079,8 +1041,8 @@ namespace Rock.Lava.Fluid
                         limit,
                         offset,
                         reversed,
-                        elseStatements.FirstOrDefault());
-                        break;
+                        elseStatements.FirstOrDefault() );
+                    break;
 
                 case "range":
                     forStatement = new ForStatement(
@@ -1246,7 +1208,7 @@ namespace Rock.Lava.Fluid
 
                 case "number":
                     // We know it's a decimal as it's configured in the grammar
-                    return new LiteralExpression( NumberValue.Create( ( decimal ) node.Token.Value ) );
+                    return new LiteralExpression( NumberValue.Create( (decimal)node.Token.Value ) );
 
                 case "boolean":
                     if ( !bool.TryParse( node.ChildNodes[0].Token.Text, out var boolean ) )
@@ -1360,10 +1322,15 @@ namespace Rock.Lava.Fluid
 
     #region Support Classes
 
+    /* [2021-02-02] DJL
+     * These classes have been added to support Lava-specific changes to the Fluid Parser.
+     * 
+     */
+
     /// <summary>
-    /// An extension of the Fluid BlockContext that allows storing additional context information.
+    /// An extension of Fluid.BlockContext that allows storing additional context information.
     /// </summary>
-    public class BlockContextEx : BlockContext
+    internal class BlockContextEx : BlockContext
     {
         public BlockContextEx( ParseTreeNode tag )
             : base( tag )
@@ -1380,54 +1347,56 @@ namespace Rock.Lava.Fluid
     /// <summary>
     /// An element from a Fluid template that has been parsed.
     /// </summary>
-    public class FluidParsedTemplateElement
+    internal class FluidParsedTemplateElement
     {
         public string ElementId { get; set; }
-
         public Statement Statement { get; set; }
         public string Node { get; set; }
-
         public int StartIndex { get; set; }
         public int EndIndex { get; set; }
     }
 
-    public class FluidElementParseEventArgs : EventArgs
+    /// <summary>
+    /// Information about a parsing event generated by the Fluid Parser.
+    /// </summary>
+    internal class FluidElementParseEventArgs : EventArgs
     {
         public string ElementId { get; set; }
         public string ElementText { get; set; }
         public int StartIndex { get; set; }
         public int EndIndex { get; set; }
-
         public Statement Statement { get; set; }
     }
 
-    public interface IFluidParserEx : IFluidParser
+    /// <summary>
+    /// An extension of the IFluisParser interface to add parsing events.
+    /// </summary>
+    internal interface IFluidParserEx : IFluidParser
     {
         event EventHandler<FluidElementParseEventArgs> ElementParsing;
         event EventHandler<FluidElementParseEventArgs> ElementParsed;
     }
 
-    public class BlockInfo
+    /// <summary>
+    /// Stores metadata for a block element that is parsed from a source document.
+    /// </summary>
+    internal class BlockInfo
     {
         public int StartPosition { get; set; }
         public int EndPosition { get; set; }
-
         public string SourceText { get; set; }
         public string OpenTag { get; set; }
         public string InnerText { get; set; }
         public string CloseTag { get; set; }
     }
 
-//    namespace Fluid.Tags
-    //{
-        public interface ITagEx : ITag
-        {
-            Statement Parse( ParseTreeNode node, LavaFluidParserContext context );
-        }
-    //}
+    /// <summary>
+    /// An extension of the Fluid.ITag interface to add additional parsing using the Lava parser for Fluid.
+    /// </summary>
+    internal interface ITagEx : ITag
+    {
+        Statement Parse( ParseTreeNode node, LavaFluidParserContext context );
+    }
 
     #endregion
-
-
-
 }

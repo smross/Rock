@@ -23,24 +23,22 @@ using Microsoft.Extensions.Primitives;
 
 namespace Rock.Lava.Fluid
 {
-    public class LavaFluidParserContext
+    /// <summary>
+    /// A modification of the FluidParserContext that stores additional information about the elements processed by the parser.
+    /// </summary>
+    internal class LavaFluidParserContext
     {
-
         internal Stack<BlockContextEx> _blocks { get; } = new Stack<BlockContextEx>();
 
+        /// <summary>
+        /// The block currently being parsed.
+        /// </summary>
         public BlockContextEx CurrentBlock { get; private set; } = new BlockContextEx( null );
-
-
 
         /// <summary>
         /// Invoked when a block is entered to create a new statements context
         /// which will received all subsequent statements.
         /// </summary>
-        //public void EnterBlock( ParseTreeNode tag )
-        //{
-            
-        //}
-
         public void EnterBlock( ParseTreeNode tag, StringSegment segment, int start, int end )
         {
             EnterBlock( tag, start, segment.Substring( start, end - start + 1 ) );
@@ -73,6 +71,7 @@ namespace Rock.Lava.Fluid
         /// </summary>
         public void EnterBlockSection( string name, TagStatement statement )
         {
+            //TODO: Remove debug statements
             Debug.Print( $"Entering Block: ThreadId={System.Threading.Thread.CurrentThread.ManagedThreadId}, CurrentBlockCount={_blocks.Count}" );
 
             CurrentBlock.EnterBlock( name, statement );

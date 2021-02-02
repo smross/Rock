@@ -24,11 +24,11 @@ using Rock.Data;
 namespace Rock.Lava.Fluid
 {
     /// <summary>
-    /// An implementation of a MemberAccessStrategy for the Fluid framework
+    /// An implementation of a MemberAccessStrategy for the Fluid framework.
     /// The MemberAccessStrategy determines the way in which property values are retrieved from specific types of objects supported by Lava:
-    /// anonymous types, types that implement ILavaDataObject, and types that are decorated with the LavaTypeAttribute.
+    /// anonymous types, types that implement ILavaDataDictionary or ILavaDataDictionarySource, and types that are decorated with the LavaTypeAttribute.
     /// </summary>
-    public class LavaObjectMemberAccessStrategy : IMemberAccessStrategy
+    internal class LavaObjectMemberAccessStrategy : IMemberAccessStrategy
     {
         private Dictionary<Type, Dictionary<string, IMemberAccessor>> _map;
         private readonly IMemberAccessStrategy _parent;
@@ -73,12 +73,7 @@ namespace Rock.Lava.Fluid
                 return _dynamicMemberAccessor;
             }
 
-            if ( typeof( LavaDataObject ).IsAssignableFrom( type ) )
-            {
-                return _dynamicMemberAccessor;
-            }
-
-            // Check for ILavaDataObject implementation.
+            // Check for ILavaDataDictionary implementation.
             if ( typeof( ILavaDataDictionarySource ).IsAssignableFrom( type )
                  || typeof( ILavaDataDictionary ).IsAssignableFrom( type ) )
             {

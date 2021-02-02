@@ -31,10 +31,16 @@ namespace Rock.Lava.Fluid
     {
         private TemplateContext _context;
 
+        #region Constructors
+
         public FluidLavaContext( TemplateContext context )
         {
             _context = context;
         }
+
+        #endregion
+
+        #region Properties
 
         public TemplateContext FluidContext
         {
@@ -44,17 +50,62 @@ namespace Rock.Lava.Fluid
             }
         }
 
-        public override List<string> GetEnabledCommands()
+        #endregion
+
+        #region Public Methods
+
+        /// <summary>
+        /// Gets a named value that is for internal use only. Internal values are not available to be resolved in the Lava Template.
+        /// </summary>
+        /// <param name="key"></param>
+        public override object GetInternalFieldValue( string key, object defaultValue = null )
         {
-            // The set of enabled Lava Commands is stored in the Fluid AmbientValues collection.
-            if ( _context.AmbientValues?.ContainsKey( "EnabledCommands" ) == true )
+            // In the Fluid framework, internal values are stored in the AmbientValues collection.
+            object value;
+
+            var exists = _context.AmbientValues.TryGetValue( key, out value );
+
+            if ( exists )
             {
-                return _context.AmbientValues["EnabledCommands"].ToString().Split( ",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries ).ToList();
+                return value;
             }
 
-            return new List<string>();
+            return defaultValue;
         }
 
+        /// <summary>
+        /// Gets the collection of variables defined for internal use only.
+        /// Internal values are not available to be resolved in the Lava Template.
+        /// </summary>
+        public override LavaDataDictionary GetInternalFields()
+        {
+            var values = new LavaDataDictionary();
+
+            foreach ( var item in _context.AmbientValues )
+            {
+                values.AddOrReplace( item.Key, item.Value );
+            }
+
+            return values;
+        }
+
+        /// <summary>
+        /// Sets a named value that is for internal use only. Internal values are not available to be resolved in the Lava Template.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        public override void SetInternalFieldValue( string key, object value )
+        {
+            // In the Fluid framework, internal values are stored in the AmbientValues collection.
+            _context.AmbientValues[key] = value;
+        }
+
+        /// <summary>
+        /// Get the value of a field that is accessible for merging into a template.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
         public override object GetMergeFieldValue( string key, object defaultValue )
         {
             if ( !_context.AmbientValues.ContainsKey( key ) )
@@ -63,26 +114,18 @@ namespace Rock.Lava.Fluid
             }
 
             return _context.AmbientValues[key];
-
         }
 
+        /// <summary>
+        /// Gets the dictionary of values that are active in the local scope.
+        /// Values are defined by the outermost container first, and overridden by values defined in a contained scope.
+        /// </summary>
+        /// <returns></returns>
         public override LavaDataDictionary GetMergeFields()
         {
             var dictionary = new LavaDataDictionary( this.GetScopeAggregatedValues( _context.LocalScope ) );
 
             return dictionary;
-        }
-
-        public override void SetEnabledCommands( IEnumerable<string> commands )
-        {
-            if ( commands == null )
-            {
-                _context.AmbientValues["EnabledCommands"] = string.Empty;
-            }
-            else
-            {
-                _context.AmbientValues["EnabledCommands"] = commands.JoinStrings( "," );
-            }
         }
 
         /// <summary>
@@ -124,45 +167,53 @@ namespace Rock.Lava.Fluid
         }
 
         /// <summary>
-        /// Sets a named value that is for internal use only. Internal values are not available to be resolved in the Lava Template.
+        /// Gets the Lava Commands that are enabled for this context.
         /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        public override void SetInternalFieldValue( string key, object value )
+        public override List<string> GetEnabledCommands()
         {
-            // In the Fluid framework, internal values are stored in the AmbientValues collection.
-            _context.AmbientValues[key] = value;
+            // The set of enabled Lava Commands is stored in the Fluid AmbientValues collection.
+            if ( _context.AmbientValues?.ContainsKey( "EnabledCommands" ) == true )
+            {
+                return _context.AmbientValues["EnabledCommands"].ToString().Split( ",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries ).ToList();
+            }
+
+            return new List<string>();
         }
 
         /// <summary>
-        /// Gets a named value that is for internal use only. Internal values are not available to be resolved in the Lava Template.
+        /// Sets the Lava commands enabled for this template.
         /// </summary>
-        /// <param name="key"></param>
-        public override object GetInternalFieldValue( string key, object defaultValue = null )
+        /// <param name="commands"></param>
+        public override void SetEnabledCommands( IEnumerable<string> commands )
         {
-            // In the Fluid framework, internal values are stored in the AmbientValues collection.
-            object value;
-
-            var exists = _context.AmbientValues.TryGetValue( key, out value );
-
-            if ( exists )
+            if ( commands == null )
             {
-                return value;
+                _context.AmbientValues["EnabledCommands"] = string.Empty;
             }
-
-            return defaultValue;
+            else
+            {
+                _context.AmbientValues["EnabledCommands"] = commands.JoinStrings( "," );
+            }
         }
-        public override LavaDataDictionary GetInternalFields()
+
+        /// <summary>
+        /// Creates a new child scope. Values added to the child scope will be released once <see cref="ExitChildScope" /> is called.
+        /// Values in the parent scope remain available to the child scope.
+        /// </summary>
+        public override void EnterChildScope()
         {
-            var values = new LavaDataDictionary();
-
-            foreach ( var item in _context.AmbientValues )
-            {
-                values.AddOrReplace( item.Key, item.Value );
-            }
-
-            return values;
+            _context.EnterChildScope();
         }
+
+        /// <summary>
+        /// Exits the current scope that has been created by <see cref="EnterChildScope" />.
+        /// </summary>
+        public override void ExitChildScope()
+        {
+            _context.ReleaseScope();
+        }
+
+        #endregion
 
         private static FieldInfo _scopeParentInternalField = typeof( Scope ).GetField( "_parent", BindingFlags.NonPublic | BindingFlags.Instance );
 
@@ -216,16 +267,6 @@ namespace Rock.Lava.Fluid
             }
 
             return dictionary;
-        }
-
-        public override void EnterChildScope()
-        {
-            _context.EnterChildScope();
-        }
-
-        public override void ExitChildScope()
-        {
-            _context.ReleaseScope();
         }
     }
 }

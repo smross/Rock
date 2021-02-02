@@ -17,8 +17,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Text.RegularExpressions;
 using Fluid;
 using Fluid.Values;
 
@@ -29,6 +27,14 @@ namespace Rock.Lava.Fluid
     /// </summary>
     public class FluidEngine : LavaEngineBase
     {
+        #region Static methods
+
+        private static LavaFluidParserFactory _parserFactory = new LavaFluidParserFactory();
+
+        #endregion
+        /// <summary>
+        /// The descriptive name of the engine.
+        /// </summary>
         public override string EngineName
         {
             get
@@ -37,6 +43,9 @@ namespace Rock.Lava.Fluid
             }
         }
 
+        /// <summary>
+        /// The type specifier for the framework.
+        /// </summary>
         public override LavaEngineTypeSpecifier EngineType
         {
             get
@@ -44,6 +53,12 @@ namespace Rock.Lava.Fluid
                 return LavaEngineTypeSpecifier.Fluid;
             }
         }
+
+        /// <summary>
+        /// Create a new template context containing the specified merge fields.
+        /// </summary>
+        /// <param name="mergeFields"></param>
+        /// <returns></returns>
 
         public override ILavaContext NewContext( IDictionary<string, object> mergeFields = null )
         {
@@ -91,7 +106,7 @@ namespace Rock.Lava.Fluid
         /// by default. Rock uses CamelCase filter names and to ensure that
         /// a mistype doesn't cause it to work anyway we hide these.
         /// </summary>
-        private static void HideSnakeCaseFilters()
+        private void HideSnakeCaseFilters()
         {
             TemplateContext.GlobalFilters.AddFilter( "join", NoOp );
             TemplateContext.GlobalFilters.AddFilter( "first", NoOp );
@@ -153,7 +168,7 @@ namespace Rock.Lava.Fluid
         /// <summary>
         /// Registers all the base Fluid filters with the proper CamelCase.
         /// </summary>
-        private static void RegisterBaseFilters()
+        private void RegisterBaseFilters()
         {
             TemplateContext.GlobalFilters.AddFilter( "Join", global::Fluid.Filters.ArrayFilters.Join );
             TemplateContext.GlobalFilters.AddFilter( "First", global::Fluid.Filters.ArrayFilters.First );
@@ -353,6 +368,11 @@ namespace Rock.Lava.Fluid
             return input;
         }
 
+        /// <summary>
+        /// Register a specific System.Type as available for referencing in a Lava template.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="allowedMembers"></param>
         public override void RegisterSafeType( Type type, string[] allowedMembers = null )
         {
             if ( allowedMembers != null
@@ -389,21 +409,19 @@ namespace Rock.Lava.Fluid
             return template;
         }
 
-        private static LavaFluidParserFactory _parserFactory = new LavaFluidParserFactory();
-
         private bool TryParse( string template, out LavaFluidTemplate result, out IEnumerable<string> errors )
         {
             // This is a replacement for the BaseFluidTemplate.TryParse() method, which allows us to use a modified parser.
-            var parser = _parserFactory.CreateParser() as LavaFluidParser;
+            var parser = _parserFactory.CreateParser() as FluidParserEx;
 
             var elements = new List<FluidParsedTemplateElement>();
 
-            parser.ElementParsed += (object sender, FluidElementParseEventArgs e) =>
+            parser.ElementParsed += ( object sender, FluidElementParseEventArgs e ) =>
             {
                 elements.Add( new FluidParsedTemplateElement { ElementId = e.ElementId, Statement = e.Statement, Node = e.ElementText, StartIndex = e.StartIndex, EndIndex = e.EndIndex } );
             };
 
-            List <global::Fluid.Ast.Statement> statements;
+            List<global::Fluid.Ast.Statement> statements;
 
             var success = parser.TryParse( template, false, out statements, out errors );
 
@@ -432,7 +450,7 @@ namespace Rock.Lava.Fluid
             return TryRenderInternal( fluidTemplate, parameters, out output );
         }
 
-        private bool TryRenderInternal( LavaFluidTemplate template, LavaRenderParameters parameters, out string output)
+        private bool TryRenderInternal( LavaFluidTemplate template, LavaRenderParameters parameters, out string output )
         {
             var templateContext = parameters.LavaContext as FluidLavaContext;
 
@@ -454,16 +472,16 @@ namespace Rock.Lava.Fluid
 
                 output = template.Render( templateContext.FluidContext );
 
-            return true;
-        }
-            catch (Exception ex )
+                return true;
+            }
+            catch ( Exception ex )
             {
                 ProcessException( ex, out output );
 
                 return false;
             }
 
-}
+        }
 
         //protected override bool OnTryRender( string inputTemplate, out string output, ILavaContext context )
         //{
@@ -516,6 +534,11 @@ namespace Rock.Lava.Fluid
         //    throw new NotImplementedException();
         //}
 
+        /// <summary>
+        /// Register a Lava Tag element.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="factoryMethod"></param>
         public override void RegisterTag( string name, Func<string, IRockLavaTag> factoryMethod )
         {
             if ( name == null )
@@ -541,6 +564,11 @@ namespace Rock.Lava.Fluid
             _parserFactory.RegisterTag( name, proxyInstance );
         }
 
+        /// <summary>
+        /// Register a Lava Block element.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="factoryMethod"></param>
         public override void RegisterBlock( string name, Func<string, IRockLavaBlock> factoryMethod )
         {
             if ( name == null )
@@ -572,8 +600,12 @@ namespace Rock.Lava.Fluid
             return newTemplate;
         }
 
-        #region Obsolete/Not Required?
-
+        /// <summary>
+        /// Compare two objects for equivalence according to the applicable Lava equality rules for the input object types.
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns>True if the two objects are considered equal.</returns>
         public override bool AreEqualValue( object left, object right )
         {
             if ( right == null )
@@ -588,13 +620,5 @@ namespace Rock.Lava.Fluid
 
             return left.Equals( right );
         }
-
-        //public override Type GetShortcodeType( string name )
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        #endregion
-
     }
 }

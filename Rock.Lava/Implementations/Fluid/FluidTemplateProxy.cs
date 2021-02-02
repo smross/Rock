@@ -19,19 +19,13 @@ using System;
 namespace Rock.Lava.Fluid
 {
     /// <summary>
-    /// A wrapper for a Fluid Template for use with the Rock Lava library.
+    /// A Lava library wrapper for the Fluid implementation of a Liquid template.
     /// </summary>
-    /// <remarks>
-    /// This class should exist in the Rock.Lava.Fluid library.
-    /// </remarks>
-    [Obsolete]
-    public class FluidTemplateProxy : LavaTemplateBase
+    internal class FluidTemplateProxy : LavaTemplateBase
     {
         #region Constructors
 
         private LavaFluidTemplate _template;
-
-        //public override ILavaEngine LavaEngine => throw new NotImplementedException();
 
         public FluidTemplateProxy( LavaFluidTemplate template )
         {
@@ -40,6 +34,9 @@ namespace Rock.Lava.Fluid
 
         #endregion
 
+        /// <summary>
+        /// Get the Fluid template instance.
+        /// </summary>
         public LavaFluidTemplate FluidTemplate
         {
             get

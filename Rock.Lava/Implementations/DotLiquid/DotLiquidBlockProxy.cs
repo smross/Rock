@@ -31,12 +31,13 @@ namespace Rock.Lava.DotLiquid
     /// </remarks>
     internal class DotLiquidBlockProxy : Block, ILiquidFrameworkElementRenderer
     {
-        #region Static factory methods
+        #region Static methods
 
         private static Dictionary<string, Func<string, IRockLavaBlock>> _factoryMethods = new Dictionary<string, Func<string, IRockLavaBlock>>( StringComparer.OrdinalIgnoreCase );
+        private static object _factoryLock = new object();
 
         /// <summary>
-        /// Register a factory method that is capable of creating instances of the named block.
+        /// Register a factory that is capable of creating instances of the named block.
         /// </summary>
         /// <param name="name"></param>
         /// <param name="factoryMethod"></param>
@@ -49,7 +50,10 @@ namespace Rock.Lava.DotLiquid
 
             name = name.Trim().ToLower();
 
-            _factoryMethods[name] = factoryMethod;
+            lock ( _factoryLock )
+            {
+                _factoryMethods[name] = factoryMethod;
+            }
         }
 
         #endregion

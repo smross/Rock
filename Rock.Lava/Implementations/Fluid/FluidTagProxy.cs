@@ -57,39 +57,8 @@ namespace Rock.Lava.Fluid
 
         private IRockLavaTag _lavaTag = null;
 
-        public string SourceElementName
-        {
-            get
-            {
-                return _lavaTag.SourceElementName;
-            }
-        }
 
-        #region Fluid ITag Implementation
-
-        public Statement Parse( ParseTreeNode node, ParserContext context )
-        {
-            throw new NotImplementedException( "Use Parse( ParseTreeNode, LavaFluidParserContext ) instead." );
-
-            //return Parse( node, context as LavaFluidParserContext );
-        }
-        public Statement Parse( ParseTreeNode node, LavaFluidParserContext context )
-        {
-            // Get the tag instance.
-            var tagName = node.Term.Name;
-
-            var factoryMethod = _factoryMethods[tagName];
-
-            _lavaTag = factoryMethod( tagName );
-
-            // Get the markup for the tag attributes.
-            //var argsNode = context.CurrentBlock.Tag.ChildNodes[0].ChildNodes[0];
-
-            var attributesMarkup = node.FindTokenAndGetText().Trim();
-
-            // When this element is rendered, write the content to the output stream.
-            return new DelegateStatement( ( writer, encoder, ctx ) => WriteToAsync( writer, encoder, ctx, _lavaTag, tagName, attributesMarkup ) );
-        }
+        #region Fluid.ITagEx Implementation
 
         /// <summary>
         /// Retrieve the syntax rules for the argument markup in this element tag.
@@ -102,8 +71,6 @@ namespace Rock.Lava.Fluid
             // Lava syntax uses whitespace as a separator between arguments, which Fluid/Irony does not support.
             // Therefore we return a syntax for this element that captures the entire argument list as a single token
             // and we will then parse the arguments list ourselves.
-            //var filterArguments = new NonTerminal( "filterArguments" );
-
             var lavaArgumentList = new FreeTextLiteral( "lavaElementAttributesMarkup", FreeTextOptions.AllowEmpty | FreeTextOptions.AllowEof, "%}" );
 
             // Return a syntax that allows an empty arguments list, a comma-delimited list per the standard Fluid implementation,
@@ -111,12 +78,33 @@ namespace Rock.Lava.Fluid
             return grammar.Empty | grammar.FilterArguments.Rule | lavaArgumentList;
         }
 
-        //public BnfTerm GetSyntax( FluidGrammar grammar )
-        //{
-        //    // The grammar for an inline tag element allows for zero or more arguments.
-        //    // TODO: Modify the grammar rule to make the argument separator (comma) optional.
-        //    return grammar.Empty | grammar.FilterArguments.Rule;
-        //}
+        /// <summary>
+        /// Parses an element from a Lava document for the Fluid framework.
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public Statement Parse( ParseTreeNode node, LavaFluidParserContext context )
+        {
+            // Get the tag instance.
+            var tagName = node.Term.Name;
+
+            var factoryMethod = _factoryMethods[tagName];
+
+            _lavaTag = factoryMethod( tagName );
+
+            // Get the markup for the tag attributes.
+            var attributesMarkup = node.FindTokenAndGetText().Trim();
+
+            // When this element is rendered, write the content to the output stream.
+            return new DelegateStatement( ( writer, encoder, ctx ) => WriteToAsync( writer, encoder, ctx, _lavaTag, tagName, attributesMarkup ) );
+        }
+
+        Statement ITag.Parse( ParseTreeNode node, ParserContext context )
+        {
+            // This method is required to implement ITag.Parse, but it is not used.
+            throw new NotImplementedException( "Call Parse(ParseTreeNode, LavaFluidParserContext) instead." );
+        }
 
         public ValueTask<Completion> WriteToAsync( TextWriter writer, TextEncoder encoder, TemplateContext context, IRockLavaTag lavaTag, string tagName, string tagAttributesMarkup )
         {
@@ -137,9 +125,6 @@ namespace Rock.Lava.Fluid
 
             lavaTag.OnParsed( tokens );
 
-            // Store the Fluid Statements required to render the tag in the template context.
-            //lavaContext.SetInternalFieldValue( Constants.ContextKeys.SourceTemplateStatements, statements );
-
             // Execute the tag rendering process.
             elementRenderer.Render( this, lavaContext, writer, encoder );
 
@@ -148,36 +133,18 @@ namespace Rock.Lava.Fluid
 
         #endregion
 
-        #region IRockLavaTag implementation
+        #region ILiquidFrameworkRenderer implementation
 
         void ILiquidFrameworkElementRenderer.Render( ILiquidFrameworkElementRenderer baseRenderer, ILavaContext context, TextWriter result, TextEncoder encoder )
         {
             // By default, rendering a custom tag does not produce any output.
-
-            //var fluidContext = ( (FluidLavaContext)context ).FluidContext;
-            //throw new NotImplementedException();
-            //this.WriteToAsync( result, encoder, fluidContext );
-        }
-
-        public void OnStartup()
-        {
-            throw new NotImplementedException( "The OnStartup method is not a valid operation for the DotLiquidTagProxy." );
         }
 
         void ILiquidFrameworkElementRenderer.Parse( ILiquidFrameworkElementRenderer baseRenderer, List<string> tokens, out List<object> nodes )
         {
-            // TODO: May need to rework this?
-            // Make sure we are getting a list of text-based tokens here.
-            // We should be returning a list of Fluid statements as nodes.
-
-            //base.Parse( tokens );
-
-            //nodes = base.NodeList;
-
             nodes = null;
         }
 
         #endregion
-
     }
 }

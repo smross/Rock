@@ -23,7 +23,7 @@ namespace Rock.Lava.Fluid
     /// <summary>
     /// An implementation of the Fluid Grammar definition that is modified to include Lava syntax variations.
     /// </summary>
-    public class LavaFluidGrammar : FluidGrammar
+    internal class LavaFluidGrammar : FluidGrammar
     {
         public LavaFluidGrammar()
         {

@@ -18,16 +18,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.Encodings.Web;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
 using Fluid.Tags;
 using Irony.Parsing;
-using Microsoft.Extensions.Primitives;
-using Rock.Lava.Blocks;
 
 namespace Rock.Lava.Fluid
 {
@@ -92,8 +88,6 @@ namespace Rock.Lava.Fluid
             return grammar.Empty | grammar.FilterArguments.Rule | lavaArgumentList;
         }
 
-        //private ParseTreeNode _rootNode = null;
-
         public Statement Parse( ParseTreeNode node, ParserContext context )
         {
             /* The Fluid framework parses the block into Liquid tokens using an adapted Irony.Net grammar.
@@ -133,6 +127,9 @@ namespace Rock.Lava.Fluid
             return renderBlockDelegate; 
         }
 
+        // TODO: Tidy up
+
+        /*
 
         /// <summary>
         /// Parses the specified tokens.
@@ -231,6 +228,8 @@ namespace Rock.Lava.Fluid
             return blockMarkup;
         }
 
+        */
+
         private List<Statement> _statements = null;
 
         private ValueTask<Completion> WriteToAsync( TextWriter writer, TextEncoder encoder, TemplateContext context, string elementAttributesMarkup, List<Statement> statements, ParseTreeNode node )
@@ -245,11 +244,6 @@ namespace Rock.Lava.Fluid
 
             var tokens = new List<string>();
             bool addElements = false;
-
-            if ( elementAttributesMarkup == "url:'~/Scripts/Chartjs/Chart.min.js' id:'chartjs'" )
-            {
-                int i = 0;
-            }
 
             var lastStatement = statements.LastOrDefault();
 
@@ -322,11 +316,6 @@ namespace Rock.Lava.Fluid
             var fluidContext = ( (FluidLavaContext)context ).FluidContext;
 
             var result = WriteToDefaultAsync( writer, HtmlEncoder.Default, fluidContext, _statements );
-        }
-
-        public void OnStartup()
-        {
-            throw new NotImplementedException( "The OnStartup method is not a valid operation for the DotLiquidBlockProxy." );
         }
 
         void ILiquidFrameworkElementRenderer.Parse( ILiquidFrameworkElementRenderer baseRenderer, List<string> tokens, out List<object> nodes )

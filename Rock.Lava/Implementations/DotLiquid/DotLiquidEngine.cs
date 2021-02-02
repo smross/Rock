@@ -51,7 +51,7 @@ namespace Rock.Lava.DotLiquid
         }
 
         /// <summary>
-        /// Create a new template context and add the specified merge fields.
+        /// Create a new template context containing the specified merge fields.
         /// </summary>
         /// <param name="mergeFields"></param>
         /// <returns></returns>
@@ -274,7 +274,7 @@ namespace Rock.Lava.DotLiquid
                 Template.RegisterSafeType( typeof( Rock.Lava.ILavaDataDictionary ),
                     ( x ) =>
                     {
-                        return new DotLiquidLavaDataObjectProxy( x as ILavaDataDictionary );
+                        return new DotLiquidLavaDataDictionaryProxy( x as ILavaDataDictionary );
                     } );
             }
             else

@@ -1,4 +1,20 @@
-﻿using System;
+﻿// <copyright>
+// Copyright by the Spark Development Network
+//
+// Licensed under the Rock Community License (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.rockrms.com/license
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+// </copyright>
+//
+using System;
 using System.IO;
 using System.Text;
 using Microsoft.Extensions.FileProviders;
@@ -7,36 +23,54 @@ using Microsoft.Extensions.Primitives;
 namespace Rock.Lava
 {
     /// <summary>
-    /// An implementation of a Lava File System for the Fluid framework.
+    /// A proxy for a LavaFileSystem component that is compatible with the Fluid framework.
     /// </summary>
-    public class FluidFileSystem : IFileProvider, ILavaFileSystem
+    internal class FluidFileSystem : IFileProvider, ILavaFileSystem
     {
         private ILavaFileSystem _fileSystem = null;
 
+        #region Constructors
+
+        /// <summary>
+        /// Create a new proxy for a LavaFileSystem instance.
+        /// </summary>
+        /// <param name="lavaFileSystem"></param>
         public FluidFileSystem( ILavaFileSystem fileSystem )
         {
             _fileSystem = fileSystem;
         }
 
-        public bool FileExists( string filePath )
+        #endregion
+
+        #region ILavaFileSystem implementation
+
+        bool ILavaFileSystem.FileExists( string filePath )
         {
             return _fileSystem.FileExists( filePath );
         }
 
-        public IDirectoryContents GetDirectoryContents( string subpath )
+        string ILavaFileSystem.ReadTemplateFile( ILavaContext context, string templateName )
+        {
+            return _fileSystem.ReadTemplateFile( context, templateName );
+        }
+
+        #endregion
+
+        #region IFileProvider implementation
+
+        IDirectoryContents IFileProvider.GetDirectoryContents( string subpath )
         {
             // Directory listing is not supported.
             return null;
-
         }
 
-        public IFileInfo GetFileInfo( string subpath )
+        IFileInfo IFileProvider.GetFileInfo( string subpath )
         {
             // The Fluid framework forces a ".liquid" extension in the file path.
             // Most Lava template files use a ".lava" file type, so remove the ".liquid" extension and retry.
             bool exists = false;
 
-            if ( subpath.EndsWith(".liquid") )
+            if ( subpath.EndsWith( ".liquid" ) )
             {
                 exists = _fileSystem.FileExists( subpath );
 
@@ -60,19 +94,21 @@ namespace Rock.Lava
             return fileInfo;
         }
 
-        public string ReadTemplateFile( ILavaContext context, string templateName )
-        {
-            return _fileSystem.ReadTemplateFile( context, templateName );
-        }
-
-        public IChangeToken Watch( string filter )
+        IChangeToken IFileProvider.Watch( string filter )
         {
             // File system monitoring is not supported.
             return null;
         }
+
+        #endregion
     }
 
-    public class LavaFileInfo : IFileInfo
+    #region Support Classes
+
+    /// <summary>
+    /// A FileInfo implementation for the FluidFileSystem.
+    /// </summary>
+    internal class LavaFileInfo : IFileInfo
     {
         public LavaFileInfo( string name, string content, bool exists = true )
         {
@@ -82,17 +118,42 @@ namespace Rock.Lava
         }
 
         public string Content { get; set; }
+
         public bool Exists { get; }
 
-        public bool IsDirectory => false;
+        public bool IsDirectory
+        {
+            get
+            {
+                return false;
+            }
+        }
 
-        public DateTimeOffset LastModified => DateTimeOffset.MinValue;
+        public DateTimeOffset LastModified
+        {
+            get
+            {
+                return DateTimeOffset.MinValue;
+            }
+        }
 
-        public long Length => -1;
+        public long Length
+        {
+            get
+            {
+                return -1;
+            }
+        }
 
         public string Name { get; }
 
-        public string PhysicalPath => null;
+        public string PhysicalPath
+        {
+            get
+            {
+                return null;
+            }
+        }
 
         public Stream CreateReadStream()
         {
@@ -101,4 +162,5 @@ namespace Rock.Lava
         }
     }
 
+    #endregion
 }

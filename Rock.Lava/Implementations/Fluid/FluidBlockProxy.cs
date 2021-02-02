@@ -18,16 +18,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.Encodings.Web;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
 using Fluid.Tags;
 using Irony.Parsing;
-using Microsoft.Extensions.Primitives;
-using Rock.Lava.Blocks;
 
 namespace Rock.Lava.Fluid
 {
@@ -45,7 +41,13 @@ namespace Rock.Lava.Fluid
         #region Static factory methods
 
         private static Dictionary<string, Func<string, IRockLavaBlock>> _factoryMethods = new Dictionary<string, Func<string, IRockLavaBlock>>( StringComparer.OrdinalIgnoreCase );
+        private static object _factoryLock = new object();
 
+        /// <summary>
+        /// Register a factory that is capable of creating instances of the named block.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="factoryMethod"></param>
         public static void RegisterFactory( string name, Func<string, IRockLavaBlock> factoryMethod )
         {
             if ( string.IsNullOrWhiteSpace( name ) )
@@ -55,7 +57,11 @@ namespace Rock.Lava.Fluid
 
             name = name.Trim().ToLower();
 
-            _factoryMethods[name] = factoryMethod;
+            lock ( _factoryLock )
+            {
+                _factoryMethods[name] = factoryMethod;
+            }
+
         }
 
         #endregion
@@ -67,17 +73,17 @@ namespace Rock.Lava.Fluid
         #endregion
 
         //private IRockLavaBlock _lavaBlock = null;
-        private string _sourceElementName;
+        //private string _sourceElementName;
 
-        public string SourceElementName
-        {
-            get
-            {
-                return _sourceElementName; // _lavaBlock.SourceElementName;
-            }
-        }
+        //public string SourceElementName
+        //{
+        //    get
+        //    {
+        //        return _sourceElementName; // _lavaBlock.SourceElementName;
+        //    }
+        //}
 
-        #region ITag Implementation
+        #region ITagEx Implementation (extended from Fluid.ITag)
 
         /// <summary>
         /// Retrieve the syntax rules for the argument markup in this element tag.
@@ -99,13 +105,12 @@ namespace Rock.Lava.Fluid
             return grammar.Empty | grammar.FilterArguments.Rule | lavaArgumentList;
         }
 
-        //private ParseTreeNode _rootNode = null;
-
-        public Statement Parse( ParseTreeNode node, ParserContext context )
-        {
-            throw new NotImplementedException();
-        }
-
+        /// <summary>
+        /// Parses an element from a Lava document for the Fluid framework.
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public Statement Parse( ParseTreeNode node, LavaFluidParserContext context )
         {
             /* The Fluid framework parses the block into Liquid tokens using an adapted Irony.Net grammar.
@@ -128,8 +133,6 @@ namespace Rock.Lava.Fluid
 
             var lavaBlock = factoryMethod( blockName );
 
-            _sourceElementName = lavaBlock.SourceElementName;
-
             // Get the markup for the block attributes.
             var argsNode = context.CurrentBlock.Tag.ChildNodes[0].ChildNodes[0];
 
@@ -147,6 +150,12 @@ namespace Rock.Lava.Fluid
             var renderBlockDelegate = new DelegateStatement( ( writer, encoder, ctx ) => WriteToAsync( writer, encoder, ctx, lavaBlock, blockName, blockAttributesMarkup, tokens, statements ) );
 
             return renderBlockDelegate;
+        }
+
+        Statement ITag.Parse( ParseTreeNode node, ParserContext context )
+        {
+            // This method is required to implement ITag.Parse, but it is not used.
+            throw new NotImplementedException("Call Parse(ParseTreeNode, LavaFluidParserContext) instead.");
         }
 
         private ValueTask<Completion> WriteToAsync( TextWriter writer, TextEncoder encoder, TemplateContext context, IRockLavaBlock lavaBlock, string blockName, string blockAttributesMarkup, List<string> tokens, List<Statement> statements )
@@ -168,8 +177,6 @@ namespace Rock.Lava.Fluid
             // Earlier implementations of Lava required that the document tokens passed to the block be consumed as they are processed.
             // This function is called each time the block is rendered, so we pass a copy of the token list to preserve compatibility
             // with custom blocks that implement this behavior.
-            // TODO: Why? Is this actually the same behavior as the DotLiquid library?
-
             var parseTokens = tokens.ToList();
 
             lavaBlock.OnParsed( parseTokens );
@@ -217,11 +224,6 @@ namespace Rock.Lava.Fluid
             var statements = context.GetInternalFieldValue( Constants.ContextKeys.SourceTemplateStatements ) as List<Statement>;
 
             var result = WriteToDefaultAsync( writer, encoder, fluidContext, statements );
-        }
-
-        public void OnStartup()
-        {
-            throw new NotImplementedException( "The OnStartup method is not a valid operation for the DotLiquidBlockProxy." );
         }
 
         void ILiquidFrameworkElementRenderer.Parse( ILiquidFrameworkElementRenderer baseRenderer, List<string> tokens, out List<object> nodes )
