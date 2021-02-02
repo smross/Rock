@@ -66,12 +66,6 @@ namespace Rock.Lava.Fluid
 
         #endregion
 
-        #region Debug Code
-
-        public Guid Id = Guid.NewGuid();
-
-        #endregion
-
         #region ITagEx Implementation (extended from Fluid.ITag)
 
         /// <summary>
@@ -118,8 +112,6 @@ namespace Rock.Lava.Fluid
 
             var factoryMethod = _factoryMethods[blockName];
 
-            System.Diagnostics.Debug.Print( $"Parsing FluidBlockProxy. [Id={Id.ToString()}, BlockName={blockName}, ThreadId={System.Threading.Thread.CurrentThread.ManagedThreadId}]" );
-
             var lavaBlock = factoryMethod( blockName );
 
             // Get the markup for the block attributes.
@@ -149,8 +141,6 @@ namespace Rock.Lava.Fluid
 
         private ValueTask<Completion> WriteToAsync( TextWriter writer, TextEncoder encoder, TemplateContext context, IRockLavaBlock lavaBlock, string blockName, string blockAttributesMarkup, List<string> tokens, List<Statement> statements )
         {
-            System.Diagnostics.Debug.Print( $"WriteToAsync FluidBlockProxy. [Id={Id}, BlockName={blockName}, Attributes={blockAttributesMarkup}, Tokens={tokens.Count}, ThreadId={System.Threading.Thread.CurrentThread.ManagedThreadId}]" );
-
             var lavaContext = new FluidLavaContext( context );
 
             var elementRenderer = lavaBlock as ILiquidFrameworkElementRenderer;
