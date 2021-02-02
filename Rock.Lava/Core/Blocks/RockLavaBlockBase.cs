@@ -19,7 +19,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.Encodings.Web;
 
-namespace Rock.Lava.Blocks
+namespace Rock.Lava
 {
     /// <summary>
     /// Provides base functionality for implementation of a Rock Lava block.

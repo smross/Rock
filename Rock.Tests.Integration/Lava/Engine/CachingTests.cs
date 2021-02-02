@@ -55,11 +55,6 @@ namespace Rock.Tests.Integration.Lava
             // Verify that the template does not initially exist in the cache.
             var exists = cacheService.ContainsTemplate( input0 );
 
-            if (exists)
-            {
-                int i = 0;
-            }
-
             Assert.IsFalse( exists, "String-0 Template found in cache unexpectedly." );
 
             // Render the template, which will automatically add it to the cache.

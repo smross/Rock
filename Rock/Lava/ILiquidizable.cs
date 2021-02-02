@@ -23,11 +23,27 @@ namespace Rock.Lava
     /// Represents an object model that can be used with Lava.
     /// This is a legacy interface, duplicated from the DotLiquid project.
     /// </summary>
-    [Obsolete("Implement the Rock.Lava.ILavaDataDictionary interface instead.")]
+    [Obsolete( "Implement the Rock.Lava.ILavaDataDictionary interface instead." )]
     public interface ILiquidizable
     {
+        /// <summary>
+        /// Get a representation of the object that can be referenced as a data source in a Liquid template.
+        /// </summary>
+        /// <returns></returns>
         object ToLiquid();
+
+        /// <summary>
+        /// Get the value associated with the specified key.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         object this[object key] { get; }
+
+        /// <summary>
+        /// A flag indicating if the specified key has an associated value for this object.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         bool ContainsKey( object key );
 
         /// <summary>

@@ -49,22 +49,6 @@ namespace Rock.Lava.Blocks
 
         #endregion Parameter Keys
 
-        //private string _markup;
-
-        /// <summary>
-        /// Initializes the specified tag name.
-        /// </summary>
-        /// <param name="tagName">Name of the tag.</param>
-        /// <param name="markup">The markup.</param>
-        /// <param name="tokens">The tokens.</param>
-        //public override void OnInitialize()
-        //    //string tagName, string markup, IEnumerable<string> tokens )
-        //{
-        //    //_markup = markup;
-
-        //    base.OnInitialize( tagName, markup, tokens );
-        //}
-
         /// <summary>
         /// Renders the specified context.
         /// </summary>

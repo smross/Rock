@@ -24,7 +24,7 @@ using System.Text.RegularExpressions;
 
 using Rock.Common;
 
-namespace Rock.Lava.Shortcodes
+namespace Rock.Lava
 {
     /// <summary>
     /// A shortcode that uses a parameterized Lava template supplied at runtime to dynamically generate a block or tag element in a Lava source document.

@@ -36,7 +36,7 @@ namespace Rock.Web.Cache
     /// <seealso cref="EntityCache{T, TT}" />
     /// <seealso cref="Rock.Security.ISecured" />
     /// <seealso cref="Rock.Attribute.IHasAttributes" />
-    /// <seealso cref="Rock.ILavaDataDictionary" />
+    /// <seealso cref="Rock.Lava.ILavaDataDictionary" />
     [Serializable]
     [DataContract]
     public abstract class ModelCache<T, TT> : EntityCache<T, TT>, ISecured, IHasAttributes, ILavaDataDictionary where T : IEntityCache, new()

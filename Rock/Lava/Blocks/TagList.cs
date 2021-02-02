@@ -14,56 +14,18 @@
 // limitations under the License.
 // </copyright>
 //
-using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
-
-using Rock.Utility;
 
 namespace Rock.Lava.Blocks
 {
     /// <summary>
     /// Tag which allows you to list all of the registered Lava commands on your server.
     /// </summary>
-    public class TagList : RockLavaTagBase //, IRockStartup
+    public class TagList : RockLavaTagBase
     {
-        //private static readonly Regex Syntax = new Regex( @"(\w+)" );
-
-        //string _markup = string.Empty;
-
-        /// <summary>
-        /// Method that will be run at Rock startup
-        /// </summary>
-        //public void OnStartup()
-        //{
-        //    //Template.RegisterTag<TagList>( "taglist" );
-        //}
-
-        /// <summary>
-        /// All IRockStartup classes will be run in order by this value. If class does not depend on an order, return zero.
-        /// </summary>
-        /// <value>
-        /// The order.
-        /// </value>
-        //public int StartupOrder { get { return 0; } }
-
-        /// <summary>
-        /// Initializes the specified tag name.
-        /// </summary>
-        /// <param name="tagName">Name of the tag.</param>
-        /// <param name="markup">The markup.</param>
-        /// <param name="tokens">The tokens.</param>
-        /// <exception cref="System.Exception">Could not find the variable to place results in.</exception>
-        //public override void OnInitialize() // string tagName, string markup, IEnumerable<string> tokens )
-        //{
-        //    _markup = markup;
-
-        //    base.OnInitialize( tagName, markup, tokens );
-        //}
-
         /// <summary>
         /// Renders the specified context.
         /// </summary>

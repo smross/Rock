@@ -17,7 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Rock.Lava.Utility;
+using Rock.Lava;
 using Rock.Model;
 using Rock.Web.Cache;
 

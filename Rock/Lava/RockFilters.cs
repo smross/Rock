@@ -4175,7 +4175,7 @@ namespace Rock.Lava
         }
 
         /// <summary>
-        /// Appends Following information to entity/entities or a data object created from <see cref="PersistedDataset(Context, string, string)" />.
+        /// Appends Following information to entity/entities or a data object created from <see cref="PersistedDataset(ILavaContext, string, string)" />.
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="dataObject">The data object.</param>
@@ -4334,7 +4334,7 @@ namespace Rock.Lava
         }
 
         /// <summary>
-        /// Filters results to items that are being followed by the current person. Items can be  entity/entities or a data object created from <see cref="PersistedDataset(Context, string, string)"/>.
+        /// Filters results to items that are being followed by the current person. Items can be  entity/entities or a data object created from <see cref="PersistedDataset(ILavaContext, string, string)"/>.
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="dataObject">The data object.</param>
@@ -4345,7 +4345,7 @@ namespace Rock.Lava
         }
 
         /// <summary>
-        /// Filters results to items that are not being followed by the current person. Items can be  entity/entities or a data object created from <see cref="PersistedDataset(Context, string, string)"/>.
+        /// Filters results to items that are not being followed by the current person. Items can be  entity/entities or a data object created from <see cref="PersistedDataset(ILavaContext, string, string)"/>.
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="dataObject">The data object.</param>
@@ -6411,7 +6411,7 @@ namespace Rock.Lava
             /// <value>
             /// The values.
             /// </value>
-            public new NameValueCollection Values
+            public NameValueCollection Values
             {
                 get
                 {

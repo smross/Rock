@@ -15,7 +15,7 @@
 // </copyright>
 //
 
-namespace Rock.Lava.Shortcodes
+namespace Rock.Lava
 {
     /// <summary>
     /// An implementation of a shortcode in the form of a Liquid block element.

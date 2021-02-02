@@ -71,17 +71,7 @@ namespace Rock.Lava.Shortcodes
         "" )]
     public class Scripturize : RockLavaShortcodeBase, IRockLavaBlock
     {
-        //private static readonly Regex Syntax = new Regex( @"(\w+)" );
-
         string _markup = string.Empty;
-
-        /// <summary>
-        /// Method that will be run at Rock startup
-        /// </summary>
-        //public override void OnStartup()
-        //{
-        //    Template.RegisterShortcode<Scripturize>( "scripturize" );
-        //}
 
         /// <summary>
         /// Specifies the type of Liquid element for this shortcode.
@@ -93,14 +83,6 @@ namespace Rock.Lava.Shortcodes
                 return LavaShortcodeTypeSpecifier.Block;
             }
         }
-
-        //public string SourceElementName
-        //{
-        //    get
-        //    {
-        //        return this.GetType().Name;
-        //    }
-        //}
 
         /// <summary>
         /// Initializes the specified tag name.
@@ -142,11 +124,6 @@ namespace Rock.Lava.Shortcodes
                 result.Write( output );
             }
         }
-
-        //public override void OnParse( List<string> tokens, out List<object> nodes )
-        //{
-        //    base.OnParse( tokens, out nodes );
-        //}
 
         /// <summary>
         /// Parses the markup.

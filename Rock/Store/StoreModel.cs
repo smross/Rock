@@ -31,7 +31,7 @@ namespace Rock.Store
         /// </summary>
         public StoreModel() { }
 
-        public ILavaDataDictionary GetLavaDataDictionary()
+        ILavaDataDictionary ILavaDataDictionarySource.GetLavaDataDictionary()
         {
             var dictionary = this.ToLiquid( false ) as Dictionary<string, object>;
 

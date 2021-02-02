@@ -42,14 +42,6 @@ namespace Rock.Lava.Blocks
         LavaElementAttributes _settings = new LavaElementAttributes();
 
         /// <summary>
-        /// Method that will be run at Rock startup
-        /// </summary>
-        //public override void OnStartup()
-        //{
-        //    Template.RegisterTag<CalendarEvents>( TagSourceName );
-        //}
-
-        /// <summary>
         /// Initializes the specified tag name.
         /// </summary>
         /// <param name="tagName">Name of the tag.</param>

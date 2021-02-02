@@ -21,7 +21,7 @@ using System.Text;
 
 using Rock.Common;
 
-namespace Rock.Lava.Utility
+namespace Rock.Lava
 {
     /// <summary>
     /// A dictionary of objects that can be serialized to a Rock-specific formatted string for portability and storage.

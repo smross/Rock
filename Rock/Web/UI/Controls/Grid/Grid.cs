@@ -2659,6 +2659,7 @@ $('#{this.ClientID} .{GRID_SELECT_CELL_CSS_CLASS}').on( 'click', function (event
         /// Filters a collection of properties from a dynamic type to exclude properties of the base class.
         /// </summary>
         /// <param name="dataSourceObjectType"></param>
+        /// <param name="additionalMergeProperties"></param>
         /// <returns></returns>
         private List<PropertyInfo> FilterDynamicObjectPropertiesCollection( Type dataSourceObjectType, List<PropertyInfo> additionalMergeProperties )
         {

@@ -185,7 +185,7 @@ namespace Rock.Tests.Integration.Lava
                 newShortcode.Name = shortcodeDefinition.Name;
                 newShortcode.TemplateMarkup = shortcodeDefinition.Markup;
 
-                var parameters = RockSerializableDictionary.FromUriEncodedString( shortcodeDefinition.Parameters );
+                var parameters = Rock.Lava.RockSerializableDictionary.FromUriEncodedString( shortcodeDefinition.Parameters );
 
                 newShortcode.Parameters = new Dictionary<string, string>( parameters.Dictionary );
 

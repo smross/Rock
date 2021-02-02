@@ -70,7 +70,7 @@ namespace Rock.Model
         [DataMember]
         public virtual Model.DefinedValue LocationTypeValue { get; set; }
 
-        public ILavaDataDictionary GetLavaDataDictionary()
+        ILavaDataDictionary ILavaDataDictionarySource.GetLavaDataDictionary()
         {
             return new LavaDataDictionary( LocationTypeValue );
         }

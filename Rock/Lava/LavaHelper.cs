@@ -186,7 +186,8 @@ namespace Rock.Lava
                     inheriting from the RockLavaBlockBase class.
                 */
                 foreach ( var blockType in Rock.Reflection.FindTypes( typeof( Rock.Lava.IRockLavaBlock ) )
-                    .Union( Rock.Reflection.FindTypes( typeof( Rock.Lava.Blocks.RockLavaBlockBase ) ) )
+                    .Union( Rock.Reflection.FindTypes( typeof( Rock.Lava.IRockLavaTag ) ) )
+                    .Union( Rock.Reflection.FindTypes( typeof( Rock.Lava.RockLavaBlockBase ) ) )
                     .Select( a => a.Value )
                     .OrderBy( a => a.Name )
                     .ToList() )
