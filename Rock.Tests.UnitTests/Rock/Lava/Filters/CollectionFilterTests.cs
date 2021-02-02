@@ -46,13 +46,13 @@ namespace Rock.Tests.UnitTests.Lava
         }
 
         [TestMethod]
-        public void DistinctBy_OnObjectPropertyWithMultipleValues_ReturnsFirstValueOnly()
+        public void Distinct_OnObjectPropertyWithMultipleValues_ReturnsFirstValueOnly()
         {
             var personList = TestHelper.GetTestPersonCollectionForDeckerAndMarble();
             var mergeValues = new LavaDataDictionary { { "PersonList", personList } };
 
             var lavaTemplate = @"
-{% assign distinctPersonList = PersonList | DistinctBy:'LastName' %}
+{% assign distinctPersonList = PersonList | Distinct:'LastName' %}
 {% for person in distinctPersonList %}
 {{ person.NickName }} {{ person.LastName }}<br>
 {% endfor %}

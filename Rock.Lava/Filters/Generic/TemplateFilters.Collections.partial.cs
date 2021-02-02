@@ -57,14 +57,7 @@ namespace Rock.Lava.Filters
         /// </example>
         public static IEnumerable Distinct( object input )
         {
-            IEnumerable<object> e = input is IEnumerable<object> ? input as IEnumerable<object> : new List<object>( new[] { input } );
-
-            if ( !e.Any() )
-            {
-                return e;
-            }
-
-            return e.ToList().Distinct();
+            return Distinct( input, null );
         }
 
         /// <summary>
@@ -80,16 +73,23 @@ namespace Rock.Lava.Filters
         ///     {{ groupmemberItems | DistinctBy:'Person.FirstName' | Select:'Id' | ToJSON }}
         /// {% endgroupmember %}
         /// ]]></example>
-        public static IEnumerable DistinctBy( object input, string property )
+        public static IEnumerable Distinct( object input, string property )
         {
             IEnumerable<object> e = input is IEnumerable<object> ? input as IEnumerable<object> : new List<object>( new[] { input } );
 
-            if ( !e.Any() || string.IsNullOrWhiteSpace( property ) )
+            if ( !e.Any() )
             {
                 return e;
             }
 
-            return e.GroupBy( d => d.GetPropertyValue( property ) ).Select( x => x.FirstOrDefault() );
+            if ( string.IsNullOrWhiteSpace( property ) )
+            {
+                return e.ToList().Distinct();
+            }
+            else
+            {
+                return e.GroupBy( d => d.GetPropertyValue( property ) ).Select( x => x.FirstOrDefault() );
+            }
         }
 
         /// <summary>
