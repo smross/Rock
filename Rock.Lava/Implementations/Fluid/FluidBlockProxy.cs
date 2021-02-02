@@ -72,17 +72,6 @@ namespace Rock.Lava.Fluid
 
         #endregion
 
-        //private IRockLavaBlock _lavaBlock = null;
-        //private string _sourceElementName;
-
-        //public string SourceElementName
-        //{
-        //    get
-        //    {
-        //        return _sourceElementName; // _lavaBlock.SourceElementName;
-        //    }
-        //}
-
         #region ITagEx Implementation (extended from Fluid.ITag)
 
         /// <summary>
