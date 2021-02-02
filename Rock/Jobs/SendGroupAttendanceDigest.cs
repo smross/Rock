@@ -28,7 +28,7 @@ using Quartz;
 using Rock.Attribute;
 using Rock.Communication;
 using Rock.Data;
-using Rock.Lava;
+using Rock.Utility;
 using Rock.Model;
 
 namespace Rock.Jobs
@@ -262,7 +262,7 @@ namespace Rock.Jobs
         /// <summary>
         /// A class to represent the attendance summary.
         /// </summary>
-        private class AttendanceSummary : LavaDataObject
+        private class AttendanceSummary : RockDynamic
         {
             /// <summary>
             /// The start date for this attendance summary.
@@ -283,7 +283,7 @@ namespace Rock.Jobs
         /// <summary>
         /// A class to represent a regional group and attendance data for each of its child groups.
         /// </summary>
-        private class RegionalGroupAttendance : LavaDataObject
+        private class RegionalGroupAttendance : RockDynamic
         {
             /// <summary>
             /// The regional group name.
@@ -304,7 +304,7 @@ namespace Rock.Jobs
         /// <summary>
         /// A class to represent attendance data for a group.
         /// </summary>
-        private class GroupAttendance : LavaDataObject
+        private class GroupAttendance : RockDynamic
         {
             /// <summary>
             /// The group name.

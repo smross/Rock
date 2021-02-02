@@ -25,7 +25,6 @@ namespace Rock.Communication.SmsActions
     /// <summary>
     /// 
     /// </summary>
-    /// <seealso cref="Rock.ILavaDataObject" />
     public class SmsMessage : ILavaDataDictionary
     {
         /// <summary>
@@ -76,16 +75,7 @@ namespace Rock.Communication.SmsActions
             Attachments = new List<BinaryFile>();
         }
 
-        #region ILiquidizable
-
-        /// <summary>
-        /// Creates a DotLiquid compatible dictionary that represents the current entity object. 
-        /// </summary>
-        /// <returns>DotLiquid compatible dictionary.</returns>
-        public object ToLiquid()
-        {
-            return this;
-        }
+        #region ILavaDataDictionary implementation
 
         /// <summary>
         /// Gets the available keys (for debugging info).
@@ -179,5 +169,14 @@ namespace Rock.Communication.SmsActions
 
         #endregion
 
+        /// <summary>
+        /// Creates a DotLiquid compatible dictionary that represents the current entity object. 
+        /// </summary>
+        /// <returns>DotLiquid compatible dictionary.</returns>
+        [Obsolete]
+        public object ToLiquid()
+        {
+            return this;
+        }
     }
 }

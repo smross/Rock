@@ -22,6 +22,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Rock.Data;
 using Rock.Lava;
 using Rock.Tests.Shared;
+using Rock.Utility;
 using Rock.Web.Cache;
 
 namespace Rock.Tests.UnitTests.Lava
@@ -277,7 +278,25 @@ namespace Rock.Tests.UnitTests.Lava
         /// <summary>
         /// A representation of a Person used for testing purposes.
         /// </summary>
-        public class TestSecuredRockDynamicObject : LavaDataObject
+        public class TestSecuredRockDynamicObject : RockDynamic
+        {
+            [LavaInclude]
+            public int Id { get; set; }
+            public string NickName { get; set; }
+            public string FirstName { get; set; }
+            public string LastName { get; set; }
+            public TestCampus Campus { get; set; }
+
+            public override string ToString()
+            {
+                return $"{NickName} {LastName}";
+            }
+        }
+
+        /// <summary>
+        /// A representation of a Person used for testing purposes.
+        /// </summary>
+        public class TestSecuredLavaDataObject : LavaDataObject
         {
             [LavaInclude]
             public int Id { get; set; }

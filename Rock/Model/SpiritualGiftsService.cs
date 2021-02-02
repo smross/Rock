@@ -17,7 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Rock.Lava;
+using Rock.Utility;
 using Rock.Web.Cache;
 
 namespace Rock.Model
@@ -416,7 +416,7 @@ namespace Rock.Model
         /// <summary>
         /// The SpiritualGiftScore struct used to return the spiritual gift score
         /// </summary>
-        public class SpiritualGiftScore : LavaDataObject
+        public class SpiritualGiftScore : RockDynamic
         {
             /// <summary>
             /// Gets or sets the defined value unique identifier.

@@ -18,7 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.UI;
-using Rock.Lava;
+using Rock.Utility;
 using Rock.Model;
 using Rock.Web.Cache;
 
@@ -27,7 +27,7 @@ namespace Rock.Web.UI.Controls
     /// <summary>
     /// 
     /// </summary>
-    public class NoteOptions : LavaDataObject
+    public class NoteOptions : RockDynamic
     {
         private StateBag _containerViewState;
 

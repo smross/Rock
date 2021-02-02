@@ -199,7 +199,7 @@ namespace Rock.Lava.DotLiquid
 
         #endregion
 
-        #region ILavaDataObjectSource implementation
+        #region ILavaDataDictionarySource implementation
 
         /// <summary>
         /// Gets an instance of this object as a LavaDataDictionary.
@@ -212,7 +212,7 @@ namespace Rock.Lava.DotLiquid
 
         #endregion
 
-        #region ILiquidizable implementation
+        #region DotLiquid.ILiquidizable implementation
 
         /// <summary>
         /// Returns a representation of this object that can be accessed by the DotLiquid framework.

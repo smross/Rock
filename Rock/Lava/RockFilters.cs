@@ -6303,7 +6303,7 @@ namespace Rock.Lava
         /// <summary>
         /// POCO to translate an HTTP cookie in to a Liquidizable form
         /// </summary>
-        public class HttpCookieDrop : LavaDataObject
+        public class HttpCookieDrop : RockDynamic
         {
             private readonly HttpCookie _cookie;
 
@@ -6451,20 +6451,9 @@ namespace Rock.Lava
 
             while ( properties.Any() && obj != null )
             {
-                /* [2020-09-01] DJL
-                 * Support for Liquid.Drop objects has been removed, replaced by the RockDynamic object.
-                 * RockDynamic does not support the late execution of methods to lazy-load data.
-                 * If this causes a problem, lazy-loading features may need to be added to RockDynamic.
-                 */
-                //if ( obj is RockDynamic drop )
-                //{
-                //    obj = drop.InvokeDrop( properties.First() );
-                //}
-                if ( obj is LavaDataObject rockDynamic )
+                if ( obj is ILavaDataDictionary lavaDictionary )
                 {
-                    rockDynamic.TryGetMember( properties.First(), out obj );
-
-                    //.TryInvoke( InvokeBinder. new InvokeBinder(.InvokeDrop( properties.First() );
+                    obj = lavaDictionary.GetValue( properties.First() );
                 }
                 else if ( obj is IDictionary dictionary )
                 {

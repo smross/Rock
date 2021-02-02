@@ -16,14 +16,14 @@
 //
 using System;
 using System.Collections.Generic;
-using Rock.Lava;
+using Rock.Utility;
 
 namespace Rock.StatementGenerator
 {
     /// <summary>
     /// 
     /// </summary>
-    public class StatementGeneratorOptions : LavaDataObject
+    public class StatementGeneratorOptions : RockDynamic
     {
         /// <summary>
         /// Gets or sets the start date.

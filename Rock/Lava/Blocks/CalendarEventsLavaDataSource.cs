@@ -510,8 +510,7 @@ namespace Rock.Lava.Blocks
     /// <summary>
     /// A class to store event item occurrence data for use in a Lava Template.
     /// </summary>
-    //[DotLiquid.LiquidType( "EventItemOccurrence", "DateTime", "Name", "Date", "Time", "EndDate", "EndTime", "Campus", "Location", "LocationDescription", "Description", "Summary", "OccurrenceNote", "DetailPage", "CalendarNames", "AudienceNames" )]
-    public class EventOccurrenceSummary : LavaDataObject
+    public class EventOccurrenceSummary : RockDynamic
     {
         /// <summary>
         /// The data model for this event occurrence.

@@ -14,6 +14,7 @@
 // limitations under the License.
 // </copyright>
 //
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Rock.Lava;
@@ -23,7 +24,6 @@ namespace Rock.CheckIn
     /// <summary>
     /// 
     /// </summary>
-    /// <seealso cref="Rock.ILavaDataObject" />
     [DataContract]
     public class CheckInMessage : ILavaDataDictionary
     {
@@ -114,6 +114,7 @@ namespace Rock.CheckIn
         /// </summary>
         /// <returns></returns>
         /// <exception cref="System.NotImplementedException"></exception>
+        [Obsolete]
         public object ToLiquid()
         {
             return this;

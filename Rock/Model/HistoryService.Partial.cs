@@ -21,7 +21,7 @@ using System.Linq;
 using System.Reflection;
 
 using Rock.Data;
-using Rock.Lava;
+using Rock.Utility;
 using Rock.Web.Cache;
 
 namespace Rock.Model
@@ -272,7 +272,7 @@ namespace Rock.Model
         /// <summary>
         /// 
         /// </summary>
-        public class HistorySummaryByDateTimeAndVerb : LavaDataObject
+        public class HistorySummaryByDateTimeAndVerb : RockDynamic
         {
             /// <summary>
             /// Gets or sets the date time 
@@ -310,7 +310,7 @@ namespace Rock.Model
         /// <summary>
         /// 
         /// </summary>
-        public class HistorySummaryListByEntityTypeAndVerb : LavaDataObject
+        public class HistorySummaryListByEntityTypeAndVerb : RockDynamic
         {
             /// <summary>
             /// Gets or sets the verb.
@@ -370,7 +370,7 @@ namespace Rock.Model
         /// <summary>
         /// 
         /// </summary>
-        public class HistorySummaryByDateTime : LavaDataObject
+        public class HistorySummaryByDateTime : RockDynamic
         {
             /// <summary>
             /// Gets or sets the date time.
@@ -392,7 +392,7 @@ namespace Rock.Model
         /// <summary>
         /// 
         /// </summary>
-        public class HistorySummary : LavaDataObject
+        public class HistorySummary : RockDynamic
         {
             /// <summary>
             /// Gets or sets the created date time.

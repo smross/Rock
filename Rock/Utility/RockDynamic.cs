@@ -30,7 +30,7 @@ namespace Rock.Utility
     /// It can also be used to create a Lava Proxy for C# objects that can't inherit from RockDynamic.
     /// </summary>
     /// <seealso cref="System.Dynamic.DynamicObject" />
-    /// <seealso cref="Rock.Lava.ILiquidizable" />
+    /// <seealso cref="Rock.Lava.ILavaDataDictionary" />
     public class RockDynamic : DynamicObject, ILavaDataDictionary
     {
         private Dictionary<string, object> _members = new Dictionary<string, object>();
@@ -327,7 +327,7 @@ namespace Rock.Utility
             }
         }
 
-        #region ILavaDataObject Implementation
+        #region ILavaDataDictionary Implementation
 
         /// <summary>
         /// Gets the available keys (for debugging info).

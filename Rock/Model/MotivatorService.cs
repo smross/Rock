@@ -17,7 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Rock.Lava;
+using Rock.Utility;
 using Rock.Web.Cache;
 
 namespace Rock.Model
@@ -619,7 +619,7 @@ namespace Rock.Model
         /// <summary>
         /// The MotivatorScore struct used to return the motivator score
         /// </summary>
-        public class MotivatorScore : LavaDataObject
+        public class MotivatorScore : RockDynamic
         {
             /// <summary>
             /// Gets or sets the Name.
