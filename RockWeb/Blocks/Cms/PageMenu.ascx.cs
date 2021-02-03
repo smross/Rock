@@ -207,19 +207,19 @@ namespace RockWeb.Blocks.Cms
                 {
                     pageProperties.Add( "Page", rootPage.GetMenuProperties( levelsDeep, CurrentPerson, rockContext, pageHeirarchy, pageParameters, queryString ) );
                 }
-           
+
                 var lavaTemplate = GetTemplate();
 
                 // Apply Enabled Lava Commands
+                var lavaContext = LavaEngine.CurrentEngine.NewContext( pageProperties );
+
                 var enabledCommands = GetAttributeValue( AttributeKey.EnabledLavaCommands );
 
-                lavaTemplate.EnabledCommands = enabledCommands.SplitDelimitedValues();
+                lavaContext.SetEnabledCommands( enabledCommands.SplitDelimitedValues() );
 
                 IList<Exception> errors;
 
-                lavaTemplate.TryRender( pageProperties, out content, out errors );
-
-                content = lavaTemplate.Render( pageProperties );
+                lavaTemplate.TryRender( lavaContext, out content, out errors );
 
                 // Check for Lava rendering errors.
                 if ( errors.Any() )

@@ -25,19 +25,13 @@ namespace Rock.Lava
     public abstract class LavaTemplateBase : ILavaTemplate
     {
         /// <summary>
-        /// The set of Lava commands permitted for this template.
-        /// </summary>
-        [Obsolete( "Do Lava Commands need to be enabled (and cached) for a Template, or only at the context level?" )]
-        public IList<string> EnabledCommands { get; set; }
-
-        /// <summary>
         /// Try to render the template.
         /// Errors will be included in the rendered output.
         /// </summary>
-        /// <returns></returns>        
+        /// <returns></returns>
         public string Render()
         {
-            return Render( null );
+            return Render( context:null );
         }
 
         /// <summary>
@@ -45,13 +39,38 @@ namespace Rock.Lava
         /// Errors will be included in the rendered output.
         /// </summary>
         /// <param name="values"></param>
-        /// <returns></returns>        
+        /// <returns></returns>
         public string Render( IDictionary<string, object> values )
         {
             string output;
             IList<Exception> errors;
 
             var isValid = TryRender( values, out output, out errors );
+
+            if ( !isValid )
+            {
+                // Append error messages to the output.
+                foreach ( var error in errors )
+                {
+                    output += "\nLava Error: " + error.Message;
+                }
+            }
+
+            return output;
+        }
+
+        /// <summary>
+        /// Try to render the template using the provided context.
+        /// Errors will be included in the rendered output.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public string Render( ILavaContext context )
+        {
+            string output;
+            IList<Exception> errors;
+
+            var isValid = TryRender( context, out output, out errors );
 
             if ( !isValid )
             {
@@ -75,9 +94,6 @@ namespace Rock.Lava
         public bool TryRender( IDictionary<string, object> values, out string output, out IList<Exception> errors )
         {
             var context = LavaEngine.CurrentEngine.NewContext( values );
-
-            // Set the EnabledCommands for this template.
-            context.SetEnabledCommands( this.EnabledCommands );
 
             return TryRender( context, out output, out errors );
         }

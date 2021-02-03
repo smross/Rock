@@ -28,7 +28,7 @@ namespace Rock.Lava
         /// <summary>
         /// Render the template output.
         /// </summary>
-        /// <returns></returns>        
+        /// <returns></returns>
         string Render();
 
         /// <summary>
@@ -36,8 +36,16 @@ namespace Rock.Lava
         /// Errors will be included in the rendered output.
         /// </summary>
         /// <param name="values"></param>
-        /// <returns></returns>        
+        /// <returns></returns>
         string Render( IDictionary<string, object> values );
+
+        /// <summary>
+        /// Try to render the template using the provided context.
+        /// Errors will be included in the rendered output.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        string Render( ILavaContext context );
 
         /// <summary>
         /// Try to render the template using the provided context values.
@@ -65,10 +73,5 @@ namespace Rock.Lava
         /// <param name="errors"></param>
         /// <returns></returns>
         bool TryRender( LavaRenderParameters parameters, out string output, out IList<Exception> errors );
-
-        /// <summary>
-        /// The set of Lava commands permitted for this template.
-        /// </summary>
-        IList<string> EnabledCommands { get; set; }
     }
 }

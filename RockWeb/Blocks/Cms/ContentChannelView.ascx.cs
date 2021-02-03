@@ -833,7 +833,11 @@ $(document).ready(function() {
 
                 var template = GetTemplate();
 
-                outputContents = template.Render( mergeFields );
+                var lavaContext = LavaEngine.CurrentEngine.NewContext( mergeFields );
+
+                lavaContext.SetEnabledCommands( GetAttributeValue( AttributeKey.EnabledLavaCommands ).SplitDelimitedValues() );
+
+                outputContents = template.Render( lavaContext );
 
                 if ( OutputCacheDuration.HasValue && OutputCacheDuration.Value > 0 )
                 {
@@ -897,8 +901,6 @@ $(document).ready(function() {
                         string cacheTags = GetAttributeValue( AttributeKey.CacheTags ) ?? string.Empty;
                         AddCacheItem( TEMPLATE_CACHE_KEY, template, ItemCacheDuration.Value, cacheTags );
                     }
-
-                    template.EnabledCommands = GetAttributeValue( AttributeKey.EnabledLavaCommands ).SplitDelimitedValues();
                 }
             }
             catch ( Exception ex )
