@@ -34,14 +34,5 @@ namespace Rock.Lava
         /// <param name="writer"></param>
         /// <param name="encoder"></param>
         void Render( ILiquidFrameworkElementRenderer baseRenderer, ILavaContext context, TextWriter writer, TextEncoder encoder );
-
-        /// <summary>
-        /// Parse the source text for this document element.
-        /// </summary>
-        /// <param name="baseRenderer"></param>
-        /// <param name="tokens"></param>
-        /// <param name="nodes"></param>
-        [Obsolete]
-        void Parse( ILiquidFrameworkElementRenderer baseRenderer, List<string> tokens, out List<object> nodes );
     }
 }

@@ -205,13 +205,6 @@ namespace Rock.Lava.Fluid
             var result = WriteToDefaultAsync( writer, encoder, fluidContext, statements );
         }
 
-        void ILiquidFrameworkElementRenderer.Parse( ILiquidFrameworkElementRenderer baseRenderer, List<string> tokens, out List<object> nodes )
-        {
-            // TODO: May need to rework this?
-
-            nodes = null;
-        }
-
         #endregion
     }
 }

@@ -186,18 +186,6 @@ namespace Rock.Lava
             OnRender( context, result );
         }
 
-        void ILiquidFrameworkElementRenderer.Parse( ILiquidFrameworkElementRenderer baseRenderer, List<string> tokens, out List<object> nodes )
-        {
-            if ( baseRenderer == null )
-            {
-                nodes = null;
-                return;
-            }
-
-            // Forward this call through to the implementation provided by the shortcode component.
-            baseRenderer.Parse( null, tokens, out nodes );
-        }
-
         #endregion
     }
 }

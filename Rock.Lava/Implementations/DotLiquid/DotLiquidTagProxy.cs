@@ -124,13 +124,6 @@ namespace Rock.Lava.DotLiquid
             base.Render( dotLiquidContext, result );
         }
 
-        void ILiquidFrameworkElementRenderer.Parse( ILiquidFrameworkElementRenderer baseRenderer, List<string> tokens, out List<object> nodes )
-        {
-            base.Parse( tokens );
-
-            nodes = base.NodeList;
-        }
-
         #endregion
 
     }

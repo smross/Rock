@@ -141,11 +141,6 @@ namespace Rock.Lava
             OnRender( context, result );
         }
 
-        void ILiquidFrameworkElementRenderer.Parse( ILiquidFrameworkElementRenderer baseRenderer, List<string> tokens, out List<object> nodes )
-        {
-            baseRenderer.Parse( baseRenderer, tokens, out nodes );
-        }
-
         #endregion
     }
 }

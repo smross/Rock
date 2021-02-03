@@ -140,11 +140,6 @@ namespace Rock.Lava.Fluid
             // By default, rendering a custom tag does not produce any output.
         }
 
-        void ILiquidFrameworkElementRenderer.Parse( ILiquidFrameworkElementRenderer baseRenderer, List<string> tokens, out List<object> nodes )
-        {
-            nodes = null;
-        }
-
         #endregion
     }
 }
