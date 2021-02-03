@@ -71,9 +71,6 @@ namespace Rock.Lava.Fluid
         /// </summary>
         public void EnterBlockSection( string name, TagStatement statement )
         {
-            //TODO: Remove debug statements
-            Debug.Print( $"Entering Block: ThreadId={System.Threading.Thread.CurrentThread.ManagedThreadId}, CurrentBlockCount={_blocks.Count}" );
-
             CurrentBlock.EnterBlock( name, statement );
         }
 
@@ -83,8 +80,6 @@ namespace Rock.Lava.Fluid
         /// </summary>
         public void ExitBlock()
         {
-            Debug.Print( $"Exiting Block: ThreadId={System.Threading.Thread.CurrentThread.ManagedThreadId}, CurrentBlockCount={_blocks.Count}" );
-
             CurrentBlock = _blocks.Pop();
         }
     }
