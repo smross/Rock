@@ -216,41 +216,6 @@ namespace Rock.Tests.Integration.Lava
         #region Web Cache
 
         [TestMethod]
-        public void GetCache_CacheValueDoesNotExist_EmitsDefaultValue()
-        {
-            var template = @"
-{{ '' | SetCache:'SelectedCampus' }}
-{{ 'SelectedCampus' | GetCache:'West Valley' }}
-";
-
-            TestHelper.AssertTemplateOutput( "West Valley", template, null, ignoreWhitespace: true );
-        }
-
-        [TestMethod]
-        public void GetCache_CacheValueExists_EmitsCacheValue()
-        {
-            var template = @"
-{{ 'East Valley' | SetCache:'SelectedCampus' }}
-{{ 'SelectedCampus' | GetCache:'West Valley' }}
-";
-
-            TestHelper.AssertTemplateOutput( "East Valley", template, null, ignoreWhitespace: true );
-        }
-
-        [TestMethod]
-        public void SetCache_CacheValueExists_ExistingValueIsOverwritten()
-        {
-            var template = @"
-{{ 'East Valley' | SetCache:'SelectedCampus' }}
-Cached Campus: {{ 'SelectedCampus' | GetCache }}<br>
-{{ 'West Valley' | SetCache:'SelectedCampus' }}
-Cached Campus: {{ 'SelectedCampus' | GetCache }}<br>
-";
-
-            TestHelper.AssertTemplateOutput( "CachedCampus:EastValley<br>CachedCampus:WestValley<br>", template, null, ignoreWhitespace: true );
-        }
-
-        [TestMethod]
         public void SetCache_WithQueryParameter_EmitsUrlWithQueryString()
         {
             var simulator = new Http.TestLibrary.HttpSimulator();

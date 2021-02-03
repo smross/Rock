@@ -6250,55 +6250,6 @@ namespace Rock.Lava
             return pageReference.BuildUrl();
         }
 
-        #region Caching
-
-        /// <summary>
-        /// Get a previously cached value from the memory cache.
-        /// </summary>
-        /// <param name="input">The cache key the value was stored in.</param>
-        /// <param name="defaultValue">The optional value to return if no cached value was found.</param>
-        /// <example><![CDATA[
-        /// {{ 'SelectedCampus' | GetCache:'West Valley' }}
-        /// ]]></example>
-        public static object GetCache( object input, object defaultValue = null )
-        {
-            return Rock.Web.Cache.RockCache.Get( $"LavaCache.{input}" ) ?? defaultValue;
-        }
-
-        /// <summary>
-        /// Store a value into the memory cache. This filter always returns the input object.
-        /// </summary>
-        /// <param name="input">The object value to store in the cache. Can pass null to remove any existing cached item.</param>
-        /// <param name="cacheKey">The cache key the value is to be stored in.</param>
-        /// <param name="cacheDuration">The number of seconds to cache the value for. If not specified or 0 then the item is cached until removed.</param>
-        /// <example><![CDATA[
-        /// {{ 'West Valley' | SetCache:'SelectedCampus' }}
-        /// ]]></example>
-        public static void SetCache( object input, object cacheKey, object cacheDuration = null )
-        {
-            var key = $"LavaCache.{cacheKey}";
-
-            int? cacheTime = cacheDuration.ToStringSafe().AsIntegerOrNull();
-
-            if ( string.IsNullOrEmpty( input as string ) )
-            {
-                Rock.Web.Cache.RockCache.Remove( key );
-            }
-            else
-            {
-                if ( cacheTime != null )
-                {
-                    Rock.Web.Cache.RockCache.AddOrUpdate( key, string.Empty, input, RockDateTime.Now.AddSeconds( cacheTime.Value ) );
-                }
-                else
-                {
-                    Rock.Web.Cache.RockCache.AddOrUpdate( key, string.Empty, input );
-                }
-            }
-        }
-
-        #endregion
-
         #region POCOs
         /// <summary>
         /// POCO to translate an HTTP cookie in to a Liquidizable form
