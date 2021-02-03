@@ -594,7 +594,7 @@ namespace Rock.WebStartup
             // Get the Lava Engine configuration settings.
             LavaEngineTypeSpecifier? engineType = null;
 
-            var liquidEngineTypeValue = GlobalAttributesCache.Value( "LavaRenderingEngine" ).ToLower();
+            var liquidEngineTypeValue = GlobalAttributesCache.Value( Rock.SystemKey.SystemSetting.LAVA_ENGINE_LIQUID_FRAMEWORK ).ToLower();
 
             if ( string.IsNullOrWhiteSpace( liquidEngineTypeValue ) || liquidEngineTypeValue == "default" )
             {
