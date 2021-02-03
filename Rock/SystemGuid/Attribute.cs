@@ -66,7 +66,7 @@ namespace Rock.SystemGuid
         /// <summary>
         /// The Liquid Framework used to parse and render Lava.
         /// </summary>
-        public const string GLOBAL_LAVA_LIQUID_FRAMEWORK = "E64A9519-2263-455E-A224-5406CCDA52A4";
+        public const string GLOBAL_LAVA_ENGINE_LIQUID_FRAMEWORK = "9CBDD352-A4F5-47D6-9EFE-6115774B2DFE";
 
         /// <summary>
         /// The Facebook link attribute

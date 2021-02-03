@@ -234,6 +234,6 @@ namespace Rock.SystemKey
 
         /// Lava Engine Type.
         /// </summary>
-        public const string LAVA_ENGINE_TYPE = "LavaEngineType";
+        public const string LAVA_ENGINE_LIQUID_FRAMEWORK = "core_LavaEngine_LiquidFramework";
     }
 }
