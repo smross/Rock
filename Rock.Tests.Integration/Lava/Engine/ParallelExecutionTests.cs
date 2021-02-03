@@ -66,7 +66,7 @@ Font Bold: true
 
             var parallelOptions = new ParallelOptions { MaxDegreeOfParallelism = 100 };
 
-            Parallel.For( 1, 100000, parallelOptions, ( x ) =>
+            Parallel.For( 1, 1000, parallelOptions, ( x ) =>
             {
                 var context = new LavaDataDictionary()
                 {
@@ -135,9 +135,9 @@ Panel 3 - Panel 3 content.
 
             expectedOutput = expectedOutput.Replace( "``", @"""" );
 
-            var parallelOptions = new ParallelOptions { MaxDegreeOfParallelism = 100 };
+            var parallelOptions = new ParallelOptions { MaxDegreeOfParallelism = 10 };
 
-            Parallel.For( 0, 100000, parallelOptions, ( x ) =>
+            Parallel.For( 0, 1000, parallelOptions, ( x ) =>
             {
                 var context = new LavaDataDictionary();
                 context["iteration"] = x;
