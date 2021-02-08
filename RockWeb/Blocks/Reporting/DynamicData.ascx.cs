@@ -972,7 +972,7 @@ namespace RockWeb.Blocks.Reporting
         /// <summary>
         ///
         /// </summary>
-        private class DataRowDrop : RockDynamic
+        private class DataRowDrop : LavaDataObject
         {
             private readonly DataRow _dataRow;
 
@@ -981,11 +981,11 @@ namespace RockWeb.Blocks.Reporting
                 _dataRow = dataRow;
             }
 
-            public override bool TryGetMember( GetMemberBinder binder, out object result )
+            protected override bool OnTryGetValue( string key, out object result )
             {
-                if ( _dataRow.Table.Columns.Contains( binder.Name ) )
+                if ( _dataRow.Table.Columns.Contains( key ) )
                 {
-                    result = _dataRow[binder.Name];
+                    result = _dataRow[key];
                     return true;
                 }
 
