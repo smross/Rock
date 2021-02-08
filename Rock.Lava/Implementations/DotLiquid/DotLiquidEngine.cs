@@ -223,9 +223,9 @@ namespace Rock.Lava.DotLiquid
             // Unwrap proxy objects.
             for ( int i = 0; i < args.Count; i++ )
             {
-                if ( ( args[i] is ILavaDataDictionarySource ) )
+                if ( args[i] is ILiquidFrameworkDataObjectProxy proxy )
                 {
-                    args[i] = ( (ILavaDataDictionarySource)args[i] ).GetLavaDataDictionary();
+                    args[i] = proxy.GetProxiedDataObject();
                 }
 
                 if ( args[i] is DropProxy )
