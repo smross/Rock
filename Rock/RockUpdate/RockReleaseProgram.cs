@@ -1,4 +1,4 @@
-﻿namespace Rock.Services
+﻿namespace Rock.RockUpdate
 {
     /// <summary>
     /// One of three options that represent which release 'program' one can be on.
