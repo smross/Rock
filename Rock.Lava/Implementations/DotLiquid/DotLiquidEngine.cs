@@ -343,7 +343,7 @@ namespace Rock.Lava.DotLiquid
         /// <param name="output"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        protected override bool OnTryRender( ILavaTemplate template, LavaRenderParameters parameters, out string output )
+        protected override bool OnTryRender( ILavaTemplate template, LavaRenderParameters parameters, out string output, out List<Exception> errors )
         {
             try
             {
@@ -376,7 +376,7 @@ namespace Rock.Lava.DotLiquid
 
                 output = templateProxy.DotLiquidTemplate.Render( renderSettings );
 
-                var errors = renderSettings.Context.Errors;
+                errors = renderSettings.Context.Errors;
 
                 return true;
             }
@@ -384,6 +384,7 @@ namespace Rock.Lava.DotLiquid
             {
                 ProcessException( ex, out output );
 
+                errors = new List<Exception> { ex };
                 return false;
             }
         }

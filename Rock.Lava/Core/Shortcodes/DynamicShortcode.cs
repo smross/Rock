@@ -218,9 +218,7 @@ namespace Rock.Lava
 
             // Resolve any merge fields in the block content.
             // The block content will then be merged into the shortcode template to produce the final output.
-            string blockMarkup;
-
-            LavaEngine.CurrentEngine.TryRenderTemplate( _blockMarkup.ToString(), out blockMarkup, internalMergeFields );
+            var blockMarkup = LavaEngine.CurrentEngine.RenderTemplate( _blockMarkup.ToString(), internalMergeFields );
 
             // Extract any child elements from the block content.
             Dictionary<string, object> childParameters;
@@ -252,9 +250,7 @@ namespace Rock.Lava
             // Now ensure there aren't any entity commands in the block that are not allowed.
             // This is necessary because the shortcode may be configured to allow more entities for processing
             // than the source block, template, action, etc. permits.
-            string securityCheck;
-
-            LavaEngine.CurrentEngine.TryRenderTemplate( blockMarkup, out securityCheck, context );
+            var securityCheck = LavaEngine.CurrentEngine.RenderTemplate( blockMarkup, context );
 
             Regex securityPattern = new Regex( string.Format( Constants.Messages.NotAuthorizedMessage, ".*" ) );
             Match securityMatch = securityPattern.Match( securityCheck );
@@ -265,25 +261,26 @@ namespace Rock.Lava
             }
             else
             {
-                // If the shortcode specifies a set of enabled Lava commands, set these for the current context.
-                var blockCommands = context.GetEnabledCommands();
+                // Merge the shortcode template in a new context, using the parameters and security allowed by the shortcode.
+                var shortcodeContext = LavaEngine.CurrentEngine.NewContext( parms );
 
-                if ( _shortcode.EnabledLavaCommands.Any() )
+                // If the shortcode specifies a set of enabled Lava commands, set these for the current context.
+                // If not, use the commands enabled for the current context.
+                if ( _shortcode.EnabledLavaCommands != null
+                     &&  _shortcode.EnabledLavaCommands.Any() )
                 {
-                    context.SetEnabledCommands( _shortcode.EnabledLavaCommands );
+                    shortcodeContext.SetEnabledCommands( _shortcode.EnabledLavaCommands );
+                }
+                else
+                {
+                    shortcodeContext.SetEnabledCommands( context.GetEnabledCommands() );
                 }
 
-                // Resolve the child parameters in the template to get the final output.
                 var lavaTemplate = _shortcode.TemplateMarkup;
 
-                string results;
-
-               LavaEngine.CurrentEngine.TryRenderTemplate( lavaTemplate, out results, shortcodeContext );
+                var results = LavaEngine.CurrentEngine.RenderTemplate( lavaTemplate, shortcodeContext );
 
                 result.Write( results.Trim() );
-
-                // Revert the enabled commands to those of the block.
-                context.SetEnabledCommands( blockCommands );
             }
         }
 
@@ -407,9 +404,7 @@ namespace Rock.Lava
         private void SetParametersFromElementAttributes( Dictionary<string, object> parameters, string elementAttributesMarkup, ILavaContext context )
         {
             // Resolve any Lava merge fields in the element attributes markup.
-            string resolvedMarkup;
-
-            LavaEngine.CurrentEngine.TryRenderTemplate( elementAttributesMarkup, out resolvedMarkup, context );
+            var resolvedMarkup = LavaEngine.CurrentEngine.RenderTemplate( elementAttributesMarkup, context );
 
             var markupItems = Regex.Matches( resolvedMarkup, @"(\S*?:'[^']+')" )
                 .Cast<Match>()
