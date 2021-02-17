@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Web;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Rock.RockUpdate;
 using Rock.Tests.Shared;
 
 namespace Rock.Tests.Integration.Web.Utilities
@@ -9,16 +10,19 @@ namespace Rock.Tests.Integration.Web.Utilities
     [TestClass]
     public class RockUpdateHelperTests
     {
+        /// <summary>
+        /// Gets the env data as json should return correct data.
+        /// </summary>
         [TestMethod]
         public void GetEnvDataAsJsonShouldReturnCorrectData()
         {
             var request = new HttpRequest( "test", "http://localhost/test", "" );
-            var data = Rock.Web.Utilities.RockUpdateHelper.GetEnvDataAsJson( request, "test" );
+            var data = RockUpdateHelper.GetEnvDataAsJson( request, "test" );
 
             var actualResult = data.FromJsonOrNull<Dictionary<string, string>>();
             Assert.That.AreEqual( "test", actualResult["AppRoot"] );
             Assert.That.AreEqual( ( IntPtr.Size == 4 ) ? "32bit" : "64bit", actualResult["Architecture"] );
-            Assert.That.AreEqual( Rock.Web.Utilities.RockUpdateHelper.GetDotNetVersion(), actualResult["AspNetVersion"] );
+            Assert.That.AreEqual( RockUpdateHelper.GetDotNetVersion(), actualResult["AspNetVersion"] );
             Assert.That.AreEqual( Environment.OSVersion.ToString(), actualResult["ServerOs"] );
         }
 
@@ -37,7 +41,7 @@ namespace Rock.Tests.Integration.Web.Utilities
         [DataRow( 378388, "Unknown" )]
         public void GetDotNetVersionShouldReturnCorrectString(int releaseNumber, string expectedResult )
         {
-            var actualResult = Rock.Web.Utilities.RockUpdateHelper.GetDotNetVersion( releaseNumber );
+            var actualResult = RockUpdateHelper.GetDotNetVersion( releaseNumber );
             Assert.That.AreEqual( expectedResult, actualResult );
         }
     }

@@ -15,6 +15,7 @@
 // </copyright>
 //
 using System;
+using Rock.RockUpdate;
 using Rock.Web.Utilities;
 
 namespace Rock.Utility.Settings

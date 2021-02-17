@@ -32,6 +32,8 @@ using RestSharp;
 using Rock;
 using Rock.Data;
 using Rock.Model;
+using Rock.RockUpdate;
+using Rock.RockUpdate.Enum;
 using Rock.Services.NuGet;
 using Rock.VersionInfo;
 using Rock.Web.Cache;
@@ -870,7 +872,7 @@ namespace RockWeb.Blocks.Core
                         numberOfActiveRecords = 0;
                     }
 
-                    var environmentData = Rock.Web.Utilities.RockUpdateHelper.GetEnvDataAsJson( Request, ResolveRockUrl( "~/" ) );
+                    var environmentData = RockUpdateHelper.GetEnvDataAsJson( Request, ResolveRockUrl( "~/" ) );
 
                     // now send them to SDN/Rock server
                     SendToSpark( rockInstanceId, version, ipAddress, publicUrl, organizationName, organizationLocation, numberOfActiveRecords, environmentData );

@@ -14,7 +14,7 @@
 // limitations under the License.
 // </copyright>
 //
-namespace Rock.Web.Utilities
+namespace Rock.RockUpdate.Enum
 {
     /// <summary>
     /// Represents the possible results of a version check.

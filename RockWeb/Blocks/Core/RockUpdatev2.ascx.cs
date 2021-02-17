@@ -13,27 +13,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // </copyright>
-//
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Web.UI;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
-using NuGet;
 
 using Rock;
-using Rock.Data;
 using Rock.Model;
 using Rock.RockUpdate;
-using Rock.Services.NuGet;
+using Rock.RockUpdate.Enum;
+using Rock.Utility;
 using Rock.VersionInfo;
 using Rock.Web.Cache;
-using Rock.Web.Utilities;
 
 namespace RockWeb.Blocks.Core
 {
@@ -45,51 +42,12 @@ namespace RockWeb.Blocks.Core
         #region Fields
         private bool _isEarlyAccessOrganization = false;
         private List<RockRelease> _releases = new List<RockRelease>();
-        WebProjectManager nuGetService = null;
-        private string _rockPackageId = "Rock";
-        IEnumerable<IPackage> _availablePackages = null;
         Version _installedVersion = new Version( "0.0.0" );
-        private int _numberOfAvailablePackages = 0;
         private bool _isOkToProceed = false;
         private bool _hasSqlServer14OrHigher = false;
         #endregion
 
         #region Properties
-
-        /// <summary>
-        /// Obtains a WebProjectManager from the Global "UpdateServerUrl" Attribute.
-        /// </summary>
-        /// <value>
-        /// The NuGet service or null if no valid service could be found using the UpdateServerUrl.
-        /// </value>
-        protected WebProjectManager NuGetService
-        {
-            get
-            {
-                //if ( nuGetService == null )
-                //{
-                //    var globalAttributesCache = GlobalAttributesCache.Get();
-                //    string packageSource = globalAttributesCache.GetValue( "UpdateServerUrl" );
-                //    if ( packageSource.ToLowerInvariant().Contains( "rockalpha" ) || packageSource.ToLowerInvariant().Contains( "rockbeta" ) )
-                //    {
-                //        nbRepoWarning.Visible = true;
-                //    }
-
-                //    // Since you can use a URL or a local path, we can't just check for valid URI
-                //    try
-                //    {
-                //        string siteRoot = Request.MapPath( "~/" );
-                //        nuGetService = new WebProjectManager( packageSource, siteRoot );
-                //    }
-                //    catch
-                //    {
-                //        // if caught, we will return a null nuGetService
-                //    }
-                //}
-                return null;
-            }
-        }
-
         #endregion
 
         #region Base Control Methods
@@ -125,78 +83,61 @@ namespace RockWeb.Blocks.Core
             Server.ScriptTimeout = 900;
             ScriptManager.GetCurrent( Page ).AsyncPostBackTimeout = 900;
 
+            _isEarlyAccessOrganization = rockUpdateService.IsEarlyAccessInstance();
+            _installedVersion = new Version( VersionInfo.GetRockSemanticVersionNumber() );
+
             DisplayRockVersion();
             if ( !IsPostBack )
             {
-                //if ( NuGetService == null )
-                //{
-                //    pnlNoUpdates.Visible = false;
-                //    pnlError.Visible = true;
-                //    nbErrors.Text = string.Format( "Your UpdateServerUrl is not valid. It is currently set to: {0}", GlobalAttributesCache.Get().GetValue( "UpdateServerUrl" ) );
-                //}
-                //else
-                //{
-                try
+                btnIssues.NavigateUrl = rockUpdateService.GetRockEarlyAccessRequestUrl();
+
+                if ( _isEarlyAccessOrganization )
                 {
-                    _isEarlyAccessOrganization = rockUpdateService.IsEarlyAccessInstance();
-                    _installedVersion = new Version( VersionInfo.GetRockSemanticVersionNumber() );
+                    hlblEarlyAccess.LabelType = Rock.Web.UI.Controls.LabelType.Success;
+                    hlblEarlyAccess.Text = "Early Access: Enabled";
 
-                    btnIssues.NavigateUrl = rockUpdateService.GetRockEarlyAccessRequestUrl();
-
-                    if ( _isEarlyAccessOrganization )
-                    {
-                        hlblEarlyAccess.LabelType = Rock.Web.UI.Controls.LabelType.Success;
-                        hlblEarlyAccess.Text = "Early Access: Enabled";
-
-                        pnlEarlyAccessNotEnabled.Visible = false;
-                        pnlEarlyAccessEnabled.Visible = true;
-                    }
-
-                    var result = CheckFrameworkVersion();
-
-                    _isOkToProceed = true;
-
-                    if ( result == DotNetVersionCheckResult.Fail )
-                    {
-
-                        nbVersionIssue.Visible = true;
-                        nbVersionIssue.Text += "<p>You will need to upgrade your hosting server in order to proceed with the v13 update.</p>";
-                        nbBackupMessage.Visible = false;
-                    }
-                    else if ( result == DotNetVersionCheckResult.Unknown )
-                    {
-                        nbVersionIssue.Visible = true;
-                        nbVersionIssue.Text += "<p>You may need to upgrade your hosting server in order to proceed with the v13 update. We were <b>unable to determine which Framework version</b> your server is using.</p>";
-                        nbVersionIssue.Details += "<div class='alert alert-warning'>We were unable to check your server to verify that the .Net 4.7.2 Framework is installed! <b>You MUST verify this manually before you proceed with the update</b> otherwise your Rock application will be broken until you update the server.</div>";
-                        nbBackupMessage.Visible = false;
-                    }
-
-                    _hasSqlServer14OrHigher = CheckSqlServerVersionGreaterThenSqlServer2012();
-
-                    if ( !_hasSqlServer14OrHigher )
-                    {
-                        nbSqlServerVersionIssue.Visible = true;
-                    }
-
-                    _releases = rockUpdateService.GetReleasesList( _installedVersion );
-                    //_availablePackages = NuGetService.SourceRepository.FindPackagesById( _rockPackageId ).OrderByDescending( p => p.Version );
-
-                    if ( _releases.Count > 0 )
-                    {
-                        pnlUpdatesAvailable.Visible = true;
-                        pnlUpdates.Visible = true;
-                        pnlNoUpdates.Visible = false;
-                        cbIncludeStats.Visible = true;
-                        BindGrid();
-                    }
-
-                    RemoveOldRDeleteFiles();
+                    pnlEarlyAccessNotEnabled.Visible = false;
+                    pnlEarlyAccessEnabled.Visible = true;
                 }
-                catch ( InvalidOperationException ex )
+
+                var result = VersionValidationHelper.CheckFrameworkVersion();
+
+                _isOkToProceed = true;
+
+                if ( result == DotNetVersionCheckResult.Fail )
                 {
-                    HandleNuGetException( ex );
+
+                    nbVersionIssue.Visible = true;
+                    nbVersionIssue.Text += "<p>You will need to upgrade your hosting server in order to proceed with the v13 update.</p>";
+                    nbBackupMessage.Visible = false;
                 }
-                //}
+                else if ( result == DotNetVersionCheckResult.Unknown )
+                {
+                    nbVersionIssue.Visible = true;
+                    nbVersionIssue.Text += "<p>You may need to upgrade your hosting server in order to proceed with the v13 update. We were <b>unable to determine which Framework version</b> your server is using.</p>";
+                    nbVersionIssue.Details += "<div class='alert alert-warning'>We were unable to check your server to verify that the .Net 4.7.2 Framework is installed! <b>You MUST verify this manually before you proceed with the update</b> otherwise your Rock application will be broken until you update the server.</div>";
+                    nbBackupMessage.Visible = false;
+                }
+
+                _hasSqlServer14OrHigher = VersionValidationHelper.CheckSqlServerVersionGreaterThenSqlServer2012();
+
+                if ( !_hasSqlServer14OrHigher )
+                {
+                    nbSqlServerVersionIssue.Visible = true;
+                }
+
+                _releases = rockUpdateService.GetReleasesList( _installedVersion );
+
+                if ( _releases.Count > 0 )
+                {
+                    pnlUpdatesAvailable.Visible = true;
+                    pnlUpdates.Visible = true;
+                    pnlNoUpdates.Visible = false;
+                    cbIncludeStats.Visible = true;
+                    BindGrid();
+                }
+
+                FileManagementHelper.CleanUpDeletedFiles();
             }
         }
 
@@ -221,15 +162,7 @@ namespace RockWeb.Blocks.Core
         private void Update( string version )
         {
             var targetVersion = new Version( version );
-            if ( !CanInstallVersion( targetVersion ) )
-            {
-                nbErrors.Text = "<ul class='list-padded'><li>This version cannot be installed because not all requirements have been met.</li></ul>";
-                pnlError.Visible = true;
-                pnlUpdateSuccess.Visible = false;
-                return;
-            }
 
-            WriteAppOffline();
             try
             {
                 pnlUpdatesAvailable.Visible = false;
@@ -254,30 +187,6 @@ namespace RockWeb.Blocks.Core
                 nbErrors.Text = string.Format( "Something went wrong.  Although the errors were written to the error log, they are listed for your review:<br/>{0}", ex.Message );
                 LogException( ex );
             }
-            RemoveAppOffline();
-        }
-
-        private bool CanInstallVersion( Version targetVersion )
-        {
-            var requiresSqlServer14OrHigher = targetVersion.Major > 1 || targetVersion.Minor > 10;
-            var requiresNet472 = targetVersion.Major > 1 || targetVersion.Minor > 12;
-
-            if ( !requiresSqlServer14OrHigher )
-            {
-                return true;
-            }
-
-            var hasSqlServer2012OrGreater = CheckSqlServerVersionGreaterThenSqlServer2012();
-            if ( requiresNet472 )
-            {
-                var result = CheckFrameworkVersion();
-                if ( result == DotNetVersionCheckResult.Fail )
-                {
-                    return false;
-                }
-            }
-
-            return hasSqlServer2012OrGreater;
         }
 
         /// <summary>
@@ -321,7 +230,7 @@ namespace RockWeb.Blocks.Core
                         divPanel.AddCssClass( "panel-block" );
                     }
 
-                    if ( !_isOkToProceed || !CanInstallVersion( new Version( package.SemanticVersion ) ) )
+                    if ( !_isOkToProceed || !VersionValidationHelper.CanInstallVersion( new Version( package.SemanticVersion ) ) )
                     {
                         lbInstall.Enabled = false;
                         lbInstall.AddCssClass( "btn-danger" );
@@ -347,61 +256,6 @@ namespace RockWeb.Blocks.Core
         #endregion
 
         #region Methods
-
-        /// <summary>
-        /// Checks the .NET Framework version and returns Pass, Fail, or Unknown which can be
-        /// used to determine if it's safe to proceed.
-        /// </summary>
-        /// <returns>One of the values of the VersionCheckResult enum.</returns>
-        private DotNetVersionCheckResult CheckFrameworkVersion()
-        {
-            var result = DotNetVersionCheckResult.Fail;
-            try
-            {
-                // Once we get to 4.5 Microsoft recommends we test via the Registry...
-                result = RockUpdateHelper.CheckDotNetVersionFromRegistry();
-            }
-            catch
-            {
-                // This would be pretty bad, but regardless we'll return
-                // the Unknown result and let the caller proceed with caution.
-                result = DotNetVersionCheckResult.Unknown;
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Checks the SQL server version and returns false if not at the needed
-        /// level to proceed.
-        /// </summary>
-        /// <returns></returns>
-        private bool CheckSqlServerVersionGreaterThenSqlServer2012()
-        {
-            bool isOk = false;
-            string sqlVersion = "";
-            try
-            {
-                sqlVersion = DbService.ExecuteScaler( "SELECT SERVERPROPERTY('productversion')" ).ToString();
-                string[] versionParts = sqlVersion.Split( '.' );
-
-                int majorVersion = -1;
-                Int32.TryParse( versionParts[0], out majorVersion );
-
-                if ( majorVersion > 11 )
-                {
-                    isOk = true;
-                }
-            }
-            catch
-            {
-                // This would be pretty bad, but regardless we'll just
-                // return the isOk (not) and let the caller proceed.
-            }
-
-            return isOk;
-        }
-
         /// <summary>
         /// Updates an existing Rock package to the given version and returns true if successful.
         /// </summary>
@@ -411,25 +265,12 @@ namespace RockWeb.Blocks.Core
             IEnumerable<string> errors = Enumerable.Empty<string>();
             try
             {
-                var rockUpdateService = new RockUpdateService();
+                var rockInstaller = new RockInstaller( new RockUpdateService(), new Version( version ), _installedVersion );
 
-                var update = rockUpdateService.InstallVersion( new Version(version), _installedVersion );
-                
-                nbSuccess.Text = ConvertToHtmlLiWrappedUl( update.ReleaseNotes ).ConvertCrLfToHtmlBr();
-                lSuccessVersion.Text = GetRockVersion( update.SemanticVersion );
+                var installedRelease = rockInstaller.InstallVersion();
 
-                // Record the current version to the database
-                Rock.Web.SystemSettings.SetValue( Rock.SystemKey.SystemSetting.ROCK_INSTANCE_ID, version );
-
-                // register any new REST controllers
-                try
-                {
-                    RestControllerService.RegisterControllers();
-                }
-                catch ( Exception ex )
-                {
-                    LogException( ex );
-                }
+                nbSuccess.Text = ConvertToHtmlLiWrappedUl( installedRelease.ReleaseNotes ).ConvertCrLfToHtmlBr();
+                lSuccessVersion.Text = GetRockVersion( installedRelease.SemanticVersion );
             }
             catch ( OutOfMemoryException ex )
             {
@@ -441,9 +282,14 @@ namespace RockWeb.Blocks.Core
                 errors = errors.Concat( new[] { string.Format( "There is a problem installing v{0}. It looks one of the standard XML files ({1}) may have been customized which prevented us from updating it. Check out <a href='http://www.rockrms.com/Rock/UpdateIssues#customizedxml'>this page for some assistance</a>", version, ex.Message ) } );
                 LogException( ex );
             }
-            catch ( System.IO.IOException ex )
+            catch ( IOException ex )
             {
                 errors = errors.Concat( new[] { string.Format( "There is a problem installing v{0}. We were not able to replace an important file ({1}) after the update. Check out <a href='http://www.rockrms.com/Rock/UpdateIssues#unabletoreplacefile'>this page for some assistance</a>", version, ex.Message ) } );
+                LogException( ex );
+            }
+            catch ( VersionValidationException ex )
+            {
+                errors = errors.Concat( new[] { ex.Message } );
                 LogException( ex );
             }
             catch ( Exception ex )
@@ -505,85 +351,6 @@ namespace RockWeb.Blocks.Core
         }
 
         /// <summary>
-        /// Extracts the required SemanticVersion from the package's tags.
-        /// </summary>
-        /// <param name="package">a Rock nuget package</param>
-        /// <returns>the SemanticVersion of the package that this particular package requires</returns>
-        protected SemanticVersion ExtractRequiredVersionFromTags( IPackage package )
-        {
-            Regex regex = new Regex( @"requires-([\.\d]+)" );
-            if ( package.Tags != null )
-            {
-                Match match = regex.Match( package.Tags );
-                if ( match.Success )
-                {
-                    return new SemanticVersion( match.Groups[1].Value );
-                }
-            }
-
-            throw new ArgumentException( string.Format( "There is a malformed 'requires-' tag in a Rock package ({0})", package.Version ) );
-        }
-
-        /// <summary>
-        /// Removes the app_offline.htm file so the app can be used again.
-        /// </summary>
-        private void RemoveAppOffline()
-        {
-            var root = this.Request.PhysicalApplicationPath;
-            var file = System.IO.Path.Combine( root, "app_offline.htm" );
-            System.IO.File.Delete( file );
-        }
-
-        /// <summary>
-        /// Copies the app_offline-template.htm file to app_offline.htm so no one else can hit the app.
-        /// If the template file does not exist an app_offline.htm file will be created from scratch.
-        /// </summary>
-        private void WriteAppOffline()
-        {
-            var root = this.Request.PhysicalApplicationPath;
-
-            var templateFile = System.IO.Path.Combine( root, "app_offline-template.htm" );
-            var offlineFile = System.IO.Path.Combine( root, "app_offline.htm" );
-
-            try
-            {
-                if ( File.Exists( templateFile ) )
-                {
-                    System.IO.File.Copy( templateFile, offlineFile, overwrite: true );
-                }
-                else
-                {
-                    CreateOfflineFileFromScratch( offlineFile );
-                }
-            }
-            catch ( Exception )
-            {
-                if ( !File.Exists( offlineFile ) )
-                {
-                    CreateOfflineFileFromScratch( offlineFile );
-                }
-            }
-        }
-
-        /// <summary>
-        /// Simply creates an app_offline.htm file so no one else can hit the app.
-        /// </summary>
-        private void CreateOfflineFileFromScratch( string offlineFile )
-        {
-            System.IO.File.WriteAllText( offlineFile, @"
-<html>
-    <head>
-    <title>Application Updating...</title>
-    </head>
-    <body>
-        <h1>One Moment Please</h1>
-        This application is undergoing an essential update and is temporarily offline.  Please give me a minute or two to wrap things up.
-    </body>
-</html>
-" );
-        }
-
-        /// <summary>
         /// Removes the old *.rdelete (Rock delete) files that were created during an update.
         /// </summary>
         private void RemoveOldRDeleteFiles()
@@ -601,42 +368,6 @@ namespace RockWeb.Blocks.Core
                     //we'll try again later
                 }
             }
-        }
-
-        private void CheckForManualFileMoves( string version )
-        {
-            var versionDirectory = new DirectoryInfo( Server.MapPath( "~/App_Data/" + version ) );
-            if ( versionDirectory.Exists )
-            {
-                foreach ( var file in versionDirectory.EnumerateFiles( "*", SearchOption.AllDirectories ) )
-                {
-                    ManuallyMoveFile( file, file.FullName.Replace( @"\App_Data\" + version, "" ) );
-                }
-
-                versionDirectory.Delete( true );
-            }
-        }
-
-        private void ManuallyMoveFile( FileInfo file, string newPath )
-        {
-            if ( newPath.EndsWith( ".dll" ) && !newPath.Contains( @"\bin\" ) )
-            {
-                int fileCount = 0;
-                if ( File.Exists( newPath ) )
-                {
-                    // generate a unique *.#.rdelete filename
-                    do
-                    {
-                        fileCount++;
-                    }
-                    while ( File.Exists( string.Format( "{0}.{1}.rdelete", newPath, fileCount ) ) );
-
-                    string fileToDelete = string.Format( "{0}.{1}.rdelete", newPath, fileCount );
-                    File.Move( newPath, fileToDelete );
-                }
-            }
-
-            file.CopyTo( newPath, true );
         }
 
         /// <summary>
@@ -699,48 +430,11 @@ namespace RockWeb.Blocks.Core
         {
             try
             {
-                var rockContext = new RockContext();
-                int numberOfActiveRecords = new PersonService( rockContext ).Queryable( includeDeceased: false, includeBusinesses: false ).Count();
+                var ipAddress = Request.ServerVariables["LOCAL_ADDR"];
+                var environmentData = RockUpdateHelper.GetEnvDataAsJson( Request, ResolveRockUrl( "~/" ) );
+                var instanceStatistics = new RockInstanceImpactStatistics( new RockImpactService() );
 
-                if ( numberOfActiveRecords > 100 || !Rock.Web.SystemSettings.GetValue( Rock.SystemKey.SystemSetting.SAMPLEDATA_DATE ).AsDateTime().HasValue )
-                {
-                    string organizationName = string.Empty;
-                    // TODO: Fix
-                    //ImpactLocation organizationLocation = null;
-                    string publicUrl = string.Empty;
-
-                    var rockInstanceId = Rock.Web.SystemSettings.GetRockInstanceId();
-                    var ipAddress = Request.ServerVariables["LOCAL_ADDR"];
-
-                    if ( cbIncludeStats.Checked )
-                    {
-                        var globalAttributes = GlobalAttributesCache.Get();
-                        organizationName = globalAttributes.GetValue( "OrganizationName" );
-                        publicUrl = globalAttributes.GetValue( "PublicApplicationRoot" );
-
-                        // Fetch the organization address
-                        var organizationAddressLocationGuid = globalAttributes.GetValue( "OrganizationAddress" ).AsGuid();
-                        if ( !organizationAddressLocationGuid.Equals( Guid.Empty ) )
-                        {
-                            var location = new Rock.Model.LocationService( rockContext ).Get( organizationAddressLocationGuid );
-                            if ( location != null )
-                            {
-                                // TODO: Fix
-                                //organizationLocation = new ImpactLocation( location );
-                            }
-                        }
-                    }
-                    else
-                    {
-                        numberOfActiveRecords = 0;
-                    }
-
-                    var environmentData = Rock.Web.Utilities.RockUpdateHelper.GetEnvDataAsJson( Request, ResolveRockUrl( "~/" ) );
-
-                    // now send them to SDN/Rock server
-                    // TODO: Fix
-                    //SendToSpark( rockInstanceId, version, ipAddress, publicUrl, organizationName, organizationLocation, numberOfActiveRecords, environmentData );
-                }
+                instanceStatistics.SendImpactStatisticsToSpark( cbIncludeStats.Checked, version, ipAddress, environmentData );
             }
             catch ( Exception ex )
             {
@@ -754,44 +448,12 @@ namespace RockWeb.Blocks.Core
             }
         }
 
-        /// <summary>
-        /// Sends the public data and impact statistics to the Rock server.
-        /// </summary>
-        /// <param name="rockInstanceId">The rock instance identifier.</param>
-        /// <param name="version">The version.</param>
-        /// <param name="ipAddress">The ip address.</param>
-        /// <param name="publicUrl">The public URL.</param>
-        /// <param name="organizationName">Name of the organization.</param>
-        /// <param name="organizationLocation">The organization location.</param>
-        /// <param name="numberOfActiveRecords">The number of active records.</param>
-        /// <param name="environmentData">The environment data (JSON).</param>
-        // TODO: Fix
-        //private void SendToSpark( Guid rockInstanceId, string version, string ipAddress, string publicUrl, string organizationName, ImpactLocation organizationLocation, int numberOfActiveRecords, string environmentData )
-        //{
-        //    ImpactStatistic impactStatistic = new ImpactStatistic()
-        //    {
-        //        RockInstanceId = rockInstanceId,
-        //        Version = version,
-        //        IpAddress = ipAddress,
-        //        PublicUrl = publicUrl,
-        //        OrganizationName = organizationName,
-        //        OrganizationLocation = organizationLocation,
-        //        NumberOfActiveRecords = numberOfActiveRecords,
-        //        EnvironmentData = environmentData
-        //    };
-
-        //    var client = new RestClient( "http://www.rockrms.com/api/impacts/save" );
-        //    var request = new RestRequest( Method.POST );
-        //    request.RequestFormat = DataFormat.Json;
-        //    request.AddBody( impactStatistic );
-        //    var response = client.Execute( request );
-        //}
 
         /// <summary>
         /// Sets up the page to report the error in a nicer manner.
         /// </summary>
         /// <param name="ex"></param>
-        private void HandleNuGetException( Exception ex )
+        private void HandleUpdateException( Exception ex )
         {
             pnlError.Visible = true;
             pnlUpdateSuccess.Visible = false;

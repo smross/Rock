@@ -21,9 +21,10 @@ using System.Linq;
 using Microsoft.Win32;
 using Rock.Data;
 using Rock.Model;
+using Rock.RockUpdate.Enum;
 using Rock.Web.Cache;
 
-namespace Rock.Web.Utilities
+namespace Rock.RockUpdate
 {
     /// <summary>
     /// Helper class for collecting enviromental information about Rock install that is saved during update
