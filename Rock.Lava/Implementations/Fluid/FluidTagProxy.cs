@@ -108,7 +108,7 @@ namespace Rock.Lava.Fluid
 
         public ValueTask<Completion> WriteToAsync( TextWriter writer, TextEncoder encoder, TemplateContext context, IRockLavaTag lavaTag, string tagName, string tagAttributesMarkup )
         {
-            var lavaContext = new FluidLavaContext( context );
+            var lavaContext = new FluidRenderContext( context );
 
             var elementRenderer = _lavaTag as ILiquidFrameworkElementRenderer;
 
@@ -135,7 +135,7 @@ namespace Rock.Lava.Fluid
 
         #region ILiquidFrameworkRenderer implementation
 
-        void ILiquidFrameworkElementRenderer.Render( ILiquidFrameworkElementRenderer baseRenderer, ILavaContext context, TextWriter result, TextEncoder encoder )
+        void ILiquidFrameworkElementRenderer.Render( ILiquidFrameworkElementRenderer baseRenderer, ILavaRenderContext context, TextWriter result, TextEncoder encoder )
         {
             // By default, rendering a custom tag does not produce any output.
         }

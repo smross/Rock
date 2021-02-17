@@ -66,7 +66,7 @@ namespace Rock.Lava.Blocks
         /// <param name="context">The context.</param>
         /// <param name="result">The result.</param>
         /// <exception cref="System.Exception">Your Lava command must contain at least one valid filter. If you configured a filter it's possible that the property or attribute you provided does not exist.</exception>
-        public override void OnRender( ILavaContext context, TextWriter result )
+        public override void OnRender( ILavaRenderContext context, TextWriter result )
         {
             // first ensure that entity commands are allowed in the context
             var commandTypeName = this.GetType().Name.ToLower();
@@ -564,7 +564,7 @@ namespace Rock.Lava.Blocks
         /// </summary>
         /// <param name="context">The context.</param>
         /// <returns></returns>
-        private static Person GetCurrentPerson( ILavaContext context )
+        private static Person GetCurrentPerson( ILavaRenderContext context )
         {
             Person currentPerson = null;
 
@@ -589,7 +589,7 @@ namespace Rock.Lava.Blocks
         /// <param name="markup">The markup.</param>
         /// <param name="context">The context.</param>
         /// <returns></returns>
-        private Dictionary<string, string> ParseMarkup( string markup, ILavaContext context )
+        private Dictionary<string, string> ParseMarkup( string markup, ILavaRenderContext context )
         {
             // first run lava across the inputted markup
             var internalMergeFields = context.GetMergeFields();

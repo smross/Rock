@@ -14,39 +14,30 @@
 // limitations under the License.
 // </copyright>
 //
-
 using System;
 using System.Collections.Generic;
+
+using Rock.Common;
 
 namespace Rock.Lava
 {
     /// <summary>
-    /// Specifies the scope of a variable relative to the current Lava context.
+    /// Stores the configuration and data used by the Lava Engine to resolve a Lava template.
     /// </summary>
-    public enum LavaContextRelativeScopeSpecifier
-    {
-        Current = 0,
-        Parent = 1,
-        Root = 2
-    }
-
-    /// <summary>
-    /// Represents the configuration and data used by the Lava Engine to resolve a Lava template.
-    /// </summary>
-    public interface ILavaContext
+    public abstract class LavaRenderContextBase : ILavaRenderContext
     {
         /// <summary>
         /// Gets a named value that is for internal use only, by other components of the Lava engine.
         /// Internal values are not available to be resolved in the Lava Template.
         /// </summary>
         /// <param name="key"></param>
-        object GetInternalField( string key, object defaultValue = null );
+        public abstract object GetInternalField( string key, object defaultValue = null );
 
         /// <summary>
         /// Gets the collection of variables defined for internal use only.
         /// Internal values are not available to be resolved in the Lava Template.
         /// </summary>
-        LavaDataDictionary GetInternalFields();
+        public abstract LavaDataDictionary GetInternalFields();
 
         /// <summary>
         /// Sets a named value that is for internal use only, by other components of the Lava engine.
@@ -54,21 +45,35 @@ namespace Rock.Lava
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        void SetInternalField( string key, object value );
+        public abstract void SetInternalField( string key, object value );
 
         /// <summary>
         /// Sets a collection of named values for internal use only.
         /// Internal values are not available to be resolved in the Lava Template.
         /// </summary>
         /// <param name="values"></param>
-        void SetInternalFields( IDictionary<string, object> values );
+        public void SetInternalFields( LavaDataDictionary values )
+        {
+            SetInternalFields( values as IDictionary<string, object> );
+        }
 
         /// <summary>
         /// Sets a collection of named values for internal use only.
         /// Internal values are not available to be resolved in the Lava Template.
         /// </summary>
         /// <param name="values"></param>
-        void SetInternalFields( LavaDataDictionary values );
+        public virtual void SetInternalFields( IDictionary<string, object> values )
+        {
+            if ( values == null )
+            {
+                return;
+            }
+
+            foreach ( var kvp in values )
+            {
+                SetInternalField( kvp.Key, kvp.Value );
+            }
+        }
 
         /// <summary>
         /// Gets the value of a field that is accessible for merging into a template.
@@ -76,74 +81,113 @@ namespace Rock.Lava
         /// <param name="key"></param>
         /// <param name="defaultValue"></param>
         /// <returns></returns>
-        object GetMergeField( string key, object defaultValue = null );
+        public abstract object GetMergeField( string key, object defaultValue = null );
 
         /// <summary>
         /// Gets the user-defined variables in the current context that are accessible in a template.
         /// </summary>
-        LavaDataDictionary GetMergeFields();
+        public abstract LavaDataDictionary GetMergeFields();
 
         /// <summary>
-        /// Sets the value of a field that is accessible for merging into a template.
+        /// Sets a named value that is available to be resolved in the Lava Template.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        /// <param name="scope">Current, Parent, or Root.</param>
-        /// <returns></returns>
-        void SetMergeField( string key, object value, LavaContextRelativeScopeSpecifier scope = LavaContextRelativeScopeSpecifier.Current );
+        /// <param name="scope"></param>
+        public abstract void SetMergeField( string key, object value, LavaContextRelativeScopeSpecifier scope = LavaContextRelativeScopeSpecifier.Current );
 
         /// <summary>
         /// Sets the user-defined variables in the current context that are internally available to custom filters and tags.
         /// </summary>
         /// <param name="values"></param>
-        void SetMergeFields( LavaDataDictionary values );
+        public void SetMergeFields( LavaDataDictionary values )
+        {
+            SetMergeFields( values as IDictionary<string, object> );
+        }
 
         /// <summary>
         /// Sets the user-defined variables in the current context that are internally available to custom filters and tags.
         /// </summary>
         /// <param name="values"></param>
-        void SetMergeFields( IDictionary<string, object> values );
+        public virtual void SetMergeFields( IDictionary<string, object> values )
+        {
+            if ( values == null )
+            {
+                return;
+            }
+
+            foreach ( var kvp in values )
+            {
+                SetMergeField( kvp.Key, kvp.Value );
+            }
+        }
 
         /// <summary>
         /// Get or set the value of a field that is accessible for merging into a template.
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        object this[string key] { get; set; }
+        public object this[string key]
+        {
+            get
+            {
+                return GetMergeField( key, null );
+            }
+            set
+            {
+                SetMergeField( key, value );
+            }
+        }
 
         /// <summary>
         /// Gets the Lava Commands that are enabled for this context.
         /// </summary>
-        List<string> GetEnabledCommands();
+        public abstract List<string> GetEnabledCommands();
 
         /// <summary>
         /// Sets the Lava commands enabled for this template.
         /// </summary>
         /// <param name="commands"></param>
-        void SetEnabledCommands( IEnumerable<string> commands );
+        public abstract void SetEnabledCommands( IEnumerable<string> commands );
 
         /// <summary>
         /// Sets the Lava commands enabled for this template.
         /// </summary>
         /// <param name="commandList">A delimited list of command names.</param>
         /// <param name="delimiter">The list delimiter.</param>
-        void SetEnabledCommands( string commandList, string delimiter = "," );
+        public void SetEnabledCommands( string commandList, string delimiter = "," )
+        {
+            var commands = commandList.SplitDelimitedValues( delimiter );
+
+            SetEnabledCommands( commands );
+        }
 
         /// <summary>
         /// Executes the specified action in a new child scope.
         /// </summary>
         /// <param name="callback"></param>
-        void ExecuteInChildScope( Action<ILavaContext> callback );
+        public void ExecuteInChildScope( Action<ILavaRenderContext> callback )
+        {
+            EnterChildScope();
+            try
+            {
+                callback( this );
+            }
+            finally
+            {
+                ExitChildScope();
+            }
+        }
 
         /// <summary>
         /// Creates a new child scope. Values added to the child scope will be released once <see cref="ExitChildScope" /> is called.
         /// Values in the parent scope remain available to the child scope.
         /// </summary>
-        void EnterChildScope();
+        public abstract void EnterChildScope();
 
         /// <summary>
         /// Exits the current scope that has been created by <see cref="EnterChildScope" />.
         /// </summary>
-        void ExitChildScope();
+        public abstract void ExitChildScope();
     }
 }

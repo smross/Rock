@@ -159,7 +159,7 @@ namespace Rock.Lava
         /// </summary>
         /// <param name="attributesMarkup"></param>
         /// <param name="context"></param>
-        public void ParseFromMarkup( string attributesMarkup, ILavaContext context )
+        public void ParseFromMarkup( string attributesMarkup, ILavaRenderContext context )
         {
             _settings = GetElementAttributes( attributesMarkup, context );
         }
@@ -173,7 +173,7 @@ namespace Rock.Lava
         /// <param name="elementAttributesMarkup">The markup.</param>
         /// <param name="context">The context.</param>
         /// <returns></returns>
-        public static Dictionary<string, string> GetElementAttributes( string elementAttributesMarkup, ILavaContext context = null )
+        public static Dictionary<string, string> GetElementAttributes( string elementAttributesMarkup, ILavaRenderContext context = null )
         {
             // First, resolve any Lava merge fields that exist in the element attributes markup.
             if ( context != null )

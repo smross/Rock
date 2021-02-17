@@ -55,7 +55,7 @@ namespace Rock.Lava
         /// </summary>
         /// <param name="mergeFields"></param>
         /// <returns></returns>
-        public abstract ILavaContext NewContext( IDictionary<string, object> mergeFields = null );
+        public abstract ILavaRenderContext NewContext( IDictionary<string, object> mergeFields = null );
 
         private ILavaTemplateCacheService _cacheService;
 
@@ -233,7 +233,7 @@ namespace Rock.Lava
         /// The rendered output of the template.
         /// If the template is invalid, returns an error message or an empty string according to the current ExceptionHandlingStrategy setting.
         /// </returns>
-        public string RenderTemplate( string inputTemplate, ILavaContext context )
+        public string RenderTemplate( string inputTemplate, ILavaRenderContext context )
         {
             string output;
             List<Exception> errors;
@@ -281,7 +281,7 @@ namespace Rock.Lava
         /// <returns></returns>
         public bool TryRenderTemplate( string inputTemplate, LavaDataDictionary mergeFields, out string output, out List<Exception> errors )
         {
-            ILavaContext context;
+            ILavaRenderContext context;
 
             if ( mergeFields != null )
             {
@@ -304,7 +304,7 @@ namespace Rock.Lava
         /// <param name="context"></param>
         /// <param name="output"></param>
         /// <returns></returns>
-        public bool TryRenderTemplate( string inputTemplate, ILavaContext context, out string output, out List<Exception> errors )
+        public bool TryRenderTemplate( string inputTemplate, ILavaRenderContext context, out string output, out List<Exception> errors )
         {
             ILavaTemplate template;
 
@@ -334,7 +334,7 @@ namespace Rock.Lava
                     context = NewContext();
                 }
 
-                var parameters = new LavaRenderParameters { LavaContext = context };
+                var parameters = new LavaRenderParameters { Context = context };
 
                 return OnTryRender( template, parameters, out output, out errors );
             }

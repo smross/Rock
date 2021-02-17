@@ -172,7 +172,7 @@ namespace Rock.Lava
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="result">The result.</param>
-        public override void OnRender( ILavaContext context, TextWriter result )
+        public override void OnRender( ILavaRenderContext context, TextWriter result )
         {
             if ( _shortcode == null )
             {
@@ -401,7 +401,7 @@ namespace Rock.Lava
         /// <param name="elementAttributesMarkup">The markup.</param>
         /// <param name="context">The context.</param>
         /// <returns></returns>
-        private void SetParametersFromElementAttributes( Dictionary<string, object> parameters, string elementAttributesMarkup, ILavaContext context )
+        private void SetParametersFromElementAttributes( Dictionary<string, object> parameters, string elementAttributesMarkup, ILavaRenderContext context )
         {
             // Resolve any Lava merge fields in the element attributes markup.
             var resolvedMarkup = LavaEngine.CurrentEngine.RenderTemplate( elementAttributesMarkup, context );

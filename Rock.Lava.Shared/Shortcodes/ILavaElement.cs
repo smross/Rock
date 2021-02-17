@@ -37,7 +37,7 @@ namespace Rock.Lava
 
         void OnInitialize( string tagName, string markup, List<string> tokens );
 
-        void OnRender( ILavaContext context, TextWriter result );
+        void OnRender( ILavaRenderContext context, TextWriter result );
 
 
     }

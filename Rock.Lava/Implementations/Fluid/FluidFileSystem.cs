@@ -49,7 +49,7 @@ namespace Rock.Lava
             return _fileSystem.FileExists( filePath );
         }
 
-        string ILavaFileSystem.ReadTemplateFile( ILavaContext context, string templateName )
+        string ILavaFileSystem.ReadTemplateFile( ILavaRenderContext context, string templateName )
         {
             return _fileSystem.ReadTemplateFile( context, templateName );
         }

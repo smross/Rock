@@ -51,7 +51,7 @@ namespace Rock.Lava
 
             try
             {
-                var lavaContext = new DotLiquidLavaContext( context );
+                var lavaContext = new DotLiquidRenderContext( context );
 
                 return _lavaFileSystem.ReadTemplateFile( lavaContext, templateName );
             }
@@ -73,7 +73,7 @@ namespace Rock.Lava
         /// <param name="templateName"></param>
         /// <returns></returns>
         /// <exception cref="FileSystemException">LavaFileSystem Template Not Found</exception>
-        public string ReadTemplateFile( ILavaContext context, string templateName )
+        public string ReadTemplateFile( ILavaRenderContext context, string templateName )
         {
             return _lavaFileSystem.ReadTemplateFile( context, templateName );
         }

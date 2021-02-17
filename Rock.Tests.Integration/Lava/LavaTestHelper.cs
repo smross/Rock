@@ -238,7 +238,7 @@ namespace Rock.Tests.Integration.Lava
         /// </summary>
         /// <param name="inputTemplate"></param>
         /// <returns></returns>
-        public string GetTemplateOutput( string inputTemplate, ILavaContext context )
+        public string GetTemplateOutput( string inputTemplate, ILavaRenderContext context )
         {
             inputTemplate = inputTemplate ?? string.Empty;
 
@@ -252,7 +252,7 @@ namespace Rock.Tests.Integration.Lava
         /// </summary>
         /// <param name="expectedOutput"></param>
         /// <param name="inputTemplate"></param>
-        public void AssertTemplateOutput( string expectedOutput, string inputTemplate, ILavaContext context, bool ignoreWhiteSpace = false )
+        public void AssertTemplateOutput( string expectedOutput, string inputTemplate, ILavaRenderContext context, bool ignoreWhiteSpace = false )
         {
             var outputString = GetTemplateOutput( inputTemplate, context );
 
@@ -364,7 +364,7 @@ namespace Rock.Tests.Integration.Lava
         /// </summary>
         /// <param name="expectedOutputRegex"></param>
         /// <param name="inputTemplate"></param>
-        public void AssertTemplateOutputRegex( string expectedOutputRegex, string inputTemplate, ILavaContext context, bool ignoreWhiteSpace = true )
+        public void AssertTemplateOutputRegex( string expectedOutputRegex, string inputTemplate, ILavaRenderContext context, bool ignoreWhiteSpace = true )
         {
             var outputString = GetTemplateOutput( inputTemplate, context );
 

@@ -33,6 +33,6 @@ namespace Rock.Lava
         /// <param name="context"></param>
         /// <param name="writer"></param>
         /// <param name="encoder"></param>
-        void Render( ILiquidFrameworkElementRenderer baseRenderer, ILavaContext context, TextWriter writer, TextEncoder encoder );
+        void Render( ILiquidFrameworkElementRenderer baseRenderer, ILavaRenderContext context, TextWriter writer, TextEncoder encoder );
     }
 }

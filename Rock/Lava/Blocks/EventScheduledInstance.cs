@@ -59,7 +59,7 @@ namespace Rock.Lava.Blocks
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="result">The result.</param>
-        public override void OnRender( ILavaContext context, TextWriter result )
+        public override void OnRender( ILavaRenderContext context, TextWriter result )
         {
             try
             {
@@ -90,7 +90,7 @@ namespace Rock.Lava.Blocks
             }
         }
 
-        private void AddLavaMergeFieldsToContext( ILavaContext context, List<EventOccurrenceSummary> eventOccurrenceSummaries )
+        private void AddLavaMergeFieldsToContext( ILavaRenderContext context, List<EventOccurrenceSummary> eventOccurrenceSummaries )
         {
             var eventSummaries = eventOccurrenceSummaries
                 .OrderBy( e => e.DateTime )

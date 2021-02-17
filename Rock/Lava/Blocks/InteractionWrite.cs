@@ -82,7 +82,7 @@ namespace Rock.Lava.Blocks
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="result">The result.</param>
-        public override void OnRender( ILavaContext context, TextWriter result )
+        public override void OnRender( ILavaRenderContext context, TextWriter result )
         {
             // First, ensure that this command is allowed in the context.
             if ( !this.IsAuthorized( context ) )

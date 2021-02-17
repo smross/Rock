@@ -86,7 +86,7 @@ namespace Rock.Lava.Blocks
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="result">The result.</param>
-        public override void OnRender( ILavaContext context, TextWriter result )
+        public override void OnRender( ILavaRenderContext context, TextWriter result )
         {
             // First ensure that cached commands are allowed in the context
             if ( !this.IsAuthorized( context ) )
@@ -213,7 +213,7 @@ namespace Rock.Lava.Blocks
         /// <param name="lavaTemplate">The lava template.</param>
         /// <param name="context">The context.</param>
         /// <returns></returns>
-        private string MergeLava( string lavaTemplate, ILavaContext context )
+        private string MergeLava( string lavaTemplate, ILavaRenderContext context )
         {
             // Resolve the Lava template contained in this block in a new context.
             var newContext = LavaEngine.CurrentEngine.NewContext();
@@ -231,7 +231,7 @@ namespace Rock.Lava.Blocks
         /// <param name="markup">The markup.</param>
         /// <param name="context">The context.</param>
         /// <returns></returns>
-        private Dictionary<string, string> ParseMarkup( string markup, ILavaContext context )
+        private Dictionary<string, string> ParseMarkup( string markup, ILavaRenderContext context )
         {
             // first run lava across the inputted markup
             var internalMergeFields = context.GetMergeFields();

@@ -65,7 +65,7 @@ namespace Rock.Lava
         /// </summary>
         /// <param name="context">The context.</param>
         /// <returns></returns>
-        protected bool IsAuthorized( ILavaContext context )
+        protected bool IsAuthorized( ILavaRenderContext context )
         {
             return IsAuthorized( context, this.SourceElementName );
         }
@@ -75,7 +75,7 @@ namespace Rock.Lava
         /// </summary>
         /// <param name="context">The context.</param>
         /// <returns></returns>
-        protected bool IsAuthorized( ILavaContext context, string commandName )
+        protected bool IsAuthorized( ILavaRenderContext context, string commandName )
         {
             return LavaSecurityHelper.IsAuthorized( context, commandName );
         }
@@ -99,7 +99,7 @@ namespace Rock.Lava
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="result">The result.</param>
-        public virtual void OnRender( ILavaContext context, TextWriter result )
+        public virtual void OnRender( ILavaRenderContext context, TextWriter result )
         {
             // By default, call the underlying engine to render this element.
             if ( _baseRenderer != null )
@@ -157,7 +157,7 @@ namespace Rock.Lava
         /// <param name="context"></param>
         /// <param name="result"></param>
         /// <param name="proxy"></param>
-        void ILiquidFrameworkElementRenderer.Render( ILiquidFrameworkElementRenderer baseRenderer, ILavaContext context, TextWriter result, TextEncoder encoder )
+        void ILiquidFrameworkElementRenderer.Render( ILiquidFrameworkElementRenderer baseRenderer, ILavaRenderContext context, TextWriter result, TextEncoder encoder )
         {
             // If the derived block is calling back into this method, render the block using the base implementation.
             if ( _baseRenderer != null )

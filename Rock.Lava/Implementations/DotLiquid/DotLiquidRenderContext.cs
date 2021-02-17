@@ -28,7 +28,7 @@ namespace Rock.Lava.DotLiquid
     /// <summary>
     /// An implementation of a Lava Context that wraps a DotLiquid framework context.
     /// </summary>
-    public class DotLiquidLavaContext : LavaContextBase
+    public class DotLiquidRenderContext : LavaRenderContextBase
     {
         private Context _context;
 
@@ -38,7 +38,7 @@ namespace Rock.Lava.DotLiquid
         /// Create a new instance for the provided context.
         /// </summary>
         /// <param name="context"></param>
-        public DotLiquidLavaContext( Context context )
+        public DotLiquidRenderContext( Context context )
         {
             _context = context;
         }

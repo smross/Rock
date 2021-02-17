@@ -100,7 +100,7 @@ namespace Rock.Lava.DotLiquid
         /// <param name="result"></param>
         public override void Render( Context context, TextWriter result )
         {
-            var lavaContext = new DotLiquidLavaContext( context );
+            var lavaContext = new DotLiquidRenderContext( context );
 
             var tag = _lavaElement as ILiquidFrameworkElementRenderer;
 
@@ -117,9 +117,9 @@ namespace Rock.Lava.DotLiquid
 
         #region ILiquidFrameworkElementRenderer implementation
 
-        void ILiquidFrameworkElementRenderer.Render( ILiquidFrameworkElementRenderer baseRenderer, ILavaContext context, TextWriter result, TextEncoder encoder )
+        void ILiquidFrameworkElementRenderer.Render( ILiquidFrameworkElementRenderer baseRenderer, ILavaRenderContext context, TextWriter result, TextEncoder encoder )
         {
-            var dotLiquidContext = ( (DotLiquidLavaContext)context ).DotLiquidContext;
+            var dotLiquidContext = ( (DotLiquidRenderContext)context ).DotLiquidContext;
 
             base.Render( dotLiquidContext, result );
         }

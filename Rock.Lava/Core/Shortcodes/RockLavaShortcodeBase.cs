@@ -90,7 +90,7 @@ namespace Rock.Lava
         /// </summary>
         /// <param name="context">The context.</param>
         /// <returns></returns>
-        protected bool IsAuthorized( ILavaContext context )
+        protected bool IsAuthorized( ILavaRenderContext context )
         {
             return LavaSecurityHelper.IsAuthorized( context, this.SourceElementName );
         }
@@ -113,7 +113,7 @@ namespace Rock.Lava
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="result">The result.</param>
-        public virtual void OnRender( ILavaContext context, TextWriter result )
+        public virtual void OnRender( ILavaRenderContext context, TextWriter result )
         {
             // By default, call the underlying engine to render this element.
             if ( _baseRenderer != null )
@@ -178,7 +178,7 @@ namespace Rock.Lava
         /// <param name="result"></param>
         /// <param name="result"></param>
         /// <param name="encoder"></param>
-        void ILiquidFrameworkElementRenderer.Render( ILiquidFrameworkElementRenderer baseRenderer, ILavaContext context, TextWriter result, TextEncoder encoder )
+        void ILiquidFrameworkElementRenderer.Render( ILiquidFrameworkElementRenderer baseRenderer, ILavaRenderContext context, TextWriter result, TextEncoder encoder )
         {
             _baseRenderer = baseRenderer;
 

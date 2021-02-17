@@ -51,7 +51,7 @@ namespace Rock.Lava
         /// </summary>
         /// <param name="context"></param>
         /// <param name="result"></param>
-        void OnRender( ILavaContext context, TextWriter result );
+        void OnRender( ILavaRenderContext context, TextWriter result );
 
         /// <summary>
         /// Called after the parser has divided the document into a set of recognized Lava tokens.

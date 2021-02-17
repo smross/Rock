@@ -141,7 +141,7 @@ namespace Rock.Lava.Fluid
 
         private ValueTask<Completion> WriteToAsync( TextWriter writer, TextEncoder encoder, TemplateContext context, IRockLavaBlock lavaBlock, string blockName, string blockAttributesMarkup, List<string> tokens, List<Statement> statements )
         {
-            var lavaContext = new FluidLavaContext( context );
+            var lavaContext = new FluidRenderContext( context );
 
             var elementRenderer = lavaBlock as ILiquidFrameworkElementRenderer;
 
@@ -196,9 +196,9 @@ namespace Rock.Lava.Fluid
 
         #region ILiquidFrameworkRenderer implementation
 
-        void ILiquidFrameworkElementRenderer.Render( ILiquidFrameworkElementRenderer baseRenderer, ILavaContext context, TextWriter writer, TextEncoder encoder )
+        void ILiquidFrameworkElementRenderer.Render( ILiquidFrameworkElementRenderer baseRenderer, ILavaRenderContext context, TextWriter writer, TextEncoder encoder )
         {
-            var fluidContext = ( (FluidLavaContext)context ).FluidContext;
+            var fluidContext = ( (FluidRenderContext)context ).FluidContext;
 
             var statements = context.GetInternalField( Constants.ContextKeys.SourceTemplateStatements ) as List<Statement>;
 

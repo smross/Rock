@@ -60,13 +60,13 @@ namespace Rock.Lava.Fluid
         /// <param name="mergeFields"></param>
         /// <returns></returns>
 
-        public override ILavaContext NewContext( IDictionary<string, object> mergeFields = null )
+        public override ILavaRenderContext NewContext( IDictionary<string, object> mergeFields = null )
         {
             var fluidContext = new global::Fluid.TemplateContext();
 
             fluidContext.ParserFactory = _parserFactory;
 
-            var context = new FluidLavaContext( fluidContext );
+            var context = new FluidRenderContext( fluidContext );
 
             context.SetMergeFields( mergeFields );
 
@@ -250,7 +250,7 @@ namespace Rock.Lava.Fluid
                 }
 
                 // The first argument passed to the Lava filter is either the Lava Context or the template input.
-                var hasContextParameter = lavaFilterMethodParameters[0].ParameterType == typeof( ILavaContext );
+                var hasContextParameter = lavaFilterMethodParameters[0].ParameterType == typeof( ILavaRenderContext );
 
                 var firstParameterIndex = 1 + ( hasContextParameter ? 1 : 0 );
 
@@ -269,7 +269,7 @@ namespace Rock.Lava.Fluid
                             // If this is the first parameter, it may be a LavaContext or the input template.
                             if ( hasContextParameter )
                             {
-                                lavaFilterMethodArguments[0] = new FluidLavaContext( context );
+                                lavaFilterMethodArguments[0] = new FluidRenderContext( context );
                                 continue;
                             }
                             else
@@ -453,7 +453,7 @@ namespace Rock.Lava.Fluid
 
         private bool TryRenderInternal( LavaFluidTemplate template, LavaRenderParameters parameters, out string output, out List<Exception> errors )
         {
-            var templateContext = parameters.LavaContext as FluidLavaContext;
+            var templateContext = parameters.Context as FluidRenderContext;
 
             if ( templateContext == null )
             {

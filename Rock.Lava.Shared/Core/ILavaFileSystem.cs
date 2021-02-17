@@ -35,6 +35,6 @@ namespace Rock.Lava
         /// <param name="context"></param>
         /// <param name="templateName"></param>
         /// <returns></returns>
-        string ReadTemplateFile( ILavaContext context, string templateName );
+        string ReadTemplateFile( ILavaRenderContext context, string templateName );
     }
 }

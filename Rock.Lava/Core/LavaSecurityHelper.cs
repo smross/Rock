@@ -34,7 +34,7 @@ namespace Rock.Lava
         /// <returns>
         ///   <c>true</c> if the specified command is authorized; otherwise, <c>false</c>.
         /// </returns>
-        public static bool IsAuthorized( ILavaContext context, string command )
+        public static bool IsAuthorized( ILavaRenderContext context, string command )
         {
             if ( command.IsNullOrWhiteSpace() )
             {

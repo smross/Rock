@@ -30,7 +30,7 @@ namespace Rock.Lava.Filters
         /// {% capture lava %}{% raw %}{% assign test = "hello" %}{{ test }}{% endraw %}{% endcapture %}
         /// {{ lava | RunLava }}
         /// ]]></example>
-        public static string RunLava( ILavaContext context, object input )
+        public static string RunLava( ILavaRenderContext context, object input )
         {
             if ( input == null )
             {

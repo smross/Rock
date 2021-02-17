@@ -96,7 +96,7 @@ namespace Rock.Lava.Blocks
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="result">The result.</param>
-        public override void OnRender( ILavaContext context, TextWriter result )
+        public override void OnRender( ILavaRenderContext context, TextWriter result )
         {
             // first ensure that entity commands are allowed in the context
             if ( !this.IsAuthorized( context ) )
@@ -140,7 +140,7 @@ namespace Rock.Lava.Blocks
 
             /* Process inside a new stack level so our own created variables do not
              * persist throughout the rest of the workflow. */
-            context.ExecuteInChildScope( (System.Action<ILavaContext>)((newContext) =>
+            context.ExecuteInChildScope( (System.Action<ILavaRenderContext>)((newContext) =>
             {
                 using ( var rockContext = new RockContext() )
                 {
@@ -316,7 +316,7 @@ namespace Rock.Lava.Blocks
         /// <param name="markup">The markup.</param>
         /// <param name="context">The context.</param>
         /// <returns></returns>
-        private Dictionary<string, string> ParseMarkup( string markup, ILavaContext context )
+        private Dictionary<string, string> ParseMarkup( string markup, ILavaRenderContext context )
         {
             // first run lava across the inputted markup
             var internalMergeFields = context.GetMergeFields();

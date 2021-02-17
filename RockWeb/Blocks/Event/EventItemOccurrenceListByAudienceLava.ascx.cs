@@ -212,7 +212,7 @@ namespace RockWeb.Blocks.Event
                 foreach (var contextEntityType in RockPage.GetContextEntityTypes())
                 {
                     var contextEntity = RockPage.GetCurrentContext(contextEntityType);
-                    if (contextEntity != null && contextEntity is ILavaContext)
+                    if (contextEntity != null && contextEntity is ILavaRenderContext)
                     {
                         var type = Type.GetType(contextEntityType.AssemblyName ?? contextEntityType.Name);
                         if (type != null)

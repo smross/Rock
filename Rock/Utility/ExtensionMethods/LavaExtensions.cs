@@ -665,7 +665,7 @@ namespace Rock
                     context.SetEnabledCommands( enabledLavaCommands );
                 }
 
-                var renderParameters = new LavaRenderParameters { LavaContext = context };
+                var renderParameters = new LavaRenderParameters { Context = context };
 
                 renderParameters.ShouldEncodeStringsAsXml = encodeStrings;
 

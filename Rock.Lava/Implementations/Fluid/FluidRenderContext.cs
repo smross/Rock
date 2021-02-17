@@ -27,13 +27,13 @@ namespace Rock.Lava.Fluid
     /// <summary>
     /// An implementation of a Lava Template Context for the Fluid framework.
     /// </summary>
-    public class FluidLavaContext : LavaContextBase
+    public class FluidRenderContext : LavaRenderContextBase
     {
         private TemplateContext _context;
 
         #region Constructors
 
-        public FluidLavaContext( TemplateContext context )
+        public FluidRenderContext( TemplateContext context )
         {
             _context = context;
         }

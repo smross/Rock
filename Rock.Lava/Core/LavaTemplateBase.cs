@@ -65,7 +65,7 @@ namespace Rock.Lava
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public string Render( ILavaContext context )
+        public string Render( ILavaRenderContext context )
         {
             string output;
             List<Exception> errors;
@@ -105,9 +105,9 @@ namespace Rock.Lava
         /// <param name="output"></param>
         /// <param name="errors"></param>
         /// <returns></returns>
-        public bool TryRender( ILavaContext context, out string output, out List<Exception> errors )
+        public bool TryRender( ILavaRenderContext context, out string output, out List<Exception> errors )
         {
-            var parameters = new LavaRenderParameters { LavaContext = context };
+            var parameters = new LavaRenderParameters { Context = context };
 
             return TryRender( parameters, out output, out errors );
         }

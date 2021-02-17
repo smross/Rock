@@ -107,7 +107,7 @@ namespace Rock.Lava
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="result">The result.</param>
-        public virtual void OnRender( ILavaContext context, TextWriter result )
+        public virtual void OnRender( ILavaRenderContext context, TextWriter result )
         {
             // By default, call the underlying engine to render this element.
             if ( _baseRenderer != null )
@@ -128,7 +128,7 @@ namespace Rock.Lava
         /// <param name="context"></param>
         /// <param name="result"></param>
         /// <param name="proxy"></param>
-        void ILiquidFrameworkElementRenderer.Render( ILiquidFrameworkElementRenderer baseRenderer, ILavaContext context, TextWriter result, TextEncoder encoder )
+        void ILiquidFrameworkElementRenderer.Render( ILiquidFrameworkElementRenderer baseRenderer, ILavaRenderContext context, TextWriter result, TextEncoder encoder )
         {
             // If this tag was previously called with a different base renderer, exit to prevent a circular reference.
             if ( _baseRenderer != null )

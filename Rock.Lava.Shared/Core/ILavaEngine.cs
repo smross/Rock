@@ -56,7 +56,7 @@ namespace Rock.Lava
         /// </summary>
         /// <param name="values"></param>
         /// <returns></returns>
-        ILavaContext NewContext( IDictionary<string, object> values = null );
+        ILavaRenderContext NewContext( IDictionary<string, object> values = null );
 
         /// <summary>
         /// Register one or more filter functions that are implemented by the supplied Type.
@@ -126,7 +126,7 @@ namespace Rock.Lava
         /// The rendered output of the template.
         /// If the template is invalid, returns an error message or an empty string according to the current ExceptionHandlingStrategy setting.
         /// </returns>
-        string RenderTemplate( string inputTemplate, ILavaContext context );
+        string RenderTemplate( string inputTemplate, ILavaRenderContext context );
 
         /// <summary>
         /// Render the provided template in a new context with the specified merge fields.
@@ -163,7 +163,7 @@ namespace Rock.Lava
         /// <param name="context"></param>
         /// <param name="output"></param>
         /// <returns></returns>
-        bool TryRenderTemplate( string inputTemplate, ILavaContext context, out string output, out List<Exception> errors );
+        bool TryRenderTemplate( string inputTemplate, ILavaRenderContext context, out string output, out List<Exception> errors );
 
         /// <summary>
         /// Try to render a compiled Lava template using the specified parameters.

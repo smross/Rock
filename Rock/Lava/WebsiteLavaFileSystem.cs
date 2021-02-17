@@ -51,7 +51,7 @@ namespace Rock.Lava
         /// <param name="templatePath"></param>
         /// <returns></returns>
         /// <exception cref="LavaException">LavaFileSystem Template Not Found</exception>
-        public string ReadTemplateFile( ILavaContext context, string templatePath )
+        public string ReadTemplateFile( ILavaRenderContext context, string templatePath )
         {
             // Try to find exact file specified
             var resolvedPath = ResolveTemplatePath( templatePath );

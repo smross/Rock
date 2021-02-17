@@ -24,7 +24,10 @@ namespace Rock.Lava
     /// </summary>
     public class LavaRenderParameters
     {
-        public ILavaContext LavaContext { get; set; }
+        /// <summary>
+        /// The context in which the Lava template is rendered.
+        /// </summary>
+        public ILavaRenderContext Context { get; set; }
 
         /// <summary>
         /// Should string values be XML encoded?

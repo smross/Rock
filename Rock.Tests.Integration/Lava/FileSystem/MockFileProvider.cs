@@ -65,7 +65,7 @@ namespace Rock.Tests.Integration.Lava
 
         #region ILavaFileSystem implementation
 
-        public string ReadTemplateFile( ILavaContext context, string templateName )
+        public string ReadTemplateFile( ILavaRenderContext context, string templateName )
         {
             var fi = GetFileInfo( templateName );
 
