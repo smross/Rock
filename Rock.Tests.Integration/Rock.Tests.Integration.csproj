@@ -216,11 +216,13 @@
     <Compile Include="Crm\ConnectionStatusChangeReportTests.cs" />
     <Compile Include="TestData\TestDataHelper.cs" />
     <Compile Include="Utility\Settings\RockInstanceConfigurationTests.cs" />
+    <Compile Include="Utility\FileManagementHelperTests.cs" />
     <Compile Include="Web\Utilities\RockUpdateHelperTests.cs" />
     <Compile Include="Workflow\Action\BackgroundCheckRequestTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="app.ConnectionStrings.config" />
     <None Include="packages.config" />
     <None Include="test.runsettings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -272,6 +274,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Constants\" />
+    <Folder Include="Rock.RockUpdate\" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

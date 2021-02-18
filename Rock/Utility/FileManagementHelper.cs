@@ -17,14 +17,31 @@ namespace Rock.Utility
         /// <summary>
         /// The root physical file system path of the web application.
         /// </summary>
-        public static readonly string ROOT_PATH = HostingEnvironment.MapPath( "~/" );
+        public static readonly string ROOT_PATH = HostingEnvironment.MapPath( "~/" ) ?? AppDomain.CurrentDomain.BaseDirectory;
         private static readonly string DELETE_FILE_EXTENSION = "rdelete";
 
+        /// <summary>
+        /// Tries the delete.
+        /// </summary>
+        /// <remarks>
+        /// This method will always log any exception that occurs even if the exception isn't thrown.
+        /// </remarks>
+        /// <param name="filePath">The file path.</param>
+        /// <param name="shouldBubbleException">if set to <c>true</c> [should bubble exception].</param>
         public static void TryDelete(string filePath, bool shouldBubbleException )
         {
             TryDelete( filePath, ( ex ) => ExceptionLogService.LogException( ex ), shouldBubbleException );
         }
 
+        /// <summary>
+        /// Tries the delete.
+        /// </summary>
+        /// <remarks>
+        /// Will not log the exception by default.
+        /// </remarks>
+        /// <param name="filePath">The file path.</param>
+        /// <param name="catchMethod">The catch method.</param>
+        /// <param name="shouldBubbleException">if set to <c>true</c> [should bubble exception].</param>
         public static void TryDelete( string filePath, Action<Exception> catchMethod, bool shouldBubbleException )
         {
             try
@@ -41,6 +58,10 @@ namespace Rock.Utility
             }
         }
 
+        /// <summary>
+        /// Deletes the or rename.
+        /// </summary>
+        /// <param name="filepath">The file path.</param>
         public static void DeleteOrRename( string filepath )
         {
             if ( File.Exists( filepath ) )
@@ -49,6 +70,10 @@ namespace Rock.Utility
             }
         }
 
+        /// <summary>
+        /// Renames the file.
+        /// </summary>
+        /// <param name="physicalFile">The physical file.</param>
         public static void RenameFile( string physicalFile )
         {
             if ( File.Exists( physicalFile ) )
@@ -57,6 +82,10 @@ namespace Rock.Utility
             }
         }
 
+        /// <summary>
+        /// Renames the active file.
+        /// </summary>
+        /// <param name="filepathToRename">The file path to rename.</param>
         public static void RenameActiveFile( string filepathToRename )
         {
             bool dllFileNotInBin = filepathToRename.EndsWith( ".dll" ) && !filepathToRename.Contains( @"\bin\" );
@@ -79,6 +108,9 @@ namespace Rock.Utility
             }
         }
 
+        /// <summary>
+        /// Cleans up deleted files.
+        /// </summary>
         public static void CleanUpDeletedFiles()
         {
             var filesToDelete = Directory.GetFiles( ROOT_PATH, $"*.{DELETE_FILE_EXTENSION}", SearchOption.AllDirectories );
@@ -88,6 +120,11 @@ namespace Rock.Utility
             }
         }
 
+        /// <summary>
+        /// Gets the name of the rename file.
+        /// </summary>
+        /// <param name="physicalFile">The physical file.</param>
+        /// <returns></returns>
         private static string GetRenameFileName( string physicalFile )
         {
             var fileCount = 1;
