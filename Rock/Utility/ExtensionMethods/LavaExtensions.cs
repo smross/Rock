@@ -555,7 +555,7 @@ namespace Rock
                     enabledLavaCommands = GlobalAttributesCache.Value( "DefaultEnabledLavaCommands" );
                 }
 
-                var context = LavaEngine.CurrentEngine.NewContext();
+                var context = LavaEngine.CurrentEngine.NewRenderContext();
 
                 context.SetEnabledCommands( enabledLavaCommands, "," );
 
@@ -658,7 +658,7 @@ namespace Rock
                     }
                 }
 
-                var context = LavaEngine.CurrentEngine.NewContext( mergeObjects );
+                var context = LavaEngine.CurrentEngine.NewRenderContext( mergeObjects );
 
                 if ( enabledLavaCommands != null )
                 {

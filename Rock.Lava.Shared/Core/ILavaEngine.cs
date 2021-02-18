@@ -52,11 +52,11 @@ namespace Rock.Lava
         LavaEngineTypeSpecifier EngineType { get; }
 
         /// <summary>
-        /// Get a new context instance containing the specified merge values.
+        /// Gets a new render context instance containing the specified merge values.
         /// </summary>
         /// <param name="values"></param>
         /// <returns></returns>
-        ILavaRenderContext NewContext( IDictionary<string, object> values = null );
+        ILavaRenderContext NewRenderContext( IDictionary<string, object> values = null );
 
         /// <summary>
         /// Register one or more filter functions that are implemented by the supplied Type.

@@ -96,7 +96,7 @@ namespace Rock.Tests.Integration.Lava
 TedDecker<br/>
 ";
 
-            var context = TestHelper.LavaEngine.NewContext();
+            var context = TestHelper.LavaEngine.NewRenderContext();
 
             context.SetEnabledCommands( "Cache,RockEntity" );
 
@@ -131,7 +131,7 @@ Color 3: red
 Color 4: blue
 ";
 
-            var context = TestHelper.LavaEngine.NewContext();
+            var context = TestHelper.LavaEngine.NewRenderContext();
 
             context.SetEnabledCommands( "Cache" );
 
@@ -181,7 +181,7 @@ Color 4: blue
 [Daniel Peak]: Called Daniel to see if he would be interested in joining our team as the Communications Director.<br>
 ";
 
-            var context = TestHelper.LavaEngine.NewContext();
+            var context = TestHelper.LavaEngine.NewRenderContext();
 
             context.SetEnabledCommands( "RockEntity" );
 
@@ -201,7 +201,7 @@ Color 4: blue
 {% endperson %}
             ";
 
-            var context = TestHelper.LavaEngine.NewContext();
+            var context = TestHelper.LavaEngine.NewRenderContext();
 
             context.SetEnabledCommands( "RockEntity" );
 
@@ -236,7 +236,7 @@ Color 4: blue
 
             input = input.Replace( "`", "\"" );
 
-            var context = TestHelper.LavaEngine.NewContext();
+            var context = TestHelper.LavaEngine.NewRenderContext();
 
             context.SetEnabledCommands( "Cache;RockEntity",";" );
 
@@ -277,7 +277,7 @@ Color 4: blue
 
             var expectedOutput = @"Hello World!";
 
-            var context = TestHelper.LavaEngine.NewContext();
+            var context = TestHelper.LavaEngine.NewRenderContext();
 
             context.SetEnabledCommands( "execute" );
 
@@ -301,7 +301,7 @@ Color 4: blue
 
             var expectedOutput = @"Fruit: Orange";
 
-            var context = TestHelper.LavaEngine.NewContext();
+            var context = TestHelper.LavaEngine.NewRenderContext();
 
             context.SetEnabledCommands( "execute" );
 
@@ -334,7 +334,7 @@ Color 4: blue
 
             var expectedOutput = @"Ted Decker";
 
-            var context = TestHelper.LavaEngine.NewContext();
+            var context = TestHelper.LavaEngine.NewRenderContext();
 
             context.SetEnabledCommands( "execute" );
 
@@ -365,7 +365,7 @@ Color 4: blue
 
             var expectedOutput = @"Ted Decker";
 
-            var context = TestHelper.LavaEngine.NewContext();
+            var context = TestHelper.LavaEngine.NewRenderContext();
 
             context.SetEnabledCommands( "execute" );
 
@@ -403,7 +403,7 @@ Color 4: blue
             var expectedOutput = @"
 ";
 
-            var context = TestHelper.LavaEngine.NewContext();
+            var context = TestHelper.LavaEngine.NewRenderContext();
 
             context.SetEnabledCommands( "InteractionWrite" );
 
@@ -436,7 +436,7 @@ Color 4: blue
             var expectedOutput = @"
 ";
 
-            var context = TestHelper.LavaEngine.NewContext();
+            var context = TestHelper.LavaEngine.NewRenderContext();
 
             context.SetEnabledCommands( "InteractionContentChannelItemWrite" );
 
@@ -500,7 +500,7 @@ Color 4: blue
 
             var expectedOutput = @"(.*)Search results not available. Universal search is not enabled for this Rock instance.";
 
-            var context = TestHelper.LavaEngine.NewContext();
+            var context = TestHelper.LavaEngine.NewRenderContext();
 
             context.SetEnabledCommands( "Search" );
 
@@ -546,7 +546,7 @@ Color 4: blue
 
             var expectedOutput = @"Alex_Decker;Ted_Decker;";
 
-            var context = TestHelper.LavaEngine.NewContext();
+            var context = TestHelper.LavaEngine.NewRenderContext();
 
             context.SetEnabledCommands( "Sql" );
 
@@ -625,7 +625,7 @@ Color 4: blue
 {% endwebrequest %}  
 ";
 
-            var context = TestHelper.LavaEngine.NewContext();
+            var context = TestHelper.LavaEngine.NewRenderContext();
 
             context.SetEnabledCommands( "WebRequest" );
 
@@ -664,7 +664,7 @@ Color 4: blue
 
             var expectedOutput = @"Activated new workflow with the name 'IT Support'.";
 
-            var context = TestHelper.LavaEngine.NewContext();
+            var context = TestHelper.LavaEngine.NewRenderContext();
 
             context.SetEnabledCommands( "WorkflowActivate" );
 

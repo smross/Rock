@@ -60,7 +60,7 @@ namespace Rock.Lava.Fluid
         /// <param name="mergeFields"></param>
         /// <returns></returns>
 
-        public override ILavaRenderContext NewContext( IDictionary<string, object> mergeFields = null )
+        public override ILavaRenderContext NewRenderContext( IDictionary<string, object> mergeFields = null )
         {
             var fluidContext = new global::Fluid.TemplateContext();
 

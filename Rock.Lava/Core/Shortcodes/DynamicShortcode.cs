@@ -262,7 +262,7 @@ namespace Rock.Lava
             else
             {
                 // Merge the shortcode template in a new context, using the parameters and security allowed by the shortcode.
-                var shortcodeContext = LavaEngine.CurrentEngine.NewContext( parms );
+                var shortcodeContext = LavaEngine.CurrentEngine.NewRenderContext( parms );
 
                 // If the shortcode specifies a set of enabled Lava commands, set these for the current context.
                 // If not, use the commands enabled for the current context.

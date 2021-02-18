@@ -48,7 +48,7 @@ namespace Rock.Tests.Integration.Lava
 ";
             var expectedOutput = @"Admin Admin"; // NOT 'Ted Decker'
 
-            var context = TestHelper.LavaEngine.NewContext();
+            var context = TestHelper.LavaEngine.NewRenderContext();
 
             context.SetEnabledCommands( "execute" );
 
@@ -89,7 +89,7 @@ Loop Value (Level 2): for_loop_3
 Document Value (Level 1): for_loop_3
 Document Value (Level 1): document_2";
 
-            var context = TestHelper.LavaEngine.NewContext();
+            var context = TestHelper.LavaEngine.NewRenderContext();
 
             context.SetMergeField( "currentBlock", "context" );
 

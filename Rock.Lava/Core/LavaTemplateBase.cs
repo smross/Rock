@@ -93,7 +93,7 @@ namespace Rock.Lava
         /// <returns></returns>
         public bool TryRender( IDictionary<string, object> values, out string output, out List<Exception> errors )
         {
-            var context = LavaEngine.CurrentEngine.NewContext( values );
+            var context = LavaEngine.CurrentEngine.NewRenderContext( values );
 
             return TryRender( context, out output, out errors );
         }
