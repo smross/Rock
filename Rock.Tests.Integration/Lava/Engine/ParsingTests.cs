@@ -124,25 +124,5 @@ Slow
 
             Assert.That.AreEqualIgnoreWhitespace( expectedOutput, output );
         }
-
-
-        /*
-{[ shortcodetest ]}
-
-    [[ item title:'Panel 1' ]]
-        Panel 1 content.
-    [[ enditem ]]
-    
-    [[ item title:'Panel 2' ]]
-        Panel 2 content.
-    [[ enditem ]]
-    
-    [[ item title:'Panel 3' ]]
-        Panel 3 content.
-    [[ enditem ]]
-
-{[ endshortcodetest ]}
-         
-         * */
     }
 }
