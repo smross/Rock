@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Rock.RockUpdate
+namespace Rock.Update
 {
     /// <summary>
     /// Represents the bits the Rock system stores regarding a particular release.

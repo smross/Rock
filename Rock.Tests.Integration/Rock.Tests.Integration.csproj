@@ -256,6 +256,10 @@
       <Project>{d8de32c9-25da-4897-a750-7dd8755b3d45}</Project>
       <Name>Rock.Tests.Shared</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Rock.Update\Rock.Update.csproj">
+      <Project>{b62b27c8-1f77-43cf-8ee7-30de7f93facd}</Project>
+      <Name>Rock.Update</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Rock\Rock.csproj">
       <Project>{185a31d7-3037-4dae-8797-0459849a84bd}</Project>
       <Name>Rock</Name>

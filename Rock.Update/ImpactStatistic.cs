@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Rock.RockUpdate
+namespace Rock.Update
 {
     [Serializable]
     public class ImpactStatistic

@@ -5,7 +5,7 @@ using Rock.Model;
 using Rock.Web;
 using Rock.Web.Cache;
 
-namespace Rock.RockUpdate
+namespace Rock.Update
 {
     public class RockInstanceImpactStatistics
     {

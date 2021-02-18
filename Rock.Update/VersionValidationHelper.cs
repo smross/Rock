@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Rock.Data;
-using Rock.RockUpdate.Enum;
-using Rock.Web.Utilities;
+using Rock.Update.Enum;
 
-namespace Rock.RockUpdate
+namespace Rock.Update
 {
     public static class VersionValidationHelper
     {
@@ -90,7 +89,7 @@ namespace Rock.RockUpdate
         /// Validates the version install.
         /// </summary>
         /// <param name="targetVersion">The target version.</param>
-        /// <exception cref="Rock.RockUpdate.VersionValidationException">
+        /// <exception cref="Rock.Update.VersionValidationException">
         /// Version {targetVersion} requires .Net 4.7.2 or greater.
         /// or
         /// Version {targetVersion} requires Microsoft Sql Server 2012 or greater.

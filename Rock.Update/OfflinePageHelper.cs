@@ -1,8 +1,7 @@
 ﻿using System;
 using System.IO;
-using Rock.Utility;
 
-namespace Rock.RockUpdate
+namespace Rock.Update
 {
     public static class OfflinePageHelper
     {

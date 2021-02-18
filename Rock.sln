@@ -81,6 +81,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rock.Oidc", "Rock.Oidc\Rock
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rock.Specs", "Rock.Specs\Rock.Specs.csproj", "{5BC16478-A45D-4F65-87B2-FFD61650D541}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rock.Update", "Rock.Update\Rock.Update.csproj", "{B62B27C8-1F77-43CF-8EE7-30DE7F93FACD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -191,6 +193,10 @@ Global
 		{5BC16478-A45D-4F65-87B2-FFD61650D541}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5BC16478-A45D-4F65-87B2-FFD61650D541}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5BC16478-A45D-4F65-87B2-FFD61650D541}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B62B27C8-1F77-43CF-8EE7-30DE7F93FACD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B62B27C8-1F77-43CF-8EE7-30DE7F93FACD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B62B27C8-1F77-43CF-8EE7-30DE7F93FACD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B62B27C8-1F77-43CF-8EE7-30DE7F93FACD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using RestSharp;
 
-namespace Rock.RockUpdate
+namespace Rock.Update
 {
     public class RockImpactService : IRockImpactService
     {

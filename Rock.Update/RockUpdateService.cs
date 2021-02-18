@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Net;
 using Newtonsoft.Json;
 using RestSharp;
-using Rock.RockUpdate.Interfaces;
+using Rock.Update.Interfaces;
 using Rock.Web.Cache;
 
-namespace Rock.RockUpdate
+namespace Rock.Update
 {
     /// <summary>
     /// Rock Update Service

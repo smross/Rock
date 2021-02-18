@@ -21,13 +21,21 @@ using System.Linq;
 using Microsoft.Win32;
 using Rock.Data;
 using Rock.Model;
-using Rock.RockUpdate.Enum;
+using Rock.Update.Enum;
 using Rock.Web.Cache;
 
-namespace Rock.RockUpdate
+namespace Rock.Update
 {
+    /*
+        02/18/2021 - MSB
+        Once the new Rock Updater is completely deployed and active this file should be obsoleted and
+        the RockUpdateHelper in the Rock.dll should be used.
+
+        Reason: Easily Deployable Rock Updater.
+     */
+
     /// <summary>
-    /// Helper class for collecting enviromental information about Rock install that is saved during update
+    /// Helper class for collecting environmental information about Rock install that is saved during update
     /// </summary>
     public static class RockUpdateHelper
     {

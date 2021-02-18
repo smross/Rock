@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Rock.RockUpdate.Interfaces
+namespace Rock.Update.Interfaces
 {
     public interface IRockUpdateService
     {

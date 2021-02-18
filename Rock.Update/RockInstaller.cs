@@ -9,12 +9,12 @@ using Newtonsoft.Json;
 using RestSharp;
 using Rock.Data;
 using Rock.Model;
-using Rock.RockUpdate.Interfaces;
+using Rock.Update.Interfaces;
 using Rock.Utility;
 using Rock.Web.Cache;
 using Rock.Web.Utilities;
 
-namespace Rock.RockUpdate
+namespace Rock.Update
 {
     public class RockInstaller
     {

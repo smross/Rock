@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Web;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Rock.RockUpdate;
+using Rock.Update;
 using Rock.Tests.Shared;
 
 namespace Rock.Tests.Integration.Web.Utilities

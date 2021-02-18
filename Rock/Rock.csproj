@@ -607,16 +607,6 @@
     <Compile Include="Communication\Transport\EmailSendResponse.cs" />
     <Compile Include="Communication\EmailTransportComponent.cs" />
     <Compile Include="Communication\Transport\ThrottleHelper.cs" />
-    <Compile Include="RockUpdate\ImpactLocation.cs" />
-    <Compile Include="RockUpdate\ImpactStatistic.cs" />
-    <Compile Include="RockUpdate\RockInstanceImpactStatistics.cs" />
-    <Compile Include="RockUpdate\Interfaces\IRockUpdateService.cs" />
-    <Compile Include="RockUpdate\IRockImpactService.cs" />
-    <Compile Include="RockUpdate\OfflinePageHelper.cs" />
-    <Compile Include="RockUpdate\RockImpactService.cs" />
-    <Compile Include="RockUpdate\RockInstaller.cs" />
-    <Compile Include="RockUpdate\VersionValidationException.cs" />
-    <Compile Include="RockUpdate\VersionValidationHelper.cs" />
     <Compile Include="Tasks\AddCommunicationRecipients.cs" />
     <Compile Include="Tasks\AddNewMetaphones.cs" />
     <Compile Include="Tasks\AddPageRenameInteraction.cs" />
@@ -655,7 +645,6 @@
     <Compile Include="Tasks\LaunchWorkflow.cs" />
     <Compile Include="Tasks\UpdateUserLastActivity.cs" />
     <Compile Include="Store\StoreApiResult.cs" />
-    <Compile Include="Utility\FileManagementHelper.cs" />
     <Compile Include="Utility\MethodRetry.cs" />
     <Compile Include="Communication\Transport\RockMobilePush.cs" />
     <Compile Include="Communication\Transport\SafeSenderResult.cs" />
@@ -750,9 +739,6 @@
     <Compile Include="Plugin\HotFixes\129_MigrationRollupsFor11_1_0.cs" />
     <Compile Include="Security\Authentication\ClaimExtensionMethods.cs" />
     <Compile Include="Security\Authentication\OidcClient.cs" />
-    <Compile Include="RockUpdate\RockRelease.cs" />
-    <Compile Include="RockUpdate\RockReleaseProgram.cs" />
-    <Compile Include="RockUpdate\RockUpdateService.cs" />
     <Compile Include="SystemGuid\Badge.cs" />
     <Compile Include="SystemGuid\AuthScope.cs" />
     <Compile Include="SystemKey\DeviceAttributeKey.cs" />
@@ -2871,9 +2857,9 @@
     </Compile>
     <Compile Include="Web\UI\RouteUtils.cs" />
     <Compile Include="Web\UI\Validation\DataAnnotationValidator.cs" />
+    <Compile Include="Web\Utilities\DotNetVersionCheckResult.cs" />
     <Compile Include="Web\Utilities\HtmlSanitizer.cs" />
-    <Compile Include="RockUpdate\RockUpdateHelper.cs" />
-    <Compile Include="RockUpdate\Enums\DotNetVersionCheckResult.cs" />
+    <Compile Include="Web\Utilities\RockUpdateHelper.cs" />
     <Compile Include="Web\Utilities\WebControlHelper.cs" />
     <Compile Include="Web\BrowserClient.cs" />
     <Compile Include="Workflow\ActionCategoryAttribute.cs" />

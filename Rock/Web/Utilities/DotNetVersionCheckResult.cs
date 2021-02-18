@@ -14,11 +14,15 @@
 // limitations under the License.
 // </copyright>
 //
-namespace Rock.RockUpdate.Enum
+using System;
+
+namespace Rock.Web.Utilities
 {
     /// <summary>
     /// Represents the possible results of a version check.
     /// </summary>
+    [RockObsolete("1.13.0")]
+    [Obsolete( "Rock.Update.Enum.DotNetVersionCheckResult should be used instead.")]
     public enum DotNetVersionCheckResult
     {
         /// <summary>

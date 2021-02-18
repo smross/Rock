@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Web.Hosting;
 using Rock.Model;
 
-namespace Rock.Utility
+namespace Rock.Update
 {
     /// <summary>
     /// Helper methods for accessing the file system.
