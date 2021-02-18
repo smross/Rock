@@ -102,8 +102,34 @@ namespace Rock.Lava.DotLiquid
             Template.RegisterSafeType( typeof( DBNull ), o => null );
 
             // Register all Types that implement LavaDataDictionary interfaces as safe to render.
-            RegisterSafeType( typeof( Rock.Lava.ILavaDataDictionary ) );
-            RegisterSafeType( typeof( Rock.Lava.ILavaDataDictionarySource ) );
+            RegisterSafeType( typeof( ILavaDataDictionary ) );
+            RegisterSafeType( typeof( ILavaDataDictionarySource ) );
+
+            // Register all Types that are decorated with the LavaType custom attribute.
+            RegisterLavaTypesAsSafeTypes();
+        }
+
+        private void RegisterLavaTypesAsSafeTypes()
+        {
+            // Register Types that use the LavaTypeAttribute, because it is not recognized by DotLiquid as safe to render.
+            var assemblyDefinition = typeof( LavaTypeAttribute ).Assembly.GetName().Name;
+
+            foreach ( var assembly in AppDomain.CurrentDomain.GetAssemblies() )
+            {
+                if ( ( !assembly.GlobalAssemblyCache )
+                     && ( ( assembly.GetName().Name == assemblyDefinition ) || assembly.GetReferencedAssemblies().Any( a => a.Name == assemblyDefinition ) ) )
+                {
+                    foreach ( var type in assembly.GetTypes() )
+                    {
+                        var attribute = type.GetCustomAttributes<LavaTypeAttribute>( true ).FirstOrDefault();
+
+                        if ( attribute != null )
+                        {
+                            RegisterSafeType( type, attribute.AllowedMembers );
+                        }
+                    }
+                }
+            }
         }
 
         /// <summary>
