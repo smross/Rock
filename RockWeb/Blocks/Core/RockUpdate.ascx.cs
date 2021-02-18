@@ -32,12 +32,11 @@ using RestSharp;
 using Rock;
 using Rock.Data;
 using Rock.Model;
-using Rock.RockUpdate;
-using Rock.RockUpdate.Enum;
+using Rock.Update;
+using Rock.Update.Enum;
 using Rock.Services.NuGet;
 using Rock.VersionInfo;
 using Rock.Web.Cache;
-using Rock.Web.Utilities;
 
 namespace RockWeb.Blocks.Core
 {

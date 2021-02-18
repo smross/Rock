@@ -26,8 +26,8 @@ using System.Web.UI.WebControls;
 
 using Rock;
 using Rock.Model;
-using Rock.RockUpdate;
-using Rock.RockUpdate.Enum;
+using Rock.Update;
+using Rock.Update.Enum;
 using Rock.Utility;
 using Rock.VersionInfo;
 using Rock.Web.Cache;
