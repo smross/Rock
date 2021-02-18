@@ -99,6 +99,20 @@ ScheduleName:Saturday4:30pm<br>ScheduleLive:true<br>
             TestHelper.AssertTemplateOutput( expectedOutput, input, ignoreWhitespace: true );
         }
 
+        [TestMethod]
+        public void ScheduledContentShortcode_ContainedInCaptureBlock_EmitsCorrectOutput()
+        {
+            var input = @"
+{% capture isScheduleActive %}
+{[ scheduledcontent scheduleid:'6' ]}true{[ endscheduledcontent ]}
+{% endcapture %}
+Schedule Active = {{isScheduleActive}}
+";
+            var expectedOutput = @"Schedule Active = true";
+
+            TestHelper.AssertTemplateOutput( expectedOutput, input, context: null, ignoreWhiteSpace: true );
+        }
+
         #endregion
 
         #region Scripturize
