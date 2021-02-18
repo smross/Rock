@@ -14,7 +14,6 @@
 // limitations under the License.
 // </copyright>
 //
-using System;
 using System.Diagnostics;
 using System.Reflection;
 
@@ -49,18 +48,11 @@ namespace Rock.VersionInfo
             return string.Format( "{0}.{1}.{2}", GetFileVersionInfo().FileMajorPart.ToString(), GetFileVersionInfo().FileMinorPart.ToString(), GetFileVersionInfo().FileBuildPart.ToString() );
         }
 
-        public static Version GetInstalledVersion()
-        {
-            return new Version( VersionInfo.GetRockSemanticVersionNumber() );
-        }
-
         private static FileVersionInfo GetFileVersionInfo()
         {
             Assembly rockVersionDLL = Assembly.GetExecutingAssembly();
             FileVersionInfo rockDLLfvi = FileVersionInfo.GetVersionInfo( rockVersionDLL.Location );
             return rockDLLfvi;
         }
-
-
     }
 }

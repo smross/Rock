@@ -119,5 +119,14 @@ namespace Rock.Update
                 throw new VersionValidationException( $"Version {targetVersion} requires Microsoft Sql Server 2012 or greater." );
             }
         }
+
+        /// <summary>
+        /// Gets the installed version.
+        /// </summary>
+        /// <returns></returns>
+        public static Version GetInstalledVersion()
+        {
+            return new Version( VersionInfo.VersionInfo.GetRockSemanticVersionNumber() );
+        }
     }
 }
