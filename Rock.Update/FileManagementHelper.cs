@@ -1,9 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
+﻿// <copyright>
+// Copyright by the Spark Development Network
+//
+// Licensed under the Rock Community License (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.rockrms.com/license
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+// </copyright>
+
+using System;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web.Hosting;
 using Rock.Model;
 
@@ -28,7 +40,7 @@ namespace Rock.Update
         /// </remarks>
         /// <param name="filePath">The file path.</param>
         /// <param name="shouldBubbleException">if set to <c>true</c> [should bubble exception].</param>
-        public static void TryDelete(string filePath, bool shouldBubbleException )
+        public static void TryDelete( string filePath, bool shouldBubbleException )
         {
             TryDelete( filePath, ( ex ) => ExceptionLogService.LogException( ex ), shouldBubbleException );
         }
@@ -50,7 +62,7 @@ namespace Rock.Update
             }
             catch ( Exception ex )
             {
-                catchMethod(ex);
+                catchMethod( ex );
                 if ( shouldBubbleException )
                 {
                     throw;
