@@ -833,7 +833,7 @@ $(document).ready(function() {
 
                 var template = GetTemplate();
 
-                var lavaContext = LavaEngine.CurrentEngine.NewContext( mergeFields );
+                var lavaContext = LavaEngine.CurrentEngine.NewRenderContext( mergeFields );
 
                 lavaContext.SetEnabledCommands( GetAttributeValue( AttributeKey.EnabledLavaCommands ).SplitDelimitedValues() );
 

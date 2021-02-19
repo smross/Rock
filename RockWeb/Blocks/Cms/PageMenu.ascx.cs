@@ -211,7 +211,7 @@ namespace RockWeb.Blocks.Cms
                 var lavaTemplate = GetTemplate();
 
                 // Apply Enabled Lava Commands
-                var lavaContext = LavaEngine.CurrentEngine.NewContext( pageProperties );
+                var lavaContext = LavaEngine.CurrentEngine.NewRenderContext( pageProperties );
 
                 var enabledCommands = GetAttributeValue( AttributeKey.EnabledLavaCommands );
 
