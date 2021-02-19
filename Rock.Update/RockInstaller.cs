@@ -5,14 +5,8 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using Microsoft.Web.XmlTransform;
-using Newtonsoft.Json;
-using RestSharp;
-using Rock.Data;
 using Rock.Model;
 using Rock.Update.Interfaces;
-using Rock.Utility;
-using Rock.Web.Cache;
-using Rock.Web.Utilities;
 
 namespace Rock.Update
 {
@@ -20,6 +14,8 @@ namespace Rock.Update
     {
         private const string LOCAL_ROCK_PACKAGE_FOLDER = "App_Data\\RockShop";
         private const string BACKUP_FOLDER = "App_Data\\RockBackup";
+        private const string TRANSFORM_FILE_SUFFIX = ".rock.xdt";
+        private const string CONTENT_PATH = "content/";
 
         private readonly string _backupPath = Path.Combine( FileManagementHelper.ROOT_PATH, BACKUP_FOLDER );
         private readonly IRockUpdateService _rockUpdateService;
@@ -27,7 +23,7 @@ namespace Rock.Update
         private readonly Version _targetVersion;
         private readonly Version _installedVersion;
 
-        public RockInstaller(IRockUpdateService rockUpdateService, Version targetVersion, Version installedVersion )
+        public RockInstaller( IRockUpdateService rockUpdateService, Version targetVersion, Version installedVersion )
         {
             _rockUpdateService = rockUpdateService;
             _targetVersion = targetVersion;
@@ -91,7 +87,7 @@ namespace Rock.Update
                 OfflinePageHelper.RemoveOfflinePage();
             }
         }
-
+                
         private void ClearPreviousBackups()
         {
             if ( !Directory.Exists( _backupPath ) )
@@ -120,17 +116,26 @@ namespace Rock.Update
 
             foreach ( var file in filesToRestore )
             {
-                var originalPath = file.Replace( BACKUP_FOLDER, string.Empty );
-
-                var backupDirectory = Path.GetDirectoryName( originalPath );
-                if ( !Directory.Exists( backupDirectory ) )
+                try
                 {
-                    Directory.CreateDirectory( backupDirectory );
-                }
+                    var originalPath = Path.Combine( FileManagementHelper.ROOT_PATH, file.Replace( _versionBackupPath.EnsureTrailingBackslash(), string.Empty ) );
 
-                FileManagementHelper.RenameFile( originalPath );
-                File.Move( file, originalPath );
+                    var backupDirectory = Path.GetDirectoryName( originalPath );
+                    if ( !Directory.Exists( backupDirectory ) )
+                    {
+                        Directory.CreateDirectory( backupDirectory );
+                    }
+
+                    FileManagementHelper.RenameFile( originalPath );
+                    File.Move( file, originalPath );
+                }
+                catch ( Exception ex )
+                {
+                    ExceptionLogService.LogException( ex );
+                }
             }
+
+            FileManagementHelper.CleanUpDeletedFiles();
         }
 
         private void ProcessDeleteFiles( ZipArchive packageZip )
@@ -179,18 +184,19 @@ namespace Rock.Update
 
         private void ProcessContentFiles( ZipArchive packageZip )
         {
-            var transformFileSuffix = ".rock.xdt";
             var contentFilesToProcess = packageZip
                 .Entries
-                .Where( e => e.FullName.StartsWith( "content/", StringComparison.OrdinalIgnoreCase ) )
-                .Where( e => !e.FullName.EndsWith( transformFileSuffix, StringComparison.OrdinalIgnoreCase ) );
+                .Where( e => e.FullName.StartsWith( CONTENT_PATH, StringComparison.OrdinalIgnoreCase ) )
+                .Where( e => !e.FullName.EndsWith( TRANSFORM_FILE_SUFFIX, StringComparison.OrdinalIgnoreCase ) );
 
             // unzip content folder and process xdts
             foreach ( ZipArchiveEntry entry in contentFilesToProcess )
             {
                 // process all content files
-                string fullpath = Path.Combine( FileManagementHelper.ROOT_PATH, entry.FullName.Replace( "content/", string.Empty ) );
-                string directory = Path.GetDirectoryName( fullpath ).Replace( "content/", string.Empty );
+                string fullpath = Path.Combine( FileManagementHelper.ROOT_PATH, entry.FullName.Replace( CONTENT_PATH, string.Empty ) );
+                string directory = Path.GetDirectoryName( fullpath ).Replace( CONTENT_PATH, string.Empty );
+
+                ThrowTestExceptions( Path.GetFileNameWithoutExtension( entry.FullName ) );
 
                 // if entry is a directory ignore it
                 if ( entry.Length != 0 )
@@ -209,6 +215,25 @@ namespace Rock.Update
             }
         }
 
+        private void ThrowTestExceptions( string exception )
+        {
+            var exceptionList = new Dictionary<string, Exception>
+            {
+                {"exception", new Exception("Test Exception") },
+                {"ioexception", new IOException("Test IO Exception") },
+                {"outofmemoryexception", new OutOfMemoryException("Test Out of Memory Exception") },
+                {"versionvalidationexception", new Exception("Test Version Validation Exception") },
+                {"xmlexception", new Exception("XML Exception") },
+
+            };
+
+            exception = exception.ToLower();
+            if ( exceptionList.ContainsKey( exception ) )
+            {
+                throw exceptionList[exception];
+            }
+
+        }
         private string DownloadPackage( RockRelease release )
         {
             if ( release.PackageUri.IsNullOrWhiteSpace() )
@@ -242,17 +267,16 @@ namespace Rock.Update
 
         private void ProcessTransformFiles( ZipArchive packageZip )
         {
-            var transformFileSuffix = ".rock.xdt";
             var transformFilesToProcess = packageZip
                 .Entries
-                .Where( e => e.FullName.StartsWith( "content/", StringComparison.OrdinalIgnoreCase ) )
-                .Where( e => e.FullName.EndsWith( transformFileSuffix, StringComparison.OrdinalIgnoreCase ) );
+                .Where( e => e.FullName.StartsWith( CONTENT_PATH, StringComparison.OrdinalIgnoreCase ) )
+                .Where( e => e.FullName.EndsWith( TRANSFORM_FILE_SUFFIX, StringComparison.OrdinalIgnoreCase ) );
 
             foreach ( ZipArchiveEntry entry in transformFilesToProcess )
             {
                 // process xdt
-                string filename = entry.FullName.Replace( "content/", "" );
-                string transformTargetFile = Path.Combine( FileManagementHelper.ROOT_PATH, filename.Substring( 0, filename.LastIndexOf( transformFileSuffix ) ) );
+                string filename = entry.FullName.Replace( CONTENT_PATH, "" );
+                string transformTargetFile = Path.Combine( FileManagementHelper.ROOT_PATH, filename.Substring( 0, filename.LastIndexOf( TRANSFORM_FILE_SUFFIX ) ) );
 
                 // process transform
                 using ( XmlTransformableDocument document = new XmlTransformableDocument() )
