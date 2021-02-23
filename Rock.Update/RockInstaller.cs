@@ -29,6 +29,9 @@ using Rock.Update.Models;
 
 namespace Rock.Update
 {
+    /// <summary>
+    /// Class used to install Rock updates.
+    /// </summary>
     public class RockInstaller
     {
         private const string LOCAL_ROCK_PACKAGE_FOLDER = "App_Data\\RockShop";
@@ -42,6 +45,12 @@ namespace Rock.Update
         private readonly Version _targetVersion;
         private readonly Version _installedVersion;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RockInstaller"/> class.
+        /// </summary>
+        /// <param name="rockUpdateService">The rock update service.</param>
+        /// <param name="targetVersion">The target version.</param>
+        /// <param name="installedVersion">The installed version.</param>
         public RockInstaller( IRockUpdateService rockUpdateService, Version targetVersion, Version installedVersion )
         {
             _rockUpdateService = rockUpdateService;
@@ -50,6 +59,11 @@ namespace Rock.Update
             _versionBackupPath = Path.Combine( _backupPath, installedVersion.ToString() );
         }
 
+        /// <summary>
+        /// Installs the version.
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="Rock.Update.Exceptions.PackageNotFoundException">Target Release ${targetRelease} was not found.</exception>
         public RockRelease InstallVersion()
         {
             VersionValidationHelper.ValidateVersionInstall( _targetVersion );
@@ -82,6 +96,10 @@ namespace Rock.Update
             return targetRelease;
         }
 
+        /// <summary>
+        /// Installs the package.
+        /// </summary>
+        /// <param name="targetPackagePath">The target package path.</param>
         private void InstallPackage( string targetPackagePath )
         {
             OfflinePageHelper.CreateOfflinePage();
@@ -107,12 +125,16 @@ namespace Rock.Update
             }
         }
 
+        /// <summary>
+        /// Clears the previous backups.
+        /// </summary>
         private void ClearPreviousBackups()
         {
             if ( !Directory.Exists( _backupPath ) )
             {
                 return;
             }
+
             try
             {
                 Directory.Delete( _backupPath, true );
@@ -124,6 +146,9 @@ namespace Rock.Update
             }
         }
 
+        /// <summary>
+        /// Restores the original.
+        /// </summary>
         private void RestoreOriginal()
         {
             if ( !Directory.Exists( _versionBackupPath ) )
@@ -157,6 +182,10 @@ namespace Rock.Update
             FileManagementHelper.CleanUpDeletedFiles();
         }
 
+        /// <summary>
+        /// Processes the delete files.
+        /// </summary>
+        /// <param name="packageZip">The package zip.</param>
         private void ProcessDeleteFiles( ZipArchive packageZip )
         {
             // process deletefile.lst
@@ -185,7 +214,7 @@ namespace Rock.Update
                             if ( Directory.Exists( backupFilePath ) )
                             {
                                 var directoryFiles = Directory.GetFiles( deleteItemFullPath, "*.*", SearchOption.AllDirectories );
-                                foreach(var subFile in directoryFiles )
+                                foreach ( var subFile in directoryFiles )
                                 {
                                     HandleFileDeletes( subFile, GetBackupFileLocation( subFile ) );
                                 }
@@ -200,11 +229,15 @@ namespace Rock.Update
                         HandleFileDeletes( deleteItemFullPath, backupFilePath );
                     }
                 }
-
             }
         }
 
-        private void HandleFileDeletes(string deleteItemFullPath, string backupFilePath )
+        /// <summary>
+        /// Handles the file deletes.
+        /// </summary>
+        /// <param name="deleteItemFullPath">The delete item full path.</param>
+        /// <param name="backupFilePath">The backup file path.</param>
+        private void HandleFileDeletes( string deleteItemFullPath, string backupFilePath )
         {
             if ( File.Exists( deleteItemFullPath ) )
             {
@@ -225,6 +258,11 @@ namespace Rock.Update
                 }
             }
         }
+
+        /// <summary>
+        /// Processes the content files.
+        /// </summary>
+        /// <param name="packageZip">The package zip.</param>
         private void ProcessContentFiles( ZipArchive packageZip )
         {
             var contentFilesToProcess = packageZip
@@ -258,16 +296,19 @@ namespace Rock.Update
             }
         }
 
+        /// <summary>
+        /// Throws the test exceptions.
+        /// </summary>
+        /// <param name="exception">The exception.</param>
         private void ThrowTestExceptions( string exception )
         {
             var exceptionList = new Dictionary<string, Exception>
             {
-                {"exception", new Exception("Test Exception") },
-                {"ioexception", new IOException("Test IO Exception") },
-                {"outofmemoryexception", new OutOfMemoryException("Test Out of Memory Exception") },
-                {"versionvalidationexception", new Exception("Test Version Validation Exception") },
-                {"xmlexception", new Exception("XML Exception") },
-
+                { "exception", new Exception("Test Exception") },
+                { "ioexception", new IOException("Test IO Exception") },
+                { "outofmemoryexception", new OutOfMemoryException("Test Out of Memory Exception") },
+                { "versionvalidationexception", new Exception("Test Version Validation Exception") },
+                { "xmlexception", new Exception("XML Exception") },
             };
 
             exception = exception.ToLower();
@@ -275,8 +316,14 @@ namespace Rock.Update
             {
                 throw exceptionList[exception];
             }
-
         }
+
+        /// <summary>
+        /// Downloads the package.
+        /// </summary>
+        /// <param name="release">The release.</param>
+        /// <returns></returns>
+        /// <exception cref="Exception">Target Release ${release} doesn't have a Package URI specified.</exception>
         private string DownloadPackage( RockRelease release )
         {
             if ( release.PackageUri.IsNullOrWhiteSpace() )
@@ -308,6 +355,10 @@ namespace Rock.Update
             return localRockPackagePath;
         }
 
+        /// <summary>
+        /// Processes the transform files.
+        /// </summary>
+        /// <param name="packageZip">The package zip.</param>
         private void ProcessTransformFiles( ZipArchive packageZip )
         {
             var transformFilesToProcess = packageZip
@@ -318,7 +369,7 @@ namespace Rock.Update
             foreach ( ZipArchiveEntry entry in transformFilesToProcess )
             {
                 // process xdt
-                string filename = entry.FullName.Replace( CONTENT_PATH, "" );
+                string filename = entry.FullName.Replace( CONTENT_PATH, string.Empty );
                 string transformTargetFile = Path.Combine( FileManagementHelper.ROOT_PATH, filename.Substring( 0, filename.LastIndexOf( TRANSFORM_FILE_SUFFIX ) ) );
 
                 // process transform
@@ -339,6 +390,11 @@ namespace Rock.Update
             }
         }
 
+        /// <summary>
+        /// Gets the backup file location.
+        /// </summary>
+        /// <param name="filepathToBackup">The filepath to backup.</param>
+        /// <returns></returns>
         private string GetBackupFileLocation( string filepathToBackup )
         {
             var relativeTargetPath = filepathToBackup.Replace( FileManagementHelper.ROOT_PATH.EnsureTrailingBackslash(), string.Empty );
@@ -351,6 +407,10 @@ namespace Rock.Update
             return Path.Combine( _versionBackupPath, relativeTargetPath );
         }
 
+        /// <summary>
+        /// Backups the file.
+        /// </summary>
+        /// <param name="filepathToBackup">The filepath to backup.</param>
         private void BackupFile( string filepathToBackup )
         {
             if ( File.Exists( filepathToBackup ) )

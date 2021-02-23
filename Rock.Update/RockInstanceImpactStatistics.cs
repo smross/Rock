@@ -25,15 +25,29 @@ using Rock.Web.Cache;
 
 namespace Rock.Update
 {
+    /// <summary>
+    /// Class used to send statistics to the Rock site.
+    /// </summary>
     public class RockInstanceImpactStatistics
     {
         private readonly IRockImpactService _rockImpactService;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RockInstanceImpactStatistics"/> class.
+        /// </summary>
+        /// <param name="rockImpactService">The rock impact service.</param>
         public RockInstanceImpactStatistics( IRockImpactService rockImpactService )
         {
             _rockImpactService = rockImpactService;
         }
 
+        /// <summary>
+        /// Sends the impact statistics to spark.
+        /// </summary>
+        /// <param name="includeOrganizationData">if set to <c>true</c> [include organization data].</param>
+        /// <param name="version">The version.</param>
+        /// <param name="ipAddress">The ip address.</param>
+        /// <param name="environmentData">The environment data.</param>
         public void SendImpactStatisticsToSpark( bool includeOrganizationData, string version, string ipAddress, string environmentData )
         {
             ImpactLocation organizationLocation = null;
@@ -64,6 +78,7 @@ namespace Rock.Update
                             organizationLocation = new ImpactLocation( location );
                         }
                     }
+
                     organizationName = globalAttributes.GetValue( "OrganizationName" );
                     publicUrl = globalAttributes.GetValue( "PublicApplicationRoot" );
                 }

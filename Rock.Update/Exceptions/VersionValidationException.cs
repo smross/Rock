@@ -28,6 +28,8 @@ namespace Rock.Update.Exceptions
         /// Initializes a new instance of the <see cref="VersionValidationException"/> class.
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
-        public VersionValidationException( string message ) : base( message ) { }
+        public VersionValidationException( string message ) : base( message )
+        {
+        }
     }
 }

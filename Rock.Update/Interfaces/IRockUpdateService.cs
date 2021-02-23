@@ -20,11 +20,36 @@ using Rock.Update.Models;
 
 namespace Rock.Update.Interfaces
 {
+    /// <summary>
+    /// This interface is implemented by RockUpdateService and is used so we can mock the service for testing.
+    /// </summary>
     public interface IRockUpdateService
     {
+        /// <summary>
+        /// Gets the releases list.
+        /// </summary>
+        /// <param name="version">The version.</param>
+        /// <returns></returns>
         List<RockRelease> GetReleasesList( Version version );
+
+        /// <summary>
+        /// Gets the rock early access request URL.
+        /// </summary>
+        /// <returns></returns>
         string GetRockEarlyAccessRequestUrl();
+
+        /// <summary>
+        /// Gets the rock release program.
+        /// </summary>
+        /// <returns></returns>
         RockReleaseProgram GetRockReleaseProgram();
+
+        /// <summary>
+        /// Determines whether [is early access instance].
+        /// </summary>
+        /// <returns>
+        ///   <c>true</c> if [is early access instance]; otherwise, <c>false</c>.
+        /// </returns>
         bool IsEarlyAccessInstance();
     }
 }

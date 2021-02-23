@@ -19,10 +19,14 @@ using System.IO;
 
 namespace Rock.Update.Helpers
 {
+    /// <summary>
+    /// A static class for managing the offline page used during the install process.
+    /// </summary>
     public static class OfflinePageHelper
     {
         private static readonly string OFFLINE_TEMPLATE_NAME = "app_offline-template.htm";
         private static readonly string OFFLINE_FILE_NAME = "app_offline.htm";
+
         /// <summary>
         /// Removes the app_offline.htm file so the app can be used again.
         /// </summary>
@@ -69,7 +73,7 @@ namespace Rock.Update.Helpers
         /// </summary>
         private static void CreateOfflinePageFromScratch( string offlineFile )
         {
-            File.WriteAllText( offlineFile, @"
+            var offlinePage = @"
                 <html>
                     <head>
                     <title>Application Updating...</title>
@@ -79,7 +83,8 @@ namespace Rock.Update.Helpers
                         This application is undergoing an essential update and is temporarily offline.  Please give me a minute or two to wrap things up.
                     </body>
                 </html>
-                " );
+                ";
+            File.WriteAllText( offlineFile, offlinePage );
         }
     }
 }

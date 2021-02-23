@@ -35,7 +35,6 @@ namespace Rock.Update.Services
         private const string EARLY_ACCESS_URL = "http://www.rockrms.com/api/RockUpdate/GetEarlyAccessStatus";
         private const string EARLY_ACCESS_REQUEST_URL = "http://www.rockrms.com/earlyaccessissues?RockInstanceId=";
 
-
         /// <summary>
         /// Gets the releases list from the rock server.
         /// </summary>
@@ -114,7 +113,5 @@ namespace Rock.Update.Services
 
             return releaseProgram;
         }
-
-
     }
 }

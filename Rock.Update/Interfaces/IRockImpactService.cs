@@ -18,8 +18,15 @@ using Rock.Update.Models;
 
 namespace Rock.Update.Interfaces
 {
+    /// <summary>
+    /// This interface is implemented by RockImpactService and is used so we can mock the service for testing.
+    /// </summary>
     public interface IRockImpactService
     {
+        /// <summary>
+        /// Sends the impact statistics to spark.
+        /// </summary>
+        /// <param name="impactStatistic">The impact statistic.</param>
         void SendImpactStatisticsToSpark( ImpactStatistic impactStatistic );
     }
 }

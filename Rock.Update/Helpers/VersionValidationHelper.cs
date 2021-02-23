@@ -21,6 +21,9 @@ using Rock.Update.Exceptions;
 
 namespace Rock.Update.Helpers
 {
+    /// <summary>
+    /// This class is use to validate the a specific rock version can be installed.
+    /// </summary>
     public static class VersionValidationHelper
     {
         /// <summary>
@@ -74,15 +77,15 @@ namespace Rock.Update.Helpers
         /// <returns></returns>
         public static bool CheckSqlServerVersionGreaterThenSqlServer2012()
         {
-            bool isOk = false;
-            string sqlVersion = "";
+            var isOk = false;
+            var sqlVersion = string.Empty;
+
             try
             {
                 sqlVersion = DbService.ExecuteScaler( "SELECT SERVERPROPERTY('productversion')" ).ToString();
-                string[] versionParts = sqlVersion.Split( '.' );
+                var versionParts = sqlVersion.Split( '.' );
 
-                int majorVersion = -1;
-                Int32.TryParse( versionParts[0], out majorVersion );
+                int.TryParse( versionParts[0], out var majorVersion );
 
                 if ( majorVersion > 11 )
                 {

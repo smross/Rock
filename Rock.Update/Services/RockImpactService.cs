@@ -20,10 +20,18 @@ using Rock.Update.Models;
 
 namespace Rock.Update.Services
 {
+    /// <summary>
+    /// Class used to send statistics to the Rock Site.
+    /// </summary>
+    /// <seealso cref="Rock.Update.Interfaces.IRockImpactService" />
     public class RockImpactService : IRockImpactService
     {
         private const string SEND_IMPACT_URL = "http://www.rockrms.com/api/impacts/save";
 
+        /// <summary>
+        /// Sends the impact statistics to spark.
+        /// </summary>
+        /// <param name="impactStatistic">The impact statistic.</param>
         public void SendImpactStatisticsToSpark( ImpactStatistic impactStatistic )
         {
             var client = new RestClient( SEND_IMPACT_URL );

@@ -39,7 +39,7 @@ namespace Rock.Update.Helpers
     /// </summary>
     public static class RockUpdateHelper
     {
-        private const int dotNet472ReleaseNumber = 461808;
+        private const int DOT_NET_4_7_2_RELEASE_NUMBER = 461808;
 
         /// <summary>
         /// Returns the environment data as json.
@@ -55,8 +55,13 @@ namespace Rock.Update.Helpers
             envData.Add( "ServerOs", Environment.OSVersion.ToString() );
 
             try
-            { envData.Add( "SqlVersion", Rock.Data.DbService.ExecuteScaler( "SELECT SERVERPROPERTY('productversion')" ).ToString() ); }
-            catch { }
+            {
+                envData.Add( "SqlVersion", DbService.ExecuteScaler( "SELECT SERVERPROPERTY('productversion')" ).ToString() );
+            }
+            catch
+            {
+                // Intentionally ignored.
+            }
 
             try
             {
@@ -80,7 +85,10 @@ namespace Rock.Update.Helpers
                     }
                 }
             }
-            catch { }
+            catch
+            {
+                // Intentionally ignored.
+            }
 
             return envData.ToJson();
         }
@@ -93,7 +101,7 @@ namespace Rock.Update.Helpers
         public static DotNetVersionCheckResult CheckDotNetVersionFromRegistry()
         {
             // Check if Release is >= 461808 (4.7.2)
-            if ( GetDotNetReleaseNumber() >= dotNet472ReleaseNumber )
+            if ( GetDotNetReleaseNumber() >= DOT_NET_4_7_2_RELEASE_NUMBER )
             {
                 return DotNetVersionCheckResult.Pass;
             }
@@ -109,8 +117,8 @@ namespace Rock.Update.Helpers
         /// <returns></returns>
         public static int GetDotNetReleaseNumber()
         {
-            const string subkey = @"SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full\";
-            using ( RegistryKey ndpKey = RegistryKey.OpenBaseKey( RegistryHive.LocalMachine, RegistryView.Registry32 ).OpenSubKey( subkey ) )
+            const string SUB_KEY = @"SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full\";
+            using ( RegistryKey ndpKey = RegistryKey.OpenBaseKey( RegistryHive.LocalMachine, RegistryView.Registry32 ).OpenSubKey( SUB_KEY ) )
             {
                 if ( ndpKey != null && ndpKey.GetValue( "Release" ) != null )
                 {
