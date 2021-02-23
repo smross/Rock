@@ -30,8 +30,8 @@ namespace Rock.Update.Services
     /// </summary>
     public class RockUpdateService : IRockUpdateService
     {
-        private const string GET_RELEASE_LIST_URL = "http://localhost:57822/api/RockUpdate/GetReleasesList";
-        private const string GET_RELEASE_LIST_SINCE_URL = "http://localhost:57822/api/RockUpdate/GetReleasesListSinceVersion";
+        private const string GET_RELEASE_LIST_URL = "https://www.rockrms.com/api/RockUpdate/GetReleasesList";
+        private const string GET_RELEASE_LIST_SINCE_URL = "https://www.rockrms.com/api/RockUpdate/GetReleasesListSinceVersion";
         private const string EARLY_ACCESS_URL = "http://www.rockrms.com/api/RockUpdate/GetEarlyAccessStatus";
         private const string EARLY_ACCESS_REQUEST_URL = "http://www.rockrms.com/earlyaccessissues?RockInstanceId=";
 
