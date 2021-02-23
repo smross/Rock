@@ -17,8 +17,9 @@
 using System;
 using Rock.Data;
 using Rock.Update.Enum;
+using Rock.Update.Exceptions;
 
-namespace Rock.Update
+namespace Rock.Update.Helpers
 {
     public static class VersionValidationHelper
     {

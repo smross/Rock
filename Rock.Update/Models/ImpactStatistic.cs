@@ -16,26 +16,18 @@
 
 using System;
 
-namespace Rock.Update
+namespace Rock.Update.Models
 {
     [Serializable]
-    public class ImpactLocation
+    public class ImpactStatistic
     {
-        public string Street1 { get; set; }
-        public string Street2 { get; set; }
-        public string City { get; set; }
-        public string State { get; set; }
-        public string PostalCode { get; set; }
-        public string Country { get; set; }
-
-        public ImpactLocation( Rock.Model.Location location )
-        {
-            Street1 = location.Street1;
-            Street2 = location.Street2;
-            City = location.City;
-            State = location.State;
-            PostalCode = location.PostalCode;
-            Country = location.Country;
-        }
+        public Guid RockInstanceId { get; set; }
+        public string Version { get; set; }
+        public string IpAddress { get; set; }
+        public string PublicUrl { get; set; }
+        public string OrganizationName { get; set; }
+        public ImpactLocation OrganizationLocation { get; set; }
+        public int NumberOfActiveRecords { get; set; }
+        public string EnvironmentData { get; set; }
     }
 }

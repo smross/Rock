@@ -18,6 +18,8 @@ using System;
 using System.Linq;
 using Rock.Data;
 using Rock.Model;
+using Rock.Update.Interfaces;
+using Rock.Update.Models;
 using Rock.Web;
 using Rock.Web.Cache;
 
@@ -56,7 +58,7 @@ namespace Rock.Update
                     var organizationAddressLocationGuid = globalAttributes.GetValue( "OrganizationAddress" ).AsGuid();
                     if ( !organizationAddressLocationGuid.Equals( Guid.Empty ) )
                     {
-                        var location = new Rock.Model.LocationService( rockContext ).Get( organizationAddressLocationGuid );
+                        var location = new LocationService( rockContext ).Get( organizationAddressLocationGuid );
                         if ( location != null )
                         {
                             organizationLocation = new ImpactLocation( location );
@@ -64,6 +66,10 @@ namespace Rock.Update
                     }
                     organizationName = globalAttributes.GetValue( "OrganizationName" );
                     publicUrl = globalAttributes.GetValue( "PublicApplicationRoot" );
+                }
+                else
+                {
+                    numberOfActiveRecords = 0;
                 }
             }
 

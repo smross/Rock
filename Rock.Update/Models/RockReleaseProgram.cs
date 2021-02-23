@@ -14,7 +14,7 @@
 // limitations under the License.
 // </copyright>
 
-namespace Rock.Update
+namespace Rock.Update.Models
 {
     /// <summary>
     /// One of three options that represent which release 'program' one can be on.

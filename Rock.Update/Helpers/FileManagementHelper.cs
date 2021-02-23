@@ -19,7 +19,7 @@ using System.IO;
 using System.Web.Hosting;
 using Rock.Model;
 
-namespace Rock.Update
+namespace Rock.Update.Helpers
 {
     /// <summary>
     /// Helper methods for accessing the file system.

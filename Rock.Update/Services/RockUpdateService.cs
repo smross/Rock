@@ -20,9 +20,10 @@ using System.Net;
 using Newtonsoft.Json;
 using RestSharp;
 using Rock.Update.Interfaces;
+using Rock.Update.Models;
 using Rock.Web.Cache;
 
-namespace Rock.Update
+namespace Rock.Update.Services
 {
     /// <summary>
     /// Rock Update Service

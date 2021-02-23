@@ -16,7 +16,7 @@
 
 using System;
 
-namespace Rock.Update
+namespace Rock.Update.Models
 {
     /// <summary>
     /// Represents the bits the Rock system stores regarding a particular release.

@@ -24,7 +24,7 @@ using Rock.Model;
 using Rock.Update.Enum;
 using Rock.Web.Cache;
 
-namespace Rock.Update
+namespace Rock.Update.Helpers
 {
     /*
         02/18/2021 - MSB

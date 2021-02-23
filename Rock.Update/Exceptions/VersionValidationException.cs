@@ -16,7 +16,7 @@
 
 using System;
 
-namespace Rock.Update
+namespace Rock.Update.Exceptions
 {
     /// <summary>
     /// 

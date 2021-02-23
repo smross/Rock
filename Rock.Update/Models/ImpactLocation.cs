@@ -14,21 +14,28 @@
 // limitations under the License.
 // </copyright>
 
-using RestSharp;
+using System;
 
-namespace Rock.Update
+namespace Rock.Update.Models
 {
-    public class RockImpactService : IRockImpactService
+    [Serializable]
+    public class ImpactLocation
     {
-        private const string SEND_IMPACT_URL = "http://www.rockrms.com/api/impacts/save";
+        public string Street1 { get; set; }
+        public string Street2 { get; set; }
+        public string City { get; set; }
+        public string State { get; set; }
+        public string PostalCode { get; set; }
+        public string Country { get; set; }
 
-        public void SendImpactStatisticsToSpark( ImpactStatistic impactStatistic )
+        public ImpactLocation( Rock.Model.Location location )
         {
-            var client = new RestClient( SEND_IMPACT_URL );
-            var request = new RestRequest( Method.POST );
-            request.RequestFormat = DataFormat.Json;
-            request.AddBody( impactStatistic );
-            client.Execute( request );
+            Street1 = location.Street1;
+            Street2 = location.Street2;
+            City = location.City;
+            State = location.State;
+            PostalCode = location.PostalCode;
+            Country = location.Country;
         }
     }
 }

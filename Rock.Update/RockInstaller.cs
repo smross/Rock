@@ -22,7 +22,10 @@ using System.Linq;
 using System.Net;
 using Microsoft.Web.XmlTransform;
 using Rock.Model;
+using Rock.Update.Exceptions;
+using Rock.Update.Helpers;
 using Rock.Update.Interfaces;
+using Rock.Update.Models;
 
 namespace Rock.Update
 {
@@ -52,11 +55,11 @@ namespace Rock.Update
             VersionValidationHelper.ValidateVersionInstall( _targetVersion );
 
             var releases = _rockUpdateService.GetReleasesList( _installedVersion );
-            var targetRelease = releases.Where( r => r.SemanticVersion == _targetVersion.ToString() ).FirstOrDefault();
+            var targetRelease = releases?.Where( r => r.SemanticVersion == _targetVersion.ToString() ).FirstOrDefault();
 
             if ( targetRelease == null )
             {
-                throw new Exception( $"Target Release ${targetRelease} was not found." );
+                throw new PackageNotFoundException( $"Target Release ${targetRelease} was not found." );
             }
 
             var targetPackagePath = DownloadPackage( targetRelease );
@@ -314,7 +317,7 @@ namespace Rock.Update
 
         private string GetBackupFileLocation( string filepathToBackup )
         {
-            var relativeTargetPath = filepathToBackup.Replace( FileManagementHelper.ROOT_PATH, string.Empty );
+            var relativeTargetPath = filepathToBackup.Replace( FileManagementHelper.ROOT_PATH.EnsureTrailingBackslash(), string.Empty );
 
             if ( !Directory.Exists( _versionBackupPath ) )
             {
@@ -329,10 +332,10 @@ namespace Rock.Update
             if ( File.Exists( filepathToBackup ) )
             {
                 var backupFilePath = GetBackupFileLocation( filepathToBackup );
-
-                if ( !Directory.Exists( Path.GetDirectoryName( backupFilePath ) ) )
+                var backupDirectory = Path.GetDirectoryName( backupFilePath );
+                if ( !Directory.Exists( backupDirectory ) )
                 {
-                    Directory.CreateDirectory( Path.GetDirectoryName( backupFilePath ) );
+                    Directory.CreateDirectory( backupDirectory );
                 }
 
                 FileManagementHelper.DeleteOrRename( backupFilePath );

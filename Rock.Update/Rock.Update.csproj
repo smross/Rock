@@ -61,22 +61,23 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Enums\DotNetVersionCheckResult.cs" />
-    <Compile Include="FileManagementHelper.cs" />
-    <Compile Include="ImpactLocation.cs" />
-    <Compile Include="ImpactStatistic.cs" />
+    <Compile Include="Exceptions\PackageNotFoundException.cs" />
+    <Compile Include="Helpers\FileManagementHelper.cs" />
+    <Compile Include="Models\ImpactLocation.cs" />
+    <Compile Include="Models\ImpactStatistic.cs" />
     <Compile Include="Interfaces\IRockUpdateService.cs" />
-    <Compile Include="IRockImpactService.cs" />
-    <Compile Include="OfflinePageHelper.cs" />
+    <Compile Include="Interfaces\IRockImpactService.cs" />
+    <Compile Include="Helpers\OfflinePageHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RockImpactService.cs" />
+    <Compile Include="Services\RockImpactService.cs" />
     <Compile Include="RockInstaller.cs" />
     <Compile Include="RockInstanceImpactStatistics.cs" />
-    <Compile Include="RockRelease.cs" />
-    <Compile Include="RockReleaseProgram.cs" />
-    <Compile Include="RockUpdateHelper.cs" />
-    <Compile Include="RockUpdateService.cs" />
-    <Compile Include="VersionValidationException.cs" />
-    <Compile Include="VersionValidationHelper.cs" />
+    <Compile Include="Models\RockRelease.cs" />
+    <Compile Include="Models\RockReleaseProgram.cs" />
+    <Compile Include="Helpers\RockUpdateHelper.cs" />
+    <Compile Include="Services\RockUpdateService.cs" />
+    <Compile Include="Exceptions\VersionValidationException.cs" />
+    <Compile Include="Helpers\VersionValidationHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
