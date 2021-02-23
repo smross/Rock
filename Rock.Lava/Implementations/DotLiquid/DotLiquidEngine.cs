@@ -114,27 +114,40 @@ namespace Rock.Lava.DotLiquid
 
             var errors = string.Empty;
 
-            foreach ( var assembly in AppDomain.CurrentDomain.GetAssemblies() )
+            // Get the list of assemblies to search.
+            // We are only interested in those that hold a reference to the assembly that defines the LavaTypeAttribute,
+            // so we can exclude system assemblies.
+            var candidateAssemblies = AppDomain.CurrentDomain.GetAssemblies()
+                .Where( x => !x.GlobalAssemblyCache
+                    && !x.FullName.StartsWith( "System." )
+                    && !x.FullName.StartsWith( "Microsoft." ) )
+                .ToList();
+
+            var searchAssemblies = candidateAssemblies.Where( x => x.GetName().Name == assemblyDefinition
+                || x.GetReferencedAssemblies().Any( a => a.Name == assemblyDefinition ) )
+                .ToList(); 
+
+            foreach ( var assembly in searchAssemblies )
             {
+                var registeringTypeName = "(none)";
+
                 try
                 {
-                    if ( ( !assembly.GlobalAssemblyCache )
-                     && ( ( assembly.GetName().Name == assemblyDefinition ) || assembly.GetReferencedAssemblies().Any( a => a.Name == assemblyDefinition ) ) )
+                    foreach ( var type in assembly.GetTypes() )
                     {
-                        foreach ( var type in assembly.GetTypes() )
-                        {
-                            var attribute = type.GetCustomAttributes<LavaTypeAttribute>( true ).FirstOrDefault();
+                        registeringTypeName = type.Name;
 
-                            if ( attribute != null )
-                            {
-                                RegisterSafeType( type, attribute.AllowedMembers );
-                            }
+                        var attribute = type.GetCustomAttributes<LavaTypeAttribute>( true ).FirstOrDefault();
+
+                        if ( attribute != null )
+                        {
+                            RegisterSafeType( type, attribute.AllowedMembers );
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    errors += $"\n[{ assembly.FullName }] { ex.Message }";
+                    errors += $"\n[{ assembly.FullName }:{ registeringTypeName }] { ex.Message }";
                 }
             }
 
