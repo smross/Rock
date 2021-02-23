@@ -337,7 +337,19 @@ namespace Rock.Tests.Integration.Lava
         /// <param name="inputTemplate"></param>
         public void AssertTemplateOutputWithWildcard( string expectedOutput, string inputTemplate, LavaDataDictionary mergeValues = null, bool ignoreWhiteSpace = false, string wildCard = "*" )
         {
-            var outputString = GetTemplateOutput( inputTemplate, mergeValues );
+            var lavaContext = global::Rock.Lava.LavaEngine.CurrentEngine.NewRenderContext( mergeValues );
+
+            AssertTemplateOutputWithWildcard( expectedOutput, inputTemplate, lavaContext, ignoreWhiteSpace, wildCard );
+        }
+
+        /// <summary>
+        /// Process the specified input template and verify against the expected output regular expression.
+        /// </summary>
+        /// <param name="expectedOutput"></param>
+        /// <param name="inputTemplate"></param>
+        public void AssertTemplateOutputWithWildcard( string expectedOutput, string inputTemplate, ILavaRenderContext context, bool ignoreWhiteSpace = false, string wildCard = "*" )
+        {
+            var outputString = GetTemplateOutput( inputTemplate, context );
 
             // Replace the wildcards with a non-Regex symbol.
             expectedOutput = expectedOutput.Replace( wildCard, "<<<wildCard>>>" );

@@ -15,6 +15,7 @@
 // </copyright>
 //
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Rock.Data;
@@ -43,11 +44,30 @@ namespace Rock.Tests.Integration.Lava
 
             var tedDeckerPerson = new PersonService( rockContext ).Queryable().First( x => x.Guid == tedDeckerGuid );
 
-            var values = new LavaDataDictionary { { "Person", tedDeckerPerson } };
+            var values = LavaEngine.CurrentEngine.NewRenderContext( new LavaDataDictionary { { "Person", tedDeckerPerson } } );
 
             TestHelper.AssertTemplateOutput("2001-09-13",
                 "{{ Person | Attribute:'BaptismDate' | Date:'yyyy-MM-dd' }}",
                 values );
+        }
+
+        [TestMethod]
+        public void AttributeFilter_ForBinaryFileWithObjectParameter_ReturnsBinaryFileObject()
+        {
+            var inputTemplate = @"
+{% contentchannelitem expression:'ContentChannel.Name == ""External Website Ads"" && Title == ""SAMPLE: Easter""' %}
+    {% assign image = contentchannelitem | Attribute:'Image','Object' %}
+    Base64Format: {{ image | Base64Encode }}<br/>
+{% endcontentchannelitem %}
+";
+
+            var expectedOutput = @"/9j/4AAQSkZJRgABAQEAAAAAAAD/{moreBase64Data}";
+
+            var lavaContext = LavaEngine.CurrentEngine.NewRenderContext( enabledCommands: new List<string> { "RockEntity" } );
+
+            //lavaContext.SetEnabledCommands( "rockentity" );
+
+            TestHelper.AssertTemplateOutputWithWildcard( expectedOutput, inputTemplate, lavaContext, wildCard: "{moreBase64Data}" );
         }
 
         #endregion
