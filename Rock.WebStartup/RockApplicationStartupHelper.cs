@@ -618,10 +618,13 @@ namespace Rock.WebStartup
             }
 
             // Initialize the Lava engine.
+            var defaultEnabledLavaCommands = GlobalAttributesCache.Value( "DefaultEnabledLavaCommands" ).SplitDelimitedValues(",").ToList();
+
             var engineOptions = new LavaEngineConfigurationOptions
             {
                 FileSystem = new WebsiteLavaFileSystem(),
-                CacheService = new LavaTemplateCache()
+                CacheService = new LavaTemplateCache(),
+                DefaultEnabledCommands = defaultEnabledLavaCommands
             };
 
             LavaEngine.Initialize( engineType, engineOptions );

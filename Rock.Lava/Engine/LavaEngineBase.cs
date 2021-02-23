@@ -24,6 +24,8 @@ namespace Rock.Lava
     /// </summary>
     public abstract class LavaEngineBase : ILavaEngine
     {
+        private List<string> _defaultEnabledCommands = new List<string>();
+
         /// <summary>
         /// Initializes the Lava engine with the specified options.
         /// </summary>
@@ -36,7 +38,24 @@ namespace Rock.Lava
 
             _cacheService = options.CacheService;
 
+            _defaultEnabledCommands = options.DefaultEnabledCommands;
+
             OnSetConfiguration( options );
+        }
+
+        /// <summary>
+        /// The set of Lava commands that are enabled by default when a new context is created.
+        /// </summary>
+        public List<string> DefaultEnabledCommands
+        {
+            get
+            {
+                return _defaultEnabledCommands;
+            }
+            set
+            {
+                _defaultEnabledCommands = value ?? new List<string>();
+            }
         }
 
         /// <summary>
@@ -55,7 +74,32 @@ namespace Rock.Lava
         /// </summary>
         /// <param name="mergeFields"></param>
         /// <returns></returns>
-        public abstract ILavaRenderContext NewRenderContext( IDictionary<string, object> mergeFields = null );
+        public ILavaRenderContext NewRenderContext( IDictionary<string, object> mergeFields = null, IEnumerable<string> enabledCommands = null )
+        {
+            var context = OnCreateRenderContext();
+
+            if (context == null )
+            {
+                throw new LavaException( "Failed to create a new render context." );
+            }
+
+            context.SetMergeFields( mergeFields );
+
+            if ( enabledCommands == null )
+            {
+                enabledCommands = this.DefaultEnabledCommands;
+            }
+
+            context.SetEnabledCommands( enabledCommands );
+
+            return context;
+        }
+
+        /// <summary>
+        /// Implement this method to provide a Liquid framework-specific instance of a new render context. 
+        /// </summary>
+        /// <returns></returns>
+        protected abstract ILavaRenderContext OnCreateRenderContext();
 
         private ILavaTemplateCacheService _cacheService;
 

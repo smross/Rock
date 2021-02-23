@@ -15,6 +15,7 @@
 // </copyright>
 //
 using System;
+using System.Collections.Generic;
 
 namespace Rock.Lava
 {
@@ -33,5 +34,10 @@ namespace Rock.Lava
         /// The file system is required to locate aand load templates reference by the {% include %} command.
         /// </summary>
         public ILavaFileSystem FileSystem { get; set; }
+
+        /// <summary>
+        /// The set of Lava commands that are enabled by default when a new context is created.
+        /// </summary>
+        public List<string> DefaultEnabledCommands { get; set; }
     }
 }

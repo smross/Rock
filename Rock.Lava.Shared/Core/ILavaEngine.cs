@@ -55,8 +55,9 @@ namespace Rock.Lava
         /// Gets a new render context instance containing the specified merge values.
         /// </summary>
         /// <param name="values"></param>
+        /// <param name="enabledCommands"></param>
         /// <returns></returns>
-        ILavaRenderContext NewRenderContext( IDictionary<string, object> values = null );
+        ILavaRenderContext NewRenderContext( IDictionary<string, object> values = null, IEnumerable<string> enabledCommands = null );
 
         /// <summary>
         /// Register one or more filter functions that are implemented by the supplied Type.
