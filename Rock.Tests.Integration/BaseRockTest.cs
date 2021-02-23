@@ -14,21 +14,28 @@
 // limitations under the License.
 // </copyright>
 //
-using System;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Rock.Bus;
 
-namespace Rock.Tests.Integration.RockTests
+namespace Rock.Tests.Integration
 {
-    [TestClass()]
-    public sealed class DivideClassTest
+    [TestClass]
+    public abstract class BaseRockTest
     {
         /// <summary>
         /// This will run before any tests in this assembly are run.
         /// </summary>
         /// <param name="context">The context.</param>
         [AssemblyInitialize]
-        public static void AssemblyInitialize( TestContext context )
+        public static async Task AssemblyInitialize( TestContext context )
         {
+            /*
+                02/22/2021 MSB
+                We need to start the RockMessageBus so that caching works correctly.
+            */
+            await RockMessageBus.StartAsync();
+            RockMessageBus.IsRockStarted = true;
         }
 
         /// <summary>

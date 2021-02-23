@@ -163,6 +163,10 @@
     <Compile Include="Rock.Logging\RockLoggingHelpers.cs" />
     <Compile Include="Rock.Oidc\RockSigningCredentialsTests.cs" />
     <Compile Include="Rock.Security\OidcClientTests.cs" />
+    <Compile Include="Rock.Update\FileManagementHelperTests.cs" />
+    <Compile Include="Rock.Update\OfflinePageHelperTests.cs" />
+    <Compile Include="Rock.Update\RockInstallerTests.cs" />
+    <Compile Include="Rock.Update\RockInstanceImpactStatisticsTests.cs" />
     <Compile Include="StorageTests\AmazonS3ComponentTests.cs" />
     <Compile Include="StorageTests\AzureCloudComponentTests.cs" />
     <Compile Include="StorageTests\BaseStorageComponentTests.cs" />
@@ -205,7 +209,7 @@
     <Compile Include="Reporting\DataFilter\Person\StepDataViewDataFilterTests.cs" />
     <Compile Include="Reporting\DataFilter\Person\StepsTakenDataFilterTests.cs" />
     <Compile Include="Reporting\ReportBuilder\ReportBuilderTests.cs" />
-    <Compile Include="TestInitializer.cs" />
+    <Compile Include="BaseRockTest.cs" />
     <Compile Include="StorageTests\FileSystemComponentTests.cs" />
     <Compile Include="test.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -216,7 +220,6 @@
     <Compile Include="Crm\ConnectionStatusChangeReportTests.cs" />
     <Compile Include="TestData\TestDataHelper.cs" />
     <Compile Include="Utility\Settings\RockInstanceConfigurationTests.cs" />
-    <Compile Include="Utility\FileManagementHelperTests.cs" />
     <Compile Include="Web\Utilities\RockUpdateHelperTests.cs" />
     <Compile Include="Workflow\Action\BackgroundCheckRequestTests.cs" />
   </ItemGroup>

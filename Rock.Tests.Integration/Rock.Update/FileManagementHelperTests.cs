@@ -23,8 +23,9 @@ using Rock.Data;
 using Rock.Model;
 using Rock.Tests.Shared;
 using Rock.Update;
+using Rock.Update.Helpers;
 
-namespace Rock.Tests.Integration.Utility
+namespace Rock.Tests.Integration.RockUpdate
 {
     [TestClass]
     public class FileManagementHelperTests
