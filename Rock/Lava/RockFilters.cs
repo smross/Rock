@@ -5861,6 +5861,17 @@ namespace Rock.Lava
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="input">The input.</param>
+        /// <returns></returns>
+        public static string Base64Encode( ILavaRenderContext context, object input )
+        {
+            return Base64Encode( context, input, null );
+        }
+
+        /// <summary>
+        /// Base64 encodes a binary file
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="input">The input.</param>
         /// <param name="resizeSettings">The resize settings.</param>
         /// <returns></returns>
         public static string Base64Encode( ILavaRenderContext context, object input, string resizeSettings )
