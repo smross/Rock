@@ -22,7 +22,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Rock.Data;
 using Rock.Model;
 using Rock.Tests.Shared;
-using Rock.Update;
 using Rock.Update.Helpers;
 
 namespace Rock.Tests.Integration.RockUpdate
@@ -167,6 +166,7 @@ namespace Rock.Tests.Integration.RockUpdate
                 {
                     Thread.Sleep( 500 );
                 }
+
                 Assert.AreEqual( 1, new ExceptionLogService( rockContext ).Queryable().Count() );
             }
         }
@@ -187,13 +187,13 @@ namespace Rock.Tests.Integration.RockUpdate
             Assert.That.ThrowsException<IOException>( () => FileManagementHelper.TryDelete( testFilename, true ) );
             testFile.Close();
 
-
             using ( var rockContext = new RockContext() )
             {
                 while ( new ExceptionLogService( rockContext ).Queryable().Count() == 0 )
                 {
                     Thread.Sleep( 500 );
                 }
+
                 Assert.AreEqual( 1, new ExceptionLogService( rockContext ).Queryable().Count() );
             }
         }

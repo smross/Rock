@@ -1,4 +1,20 @@
-﻿using System;
+﻿// <copyright>
+// Copyright by the Spark Development Network
+//
+// Licensed under the Rock Community License (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.rockrms.com/license
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+// </copyright>
+
+using System;
 using System.Linq;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -32,7 +48,6 @@ namespace Rock.Tests.Integration.RockUpdate
             var rockImpactService = new Mock<IRockImpactService>();
             var rockInstanceImpactStatistics = new RockInstanceImpactStatistics( rockImpactService.Object );
 
-
             rockInstanceImpactStatistics.SendImpactStatisticsToSpark( false, "1.13.0", "0.0.0.0", "data" );
             rockImpactService.Verify( x => x.SendImpactStatisticsToSpark( It.IsAny<ImpactStatistic>() ), Times.Never );
         }
@@ -47,7 +62,6 @@ namespace Rock.Tests.Integration.RockUpdate
             var rockImpactService = new Mock<IRockImpactService>();
             var rockInstanceImpactStatistics = new RockInstanceImpactStatistics( rockImpactService.Object );
 
-
             rockInstanceImpactStatistics.SendImpactStatisticsToSpark( false, "1.13.0", "0.0.0.0", "data" );
             rockImpactService.Verify( x => x.SendImpactStatisticsToSpark( It.IsAny<ImpactStatistic>() ), Times.Never );
         }
@@ -61,7 +75,6 @@ namespace Rock.Tests.Integration.RockUpdate
 
             var rockImpactService = new Mock<IRockImpactService>();
             var rockInstanceImpactStatistics = new RockInstanceImpactStatistics( rockImpactService.Object );
-
 
             rockInstanceImpactStatistics.SendImpactStatisticsToSpark( false, "1.13.0", "0.0.0.0", "data" );
             rockImpactService.Verify( x => x.SendImpactStatisticsToSpark( It.IsAny<ImpactStatistic>() ), Times.Once );
@@ -82,18 +95,18 @@ namespace Rock.Tests.Integration.RockUpdate
             var rockImpactService = new Mock<IRockImpactService>();
             var rockInstanceImpactStatistics = new RockInstanceImpactStatistics( rockImpactService.Object );
 
-
             rockInstanceImpactStatistics.SendImpactStatisticsToSpark( false, expectedVersion, expectedIpAddress, "data" );
-            rockImpactService.Verify( x => x.SendImpactStatisticsToSpark( It.Is<ImpactStatistic>( i =>
-                i.RockInstanceId == expectedInstanceId
-                && i.Version == expectedVersion
-                && i.IpAddress == expectedIpAddress
-                && i.PublicUrl.IsNullOrWhiteSpace()
-                && i.OrganizationName.IsNullOrWhiteSpace()
-                && i.OrganizationLocation == null
-                && i.NumberOfActiveRecords == 0
-                && i.EnvironmentData == expectedEnvironmentData
-             ) ), Times.Once );
+            rockImpactService.Verify(
+                x => x.SendImpactStatisticsToSpark( It.Is<ImpactStatistic>( i =>
+                    i.RockInstanceId == expectedInstanceId
+                    && i.Version == expectedVersion
+                    && i.IpAddress == expectedIpAddress
+                    && i.PublicUrl.IsNullOrWhiteSpace()
+                    && i.OrganizationName.IsNullOrWhiteSpace()
+                    && i.OrganizationLocation == null
+                    && i.NumberOfActiveRecords == 0
+                    && i.EnvironmentData == expectedEnvironmentData ) ),
+                Times.Once );
         }
 
         /// <summary>
@@ -119,21 +132,22 @@ namespace Rock.Tests.Integration.RockUpdate
             {
                 expectedNumberOfRecords = new PersonService( rockContext ).Queryable( includeDeceased: false, includeBusinesses: false ).Count();
             }
+
             var rockImpactService = new Mock<IRockImpactService>();
             var rockInstanceImpactStatistics = new RockInstanceImpactStatistics( rockImpactService.Object );
 
-
             rockInstanceImpactStatistics.SendImpactStatisticsToSpark( true, expectedVersion, expectedIpAddress, "data" );
-            rockImpactService.Verify( x => x.SendImpactStatisticsToSpark( It.Is<ImpactStatistic>( i =>
-                i.RockInstanceId == expectedInstanceId
-                && i.Version == expectedVersion
-                && i.IpAddress == expectedIpAddress
-                && i.PublicUrl == expectedPublicUrl
-                && i.OrganizationName == expectedOrganizationName
-                && i.OrganizationLocation != null
-                && i.NumberOfActiveRecords == expectedNumberOfRecords
-                && i.EnvironmentData == expectedEnvironmentData
-             ) ), Times.Once );
+            rockImpactService.Verify(
+                x => x.SendImpactStatisticsToSpark( It.Is<ImpactStatistic>( i =>
+                    i.RockInstanceId == expectedInstanceId
+                    && i.Version == expectedVersion
+                    && i.IpAddress == expectedIpAddress
+                    && i.PublicUrl == expectedPublicUrl
+                    && i.OrganizationName == expectedOrganizationName
+                    && i.OrganizationLocation != null
+                    && i.NumberOfActiveRecords == expectedNumberOfRecords
+                    && i.EnvironmentData == expectedEnvironmentData ) ),
+                Times.Once );
         }
 
         private void EnsureMoreThen100Records()
@@ -155,6 +169,7 @@ namespace Rock.Tests.Integration.RockUpdate
                     personService.Add( person );
                     numberOfRecordsToCreate--;
                 }
+
                 rockContext.SaveChanges();
             }
         }
