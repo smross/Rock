@@ -37,6 +37,7 @@ using Rock.Update.Enum;
 using Rock.Services.NuGet;
 using Rock.VersionInfo;
 using Rock.Web.Cache;
+using Rock.Update.Helpers;
 
 namespace RockWeb.Blocks.Core
 {
