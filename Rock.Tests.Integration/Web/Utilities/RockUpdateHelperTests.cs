@@ -18,21 +18,18 @@ using System;
 using System.Collections.Generic;
 using System.Web;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Rock.Web.Utilities;
 using Rock.Tests.Shared;
+using Rock.Web.Utilities;
 
 namespace Rock.Tests.Integration.Web.Utilities
 {
     [TestClass]
     public class RockUpdateHelperTests
     {
-        /// <summary>
-        /// Gets the env data as json should return correct data.
-        /// </summary>
         [TestMethod]
         public void GetEnvDataAsJsonShouldReturnCorrectData()
         {
-            var request = new HttpRequest( "test", "http://localhost/test", "" );
+            var request = new HttpRequest( "test", "http://localhost/test", string.Empty );
             var data = RockUpdateHelper.GetEnvDataAsJson( request, "test" );
 
             var actualResult = data.FromJsonOrNull<Dictionary<string, string>>();
@@ -55,7 +52,7 @@ namespace Rock.Tests.Integration.Web.Utilities
         [DataRow( 378675, ".NET Framework 4.5.1" )]
         [DataRow( 378389, ".NET Framework 4.5" )]
         [DataRow( 378388, "Unknown" )]
-        public void GetDotNetVersionShouldReturnCorrectString(int releaseNumber, string expectedResult )
+        public void GetDotNetVersionShouldReturnCorrectString( int releaseNumber, string expectedResult )
         {
             var actualResult = RockUpdateHelper.GetDotNetVersion( releaseNumber );
             Assert.That.AreEqual( expectedResult, actualResult );
