@@ -208,8 +208,8 @@ namespace RockWeb.Blocks.Core
                     LinkButton lbInstall = e.Item.FindControl( "lbInstall" ) as LinkButton;
                     var divPanel = e.Item.FindControl( "divPanel" ) as HtmlGenericControl;
 
-                    if ( package.RequiresVersion.IsNotNullOrWhiteSpace()
-                        && new Version( package.RequiresVersion ) <= _installedVersion )
+                    if ( (package.RequiresVersion.IsNotNullOrWhiteSpace() && new Version( package.RequiresVersion ) <= _installedVersion)
+                        || ( package.RequiresVersion.IsNullOrWhiteSpace() && new Version( package.SemanticVersion ) > _installedVersion ) )
                     {
                         var release = _releases.Where( r => r.SemanticVersion == package.Version.ToString() ).FirstOrDefault();
                         if ( !_isEarlyAccessOrganization && release != null && release.RequiresEarlyAccess )

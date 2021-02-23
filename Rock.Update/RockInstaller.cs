@@ -181,26 +181,50 @@ namespace Rock.Update
 
                         if ( Directory.Exists( deleteItemFullPath ) )
                         {
-                            // Don't actually delete just move the directory to the backup folder.
-                            Directory.Move( deleteItemFullPath, backupFilePath );
-                        }
-
-                        if ( File.Exists( deleteItemFullPath ) )
-                        {
-                            var backupDirectory = Path.GetDirectoryName( backupFilePath );
-                            if ( !Directory.Exists( backupDirectory ) )
+                            // if the backup folder already exists we need to process the individual files so we can keep the true originals.
+                            if ( Directory.Exists( backupFilePath ) )
                             {
-                                Directory.CreateDirectory( backupDirectory );
+                                var directoryFiles = Directory.GetFiles( deleteItemFullPath, "*.*", SearchOption.AllDirectories );
+                                foreach(var subFile in directoryFiles )
+                                {
+                                    HandleFileDeletes( subFile, GetBackupFileLocation( subFile ) );
+                                }
                             }
-
-                            File.Move( deleteItemFullPath, backupFilePath );
+                            else
+                            {
+                                // Don't actually delete just move the directory to the backup folder.
+                                Directory.Move( deleteItemFullPath, backupFilePath );
+                            }
                         }
+
+                        HandleFileDeletes( deleteItemFullPath, backupFilePath );
                     }
                 }
 
             }
         }
 
+        private void HandleFileDeletes(string deleteItemFullPath, string backupFilePath )
+        {
+            if ( File.Exists( deleteItemFullPath ) )
+            {
+                var backupDirectory = Path.GetDirectoryName( backupFilePath );
+                if ( !Directory.Exists( backupDirectory ) )
+                {
+                    Directory.CreateDirectory( backupDirectory );
+                }
+
+                // If the file already exists in the backup, we should just delete the file because true original has already been backed up.
+                if ( File.Exists( backupFilePath ) )
+                {
+                    File.Delete( deleteItemFullPath );
+                }
+                else
+                {
+                    File.Move( deleteItemFullPath, backupFilePath );
+                }
+            }
+        }
         private void ProcessContentFiles( ZipArchive packageZip )
         {
             var contentFilesToProcess = packageZip
