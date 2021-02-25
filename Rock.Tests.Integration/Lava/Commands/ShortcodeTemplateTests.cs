@@ -85,6 +85,57 @@ Panel 3 - Panel 3 content.
         }
 
         [TestMethod]
+        public void ShortcodeBlock_WithEntityCommandEnabledAndEmbeddedEntityCommand_EmitsCorrectHtml()
+        {
+            var shortcodeTemplate = @"
+{% for item in items %}
+<Item>
+{{ item.title }} --- {{ item.content }}
+</Item>
+{% endfor %}
+";
+
+            // Create a new test shortcode.
+            var shortcodeDefinition = new DynamicShortcodeDefinition();
+
+            shortcodeDefinition.ElementType = LavaShortcodeTypeSpecifier.Block;
+            shortcodeDefinition.TemplateMarkup = shortcodeTemplate;
+            shortcodeDefinition.Name = "shortcodetest";
+            shortcodeDefinition.Parameters = new Dictionary<string, string> { { "title", "(unnamed)" } };
+            shortcodeDefinition.EnabledLavaCommands = new List<string> { "RockEntity" };
+
+            TestHelper.LavaEngine.RegisterDynamicShortcode( shortcodeDefinition.Name, ( shortcodeName ) => { return shortcodeDefinition; } );
+
+            var input = @"
+{[ shortcodetest ]}
+    {% definedvalue where:'DefinedTypeId == 30' sort:'Order' %}
+        {% for dvi in definedvalueItems %}
+            [[ item title:'{{ dvi.Value }}' ]]
+                Id: {{dvi.Id}} - Guid: {{ dvi.Guid }}
+            [[ enditem ]]
+        {% endfor %}
+    {% enddefinedvalue %}
+{[ endshortcodetest ]}
+";
+
+            var expectedOutput = @"
+<Item>
+Infant --- Id: 138 - Guid: c4550426-ed87-4cb0-957e-c6e0bc96080f
+</Item>
+<Item>
+Crawling or Walking --- Id: 139 - Guid: f78d64d3-6ba1-4eca-a9ec-058fbdf8e586
+</Item>
+<Item>
+Potty Trained --- Id: 141 - Guid: e6905502-4c23-4879-a60f-8c4ceb3ee2e9
+</Item>
+";
+
+            expectedOutput = expectedOutput.Replace( "``", @"""" );
+
+            TestHelper.AssertTemplateOutput( expectedOutput, input, null, ignoreWhiteSpace: true );
+        }
+
+        [TestMethod]
         public void ShortcodeBlock_WithParameters_CanResolveParameters()
         {
             var shortcodeTemplate = @"

@@ -179,7 +179,8 @@ namespace Rock.Lava
                 result.Write( $"An error occurred while processing the {0} shortcode.", _tagName );
             }
 
-            // Get the default settings for the shortcode, then apply the specified parameters.
+            // Get the parameters and default values defined by the shortcode, then apply the parameters that have been specified in the shortcode tag attributes
+            // and those that are stored in the current render context.
             var parms = new Dictionary<string, object>();
 
             foreach ( var shortcodeParm in _shortcode.Parameters )
@@ -200,7 +201,7 @@ namespace Rock.Lava
                 internalMergeFields.AddOrReplace( item.Key, item.Value );
             }
 
-            // Keep track of the recursion depth.
+            // Add parameters for tracking the recursion depth.
             int currentRecursionDepth = 0;
 
             if ( parms.ContainsKey( "RecursionDepth" ) )
@@ -216,29 +217,38 @@ namespace Rock.Lava
 
             parms.AddOrReplace( "RecursionDepth", currentRecursionDepth );
 
-            // Resolve any merge fields in the block content.
-            // The block content will then be merged into the shortcode template to produce the final output.
-            var blockMarkup = LavaEngine.CurrentEngine.RenderTemplate( _blockMarkup.ToString(), internalMergeFields );
+            // Resolve the merge fields in the shortcode template in a separate context, using the set of merge fields that have been modified by the shortcode parameters
+            // and the set of commands specifically enabled for the shortcode.
+            // The resulting content is a shortcode template that is ready to be processed to resolve its child elements.
+            var shortcodeTemplateContext = LavaEngine.CurrentEngine.NewRenderContext( internalMergeFields, _shortcode.EnabledLavaCommands );
 
-            // Extract any child elements from the block content.
-            Dictionary<string, object> childParameters;
+            var shortcodeTemplateMarkup = LavaEngine.CurrentEngine.RenderTemplate( _blockMarkup.ToString(), shortcodeTemplateContext );
 
-            blockMarkup = ExtractShortcodeBlockChildElements( blockMarkup, out childParameters );
+            // Extract child elements from the shortcode template content.
+            // One or more child elements can be added to a shortcode block using the syntax "[[ <childElementName> <paramName1>:value1 <paramName2>:value2 ... ]] ... [[ end<childElementName> ]]",
+            // where <childElementName> is a shortcode-specific tag name, <param1> is a shortcode parameter name, and <value1> is the parameter value.
+            // Child elements are grouped by <childElementName>, and each collection is passed as a separate parameter to the shortcode template
+            // using the variable name "<childElementNameItems>". The first element of the array is also added using the variable name "<childElementName>".
+            // Parameters declared on child elements can be referenced in the shortcode template as <childElementName>.<paramName>.
+            Dictionary<string, object> childElements;
 
-            foreach ( var item in childParameters )
+            var residualMarkup = ExtractShortcodeBlockChildElements( shortcodeTemplateMarkup, out childElements );
+
+            // Add the collections of child to the set of parameters that will be passed to the shortcode template.
+            foreach ( var item in childElements )
             {
                 parms.AddOrReplace( item.Key, item.Value );
             }
 
-            // After extracting the child parameters, merge the remaining block markup into the template.
-            if ( blockMarkup.IsNotNullOrWhiteSpace() )
+            // Set context variables related to the block content so they can be referenced by the shortcode template.
+            if ( residualMarkup.IsNotNullOrWhiteSpace() )
             {
                 // JME (7/23/2019) Commented out the two lines below and substituted the line after to allow for better
                 // processing of the block content. Testing was done on all existing shortcodes but leaving
                 // this code in place in case a future edge case is found. Could/should remove this in the future.
                 // Regex rgx = new Regex( @"{{\s*blockContent\s*}}", RegexOptions.IgnoreCase );
                 // lavaTemplate = rgx.Replace( lavaTemplate, blockMarkup );
-                parms.AddOrReplace( "blockContent", blockMarkup );
+                parms.AddOrReplace( "blockContent", residualMarkup );
 
                 parms.AddOrReplace( "blockContentExists", true );
             }
@@ -250,44 +260,45 @@ namespace Rock.Lava
             // Now ensure there aren't any entity commands in the block that are not allowed.
             // This is necessary because the shortcode may be configured to allow more entities for processing
             // than the source block, template, action, etc. permits.
-            var securityCheck = LavaEngine.CurrentEngine.RenderTemplate( blockMarkup, context );
+            var securityCheck = LavaEngine.CurrentEngine.RenderTemplate( residualMarkup, context );
 
-            Regex securityPattern = new Regex( string.Format( Constants.Messages.NotAuthorizedMessage, ".*" ) );
-            Match securityMatch = securityPattern.Match( securityCheck );
+            Regex securityErrorPattern = new Regex( string.Format( Constants.Messages.NotAuthorizedMessage, ".*" ) );
+            Match securityErrorMatch = securityErrorPattern.Match( securityCheck );
 
-            if ( securityMatch.Success )
+            // If the security check failed, return the error message.
+            if ( securityErrorMatch.Success )
             {
-                result.Write( securityMatch.Value ); // return security error message
+                result.Write( securityErrorMatch.Value );
+
+                return;
+            }
+
+            // Merge the shortcode template in a new context, using the parameters and security allowed by the shortcode.
+            var shortcodeContext = LavaEngine.CurrentEngine.NewRenderContext( parms );
+
+            // If the shortcode specifies a set of enabled Lava commands, set these for the current context.
+            // If not, use the commands enabled for the current context.
+            if ( _shortcode.EnabledLavaCommands != null
+                    &&  _shortcode.EnabledLavaCommands.Any() )
+            {
+                shortcodeContext.SetEnabledCommands( _shortcode.EnabledLavaCommands );
             }
             else
             {
-                // Merge the shortcode template in a new context, using the parameters and security allowed by the shortcode.
-                var shortcodeContext = LavaEngine.CurrentEngine.NewRenderContext( parms );
-
-                // If the shortcode specifies a set of enabled Lava commands, set these for the current context.
-                // If not, use the commands enabled for the current context.
-                if ( _shortcode.EnabledLavaCommands != null
-                     &&  _shortcode.EnabledLavaCommands.Any() )
-                {
-                    shortcodeContext.SetEnabledCommands( _shortcode.EnabledLavaCommands );
-                }
-                else
-                {
-                    shortcodeContext.SetEnabledCommands( context.GetEnabledCommands() );
-                }
-
-                var lavaTemplate = _shortcode.TemplateMarkup;
-
-                var results = LavaEngine.CurrentEngine.RenderTemplate( lavaTemplate, shortcodeContext );
-
-                result.Write( results.Trim() );
+                shortcodeContext.SetEnabledCommands( context.GetEnabledCommands() );
             }
+
+            var results = LavaEngine.CurrentEngine.RenderTemplate( _shortcode.TemplateMarkup, shortcodeContext );
+
+            result.Write( results.Trim() );
         }
 
         #endregion
 
         /// <summary>
-        /// Extracts the child elements from the content of a shortcode block.
+        /// Extracts a set of child elements from the content of a shortcode block.
+        /// Child elements are grouped by tag name, and each item in the collection has a set of properties
+        /// corresponding to the child element tag attributes and a "content" property representing the inner content of the child element.
         /// </summary>
         /// <param name="blockContent">Content of the block.</param>
         /// <param name="childParameters">The child parameters.</param>

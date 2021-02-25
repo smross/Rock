@@ -43,11 +43,6 @@ namespace Rock.Lava
 
             var enabledCommands = context.GetEnabledCommands();
 
-            if ( !enabledCommands.Any() )
-            {
-                enabledCommands = context.GetMergeField( "EnabledCommands", string.Empty ).ToString().SplitDelimitedValues( "," ).ToList();
-            }
-
             if ( enabledCommands.Any() )
             {
                 if ( enabledCommands.Contains( "All", StringComparer.OrdinalIgnoreCase )
