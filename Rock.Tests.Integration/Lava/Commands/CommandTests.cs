@@ -591,6 +591,8 @@ Color 4: blue
 
             var output = TestHelper.GetTemplateOutput( input );
 
+            TestHelper.WriteTemplateRenderToDebug( input, output );
+
             output = output.Replace( " ", string.Empty );
 
             Assert.IsTrue( output.Contains( "person-Rock.Lava.Blocks.RockEntity" ), "Expected Entity Tag not found." );

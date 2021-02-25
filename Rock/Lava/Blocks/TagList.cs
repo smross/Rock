@@ -33,30 +33,32 @@ namespace Rock.Lava.Blocks
         /// <param name="result">The result.</param>
         public override void OnRender( ILavaRenderContext context, TextWriter result )
         {
-           var tags = LavaEngine.CurrentEngine.GetRegisteredElements();
+            var tags = LavaEngine.CurrentEngine.GetRegisteredElements();
 
-           if ( !tags.Any() )
-           {
+            if ( !tags.Any() )
+            {
                 return;
-           }
-           
-           var tagList = new StringBuilder();
+            }
 
-           tagList.Append( "<strong>Lava Tag List</strong>" );
-           tagList.Append( "<ul>" );
+            var tagList = new StringBuilder();
 
-           foreach( var kvp in tags.OrderBy( t => t.Key ) )
-           {
+            tagList.Append( "<strong>Lava Tag List</strong>" );
+            tagList.Append( "<ul>" );
+
+            foreach ( var kvp in tags.OrderBy( t => t.Key ) )
+            {
                 var tag = kvp.Value;
-                
-                tagList.Append( $"<li>{tag.Name} - {tag.SystemTypeName}</li>" );
-           }
 
-           tagList.Append( "</ul>" );
+                var tagName = LavaUtilityHelper.GetShortcodeNameFromLiquidElementName( tag.Name );
 
-           result.Write( tagList.ToString() );
+                tagList.Append( $"<li>{tagName} - {tag.SystemTypeName}</li>" );
+            }
 
-           base.OnRender( context, result );
+            tagList.Append( "</ul>" );
+
+            result.Write( tagList.ToString() );
+
+            base.OnRender( context, result );
         }
     }
 }

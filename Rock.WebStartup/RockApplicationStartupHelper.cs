@@ -636,6 +636,7 @@ namespace Rock.WebStartup
 
             InitializeLavaShortcodes( engine );
             InitializeLavaBlocks( engine );
+            InitializeLavaTags( engine );
         }
 
         private static void InitializeLavaShortcodes( ILavaEngine engine )
@@ -646,6 +647,49 @@ namespace Rock.WebStartup
             foreach ( var shortcode in shortCodes )
             {
                 engine.RegisterDynamicShortcode( shortcode.TagName, ( shortcodeName ) => WebsiteLavaShortcodeProvider.GetShortcodeDefinition( shortcodeName ) );
+            }
+        }
+
+        private static void InitializeLavaTags( ILavaEngine engine )
+        {
+            // Get all tags and call OnStartup methods
+            try
+            {
+                var elementTypes = Rock.Reflection.FindTypes( typeof( IRockLavaTag ) ).Select( a => a.Value ).ToList();
+
+                foreach ( var elementType in elementTypes )
+                {
+                    var instance = Activator.CreateInstance( elementType ) as IRockLavaTag;
+
+                    var name = instance.SourceElementName;
+
+                    if ( string.IsNullOrWhiteSpace( name ) )
+                    {
+                        name = elementType.Name;
+                    }
+
+                    engine.RegisterTag( name, ( shortcodeName ) =>
+                    {
+                        var shortcode = Activator.CreateInstance( elementType ) as IRockLavaTag;
+
+                        return shortcode;
+                    } );
+
+                    try
+                    {
+                        instance.OnStartup();
+                    }
+                    catch ( Exception ex )
+                    {
+                        var lavaException = new Exception( string.Format( "Lava component initialization failure. Startup failed for Lava Tag \"{0}\".", elementType.FullName ), ex );
+
+                        ExceptionLogService.LogException( lavaException, null );
+                    }
+                }
+            }
+            catch ( Exception ex )
+            {
+                ExceptionLogService.LogException( ex, null );
             }
         }
 

@@ -33,7 +33,7 @@ namespace Rock.Lava
         }
 
         /// <summary>
-        /// Get a valid Rock Shortcode name froom a Liquid document element name.
+        /// Get a valid Rock Shortcode name from a Liquid document element name.
         /// Removes the decoration applied to the shortcode name to prevent naming collisions with other custom tags and blocks.
         /// </summary>
         /// <param name="shortcodeName"></param>
@@ -46,7 +46,7 @@ namespace Rock.Lava
                 return shortcodeName.Substring( 0, shortcodeName.Length - LavaEngine.ShortcodeInternalNameSuffix.Length );
             }
 
-            return string.Empty;
+            return shortcodeName;
         }
     }
 }
