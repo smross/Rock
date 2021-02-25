@@ -40,6 +40,23 @@ namespace Rock.Tests.Integration.Lava
             Template.RegisterFilter( typeof( Rock.Lava.RockFilters ) );
         }
 
+        #region Debug
+
+        [TestMethod]
+        public void DebugFilter_WithLavaParameter_ReturnsDebugInfo()
+        {
+            var template = "{{ 'Lava' | Debug }}";
+
+            var output = template.ResolveMergeFields( null );
+
+            // Verify a portion of the expected output.
+            Assert.That.Contains( "<li><span class='lava-debug-key'>OrganizationName</span> <span class='lava-debug-value'> - Rock Solid Church</span></li>", output );
+        }
+
+        #endregion
+
+        #region RockInstanceConfigFilter
+
         [TestMethod]
         public void RockInstanceConfigFilter_MachineName_RendersExpectedValue()
         {
@@ -112,5 +129,6 @@ namespace Rock.Tests.Integration.Lava
             Assert.That.AreEqual( "Configuration setting \"unknown_setting\" is not available.", output );
         }
 
+        #endregion
     }
 }

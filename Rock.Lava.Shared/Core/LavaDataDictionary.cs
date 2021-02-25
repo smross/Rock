@@ -322,7 +322,10 @@ namespace Rock.Lava
             get { return _nestedDictionary.Values; }
         }
 
-        public List<string> AvailableKeys => throw new NotImplementedException();
+        public List<string> AvailableKeys
+        {
+            get { return new List<string>( _nestedDictionary.Keys ); }
+        }
 
         #endregion
     }
