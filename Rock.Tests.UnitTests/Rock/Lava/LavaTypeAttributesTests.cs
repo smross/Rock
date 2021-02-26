@@ -116,13 +116,13 @@ Password:
 
         #endregion
 
-        #region LavaInclude/LavaIgnore
+        #region LavaVisible/LavaHidden
 
         /// <summary>
         /// Referencing a valid property of an input object should return the property value.
         /// </summary>
         [TestMethod]
-        public void LavaIncludeAttribute_PropertyWithIncludeAttribute_IsExposedInLava()
+        public void LavaVisibleAttribute_PropertyWithVisibleAttribute_IsExposedInLava()
         {
             var testObject = new TestLavaTypeAttributeOnIndividualProperty();
 
@@ -146,7 +146,7 @@ Name: Ted Decker
         /// Accessing a nested property using dot-notation "Campus.Name" should return the correct value.
         /// </summary>
         [TestMethod]
-        public void LavaIgnoreAttribute_PropertyWithIgnoredAttribute_IsNotExposed()
+        public void LavaHiddenAttribute_PropertyWithHiddenAttribute_IsNotExposed()
         {
             var testObject = new TestLavaTypeAttributeOnIndividualProperty();
 

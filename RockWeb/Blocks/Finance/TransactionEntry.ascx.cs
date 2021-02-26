@@ -3729,8 +3729,7 @@ TransactionAccountDetails: [
         /// Lightweight object for each contribution item
         /// </summary>
         [Serializable]
-        [LavaType( "Id", "Order", "Name", "CampusId", "Amount", "PublicName", "AmountFormatted" )]
-        protected class AccountItem
+        protected class AccountItem : LavaDataObject
         {
             public int Id { get; set; }
 

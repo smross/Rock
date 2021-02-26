@@ -298,10 +298,9 @@ namespace RockWeb.Blocks.Crm
         #region Helper Classes
 
         /// <summary>
-        /// A class to store personal device for lava
+        /// A class to store personal device data for Lava.
         /// </summary>
-        [LavaType( "PersonalDevice", "DeviceIconCssClass", "PlatformValue" )]
-        public class PersonalDeviceItem
+        public class PersonalDeviceItem : LavaDataObject
         {
             /// <summary>
             /// Gets or sets the personal device.

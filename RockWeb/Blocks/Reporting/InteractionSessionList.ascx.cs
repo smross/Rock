@@ -408,8 +408,7 @@ namespace RockWeb.Blocks.Reporting
     /// <summary>
     /// Helper class for binding sessions
     /// </summary>
-    [LavaType( "InteractionSession", "PersonAlias", "StartDateTime", "EndDateTime", "Interactions" )]
-    public class WebSession
+    public class WebSession : LavaDataObject
     {
         /// <summary>
         /// Gets or sets the interaction session identifier.

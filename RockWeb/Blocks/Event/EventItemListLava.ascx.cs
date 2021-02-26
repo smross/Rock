@@ -235,10 +235,9 @@ namespace RockWeb.Blocks.Event
         #region Helper Classes
 
         /// <summary>
-        /// A class to store event item occurrence data for liquid
-        /// </summary>
-        [LavaType( "EventItem", "EventItemOccurrence", "DateTime", "Name", "Date", "Time", "EndDate", "EndTime", "Location", "Description", "Summary", "DetailPage" )]
-        public class EventOccurrenceSummary
+        /// A class to store event item occurrence data for Lava.
+        /// </summary>      
+        public class EventOccurrenceSummary : LavaDataObject
         {
             /// <summary>
             /// Gets or sets the event item.

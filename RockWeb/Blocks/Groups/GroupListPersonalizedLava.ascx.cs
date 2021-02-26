@@ -301,8 +301,7 @@ namespace RockWeb.Blocks.Groups
             return childGroups;
         }
 
-        [LavaType( "Group", "Role", "IsLeader", "GroupType" )]
-        public class GroupInvolvementSummary
+        public class GroupInvolvementSummary : LavaDataObject
         {
             public Group Group { get; set; }
             public string Role { get; set; }
