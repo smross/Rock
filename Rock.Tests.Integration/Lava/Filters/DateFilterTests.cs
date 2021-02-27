@@ -28,11 +28,11 @@ namespace Rock.Tests.Integration.Lava
         /// Applying the filter to a Friday returns the previous Sunday if the week starts on a Sunday.
         /// </summary>
         [TestMethod]
-        public void SundayDate_InputDateIsFriday_YieldsPreviousSunday()
+        public void SundayDate_InputDateIsFriday_YieldsNextSunday()
         {
-            // The filter returns the Sunday associated with the current week.
-            // If Sunday is considered to be the first day of the week, any other day should return a prior date.
-            TestHelper.AssertTemplateOutputDate( "26-Apr-2020",
+            // This filter returns the Sunday associated with the current week.
+            // Rock considers Sunday to be the last day of the week by default, so any other day should return a future date.
+            TestHelper.AssertTemplateOutputDate( "3-May-2020",
                                       "{{ '1-May-2020' | SundayDate }}" );
         }
 

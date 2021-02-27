@@ -50,7 +50,7 @@ namespace Rock.Tests.Integration.Lava
             var output = template.ResolveMergeFields( null );
 
             // Verify a portion of the expected output.
-            Assert.That.Contains( "<li><span class='lava-debug-key'>OrganizationName</span> <span class='lava-debug-value'> - Rock Solid Church</span></li>", output );
+            Assert.That.Contains( output, "<li><span class='lava-debug-key'>OrganizationName</span> <span class='lava-debug-value'> - Rock Solid Church</span></li>" );
         }
 
         #endregion

@@ -37,7 +37,7 @@ namespace Rock.Tests.Integration.Lava
 
             var output = lavaScript.ResolveMergeFields( new Dictionary<string, object>(), null, "Sql" );
 
-            Assert.That.Contains( output, "Liquid error: Execution Timeout Expired." );
+            Assert.That.Contains( output, "Lava Error: Execution Timeout Expired." );
         }
 
         [TestMethod]
@@ -105,7 +105,7 @@ namespace Rock.Tests.Integration.Lava
             ]";
 
             var output = lavaScript.ResolveMergeFields( new Dictionary<string, object>(), null, "Sql" );
-            Assert.That.Contains( output, "Liquid error: Execution Timeout Expired." );
+            Assert.That.Contains( output, "Lava Error: Execution Timeout Expired." );
         }
 
         [TestMethod]
@@ -119,7 +119,7 @@ namespace Rock.Tests.Integration.Lava
             {{ results }} {{ 'record' | PluralizeForQuantity:results }} were deleted.";
 
             var output = lavaScript.ResolveMergeFields( new Dictionary<string, object>(), null, "Sql" );
-            Assert.That.Contains( output, "Liquid error: Execution Timeout Expired." );
+            Assert.That.Contains( output, "Lava Error: Execution Timeout Expired." );
         }
 
         [TestMethod]
@@ -160,7 +160,7 @@ namespace Rock.Tests.Integration.Lava
             {{ results }} {{ 'record' | PluralizeForQuantity:results }} were deleted.";
 
             var output = lavaScript.ResolveMergeFields( new Dictionary<string, object>(), null, "Sql" );
-            Assert.That.Contains( output, "Liquid error: Execution Timeout Expired." );
+            Assert.That.Contains( output, "Lava Error: Execution Timeout Expired." );
         }
     }
 }
