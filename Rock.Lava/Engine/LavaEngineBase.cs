@@ -121,11 +121,27 @@ namespace Rock.Lava
         public abstract LavaEngineTypeSpecifier EngineType { get; }
 
         /// <summary>
-        /// Register a specific System.Type as available for referencing in a Lava template.
+        /// Register a type that can be referenced in a template during the rendering process.
         /// </summary>
         /// <param name="type"></param>
-        /// <param name="allowedMembers"></param>
-        public abstract void RegisterSafeType( Type type, string[] allowedMembers = null );
+        /// <remarks>
+        /// The [LavaVisible] and [LavaHidden] custom attributes can be applied to determine the visibility of individual properties.
+        /// If these attributes are not applied to any members of the type, all members are visible by default.
+        /// </remarks>
+        public void RegisterSafeType( Type type )
+        {
+            RegisterSafeType( type, null );
+        }
+
+        /// <summary>
+        /// Register a type that can be referenced in a template during the rendering process.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="allowedMembers">
+        /// The names of the properties that are visible to the Lava renderer.
+        /// Specifying this parameter overrides the effect of any [LavaVisible] and [LavaHidden] custom attributes applied to the type.
+        /// </param>
+        public abstract void RegisterSafeType( Type type, IEnumerable<string> allowedMembers );
 
         /// <summary>
         /// Register a shortcode that is defined and implemented in code.

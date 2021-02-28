@@ -371,12 +371,12 @@ namespace Rock.Lava.Fluid
         /// </summary>
         /// <param name="type"></param>
         /// <param name="allowedMembers"></param>
-        public override void RegisterSafeType( Type type, string[] allowedMembers = null )
+        public override void RegisterSafeType( Type type, IEnumerable<string> allowedMembers )
         {
             if ( allowedMembers != null
-                 && allowedMembers.Length > 0 )
+                 && allowedMembers.Any() )
             {
-                TemplateContext.GlobalMemberAccessStrategy.Register( type, allowedMembers );
+                TemplateContext.GlobalMemberAccessStrategy.Register( type, allowedMembers.ToArray() );
             }
             else
             {

@@ -179,8 +179,21 @@ namespace Rock.Lava
         /// Register a type that can be referenced in a template during the rendering process.
         /// </summary>
         /// <param name="type"></param>
-        /// <param name="allowedMembers"></param>
-        void RegisterSafeType( Type type, string[] allowedMembers = null );
+        /// <remarks>
+        /// The [LavaVisible] and [LavaHidden] custom attributes can be applied to determine the visibility of individual properties.
+        /// If these attributes are not applied to any members of the type, all members are visible by default.
+        /// </remarks>
+        void RegisterSafeType( Type type );
+
+        /// <summary>
+        /// Register a type that can be referenced in a template during the rendering process.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="allowedMembers">
+        /// The names of the properties that are visible to the Lava renderer.
+        /// Specifying this parameter overrides the effect of any [LavaVisible] and [LavaHidden] custom attributes applied to the type.
+        /// </param>
+        void RegisterSafeType( Type type, IEnumerable<string> allowedMembers );
 
         /// <summary>
         /// Try to parse the provided template.

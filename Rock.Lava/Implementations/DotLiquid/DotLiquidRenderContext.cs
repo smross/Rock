@@ -18,7 +18,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using DotLiquid;
 
 using Rock.Common;
@@ -267,38 +266,9 @@ namespace Rock.Lava.DotLiquid
             }
 
             // Check if the type is decorated with the LavaType attribute.
-            var attr = (LavaTypeAttribute)valueType.GetCustomAttributes( typeof( LavaTypeAttribute ), false ).FirstOrDefault();
+            var lavaInfo = LavaDataObjectHelper.GetLavaTypeInfo( valueType );
 
-            if ( attr != null )
-            {
-                var allowedProperties = GetLavaTypeAllowedProperties( valueType, attr );
-
-                return new DropProxy( value, allowedProperties );
-            }
-
-            return value;
-        }
-
-        private string[] GetLavaTypeAllowedProperties( Type type, LavaTypeAttribute attr )
-        {
-            List<PropertyInfo> includedProperties;
-
-            // Get the list of included properties, then remove the ignored properties.
-            if ( attr.AllowedMembers == null || !attr.AllowedMembers.Any() )
-            {
-                // No included properties have been specified, so assume all are included.
-                includedProperties = type.GetProperties().ToList();
-            }
-            else
-            {
-                includedProperties = type.GetProperties().Where( x => attr.AllowedMembers.Contains( x.Name, StringComparer.OrdinalIgnoreCase ) ).ToList();
-            }
-
-            var ignoredProperties = type.GetProperties().Where( x => x.GetCustomAttributes( typeof( LavaHiddenAttribute ), false ).Any() ).ToList();
-
-            var allowedProperties = includedProperties.Except( ignoredProperties ).Select( x => x.Name ).ToArray();
-
-            return allowedProperties;
+            return new DropProxy( value, lavaInfo.VisiblePropertyNames.ToArray() );
         }
     }
 }
