@@ -28,7 +28,7 @@ namespace Rock.Lava
     /// This Type can be used as a base class for a derived Type, as a proxy for an existing object, or
     /// as a dictionary of values populated dynamically at runtime.
     /// </summary>
-    public class LavaDataObject : ILavaDataDictionary, IDictionary<string, object>
+    public class LavaDataObject : ILavaDataDictionary
     {
         // The internal implementation of the DynamicObject that is used to manage access to the LavaDataObject properties.
         // This class is implemented privately because it has a number of the public methods that are unnecessary or confusing
@@ -164,130 +164,6 @@ namespace Rock.Lava
         }
 
         #endregion
-
-        #region IDictionary<string, object> implementation.
-
-        ICollection<string> IDictionary<string, object>.Keys
-        {
-            get
-            {
-                return this.AvailableKeys;
-            }
-        }
-
-        ICollection<object> IDictionary<string, object>.Values
-        {
-            get
-            {
-                var dictionary = GetValueDictionary();
-
-                return dictionary.Values;
-            }
-        }
-
-        bool IDictionary<string, object>.ContainsKey( string key )
-        {
-            return this.ContainsKey( key );
-            // AvailableKeys.Contains( key );
-        }
-
-        void IDictionary<string, object>.Add( string key, object value )
-        {
-            this[key] = value;
-        }
-
-        bool IDictionary<string, object>.Remove( string key )
-        {
-            return _lavaDataObjectInternal.DynamicProperties.Remove( key );
-        }
-
-        bool IDictionary<string, object>.TryGetValue( string key, out object value )
-        {
-            return _lavaDataObjectInternal.TryGetMember( key, out value );
-        }
-
-        #endregion
-
-        #region ICollection implementation
-
-        int ICollection<KeyValuePair<string, object>>.Count
-        {
-            get
-            {
-                return _lavaDataObjectInternal.GetDynamicMemberNames().Count();
-            }
-        }
-
-        bool ICollection<KeyValuePair<string, object>>.IsReadOnly
-        {
-            get
-            {
-                return false;
-            }
-        }
-
-        void ICollection<KeyValuePair<string, object>>.Add( KeyValuePair<string, object> item )
-        {
-            this[item.Key] = item.Value;
-        }
-
-        void ICollection<KeyValuePair<string, object>>.Clear()
-        {
-            _lavaDataObjectInternal.DynamicProperties.Clear();
-        }
-
-        bool ICollection<KeyValuePair<string, object>>.Contains( KeyValuePair<string, object> item )
-        {
-            return _lavaDataObjectInternal.DynamicProperties.Contains( item );
-        }
-
-        void ICollection<KeyValuePair<string, object>>.CopyTo( KeyValuePair<string, object>[] array, int arrayIndex )
-        {
-            _lavaDataObjectInternal.DynamicProperties.CopyTo( array, arrayIndex );
-        }
-
-        bool ICollection<KeyValuePair<string, object>>.Remove( KeyValuePair<string, object> item )
-        {
-            return _lavaDataObjectInternal.DynamicProperties.Remove( item );
-        }
-
-        #endregion
-
-        #region IEnumerable implementation
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return this.GetValueDictionary().GetEnumerator();
-        }
-
-        IEnumerator<KeyValuePair<string, object>> IEnumerable<KeyValuePair<string, object>>.GetEnumerator()
-        {
-            return this.GetValueDictionary().GetEnumerator();
-        }
-
-        #endregion
-
-        private Dictionary<string, object> GetValueDictionary()
-        {
-            var memberNames = _lavaDataObjectInternal.GetDynamicMemberNames();
-
-            var dictionary = new Dictionary<string, object>( _lavaDataObjectInternal.DynamicProperties );
-
-            foreach ( var memberName in memberNames )
-            {
-                if ( dictionary.ContainsKey( memberName ) )
-                {
-                    dictionary[memberName] = this[memberName];
-                }
-                else
-                {
-                    dictionary.Add( memberName, this[memberName] );
-                }
-            }
-
-            return dictionary;
-
-        }
     }
 
     /// <summary>
