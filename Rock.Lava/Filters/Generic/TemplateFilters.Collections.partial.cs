@@ -169,18 +169,18 @@ namespace Rock.Lava.Filters
         }
 
         /// <summary>
-        /// Takes an enumerable and returns a new enumerable with the specified object removed.
+        /// Takes an enumerable and returns a new enumerable with all instances of the specified object removed.
         /// </summary>
         /// <param name="input">The existing enumerable.</param>
-        /// <param name="newObject">The new object to remove.</param>
-        /// <returns>A new enumerable that contains the old objects without the specified object.</returns>
+        /// <param name="removeObject">The object to remove.</param>
+        /// <returns>A new enumerable that contains the old objects without any instances of the specified object.</returns>
         /// <example><![CDATA[
         /// {% assign array = '' | AddToArray:'one' %}
         /// {% assign array = array | AddToArray:'two' | AddToArray:'three' %}
         /// {% assign array = array | RemoveFromArray:'one' %}
         /// {{ array | ToJSON }}
         /// ]]></example>
-        public static IEnumerable RemoveFromArray( object input, object oldObject )
+        public static IEnumerable RemoveFromArray( object input, object removeObject )
         {
             List<object> array = new List<object>();
 
@@ -200,7 +200,8 @@ namespace Rock.Lava.Filters
                 array.Add( input );
             }
 
-            array.Remove( oldObject );
+            // Remove single instances until none remain in the collection.
+            while ( array.Remove( removeObject ) );
 
             return array;
         }

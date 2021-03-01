@@ -111,8 +111,24 @@ namespace Rock.Tests.UnitTests.Lava
         }
 
         [TestMethod]
-        [Ignore("The RemoveFromArray filter needs to be modified to remove all instances of the specified item.")]
-        public void RemoveFromArray_RemoveDuplicateEntriesInStringCollection_RemovesAllMatchingEntries()
+        public void RemoveFromArray_AppliedToStringCollectionWithNoMatchingEntries_RemovesNoEntries()
+        {
+            var mergeValues = new LavaDataDictionary { { "TestList", _TestOrderedList } };
+
+            var lavaTemplate = @"
+        {% assign array = TestList | RemoveFromArray:'Item 0' %}
+        {% for item in array %}
+            {{ item }}<br>
+        {% endfor %}
+";
+
+            lavaTemplate = lavaTemplate.Replace( "`", "\"" );
+
+            TestHelper.AssertTemplateOutput( "Item 1<br>Item 2<br>Item 3<br>Item 4<br>Item 5<br>", lavaTemplate, mergeValues, ignoreWhitespace: true );
+        }
+
+        [TestMethod]
+        public void RemoveFromArray_AppliedToStringCollectionWithDuplicateEntries_RemovesAllMatchingEntries()
         {
             var mergeValues = new LavaDataDictionary { { "TestList", _TestDuplicateStringList } };
 
@@ -121,7 +137,7 @@ namespace Rock.Tests.UnitTests.Lava
         {% for item in array %}
             {{ item }}<br>
         {% endfor %}
-"; 
+";
 
             lavaTemplate = lavaTemplate.Replace( "`", "\"" );
 
