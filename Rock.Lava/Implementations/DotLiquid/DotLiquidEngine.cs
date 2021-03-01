@@ -106,6 +106,18 @@ namespace Rock.Lava.DotLiquid
 
             // Register all Types that are decorated with the LavaType custom attribute.
             RegisterLavaTypesAsSafeTypes();
+
+            RegisterValueTypeTransformers();
+        }
+
+        private void RegisterValueTypeTransformers()
+        {
+            // Register transformers to unbox Lava library proxy objects.
+            Template.RegisterValueTypeTransformer( typeof( DotLiquidLavaDataDictionaryProxy ),
+                ( value ) =>
+                {
+                    return ( (ILiquidFrameworkDataObjectProxy)value ).GetProxiedDataObject();
+                } );
         }
 
         private void RegisterLavaTypesAsSafeTypes()
