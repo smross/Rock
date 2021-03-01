@@ -129,16 +129,11 @@ namespace RockWeb.Blocks.Core
                 lavaEngine.UnregisterShortcode( hfOriginalTagName.Value );
             }
 
-            // register shortcode            
+            // Re-register the shortcode.
             if ( lavaShortcode.TagType == TagType.Block )
             {
-                lavaEngine.RegisterDynamicShortcode( lavaShortcode.TagName, (shortcodeName) => { return null; } );
-                //lavaEngine.RegisterShortcode<DynamicShortcodeBlock>( lavaShortcode.TagName );
+                lavaEngine.RegisterDynamicShortcode( lavaShortcode.TagName, ( shortcodeName ) => WebsiteLavaShortcodeProvider.GetShortcodeDefinition( shortcodeName ) );
             }
-            //else
-            //{
-            //    lavaEngine.RegisterShortcode<DynamicShortcodeInline>( lavaShortcode.TagName );
-            //}
 
             // (bug fix) Now we have to clear the entire LavaTemplateCache because it's possible that some other
             // usage of this shortcode is cached with a key we can't predict.
