@@ -189,7 +189,11 @@ namespace Rock.Update
         private void ProcessDeleteFiles( ZipArchive packageZip )
         {
             // process deletefile.lst
-            var deleteListEntry = packageZip.Entries.Where( e => e.FullName == "install\\deletefile.lst" ).FirstOrDefault();
+            var deleteListEntry = packageZip
+                .Entries
+                .Where( e => e.FullName == "install\\deletefile.lst" || e.FullName == "install/deletefile.lst" )
+                .FirstOrDefault();
+
             if ( deleteListEntry != null )
             {
                 var deleteList = System.Text.Encoding.Default.GetString( deleteListEntry.Open().ReadBytesToEnd() );
@@ -199,8 +203,16 @@ namespace Rock.Update
                 {
                     if ( !string.IsNullOrWhiteSpace( deleteItem ) )
                     {
-                        var rockWeb = "RockWeb\\";
+                        
                         var deleteItemFullPath = Path.Combine( FileManagementHelper.ROOT_PATH, deleteItem );
+
+                        var rockWeb = "RockWeb\\";
+                        if ( deleteItem.StartsWith( rockWeb ) )
+                        {
+                            deleteItemFullPath = Path.Combine( FileManagementHelper.ROOT_PATH, deleteItem.Substring( rockWeb.Length ) );
+                        }
+
+                        rockWeb = "RockWeb/";
                         if ( deleteItem.StartsWith( rockWeb ) )
                         {
                             deleteItemFullPath = Path.Combine( FileManagementHelper.ROOT_PATH, deleteItem.Substring( rockWeb.Length ) );

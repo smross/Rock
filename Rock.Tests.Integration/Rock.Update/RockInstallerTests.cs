@@ -249,7 +249,7 @@ namespace Rock.Tests.Integration.RockUpdate
         }
 
         [TestMethod]
-        public void InstallVersion_ShouldCorrectlyDeleteFiles()
+        public void InstallVersion_ShouldCorrectlyDeleteFilesBackSlash()
         {
             var expectedBackupFileText = "Original Test File";
 
@@ -275,6 +275,70 @@ namespace Rock.Tests.Integration.RockUpdate
                 using ( var testPackage = new ZipArchive( packageFileStream, ZipArchiveMode.Create ) )
                 {
                     var testEntry = testPackage.CreateEntry( "install\\deletefile.lst" );
+                    using ( StreamWriter writer = new StreamWriter( testEntry.Open() ) )
+                    {
+                        writer.Write( "test.txt" );
+                    }
+                }
+            }
+
+            var releaseList = new List<RockRelease>
+            {
+                new RockRelease
+                {
+                    PackageUri = $"file://{testPackagePath}",
+                    SemanticVersion = targetVersion
+                }
+            };
+
+            var rockUpdateService = new Mock<IRockUpdateService>();
+
+            rockUpdateService.Setup( rus => rus.GetReleasesList( It.IsAny<Version>() ) ).Returns( releaseList );
+
+            var rockInstaller = new RockInstaller( rockUpdateService.Object, new Version( targetVersion ), new Version( currentVersion ) );
+            var package = rockInstaller.InstallVersion();
+
+            rockUpdateService.Verify( x => x.GetReleasesList( It.IsAny<Version>() ), Times.Once );
+
+            // Validate backup file was created.
+            var expectedBackupFilePath = $"{testBackupDirectory}\\test.txt";
+            Assert.IsTrue( File.Exists( expectedBackupFilePath ) );
+
+            var actualBackupFileText = File.ReadAllText( expectedBackupFilePath );
+            Assert.AreEqual( expectedBackupFileText, actualBackupFileText );
+
+            // Validate new file was copied in.
+            var expectedInstalledFilePath = $"{AppDomain.CurrentDomain.BaseDirectory}\\test.txt";
+            Assert.IsFalse( File.Exists( expectedInstalledFilePath ) );
+        }
+
+        [TestMethod]
+        public void InstallVersion_ShouldCorrectlyDeleteFilesForwardSlash()
+        {
+            var expectedBackupFileText = "Original Test File";
+
+            var testPackagePath = $"{AppDomain.CurrentDomain.BaseDirectory}\\testPackage.rockpkg";
+            var targetVersion = "1.13.1";
+            var currentVersion = "1.13.0";
+
+            if ( File.Exists( testPackagePath ) )
+            {
+                File.Delete( testPackagePath );
+            }
+
+            var testBackupDirectory = $"{AppDomain.CurrentDomain.BaseDirectory}\\App_Data\\RockBackup\\{currentVersion}";
+            if ( Directory.Exists( testBackupDirectory ) )
+            {
+                Directory.Delete( testBackupDirectory, true );
+            }
+
+            File.WriteAllText( $"{AppDomain.CurrentDomain.BaseDirectory}\\test.txt", expectedBackupFileText );
+
+            using ( var packageFileStream = new FileStream( testPackagePath, FileMode.OpenOrCreate ) )
+            {
+                using ( var testPackage = new ZipArchive( packageFileStream, ZipArchiveMode.Create ) )
+                {
+                    var testEntry = testPackage.CreateEntry( "install/deletefile.lst" );
                     using ( StreamWriter writer = new StreamWriter( testEntry.Open() ) )
                     {
                         writer.Write( "test.txt" );
