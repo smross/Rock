@@ -501,7 +501,7 @@ namespace Rock.MyWell
 
         /// <summary>
         /// Updates the customer address.
-        /// https://sandbox.gotnpgateway.com/docs/api/#update-a-specific-customer-address
+        /// https://sandbox.gotnpgateway.com/docs/api/#update-address-token-deprecated
         /// </summary>
         /// <param name="gatewayUrl">The gateway URL.</param>
         /// <param name="apiKey">The API key.</param>

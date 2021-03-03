@@ -29,7 +29,7 @@ namespace Rock.MyWell
     #region Customer Related
 
     /// <summary>
-    /// https://sandbox.gotnpgateway.com/docs/api/#create-a-new-customer
+    /// https://sandbox.gotnpgateway.com/docs/api/#create-customer-deprecated
     /// </summary>
     public class CreateCustomerRequest
     {
@@ -71,7 +71,8 @@ namespace Rock.MyWell
     }
 
     /// <summary>
-    /// from https://sandbox.gotnpgateway.com/docs/api/#create-a-new-customer and https://sandbox.gotnpgateway.com/docs/api/#get-a-specific-customer
+    /// from https://sandbox.gotnpgateway.com/docs/api/#create-customer-deprecated
+    /// and https://sandbox.gotnpgateway.com/docs/api/#get-customer-by-id-deprecated
     /// </summary>
     public class CustomerResponse : BaseResponseData
     {
@@ -86,7 +87,8 @@ namespace Rock.MyWell
     }
 
     /// <summary>
-    /// from https://sandbox.gotnpgateway.com/docs/api/#create-a-new-customer and https://sandbox.gotnpgateway.com/docs/api/#get-a-specific-customer
+    /// from https://sandbox.gotnpgateway.com/docs/api/#create-customer-deprecated
+    /// and https://sandbox.gotnpgateway.com/docs/api/#get-customer-by-id-deprecated
     /// </summary>
     public class CustomerResponseData
     {
@@ -146,14 +148,14 @@ namespace Rock.MyWell
     }
 
     /// <summary>
-    /// https://sandbox.gotnpgateway.com/docs/api/#update-a-specific-customer-address
+    /// https://sandbox.gotnpgateway.com/docs/api/#update-address-token-deprecated
     /// </summary>
     public class UpdateCustomerAddressRequest : BillingAddress
     {
     }
 
     /// <summary>
-    /// https://sandbox.gotnpgateway.com/docs/api/#update-a-specific-customer-address
+    /// https://sandbox.gotnpgateway.com/docs/api/#update-address-token-deprecated
     /// </summary>
     public class UpdateCustomerAddressResponse : BaseResponseData
     {
@@ -909,7 +911,7 @@ namespace Rock.MyWell
     #region Transactions 
 
     /// <summary>
-    /// https://sandbox.gotnpgateway.com/docs/api/#processing-a-transaction
+    /// https://sandbox.gotnpgateway.com/docs/api/#process-a-transaction
     /// </summary>
     public class CreateTransaction
     {
@@ -1491,7 +1493,7 @@ namespace Rock.MyWell
     #region Plans
 
     /// <summary>
-    /// https://sandbox.gotnpgateway.com/docs/api/#create-a-plan
+    /// https://sandbox.gotnpgateway.com/docs/api/#create-plan
     /// </summary>
     public class CreatePlanParameters : BillingPlanParameters
     {
@@ -1665,8 +1667,8 @@ namespace Rock.MyWell
     #region Subscriptions
 
     /// <summary>
-    /// https://sandbox.gotnpgateway.com/docs/api/#create-a-subscription and
-    /// https://sandbox.gotnpgateway.com/docs/api/#update-a-subscription
+    /// https://sandbox.gotnpgateway.com/docs/api/#create-subscription and
+    /// https://sandbox.gotnpgateway.com/docs/api/#update-subscription
     /// </summary>
     public class SubscriptionRequestParameters : BillingPlanParameters
     {
@@ -1711,10 +1713,15 @@ namespace Rock.MyWell
         /// </value>
         [JsonProperty( "id" )]
         public string Id { get; set; }
+
+        public string payment_method_type { get; set; }
+        public string payment_method_id { get; set; }
+        public string billing_address_id { get; set; }
+        public string shipping_address_id { get; set; }
     }
 
     /// <summary>
-    /// https://sandbox.gotnpgateway.com/docs/api/#create-a-subscription
+    /// https://sandbox.gotnpgateway.com/docs/api/#create-subscription
     /// </summary>
     public class SubscriptionResponse : BaseResponseData
     {
@@ -1729,7 +1736,7 @@ namespace Rock.MyWell
     }
 
     /// <summary>
-    /// https://sandbox.gotnpgateway.com/docs/api/#create-a-subscription
+    /// https://sandbox.gotnpgateway.com/docs/api/#create-subscription
     /// </summary>
     public class SubscriptionData
     {
@@ -1742,14 +1749,19 @@ namespace Rock.MyWell
         [JsonProperty( "id" )]
         public string Id { get; set; }
 
+        public string plan_id { get; set; }
+        public string plan_name { get; set; }
+        
+        public string status { get; set; }
+
         /// <summary>
         /// Gets or sets the name.
         /// </summary>
         /// <value>
         /// The name.
         /// </value>
-        [JsonProperty( "name" )]
-        public string Name { get; set; }
+        //[JsonProperty( "name" )]
+        //public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the description.
@@ -1759,6 +1771,9 @@ namespace Rock.MyWell
         /// </value>
         [JsonProperty( "description" )]
         public string Description { get; set; }
+
+        public string customer_name { get; set; }
+        public bool shared { get; set; }
 
         /// <summary>
         /// Gets or sets the customer.
@@ -1790,6 +1805,11 @@ namespace Rock.MyWell
         /// </value>
         [JsonProperty( "amount" )]
         public int AmountCents { get; set; }
+
+        public string currency { get; set; }
+        public string processor_id { get; set; }
+        public int total_adds { get; set; }
+        public int total_discounts { get; set; }
 
         /// <summary>
         /// "How often to run the billing cycle. Run every x months"
@@ -1836,6 +1856,9 @@ namespace Rock.MyWell
         [JsonProperty( "next_bill_date" )]
         [JsonConverter( typeof( MyWellGatewayUTCIsoDateConverter ) )]
         public DateTime? NextBillDateUTC { get; set; }
+
+        public object add_ons { get; set; }
+        public object discounts { get; set; }
 
         /// <summary>
         /// Gets or sets the created date time.
@@ -1980,7 +2003,7 @@ namespace Rock.MyWell
         /// <summary>
         /// Maximum records to return (0-100, optional)
         /// Gets or sets the limit (MyWell default is 10, but we can set it to 0 to get all of them )
-        /// https://sandbox.gotnpgateway.com/docs/api/#query-transactions
+        /// https://sandbox.gotnpgateway.com/docs/api/#search-transactions
         /// </summary>
         /// <value>
         /// The limit.
@@ -1990,7 +2013,7 @@ namespace Rock.MyWell
 
         /// <summary>
         /// Number of records to offset the return by (optional)
-        /// https://sandbox.gotnpgateway.com/docs/api/#query-transactions
+        /// https://sandbox.gotnpgateway.com/docs/api/#search-transactions
         /// </summary>
         /// <value>
         /// The offset.
@@ -2000,7 +2023,7 @@ namespace Rock.MyWell
     }
 
     /// <summary>
-    /// see https://sandbox.gotnpgateway.com/docs/api/#query-transactions
+    /// see https://sandbox.gotnpgateway.com/docs/api/#search-transactions
     /// </summary>
     public class QuerySearchString
     {
@@ -2049,7 +2072,7 @@ namespace Rock.MyWell
     }
 
     /// <summary>
-    /// see https://sandbox.gotnpgateway.com/docs/api/#query-transactions
+    /// see https://sandbox.gotnpgateway.com/docs/api/#search-transactions
     /// </summary>
     public class QuerySearchInt
     {
@@ -2401,7 +2424,7 @@ namespace Rock.MyWell
 
         /// <summary>
         /// Gets or sets the status.
-        /// https://sandbox.gotnpgateway.com/docs/api/#query-transactions.
+        /// https://sandbox.gotnpgateway.com/docs/api/#search-transactions.
         /// possible values include: unknown, declined, authorized, pending_settlement, settled, voided, reversed, refunded
         /// </summary>
         /// <value>
@@ -2690,7 +2713,7 @@ namespace Rock.MyWell
     }
 
     /// <summary>
-    /// see DateFormats specs from https://sandbox.gotnpgateway.com/docs/api/#query-transactions
+    /// see DateFormats specs from https://sandbox.gotnpgateway.com/docs/api/#search-transactions
     /// this is mostly just needed for JSON Payloads that are POST'd to the gateway
     /// </summary>
     /// <seealso cref="Newtonsoft.Json.Converters.IsoDateTimeConverter" />
