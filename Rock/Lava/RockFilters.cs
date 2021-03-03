@@ -5139,6 +5139,23 @@ namespace Rock.Lava
         /// Wheres the specified input.
         /// </summary>
         /// <param name="input">The input.</param>
+        /// <param name="filter">The filter.</param>
+        /// <returns></returns>
+        public static object Where( object input, string filter )
+        {
+            if ( input is IEnumerable )
+            {
+                var enumerableInput = ( IEnumerable ) input;
+                return enumerableInput.Where( filter );
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Wheres the specified input.
+        /// </summary>
+        /// <param name="input">The input.</param>
         /// <param name="filterKey">The filter key.</param>
         /// <param name="filterValue">The filter value.</param>
         /// <returns></returns>
