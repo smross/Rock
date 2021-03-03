@@ -152,6 +152,7 @@
     <Compile Include="Lava\Filters\DateFilterTests.cs" />
     <Compile Include="Lava\Filters\NumericFilterTests.cs" />
     <Compile Include="Lava\LavaTestHelper.cs" />
+    <Compile Include="Lava\LavaIntegrationTestBase.cs" />
     <Compile Include="Lava\ShortcodeCodeTests.cs" />
     <Compile Include="Lava\CommandTests.cs" />
     <Compile Include="Lava\ShortcodeTemplateTests.cs" />
@@ -215,7 +216,7 @@
     <Compile Include="Reporting\DataFilter\Person\StepDataViewDataFilterTests.cs" />
     <Compile Include="Reporting\DataFilter\Person\StepsTakenDataFilterTests.cs" />
     <Compile Include="Reporting\ReportBuilder\ReportBuilderTests.cs" />
-    <Compile Include="TestInitializer.cs" />
+    <Compile Include="IntegrationTestHelper.cs" />
     <Compile Include="StorageTests\FileSystemComponentTests.cs" />
     <Compile Include="test.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -232,6 +233,8 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+    <None Include="Lava\lava-dotliquid-engine.runsettings" />
+    <None Include="Lava\lava-fluid-engine.runsettings" />
     <None Include="test.runsettings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>test.Designer.cs</LastGenOutput>
@@ -290,8 +293,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Constants\" />
-    <Folder Include="Lava\Blocks\" />
-    <Folder Include="Lava\Shortcodes\" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
