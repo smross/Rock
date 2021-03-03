@@ -6204,7 +6204,7 @@ namespace Rock.Lava
             /// <value>
             /// The values.
             /// </value>
-            public NameValueCollection Values
+            public new NameValueCollection Values
             {
                 get
                 {
