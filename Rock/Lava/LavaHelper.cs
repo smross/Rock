@@ -381,6 +381,33 @@ namespace Rock.Lava
             return LavaSecurityHelper.IsAuthorized( context, command );
         }
 
+        /// <summary>
+        /// Returns a flag indicating if the target object is capable of being used as a data source in a Lava template.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static bool IsLavaDataObject( object obj )
+        {
+            if ( obj == null )
+            {
+                return false;
+            }
+
+            #region DotLiquidLegacy Code
+            if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.DotLiquidLegacy )
+            {
+                return obj != null && obj is Rock.Lava.ILavaDataDictionary;
+            }
+            #endregion
+
+            if ( obj is ILavaDataDictionary || obj is ILavaDataDictionarySource )
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         #region Lava Comments
 
         private static string LavaTokenBlockCommentStart = @"/-";
