@@ -394,7 +394,7 @@ namespace Rock.Lava
             }
 
             #region DotLiquidLegacy Code
-            if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.DotLiquidLegacy )
+            if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.Legacy )
             {
                 return obj != null && obj is Rock.Lava.ILavaDataDictionary;
             }

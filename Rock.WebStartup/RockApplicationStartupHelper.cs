@@ -599,11 +599,11 @@ namespace Rock.WebStartup
             if ( string.IsNullOrWhiteSpace( liquidEngineTypeValue ) || liquidEngineTypeValue == "default" )
             {
                 // If no engine specified, use default.
-                engineType = LavaEngineTypeSpecifier.DotLiquidLegacy;
+                engineType = LavaEngineTypeSpecifier.Legacy;
             }
             else if ( liquidEngineTypeValue == "dotliquid" )
             {
-                engineType = LavaEngineTypeSpecifier.DotLiquidLegacy;
+                engineType = LavaEngineTypeSpecifier.Legacy;
             }
             else if ( liquidEngineTypeValue == "dotliquidlavalibrary" )
             {
@@ -618,10 +618,10 @@ namespace Rock.WebStartup
             {
                 // Log an error for the invalid configuration setting, and continue with the default value.
                 ExceptionLogService.LogException( $"Invalid Lava Engine Type. The value \"{liquidEngineTypeValue}\" is not valid, must be [default|dotliquid|fluid]." );
-                engineType = LavaEngineTypeSpecifier.DotLiquidLegacy;
+                engineType = LavaEngineTypeSpecifier.Legacy;
             }
 
-            if ( engineType == LavaEngineTypeSpecifier.DotLiquidLegacy )
+            if ( engineType == LavaEngineTypeSpecifier.Legacy )
             {
                 // Initialize the DotLiquid Engine.
                 InitializeLavaDotLiquidLegacy();
