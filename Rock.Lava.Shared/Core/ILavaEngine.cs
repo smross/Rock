@@ -231,7 +231,9 @@ namespace Rock.Lava
         // DotLiquid is an open-source implementation of the Liquid templating language. [https://github.com/dotliquid/dotliquid]
         DotLiquid = 1,
         // Fluid is an open-source implementation of the Liquid templating language. [https://github.com/sebastienros/fluid]
-        Fluid = 2
+        Fluid = 2,
+        // The original implementation of DotLiquid in Rock.
+        DotLiquidLegacy = 3
     }
 
     /// <summary>

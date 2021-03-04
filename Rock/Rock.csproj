@@ -611,6 +611,7 @@
     <Compile Include="Communication\Transport\ThrottleHelper.cs" />
     <Compile Include="Data\LavaIgnoreAttribute.cs" />
     <Compile Include="Data\LavaIncludeAttribute.cs" />
+    <Compile Include="Lava\DotLiquidLegacy\LavaFileSystem.cs" />
     <Compile Include="Lava\WebsiteLavaShortcodeProvider.cs" />
     <Compile Include="Tasks\AddCommunicationRecipients.cs" />
     <Compile Include="Tasks\AddNewMetaphones.cs" />
@@ -650,6 +651,7 @@
     <Compile Include="Tasks\LaunchWorkflow.cs" />
     <Compile Include="Tasks\UpdateUserLastActivity.cs" />
     <Compile Include="Store\StoreApiResult.cs" />
+    <Compile Include="Utility\ExtensionMethods\LavaLibraryExtensions.cs" />
     <Compile Include="Utility\MethodRetry.cs" />
     <Compile Include="Communication\Transport\RockMobilePush.cs" />
     <Compile Include="Communication\Transport\SafeSenderResult.cs" />
@@ -3152,6 +3154,10 @@
     <Folder Include="Web\UI\Controls\Finance\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DotLiquid\DotLiquid.csproj">
+      <Project>{00edcb8d-ef33-459c-ad62-02876bd24dff}</Project>
+      <Name>DotLiquid</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Rock.DownhillCss\Rock.DownhillCss.csproj">
       <Project>{cadd9206-2c6b-42e4-b20b-2dfc3eb4d6d4}</Project>
       <Name>Rock.DownhillCss</Name>

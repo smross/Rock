@@ -25,7 +25,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Web;
-
+using DotLiquid;
 using Quartz;
 using Quartz.Impl;
 using Quartz.Impl.Matchers;
@@ -599,9 +599,13 @@ namespace Rock.WebStartup
             if ( string.IsNullOrWhiteSpace( liquidEngineTypeValue ) || liquidEngineTypeValue == "default" )
             {
                 // If no engine specified, use default.
-                engineType = LavaEngineTypeSpecifier.DotLiquid;
+                engineType = LavaEngineTypeSpecifier.DotLiquidLegacy;
             }
             else if ( liquidEngineTypeValue == "dotliquid" )
+            {
+                engineType = LavaEngineTypeSpecifier.DotLiquidLegacy;
+            }
+            else if ( liquidEngineTypeValue == "dotliquidlavalibrary" )
             {
                 engineType = LavaEngineTypeSpecifier.DotLiquid;
             }
@@ -614,29 +618,37 @@ namespace Rock.WebStartup
             {
                 // Log an error for the invalid configuration setting, and continue with the default value.
                 ExceptionLogService.LogException( $"Invalid Lava Engine Type. The value \"{liquidEngineTypeValue}\" is not valid, must be [default|dotliquid|fluid]." );
-                engineType = LavaEngineTypeSpecifier.DotLiquid;
+                engineType = LavaEngineTypeSpecifier.DotLiquidLegacy;
             }
 
-            // Initialize the Lava engine.
-            var defaultEnabledLavaCommands = GlobalAttributesCache.Value( "DefaultEnabledLavaCommands" ).SplitDelimitedValues(",").ToList();
-
-            var engineOptions = new LavaEngineConfigurationOptions
+            if ( engineType == LavaEngineTypeSpecifier.DotLiquidLegacy )
             {
-                FileSystem = new WebsiteLavaFileSystem(),
-                CacheService = new LavaTemplateCache(),
-                DefaultEnabledCommands = defaultEnabledLavaCommands
-            };
+                // Initialize the DotLiquid Engine.
+                InitializeLavaDotLiquidLegacy();
+            }
+            else
+            {
+                // Initialize the Lava engine.
+                var defaultEnabledLavaCommands = GlobalAttributesCache.Value( "DefaultEnabledLavaCommands" ).SplitDelimitedValues( "," ).ToList();
 
-            LavaEngine.Initialize( engineType, engineOptions );
+                var engineOptions = new LavaEngineConfigurationOptions
+                {
+                    FileSystem = new WebsiteLavaFileSystem(),
+                    CacheService = new LavaTemplateCache(),
+                    DefaultEnabledCommands = defaultEnabledLavaCommands
+                };
 
-            // Initialize Lava extensions.
-            var engine = LavaEngine.CurrentEngine;
+                LavaEngine.Initialize( engineType, engineOptions );
 
-            engine.RegisterFilters( typeof( Rock.Lava.RockFilters ) );
+                // Initialize Lava extensions.
+                var engine = LavaEngine.CurrentEngine;
 
-            InitializeLavaShortcodes( engine );
-            InitializeLavaBlocks( engine );
-            InitializeLavaTags( engine );
+                engine.RegisterFilters( typeof( Rock.Lava.RockFilters ) );
+
+                InitializeLavaShortcodes( engine );
+                InitializeLavaBlocks( engine );
+                InitializeLavaTags( engine );
+            }
         }
 
         private static void InitializeLavaShortcodes( ILavaEngine engine )
@@ -744,6 +756,38 @@ namespace Rock.WebStartup
             {
                 ExceptionLogService.LogException( ex, null );
             }
+        }
+
+        /// <summary>
+        /// Initializes Rock's legacy Lava system (which uses DotLiquid)
+        /// Doing this in startup will force the static Liquid class to get instantiated
+        /// so that the standard filters are loaded prior to the custom RockFilter.
+        /// This is to allow the custom 'Date' filter to replace the standard Date filter.
+        /// </summary>
+        /// <remarks>Remove when support for Legacy DotLiquid Lava implementation is removed.</remarks>
+        private static void InitializeLavaDotLiquidLegacy()
+        {
+            // DotLiquid uses a RubyDateFormat by default,
+            // but since we aren't using Ruby, we want to disable that
+            Liquid.UseRubyDateFormat = false;
+
+            /* 2020-05-20 MDP (actually this comment was here a long time ago)
+                NOTE: This means that all the built in template filters,
+                and the RockFilters, will use CSharpNamingConvention.
+
+                For example the dotliquid documentation says to do this for formatting dates: 
+                {{ some_date_value | date:"MMM dd, yyyy" }}
+
+                However, if CSharpNamingConvention is enabled, it needs to be: 
+                {{ some_date_value | Date:"MMM dd, yyyy" }}
+            */
+
+            Template.NamingConvention = new DotLiquid.NamingConventions.CSharpNamingConvention();
+
+            Template.FileSystem = new LavaFileSystem();
+            Template.RegisterSafeType( typeof( Enum ), o => o.ToString() );
+            Template.RegisterSafeType( typeof( DBNull ), o => null );
+            Template.RegisterFilter( typeof( Rock.Lava.RockFilters ) );
         }
 
         /// <summary>
