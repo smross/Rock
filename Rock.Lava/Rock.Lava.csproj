@@ -221,7 +221,7 @@
     <Compile Include="Core\ILiquidFrameworkElementRenderer.cs" />
     <Compile Include="Core\Shortcodes\DynamicShortcodeBlock.cs" />
     <Compile Include="Core\Shortcodes\DynamicShortcodeTag.cs" />
-    <Compile Include="Core\Shortcodes\RockLavaShortcodeBase.cs" />
+    <Compile Include="Core\Shortcodes\LavaShortcodeBase.cs" />
     <Compile Include="Core\Tags\LavaTagInfo.cs" />
     <Compile Include="Engine\LavaNullFileSystem.cs" />
     <Compile Include="Engine\LavaToLiquidTemplateConverter.cs" />

@@ -29,7 +29,7 @@ namespace Rock.Lava
     /// <summary>
     /// A shortcode that uses a parameterized Lava template supplied at runtime to dynamically generate a block or tag element in a Lava source document.
     /// </summary>
-    public class DynamicShortcode : RockLavaShortcodeBase
+    public class DynamicShortcode : LavaShortcodeBase
     {
         string _elementAttributesMarkup = string.Empty;
         string _tagName = string.Empty;
