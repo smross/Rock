@@ -631,6 +631,15 @@
     <Compile Include="Lava\Legacy\Blocks\WorkflowActivate.cs" />
     <Compile Include="Lava\Legacy\LavaFileSystem.cs" />
     <Compile Include="Lava\Legacy\RockFiltersLegacy.cs" />
+    <Compile Include="Lava\Legacy\Shortcodes\BootstrapAlert.cs" />
+    <Compile Include="Lava\Legacy\Shortcodes\DynamicShortcodeBlock.cs" />
+    <Compile Include="Lava\Legacy\Shortcodes\DynamicShortcodeInline.cs" />
+    <Compile Include="Lava\Legacy\Shortcodes\IRockShortcode.cs" />
+    <Compile Include="Lava\Legacy\Shortcodes\LavaShortcodeMetaDataAttribute.cs" />
+    <Compile Include="Lava\Legacy\Shortcodes\RockLavaShortcodeBase.cs" />
+    <Compile Include="Lava\Legacy\Shortcodes\RockLavaShortcodeBlockBase.cs" />
+    <Compile Include="Lava\Legacy\Shortcodes\ScheduledContent.cs" />
+    <Compile Include="Lava\Legacy\Shortcodes\Scripturize.cs" />
     <Compile Include="Lava\WebsiteLavaShortcodeProvider.cs" />
     <Compile Include="Tasks\AddCommunicationRecipients.cs" />
     <Compile Include="Tasks\AddNewMetaphones.cs" />
