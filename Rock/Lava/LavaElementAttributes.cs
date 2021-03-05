@@ -19,6 +19,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
+using DotLiquid;
+
 namespace Rock.Lava
 {
     /// <summary>
@@ -210,5 +212,83 @@ namespace Rock.Lava
         }
 
         #endregion
+
+
+        #region Legacy Lava implementation
+
+        /// <summary>
+        /// Parse the attributes markup of a Lava element tag to produce a collection of settings.
+        /// </summary>
+        /// <param name="attributesMarkup"></param>
+        /// <param name="context"></param>
+        public void ParseFromMarkup( string attributesMarkup, Context context )
+        {
+            _settings = GetElementAttributes( attributesMarkup, context );
+        }
+
+        /// <summary>
+        /// Parses the attributes of the Lava element tag to extract the parameter settings.
+        /// Any merge fields in the attributes markup are resolved before the settings are extracted.
+        /// </summary>
+        /// <param name="elementAttributesMarkup">The markup.</param>
+        /// <param name="context">The context.</param>
+        /// <returns></returns>
+        public static Dictionary<string, string> GetElementAttributes( string elementAttributesMarkup, Context context = null )
+        {
+            // First, resolve any Lava merge fields that exist in the element attributes markup.
+            if ( context != null )
+            {
+                var internalMergeFields = new Dictionary<string, object>();
+
+                // Get variables defined in the current scope, then from the outer block or container.
+                foreach ( var scope in context.Scopes )
+                {
+                    foreach ( var item in scope )
+                    {
+                        internalMergeFields.AddOrReplace( item.Key, item.Value );
+                    }
+                }
+
+                foreach ( var environment in context.Environments )
+                {
+                    foreach ( var item in environment )
+                    {
+                        internalMergeFields.AddOrReplace( item.Key, item.Value );
+                    }
+                }
+
+                elementAttributesMarkup = elementAttributesMarkup.ResolveMergeFields( internalMergeFields );
+            }
+
+            // Get the set of parameters using variations of the following pattern:
+            // param1:'value1 with spaces' param2:value2_without_spaces param3:'value3 with spaces'
+            var parms = new Dictionary<string, string>();
+
+            var markupItems = Regex.Matches( elementAttributesMarkup, @"(\S*?:('[^']+'|[\\d.]+|[\S*]+))" )
+                .Cast<Match>()
+                .Select( m => m.Value )
+                .ToList();
+
+            foreach ( var item in markupItems )
+            {
+                var itemParts = item.ToString().Split( new char[] { ':' }, 2 );
+                if ( itemParts.Length > 1 )
+                {
+                    if ( itemParts[1].Trim()[0] == '\'' )
+                    {
+                        parms.AddOrReplace( itemParts[0].Trim(), itemParts[1].Trim().Substring( 1, itemParts[1].Length - 2 ) );
+                    }
+                    else
+                    {
+                        parms.AddOrReplace( itemParts[0].Trim(), itemParts[1].Trim() );
+                    }
+                }
+            }
+
+            return parms;
+        }
+
+        #endregion
+
     }
 }
