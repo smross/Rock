@@ -29,7 +29,7 @@ namespace Rock.Lava.Blocks
     /// <summary>
     /// Tag which allows a snippet of JavaScript to be executed in the browser.
     /// </summary>
-    public class Javascript : RockLavaBlockBase
+    public class Javascript : LavaBlockBase
     {
         private static readonly Regex Syntax = new Regex( @"(\w+)" );
 

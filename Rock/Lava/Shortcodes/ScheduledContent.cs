@@ -65,7 +65,7 @@ namespace Rock.Lava.Shortcodes
         </ul>",
         "scheduleid,showwhen,roleid",
         "" )]
-    public class ScheduledContent : RockLavaShortcodeBase, IRockLavaBlock
+    public class ScheduledContent : RockLavaShortcodeBase, ILavaBlock
     {
         string _markup = string.Empty;
         string _enabledSecurityCommands = string.Empty;

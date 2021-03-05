@@ -39,9 +39,9 @@ namespace Rock.Lava.Fluid
     {
         #region Static factory methods
 
-        private static Dictionary<string, Func<string, IRockLavaTag>> _factoryMethods = new Dictionary<string, Func<string, IRockLavaTag>>( StringComparer.OrdinalIgnoreCase );
+        private static Dictionary<string, Func<string, ILavaTag>> _factoryMethods = new Dictionary<string, Func<string, ILavaTag>>( StringComparer.OrdinalIgnoreCase );
 
-        public static void RegisterFactory( string name, Func<string, IRockLavaTag> factoryMethod )
+        public static void RegisterFactory( string name, Func<string, ILavaTag> factoryMethod )
         {
             if ( string.IsNullOrWhiteSpace( name ) )
             {
@@ -55,7 +55,7 @@ namespace Rock.Lava.Fluid
 
         #endregion
 
-        private IRockLavaTag _lavaTag = null;
+        private ILavaTag _lavaTag = null;
 
 
         #region Fluid.ITagEx Implementation
@@ -106,7 +106,7 @@ namespace Rock.Lava.Fluid
             throw new NotImplementedException( "Call Parse(ParseTreeNode, LavaFluidParserContext) instead." );
         }
 
-        public ValueTask<Completion> WriteToAsync( TextWriter writer, TextEncoder encoder, TemplateContext context, IRockLavaTag lavaTag, string tagName, string tagAttributesMarkup )
+        public ValueTask<Completion> WriteToAsync( TextWriter writer, TextEncoder encoder, TemplateContext context, ILavaTag lavaTag, string tagName, string tagAttributesMarkup )
         {
             var lavaContext = new FluidRenderContext( context );
 

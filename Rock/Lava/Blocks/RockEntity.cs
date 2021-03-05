@@ -38,7 +38,7 @@ namespace Rock.Lava.Blocks
     /// <summary>
     ///
     /// </summary>
-    public class RockEntity : RockLavaBlockBase
+    public class RockEntity : LavaBlockBase
     {
         /// <summary>
         /// The type name of the target entity.
@@ -73,7 +73,7 @@ namespace Rock.Lava.Blocks
 
             if ( !this.IsAuthorized( context, commandTypeName ) )
             {
-                result.Write( string.Format( RockLavaBlockBase.NotAuthorizedMessage, commandTypeName ) );
+                result.Write( string.Format( LavaBlockBase.NotAuthorizedMessage, commandTypeName ) );
                 base.OnRender( context, result );
                 return;
             }

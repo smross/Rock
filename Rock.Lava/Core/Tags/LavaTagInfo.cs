@@ -52,7 +52,7 @@ namespace Rock.Lava
         /// <summary>
         /// The factory method used to create a new instance of this tag.
         /// </summary>
-        public Func<string, IRockLavaTag> FactoryMethod { get; set; }
+        public Func<string, ILavaTag> FactoryMethod { get; set; }
 
         /// <summary>
         /// Can the factory method successfully produce an instance of this tag?

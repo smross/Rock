@@ -33,7 +33,7 @@ namespace Rock.Lava.Blocks
     /// <summary>
     /// Web
     /// </summary>
-    public class WebRequest : RockLavaBlockBase
+    public class WebRequest : LavaBlockBase
     {
         private static readonly Regex Syntax = new Regex( @"(\w+)" );
 
@@ -63,7 +63,7 @@ namespace Rock.Lava.Blocks
             // first ensure that entity commands are allowed in the context
             if ( !this.IsAuthorized( context ) )
             {
-                result.Write( string.Format( RockLavaBlockBase.NotAuthorizedMessage, this.SourceElementName ) );
+                result.Write( string.Format( LavaBlockBase.NotAuthorizedMessage, this.SourceElementName ) );
                 base.OnRender( context, result );
                 return;
             }

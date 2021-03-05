@@ -708,11 +708,11 @@ namespace Rock.WebStartup
             // Get all tags and call OnStartup methods
             try
             {
-                var elementTypes = Rock.Reflection.FindTypes( typeof( IRockLavaTag ) ).Select( a => a.Value ).ToList();
+                var elementTypes = Rock.Reflection.FindTypes( typeof( ILavaTag ) ).Select( a => a.Value ).ToList();
 
                 foreach ( var elementType in elementTypes )
                 {
-                    var instance = Activator.CreateInstance( elementType ) as IRockLavaTag;
+                    var instance = Activator.CreateInstance( elementType ) as ILavaTag;
 
                     var name = instance.SourceElementName;
 
@@ -723,7 +723,7 @@ namespace Rock.WebStartup
 
                     engine.RegisterTag( name, ( shortcodeName ) =>
                     {
-                        var shortcode = Activator.CreateInstance( elementType ) as IRockLavaTag;
+                        var shortcode = Activator.CreateInstance( elementType ) as ILavaTag;
 
                         return shortcode;
                     } );
@@ -751,15 +751,15 @@ namespace Rock.WebStartup
             // Get all blocks and call OnStartup methods
             try
             {
-                var blockTypes = Rock.Reflection.FindTypes( typeof( IRockLavaBlock ) ).Select( a => a.Value ).ToList();
+                var blockTypes = Rock.Reflection.FindTypes( typeof( ILavaBlock ) ).Select( a => a.Value ).ToList();
 
                 foreach ( var blockType in blockTypes )
                 {
-                    var blockInstance = Activator.CreateInstance( blockType ) as IRockLavaBlock;
+                    var blockInstance = Activator.CreateInstance( blockType ) as ILavaBlock;
 
                     engine.RegisterBlock( blockInstance.SourceElementName, ( blockName ) =>
                     {
-                        return Activator.CreateInstance( blockType ) as IRockLavaBlock;
+                        return Activator.CreateInstance( blockType ) as ILavaBlock;
                     } );
 
                     try

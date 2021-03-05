@@ -178,7 +178,7 @@ namespace Rock.Lava
 
             if ( instance.ElementType == LavaShortcodeTypeSpecifier.Inline )
             {
-                var tagFactoryMethod = shortcodeFactoryMethod as Func<string, IRockLavaTag>;
+                var tagFactoryMethod = shortcodeFactoryMethod as Func<string, ILavaTag>;
 
                 RegisterTag( registrationKey, tagFactoryMethod );
             }
@@ -190,7 +190,7 @@ namespace Rock.Lava
                    var shortcode = shortcodeFactoryMethod( registrationKey );
 
                    // Return the shortcode instance as a RockLavaBlock
-                   return shortcode as IRockLavaBlock;
+                   return shortcode as ILavaBlock;
                } );
                 ;
             }
@@ -215,7 +215,7 @@ namespace Rock.Lava
             if ( instance.ElementType == LavaShortcodeTypeSpecifier.Inline )
             {
                 // Create a new factory method that returns an initialized Shortcode Tag element.
-                Func<string, IRockLavaTag> tagFactoryMethod = ( tagName ) =>
+                Func<string, ILavaTag> tagFactoryMethod = ( tagName ) =>
                 {
                     var shortcodeInstance = GetShortcodeFromFactory<DynamicShortcodeTag>( tagName, shortcodeFactoryMethod );
 
@@ -230,7 +230,7 @@ namespace Rock.Lava
             else
             {
                 // Create a new factory method that returns an initialized Shortcode Block element.
-                Func<string, IRockLavaBlock> blockFactoryMethod = ( blockName ) =>
+                Func<string, ILavaBlock> blockFactoryMethod = ( blockName ) =>
                 {
                     // Call the factory method we have been passed to retrieve the definition of the shortcode.
                     // The definition may change at runtime, so we need to execute the factory method for each new shortcode instance.
@@ -512,7 +512,7 @@ namespace Rock.Lava
         /// </summary>
         /// <param name="name"></param>
         /// <param name="factoryMethod"></param>
-        public virtual void RegisterTag( string name, Func<string, IRockLavaTag> factoryMethod )
+        public virtual void RegisterTag( string name, Func<string, ILavaTag> factoryMethod )
         {
             if ( string.IsNullOrWhiteSpace( name ) )
             {
@@ -543,7 +543,7 @@ namespace Rock.Lava
         /// </summary>
         /// <param name="name"></param>
         /// <param name="factoryMethod"></param>
-        public virtual void RegisterBlock( string name, Func<string, IRockLavaBlock> factoryMethod )
+        public virtual void RegisterBlock( string name, Func<string, ILavaBlock> factoryMethod )
         {
             if ( string.IsNullOrWhiteSpace( name ) )
             {

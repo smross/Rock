@@ -33,7 +33,7 @@ namespace Rock.Lava.DotLiquid
     {
         #region Static methods
 
-        private static Dictionary<string, Func<string, IRockLavaBlock>> _factoryMethods = new Dictionary<string, Func<string, IRockLavaBlock>>( StringComparer.OrdinalIgnoreCase );
+        private static Dictionary<string, Func<string, ILavaBlock>> _factoryMethods = new Dictionary<string, Func<string, ILavaBlock>>( StringComparer.OrdinalIgnoreCase );
         private static object _factoryLock = new object();
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace Rock.Lava.DotLiquid
         /// </summary>
         /// <param name="name"></param>
         /// <param name="factoryMethod"></param>
-        public static void RegisterFactory( string name, Func<string, IRockLavaBlock> factoryMethod )
+        public static void RegisterFactory( string name, Func<string, ILavaBlock> factoryMethod )
         {
             if ( string.IsNullOrWhiteSpace( name ) )
             {
@@ -58,7 +58,7 @@ namespace Rock.Lava.DotLiquid
 
         #endregion
 
-        private IRockLavaBlock _lavaBlock = null;
+        private ILavaBlock _lavaBlock = null;
 
         #region DotLiquid Block Overrides
 

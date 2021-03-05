@@ -64,11 +64,11 @@ namespace Rock.Tests.Integration.Lava
             // Get all blocks and call OnStartup methods
             try
             {
-                var elementTypes = Rock.Reflection.FindTypes( typeof( IRockLavaTag ) ).Select( a => a.Value ).ToList();
+                var elementTypes = Rock.Reflection.FindTypes( typeof( ILavaTag ) ).Select( a => a.Value ).ToList();
 
                 foreach ( var elementType in elementTypes )
                 {
-                    var instance = Activator.CreateInstance( elementType ) as IRockLavaTag;
+                    var instance = Activator.CreateInstance( elementType ) as ILavaTag;
 
                     var name = instance.SourceElementName;
 
@@ -79,7 +79,7 @@ namespace Rock.Tests.Integration.Lava
 
                     engine.RegisterTag( name, ( shortcodeName ) =>
                     {
-                        var shortcode = Activator.CreateInstance( elementType ) as IRockLavaTag;
+                        var shortcode = Activator.CreateInstance( elementType ) as ILavaTag;
 
                         return shortcode;
                     } );
@@ -107,11 +107,11 @@ namespace Rock.Tests.Integration.Lava
             // Get all blocks and call OnStartup methods
             try
             {
-                var elementTypes = Rock.Reflection.FindTypes( typeof( IRockLavaBlock ) ).Select( a => a.Value ).ToList();
+                var elementTypes = Rock.Reflection.FindTypes( typeof( ILavaBlock ) ).Select( a => a.Value ).ToList();
 
                 foreach ( var elementType in elementTypes )
                 {
-                    var instance = Activator.CreateInstance( elementType ) as IRockLavaBlock;
+                    var instance = Activator.CreateInstance( elementType ) as ILavaBlock;
 
                     var name = instance.SourceElementName;
 
@@ -122,7 +122,7 @@ namespace Rock.Tests.Integration.Lava
 
                     engine.RegisterBlock( name, ( shortcodeName ) =>
                     {
-                        var shortcode = Activator.CreateInstance( elementType ) as IRockLavaBlock;
+                        var shortcode = Activator.CreateInstance( elementType ) as ILavaBlock;
 
                         return shortcode;
                     } );

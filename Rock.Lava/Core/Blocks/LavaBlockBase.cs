@@ -24,7 +24,7 @@ namespace Rock.Lava
     /// <summary>
     /// Provides base functionality for implementation of a Rock Lava block.
     /// </summary>
-    public abstract class RockLavaBlockBase : IRockLavaBlock, ILiquidFrameworkElementRenderer
+    public abstract class LavaBlockBase : ILavaBlock, ILiquidFrameworkElementRenderer
     {
         private string _sourceElementName = null;
 

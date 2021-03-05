@@ -24,7 +24,7 @@ namespace Rock.Lava
     /// <summary>
     /// Provides base functionality for a Lava Tag element.
     /// </summary>
-    public abstract class RockLavaTagBase : IRockLavaTag, ILiquidFrameworkElementRenderer
+    public abstract class LavaTagBase : ILavaTag, ILiquidFrameworkElementRenderer
     {
         private string _sourceElementName = null;
         private string _attributesMarkup;

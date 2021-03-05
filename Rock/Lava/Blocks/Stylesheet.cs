@@ -38,7 +38,7 @@ namespace Rock.Lava.Blocks
     /// SELECT [FirstName], [LastName] FROM [Person]
     /// {% endsql %}
     /// </summary>
-    public class Stylesheet : RockLavaBlockBase
+    public class Stylesheet : LavaBlockBase
     {
         private static readonly Regex Syntax = new Regex( @"(\w+)" );
 

@@ -34,7 +34,7 @@ namespace Rock.Lava.Blocks
     ///     My Lava is now fast!
     /// {% endcache %}
     /// </summary>
-    public class Cache : RockLavaBlockBase
+    public class Cache : LavaBlockBase
     {
         private static readonly Regex Syntax = new Regex( @"(\w+)" );
 
@@ -91,7 +91,7 @@ namespace Rock.Lava.Blocks
             // First ensure that cached commands are allowed in the context
             if ( !this.IsAuthorized( context ) )
             {
-                result.Write( string.Format( RockLavaBlockBase.NotAuthorizedMessage, this.SourceElementName ) );
+                result.Write( string.Format( LavaBlockBase.NotAuthorizedMessage, this.SourceElementName ) );
                 base.OnRender( context, result );
                 return;
             }

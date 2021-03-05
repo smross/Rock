@@ -20,7 +20,7 @@ namespace Rock.Lava
     /// <summary>
     /// An implementation of a shortcode that takes the form of an inline Liquid tag element.
     /// </summary>
-    public class DynamicShortcodeTag : DynamicShortcode, IRockLavaTag
+    public class DynamicShortcodeTag : DynamicShortcode, ILavaTag
     {
         #region Constructors
 

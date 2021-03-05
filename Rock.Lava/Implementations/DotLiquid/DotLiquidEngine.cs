@@ -389,7 +389,7 @@ namespace Rock.Lava.DotLiquid
         /// </summary>
         /// <param name="name"></param>
         /// <param name="factoryMethod"></param>
-        public override void RegisterTag( string name, Func<string, IRockLavaTag> factoryMethod )
+        public override void RegisterTag( string name, Func<string, ILavaTag> factoryMethod )
         {
             if ( name == null )
             {
@@ -411,7 +411,7 @@ namespace Rock.Lava.DotLiquid
         /// </summary>
         /// <param name="name"></param>
         /// <param name="factoryMethod"></param>
-        public override void RegisterBlock( string name, Func<string, IRockLavaBlock> factoryMethod )
+        public override void RegisterBlock( string name, Func<string, ILavaBlock> factoryMethod )
         {
             if ( name == null )
             {

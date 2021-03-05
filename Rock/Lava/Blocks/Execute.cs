@@ -27,7 +27,7 @@ namespace Rock.Lava.Blocks
     /// <summary>
     /// Renders a Lava template as a C# function with a string return value, executes the function and returns the output.
     /// </summary>
-    public class Execute : RockLavaBlockBase
+    public class Execute : LavaBlockBase
     {
         private RuntimeType _runtimeType = RuntimeType.SCRIPT;
         private List<string> _imports = new List<string>();
@@ -74,7 +74,7 @@ namespace Rock.Lava.Blocks
             // first ensure that entity commands are allowed in the context
             if ( !this.IsAuthorized( context ) )
             {
-                result.Write( string.Format( RockLavaBlockBase.NotAuthorizedMessage, this.SourceElementName ) );
+                result.Write( string.Format( LavaBlockBase.NotAuthorizedMessage, this.SourceElementName ) );
                 base.OnRender( context, result );
                 return;
             }

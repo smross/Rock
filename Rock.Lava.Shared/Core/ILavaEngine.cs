@@ -71,14 +71,14 @@ namespace Rock.Lava
         /// </summary>
         /// <param name="name"></param>
         /// <param name="factoryMethod"></param>
-        void RegisterTag( string name, Func<string, IRockLavaTag> factoryMethod );
+        void RegisterTag( string name, Func<string, ILavaTag> factoryMethod );
 
         /// <summary>
         /// Register a Lava Block element.
         /// </summary>
         /// <param name="name"></param>
         /// <param name="factoryMethod"></param>
-        void RegisterBlock( string name, Func<string, IRockLavaBlock> factoryMethod );
+        void RegisterBlock( string name, Func<string, ILavaBlock> factoryMethod );
 
         /// <summary>
         /// Registers a shortcode with a factory method that provides the definition of the shortcode on demand.

@@ -40,7 +40,7 @@ namespace Rock.Lava.Fluid
     {
         #region Static factory methods
 
-        private static Dictionary<string, Func<string, IRockLavaBlock>> _factoryMethods = new Dictionary<string, Func<string, IRockLavaBlock>>( StringComparer.OrdinalIgnoreCase );
+        private static Dictionary<string, Func<string, ILavaBlock>> _factoryMethods = new Dictionary<string, Func<string, ILavaBlock>>( StringComparer.OrdinalIgnoreCase );
         private static object _factoryLock = new object();
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace Rock.Lava.Fluid
         /// </summary>
         /// <param name="name"></param>
         /// <param name="factoryMethod"></param>
-        public static void RegisterFactory( string name, Func<string, IRockLavaBlock> factoryMethod )
+        public static void RegisterFactory( string name, Func<string, ILavaBlock> factoryMethod )
         {
             if ( string.IsNullOrWhiteSpace( name ) )
             {
@@ -139,7 +139,7 @@ namespace Rock.Lava.Fluid
             throw new NotImplementedException("Call Parse(ParseTreeNode, LavaFluidParserContext) instead.");
         }
 
-        private ValueTask<Completion> WriteToAsync( TextWriter writer, TextEncoder encoder, TemplateContext context, IRockLavaBlock lavaBlock, string blockName, string blockAttributesMarkup, List<string> tokens, List<Statement> statements )
+        private ValueTask<Completion> WriteToAsync( TextWriter writer, TextEncoder encoder, TemplateContext context, ILavaBlock lavaBlock, string blockName, string blockAttributesMarkup, List<string> tokens, List<Statement> statements )
         {
             var lavaContext = new FluidRenderContext( context );
 

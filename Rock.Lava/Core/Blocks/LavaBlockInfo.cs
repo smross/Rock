@@ -51,7 +51,7 @@ namespace Rock.Lava
         /// <summary>
         /// The factory method used to create a new instance of this block.
         /// </summary>
-        public Func<string, IRockLavaBlock> FactoryMethod { get; set; }
+        public Func<string, ILavaBlock> FactoryMethod { get; set; }
 
         /// <summary>
         /// Can the factory method successfully produce an instance of this block?

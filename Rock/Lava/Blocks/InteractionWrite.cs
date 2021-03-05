@@ -26,7 +26,7 @@ namespace Rock.Lava.Blocks
     /// <summary>
     /// Tag which allows an Interaction to be written.
     /// </summary>
-    public class InteractionWrite : RockLavaBlockBase
+    public class InteractionWrite : LavaBlockBase
     {
         #region Parameter Keys
 
@@ -87,7 +87,7 @@ namespace Rock.Lava.Blocks
             // First, ensure that this command is allowed in the context.
             if ( !this.IsAuthorized( context ) )
             {
-                result.Write( string.Format( RockLavaBlockBase.NotAuthorizedMessage, this.SourceElementName ) );
+                result.Write( string.Format( LavaBlockBase.NotAuthorizedMessage, this.SourceElementName ) );
                 base.OnRender( context, result );
                 return;
             }

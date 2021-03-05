@@ -185,9 +185,9 @@ namespace Rock.Lava
                     We'll also leave the RockLavaBlockBase check in place below, in case any plugins have been developed that add Commands
                     inheriting from the RockLavaBlockBase class.
                 */
-                foreach ( var blockType in Rock.Reflection.FindTypes( typeof( Rock.Lava.IRockLavaBlock ) )
-                    .Union( Rock.Reflection.FindTypes( typeof( Rock.Lava.IRockLavaTag ) ) )
-                    .Union( Rock.Reflection.FindTypes( typeof( Rock.Lava.RockLavaBlockBase ) ) )
+                foreach ( var blockType in Rock.Reflection.FindTypes( typeof( Rock.Lava.ILavaBlock ) )
+                    .Union( Rock.Reflection.FindTypes( typeof( Rock.Lava.ILavaTag ) ) )
+                    .Union( Rock.Reflection.FindTypes( typeof( Rock.Lava.LavaBlockBase ) ) )
                     .Select( a => a.Value )
                     .OrderBy( a => a.Name )
                     .ToList() )

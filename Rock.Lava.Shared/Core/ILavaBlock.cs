@@ -20,7 +20,7 @@ namespace Rock.Lava
     /// <summary>
     /// An interface that marks a type to be included when searching assemblies for custom Lava elements.
     /// </summary>
-    public interface IRockLavaBlock : IRockLavaElement
+    public interface ILavaBlock : IRockLavaElement
     {
         //
     }

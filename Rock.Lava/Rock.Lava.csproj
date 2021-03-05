@@ -216,7 +216,7 @@
     <Compile Include="Core\Blocks\LavaBlockInfo.cs" />
     <Compile Include="Core\ILiquidFrameworkDataObjectProxy.cs" />
     <Compile Include="Core\LavaSecurityHelper.cs" />
-    <Compile Include="Core\Blocks\RockLavaBlockBase.cs" />
+    <Compile Include="Core\Blocks\LavaBlockBase.cs" />
     <Compile Include="Core\Shortcodes\DynamicShortcode.cs" />
     <Compile Include="Core\ILiquidFrameworkElementRenderer.cs" />
     <Compile Include="Core\Shortcodes\DynamicShortcodeBlock.cs" />
@@ -260,7 +260,7 @@
     <Compile Include="Implementations\DotLiquid\DotLiquidBlockProxy.cs" />
     <Compile Include="Implementations\DotLiquid\DotLiquidTagProxy.cs" />
     <Compile Include="Implementations\DotLiquid\DotLiquidFileSystem.cs" />
-    <Compile Include="Core\Tags\RockLavaTagBase.cs" />
+    <Compile Include="Core\Tags\LavaTagBase.cs" />
     <Compile Include="Core\LavaTemplateBase.cs" />
     <Compile Include="Core\LavaRenderContextBase.cs" />
     <Compile Include="Implementations\Fluid\LavaObjectMemberAccessStrategy.cs" />

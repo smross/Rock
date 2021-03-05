@@ -69,7 +69,7 @@ namespace Rock.Lava.Shortcodes
         </ul>",
         "defaulttranslation,landingsite,cssclass",
         "" )]
-    public class Scripturize : RockLavaShortcodeBase, IRockLavaBlock
+    public class Scripturize : RockLavaShortcodeBase, ILavaBlock
     {
         string _markup = string.Empty;
 
