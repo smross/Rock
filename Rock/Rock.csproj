@@ -612,6 +612,7 @@
     <Compile Include="Data\LavaIgnoreAttribute.cs" />
     <Compile Include="Data\LavaIncludeAttribute.cs" />
     <Compile Include="Lava\DotLiquidLegacy\LavaFileSystem.cs" />
+    <Compile Include="Lava\DotLiquidLegacy\RockFiltersLegacy.cs" />
     <Compile Include="Lava\WebsiteLavaShortcodeProvider.cs" />
     <Compile Include="Tasks\AddCommunicationRecipients.cs" />
     <Compile Include="Tasks\AddNewMetaphones.cs" />

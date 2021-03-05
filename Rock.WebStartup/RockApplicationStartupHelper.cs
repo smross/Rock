@@ -598,14 +598,14 @@ namespace Rock.WebStartup
 
             if ( string.IsNullOrWhiteSpace( liquidEngineTypeValue ) || liquidEngineTypeValue == "default" )
             {
-                // If no engine specified, use default.
+                // If no engine specified, use the Legacy implementation as the default.
                 engineType = LavaEngineTypeSpecifier.Legacy;
             }
-            else if ( liquidEngineTypeValue == "dotliquid" )
+            else if ( liquidEngineTypeValue == "legacy" )
             {
                 engineType = LavaEngineTypeSpecifier.Legacy;
             }
-            else if ( liquidEngineTypeValue == "dotliquidlavalibrary" )
+            else if ( liquidEngineTypeValue == "dotliquid" )
             {
                 engineType = LavaEngineTypeSpecifier.DotLiquid;
             }
@@ -623,8 +623,29 @@ namespace Rock.WebStartup
 
             if ( engineType == LavaEngineTypeSpecifier.Legacy )
             {
-                // Initialize the DotLiquid Engine.
-                InitializeLavaDotLiquidLegacy();
+                // Initialize the legacy implementation of the DotLiquid Engine.
+
+                // DotLiquid uses a RubyDateFormat by default,
+                // but since we aren't using Ruby, we want to disable that
+                Liquid.UseRubyDateFormat = false;
+
+                /* 2020-05-20 MDP (actually this comment was here a long time ago)
+                    NOTE: This means that all the built in template filters,
+                    and the RockFilters, will use CSharpNamingConvention.
+
+                    For example the dotliquid documentation says to do this for formatting dates: 
+                    {{ some_date_value | date:"MMM dd, yyyy" }}
+
+                    However, if CSharpNamingConvention is enabled, it needs to be: 
+                    {{ some_date_value | Date:"MMM dd, yyyy" }}
+                */
+
+                Template.NamingConvention = new DotLiquid.NamingConventions.CSharpNamingConvention();
+
+                Template.FileSystem = new LavaFileSystem();
+                Template.RegisterSafeType( typeof( Enum ), o => o.ToString() );
+                Template.RegisterSafeType( typeof( DBNull ), o => null );
+                Template.RegisterFilter( typeof( Rock.Lava.RockFiltersLegacy ) );
             }
             else
             {
@@ -756,38 +777,6 @@ namespace Rock.WebStartup
             {
                 ExceptionLogService.LogException( ex, null );
             }
-        }
-
-        /// <summary>
-        /// Initializes Rock's legacy Lava system (which uses DotLiquid)
-        /// Doing this in startup will force the static Liquid class to get instantiated
-        /// so that the standard filters are loaded prior to the custom RockFilter.
-        /// This is to allow the custom 'Date' filter to replace the standard Date filter.
-        /// </summary>
-        /// <remarks>Remove when support for Legacy DotLiquid Lava implementation is removed.</remarks>
-        private static void InitializeLavaDotLiquidLegacy()
-        {
-            // DotLiquid uses a RubyDateFormat by default,
-            // but since we aren't using Ruby, we want to disable that
-            Liquid.UseRubyDateFormat = false;
-
-            /* 2020-05-20 MDP (actually this comment was here a long time ago)
-                NOTE: This means that all the built in template filters,
-                and the RockFilters, will use CSharpNamingConvention.
-
-                For example the dotliquid documentation says to do this for formatting dates: 
-                {{ some_date_value | date:"MMM dd, yyyy" }}
-
-                However, if CSharpNamingConvention is enabled, it needs to be: 
-                {{ some_date_value | Date:"MMM dd, yyyy" }}
-            */
-
-            Template.NamingConvention = new DotLiquid.NamingConventions.CSharpNamingConvention();
-
-            Template.FileSystem = new LavaFileSystem();
-            Template.RegisterSafeType( typeof( Enum ), o => o.ToString() );
-            Template.RegisterSafeType( typeof( DBNull ), o => null );
-            Template.RegisterFilter( typeof( Rock.Lava.RockFilters ) );
         }
 
         /// <summary>
