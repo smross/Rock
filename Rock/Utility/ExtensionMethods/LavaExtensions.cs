@@ -23,10 +23,11 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
+using DotLiquid;
 using Rock.Attribute;
 using Rock.Data;
 using Rock.Lava;
+using Rock.Lava.DotLiquid;
 using Rock.Model;
 using Rock.Web.Cache;
 
@@ -45,10 +46,13 @@ namespace Rock
         /// </summary>
         static ExtensionMethods()
         {
-            //
-            // Register any 3rd party library classes that are safe to use.
-            //
-            LavaEngine.CurrentEngine.RegisterSafeType( typeof( Common.Mobile.DeviceData ), typeof( Common.Mobile.DeviceData ).GetProperties().Select( p => p.Name ).ToArray() );
+            if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.Legacy )
+            {
+                //
+                // Register any 3rd party library classes that are safe to use.
+                //
+                Template.RegisterSafeType( typeof( Common.Mobile.DeviceData ), typeof( Common.Mobile.DeviceData ).GetProperties().Select( p => p.Name ).ToArray() );
+            }
         }
 
         #endregion
@@ -549,29 +553,39 @@ namespace Rock
         {
             try
             {
-                // If there have not been any EnabledLavaCommands explicitly set, then use the global defaults.
-                if ( enabledLavaCommands == null )
+                if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.Legacy )
                 {
-                    enabledLavaCommands = GlobalAttributesCache.Value( "DefaultEnabledLavaCommands" );
+                    Template template = GetTemplate( content );
+                    template.Registers.AddOrReplace( "EnabledCommands", enabledLavaCommands );
+                    template.InstanceAssigns.AddOrReplace( "CurrentPerson", currentPersonOverride );
+                    return template.Render( Hash.FromDictionary( mergeObjects ) );
                 }
+                else
+                {
+                    // If there have not been any EnabledLavaCommands explicitly set, then use the global defaults.
+                    if ( enabledLavaCommands == null )
+                    {
+                        enabledLavaCommands = GlobalAttributesCache.Value( "DefaultEnabledLavaCommands" );
+                    }
 
-                var context = LavaEngine.CurrentEngine.NewRenderContext();
+                    var context = LavaEngine.CurrentEngine.NewRenderContext();
 
-                context.SetEnabledCommands( enabledLavaCommands, "," );
+                    context.SetEnabledCommands( enabledLavaCommands, "," );
 
-                context.SetMergeField( "CurrentPerson", currentPersonOverride );
-                context.SetMergeFields( mergeObjects );
+                    context.SetMergeField( "CurrentPerson", currentPersonOverride );
+                    context.SetMergeFields( mergeObjects );
 
-                ILavaTemplate template;
+                    ILavaTemplate template;
 
-                LavaEngine.CurrentEngine.TryParseTemplate( content, out template );
+                    LavaEngine.CurrentEngine.TryParseTemplate( content, out template );
 
-                List<Exception> errors;
-                string output;
+                    List<Exception> errors;
+                    string output;
 
-                var isRendered = template.TryRender( context, out output, out errors );
+                    var isRendered = template.TryRender( context, out output, out errors );
 
-                return output;
+                    return output;
+                }
             }
             catch ( Exception ex )
             {
@@ -658,40 +672,78 @@ namespace Rock
                     }
                 }
 
-                var context = LavaEngine.CurrentEngine.NewRenderContext( mergeObjects );
-
-                if ( enabledLavaCommands != null )
+                if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.Legacy )
                 {
-                    context.SetEnabledCommands( enabledLavaCommands );
-                }
+                    Template template = GetTemplate( content );
+                    template.Registers.AddOrReplace( "EnabledCommands", enabledLavaCommands );
 
-                var renderParameters = new LavaRenderParameters { Context = context };
+                    string result;
 
-                renderParameters.ShouldEncodeStringsAsXml = encodeStrings;
-
-                string result;
-                List<Exception> errors;
-
-                ILavaTemplate template;
-
-                // Try and parse the template, or retrieve it from the cache if it has been previously parsed.
-                LavaEngine.CurrentEngine.TryParseTemplate( content, out template );
-
-                var isRendered = template.TryRender( renderParameters, out result, out errors );
-
-                if ( throwExceptionOnErrors && errors.Any() )
-                {
-                    if ( errors.Count == 1 )
+                    if ( encodeStrings )
                     {
-                        throw errors[0];
+                        // if encodeStrings = true, we want any string values to be XML Encoded ( 
+                        RenderParameters renderParameters = new RenderParameters();
+                        renderParameters.LocalVariables = Hash.FromDictionary( mergeObjects );
+                        renderParameters.ValueTypeTransformers = new Dictionary<Type, Func<object, object>>();
+                        renderParameters.ValueTypeTransformers[typeof( string )] = EncodeStringTransformer;
+                        result = template.Render( renderParameters );
                     }
                     else
                     {
-                        throw new AggregateException( errors );
+                        result = template.Render( Hash.FromDictionary( mergeObjects ) );
                     }
-                }
 
-                return result;
+                    if ( throwExceptionOnErrors && template.Errors.Any() )
+                    {
+                        if ( template.Errors.Count == 1 )
+                        {
+                            throw template.Errors[0];
+                        }
+                        else
+                        {
+                            throw new AggregateException( template.Errors );
+                        }
+                    }
+
+                    return result;
+                }
+                else
+                {
+                    var context = LavaEngine.CurrentEngine.NewRenderContext( mergeObjects );
+
+                    if ( enabledLavaCommands != null )
+                    {
+                        context.SetEnabledCommands( enabledLavaCommands );
+                    }
+
+                    var renderParameters = new LavaRenderParameters { Context = context };
+
+                    renderParameters.ShouldEncodeStringsAsXml = encodeStrings;
+
+                    string result;
+                    List<Exception> errors;
+
+                    ILavaTemplate template;
+
+                    // Try and parse the template, or retrieve it from the cache if it has been previously parsed.
+                    LavaEngine.CurrentEngine.TryParseTemplate( content, out template );
+
+                    var isRendered = template.TryRender( renderParameters, out result, out errors );
+
+                    if ( throwExceptionOnErrors && errors.Any() )
+                    {
+                        if ( errors.Count == 1 )
+                        {
+                            throw errors[0];
+                        }
+                        else
+                        {
+                            throw new AggregateException( errors );
+                        }
+                    }
+
+                    return result;
+                }
             }
             catch ( System.Threading.ThreadAbortException )
             {
@@ -810,5 +862,46 @@ namespace Rock
         }
 
         #endregion Dictionary<string, object> (liquid) extension methods
+
+        #region Lava Legacy code
+
+        /// <summary>
+        /// Create a parsed Lava template or retrieve it from the cache.
+        /// </summary>
+        /// <param name="content">The content of the template.</param>
+        /// <returns></returns>
+        private static Template GetTemplate( string content )
+        {
+            const int hashLength = 10;
+            string templateKey;
+
+            if ( string.IsNullOrEmpty( content ) )
+            {
+                /* [2020-08-01] DJL - Cache the null template specifically, but process other whitespace templates individually
+                 * to ensure that the format of the final output is preserved.
+                 */
+                templateKey = string.Empty;
+            }
+            else if ( content.Length <= hashLength )
+            {
+                // If the content is less than the size of the MD5 hash,
+                // simply use the content as the key to save processing time.
+                templateKey = content;
+            }
+            else
+            {
+                // Calculate a hash of the content using xxHash.
+                templateKey = content.XxHash();
+            }
+
+            var template = ( (DotLiquidTemplateProxy)LavaTemplateCache.Get( templateKey, content ).Template ).DotLiquidTemplate;
+
+            // Clear any previous errors from the template.
+            template.Errors.Clear();
+
+            return template;
+        }
+
+        #endregion
     }
 }
