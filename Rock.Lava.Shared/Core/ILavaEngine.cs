@@ -94,7 +94,7 @@ namespace Rock.Lava
         /// </summary>
         /// <param name="name"></param>
         /// <param name="factoryMethod"></param>
-        void RegisterStaticShortcode( string name, Func<string, IRockShortcode> factoryMethod );
+        void RegisterStaticShortcode( string name, Func<string, ILavaShortcode> factoryMethod );
 
         /// <summary>
         /// Deregister a shortcode.

@@ -150,13 +150,13 @@ namespace Rock.Tests.Integration.Lava
             // Get all shortcodes and call OnStartup methods
             try
             {
-                var shortcodeTypes = Rock.Reflection.FindTypes( typeof( IRockShortcode ) ).Select( a => a.Value ).ToList();
+                var shortcodeTypes = Rock.Reflection.FindTypes( typeof( ILavaShortcode ) ).Select( a => a.Value ).ToList();
 
                 foreach ( var shortcodeType in shortcodeTypes )
                 {
                     engine.RegisterStaticShortcode( shortcodeType.Name, ( shortcodeName ) =>
                     {
-                        var shortcode = Activator.CreateInstance( shortcodeType ) as IRockShortcode;
+                        var shortcode = Activator.CreateInstance( shortcodeType ) as ILavaShortcode;
 
                         return shortcode;
                     } );

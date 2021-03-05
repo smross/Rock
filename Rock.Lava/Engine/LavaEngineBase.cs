@@ -147,7 +147,7 @@ namespace Rock.Lava
         /// Register a shortcode that is defined and implemented in code.
         /// </summary>
         /// <param name="shortcodeFactoryMethod"></param>
-        public void RegisterStaticShortcode( Func<string, IRockShortcode> shortcodeFactoryMethod )
+        public void RegisterStaticShortcode( Func<string, ILavaShortcode> shortcodeFactoryMethod )
         {
             var instance = shortcodeFactoryMethod( "default" );
 
@@ -164,7 +164,7 @@ namespace Rock.Lava
         /// </summary>
         /// <param name="name"></param>
         /// <param name="shortcodeFactoryMethod"></param>
-        public void RegisterStaticShortcode( string name, Func<string, IRockShortcode> shortcodeFactoryMethod )
+        public void RegisterStaticShortcode( string name, Func<string, ILavaShortcode> shortcodeFactoryMethod )
         {
             var instance = shortcodeFactoryMethod( name );
 

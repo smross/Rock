@@ -25,7 +25,7 @@ namespace Rock.Lava
     /// <summary>
     /// Provides base functionality for a Lava shortcode element.
     /// </summary>
-    public abstract class LavaShortcodeBase : IRockShortcode, ILiquidFrameworkElementRenderer
+    public abstract class LavaShortcodeBase : ILavaShortcode, ILiquidFrameworkElementRenderer
     {
         private string _elementName = null;
         private string _internalName = null;
