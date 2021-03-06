@@ -305,12 +305,21 @@ namespace Rock.CheckIn
         public int? GroupTypeId { get; private set; }
 
         /// <summary>
-        /// Gets the ScheduleId for the attendance's occurrence
+        /// Gets the ScheduleId for the attendee's (Most Recent) occurrence
         /// </summary>
         /// <value>
         /// The schedule identifier.
         /// </value>
         public int ScheduleId { get; private set; }
+
+        /// <summary>
+        /// The list of schedules that the person is currently attending.
+        /// This is useful if a person is checked into multiple services.
+        /// </summary>
+        /// <value>
+        /// The schedule ids.
+        /// </value>
+        public int[] ScheduleIds { get; private set; }
 
         /// <summary>
         /// Gets the name of the room (Occurrence Location.Name)
@@ -494,7 +503,9 @@ namespace Rock.CheckIn
             }
 
             // Status: if this Attendee has multiple AttendanceOccurrences, the highest AttendeeStatus value among them wins.
-            var latestAttendance = this.Attendances.OrderByDescending( a => a.StartDateTime ).First();
+            var latestAttendance = this.Attendances
+                .OrderByDescending( a => a.StartDateTime )
+                .First();
 
             this.Status = GetRosterAttendeeStatus( latestAttendance.EndDateTime, latestAttendance.PresentDateTime );
 
@@ -514,6 +525,8 @@ namespace Rock.CheckIn
 
             // ScheduleId should have a value, but just in case, we'll do some null safety.
             this.ScheduleId = latestAttendance.Occurrence?.ScheduleId ?? 0;
+
+            this.ScheduleIds = this.Attendances.Select( a => a.Occurrence?.ScheduleId ?? 0 ).Distinct().ToArray();
 
             this.RoomName = latestAttendance.Occurrence?.Location?.Name;
         }

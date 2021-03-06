@@ -735,9 +735,71 @@ namespace RockWeb.Blocks.CheckIn.Manager
             }
 
             var rockContext = new RockContext();
-            var attendanceList = new AttendanceService( rockContext ).GetByIds( attendanceIds ).ToList();
+            var attendanceList = new AttendanceService( rockContext )
+                .GetByIds( attendanceIds )
+                .Include( a => a.Occurrence )
+                .Include( a => a.PersonAlias.Person )
+                .ToList();
 
-            SetAttendancesAsCheckedOut( attendanceList, rockContext );
+            var scheduleIds = attendanceList.Select( a => a.Occurrence?.ScheduleId ?? 0 ).Distinct().ToList();
+            if ( scheduleIds.Count > 1 )
+            {
+                hfConfirmCheckoutAttendeeAttendanceIds.Value = attendanceIds.AsDelimited( "," );
+
+                var personName = attendanceList.FirstOrDefault()?.PersonAlias?.Person.FullName;
+                lConfirmCheckoutAttendee.Text = $"Which schedules would you like to check {personName} out of?";
+
+                // if there is more than one schedule, prompt for which one to check out of
+                var sortedScheduleList = new ScheduleService( rockContext ).GetByIds( scheduleIds ).AsNoTracking()
+                    .ToList().OrderByOrderAndNextScheduledDateTime();
+
+                cblSchedulesCheckoutAttendee.Items.Clear();
+
+                foreach ( var schedule in sortedScheduleList )
+                {
+                    string listItemText;
+                    if ( schedule.Name.IsNotNullOrWhiteSpace() )
+                    {
+                        listItemText = schedule.Name;
+                    }
+                    else
+                    {
+                        listItemText = schedule.FriendlyScheduleText;
+                    }
+
+                    cblSchedulesCheckoutAttendee.Items.Add( new ListItem( listItemText, schedule.Id.ToString() ) );
+                }
+
+
+                mdConfirmCheckoutAttendee.Show();
+            }
+            else
+            {
+                SetAttendancesAsCheckedOut( attendanceList, rockContext );
+
+                BindGrid();
+            }
+        }
+
+        /// <summary>
+        /// Handles the SaveClick event of the mdConfirmCheckoutAttendee control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        protected void mdConfirmCheckoutAttendee_SaveClick( object sender, EventArgs e )
+        {
+            mdConfirmCheckoutAttendee.Hide();
+            var rockContext = new RockContext();
+
+            var attendanceIds = hfConfirmCheckoutAttendeeAttendanceIds.Value?.SplitDelimitedValues().AsIntegerList() ?? new List<int>();
+
+            var selectedScheduleIds = cblSchedulesCheckoutAttendee.SelectedValuesAsInt;
+
+            var attendancesToCheckout = new AttendanceService( rockContext )
+                .GetByIds( attendanceIds )
+                .Where( x => selectedScheduleIds.Contains( x.Occurrence.ScheduleId.Value ) ).ToList();
+
+            SetAttendancesAsCheckedOut( attendancesToCheckout, rockContext );
 
             BindGrid();
         }
@@ -937,7 +999,7 @@ namespace RockWeb.Blocks.CheckIn.Manager
             using ( var rockContext = new RockContext() )
             {
                 // Populate the schedules for the 'Checkout All' to only include the schedules that are currently shown in the roster grid.
-                var displayedScheduleIds = GetAttendees( rockContext ).Select( a => a.ScheduleId ).Distinct().ToList();
+                var displayedScheduleIds = GetAttendees( rockContext ).SelectMany( a => a.ScheduleIds ).Distinct().ToList();
                 var sortedScheduleList = new ScheduleService( rockContext ).GetByIds( displayedScheduleIds ).AsNoTracking()
                     .ToList().OrderByOrderAndNextScheduledDateTime();
 
@@ -1262,5 +1324,7 @@ namespace RockWeb.Blocks.CheckIn.Manager
         }
 
         #endregion Internal Methods
+
+
     }
 }
