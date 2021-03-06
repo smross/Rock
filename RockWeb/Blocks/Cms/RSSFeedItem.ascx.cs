@@ -31,6 +31,7 @@ using Rock.Web.UI;
 using Rock.Web.UI.Controls;
 using Rock.Web.Cache;
 using Rock.Lava;
+using DotLiquid;
 
 namespace RockWeb.Blocks.Cms
 {
@@ -161,10 +162,16 @@ namespace RockWeb.Blocks.Cms
             RockCache.Remove( TemplateCacheKey );
         }
 
-        private ILavaTemplate GetTemplate()
+        private ILavaTemplate GetLavaTemplate()
         {
             var cacheTemplate = LavaTemplateCache.Get( TemplateCacheKey, GetAttributeValue( AttributeKey.Template ) );
-            return cacheTemplate != null ? cacheTemplate.Template : null;
+            return cacheTemplate != null ? cacheTemplate.Template as ILavaTemplate : null;
+        }
+
+        private Template GetTemplate()
+        {
+            var cacheTemplate = LavaTemplateCache.Get( TemplateCacheKey, GetAttributeValue( AttributeKey.Template ) );
+            return cacheTemplate != null ? cacheTemplate.Template as DotLiquid.Template : null;
         }
 
         private string LoadDebugData( Dictionary<string, object> feedDictionary )
@@ -291,7 +298,16 @@ namespace RockWeb.Blocks.Cms
                     }
                     else
                     {
-                        string content = GetTemplate().Render( feedFinal );
+                        string content;
+
+                        if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.Legacy )
+                        {
+                            content = GetTemplate().Render( Hash.FromDictionary( feedFinal ) );
+                        }
+                        else
+                        {
+                            content = GetLavaTemplate().Render( feedFinal );
+                        }
 
                         if ( content.Contains( "No such template" ) )
                         {
