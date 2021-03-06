@@ -16,6 +16,7 @@
 //
 using Rock.Lava.DotLiquid;
 using Rock.Lava.Fluid;
+using Rock.Lava.Legacy;
 
 namespace Rock.Lava
 {
@@ -46,22 +47,28 @@ namespace Rock.Lava
 
                 ILavaEngine engine;
 
-                if ( options == null )
-                {
-                    options = new LavaEngineConfigurationOptions();
-                }
-
                 if ( _liquidFramework == LavaEngineTypeSpecifier.Fluid )
                 {
                     engine = new FluidEngine();
 
+                    options = options ?? new LavaEngineConfigurationOptions();
+
                     options.FileSystem = new FluidFileSystem( options.FileSystem );
                 }
-                else
+                else if ( _liquidFramework == LavaEngineTypeSpecifier.DotLiquid )
                 {
                     engine = new DotLiquidEngine();
 
+                    options = options ?? new LavaEngineConfigurationOptions();
+
                     options.FileSystem = new DotLiquidFileSystem( options.FileSystem );
+                }
+                else
+                {
+                    // If no engine type specified, default to the legacy engine.
+                    engine = new LegacyEngine();
+
+                    options = null;
                 }
 
                 engine.Initialize( options );

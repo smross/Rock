@@ -624,27 +624,10 @@ namespace Rock.WebStartup
             if ( engineType == LavaEngineTypeSpecifier.Legacy )
             {
                 // Initialize the legacy implementation of the DotLiquid Engine.
-
-                // DotLiquid uses a RubyDateFormat by default,
-                // but since we aren't using Ruby, we want to disable that
-                Liquid.UseRubyDateFormat = false;
-
-                /* 2020-05-20 MDP (actually this comment was here a long time ago)
-                    NOTE: This means that all the built in template filters,
-                    and the RockFilters, will use CSharpNamingConvention.
-
-                    For example the dotliquid documentation says to do this for formatting dates: 
-                    {{ some_date_value | date:"MMM dd, yyyy" }}
-
-                    However, if CSharpNamingConvention is enabled, it needs to be: 
-                    {{ some_date_value | Date:"MMM dd, yyyy" }}
-                */
-
-                Template.NamingConvention = new DotLiquid.NamingConventions.CSharpNamingConvention();
+                LavaEngine.Initialize( LavaEngineTypeSpecifier.Legacy, null );
 
                 Template.FileSystem = new LavaFileSystem();
-                Template.RegisterSafeType( typeof( Enum ), o => o.ToString() );
-                Template.RegisterSafeType( typeof( DBNull ), o => null );
+
                 Template.RegisterFilter( typeof( Rock.Lava.RockFiltersLegacy ) );
             }
             else
