@@ -894,7 +894,7 @@ namespace Rock
                 templateKey = content.XxHash();
             }
 
-            var template = ( (DotLiquidTemplateProxy)LavaTemplateCache.Get( templateKey, content ).Template ).DotLiquidTemplate;
+            var template = LavaTemplateCache.Get( templateKey, content ).Template as Template;
 
             // Clear any previous errors from the template.
             template.Errors.Clear();

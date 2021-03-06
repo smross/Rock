@@ -42,7 +42,7 @@ namespace Rock.Web.Cache
         /// <summary>
         /// Gets or sets the Template object.
         /// </summary>
-        public ILavaTemplate Template { get; set; }
+        public object Template { get; set; }
 
         #endregion
 
@@ -123,13 +123,37 @@ namespace Rock.Web.Cache
 
         private static LavaTemplateCache Load( string content )
         {
-            ILavaTemplate template;
+            if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.Legacy )
+            {
+                // Strip out Lava comments before parsing the template because they are not recognized by standard Liquid syntax.
+                content = LavaHelper.RemoveLavaComments( content );
 
-            LavaEngine.CurrentEngine.TryParseTemplate( content, out template );
+                var template = DotLiquid.Template.Parse( content );
 
-            var lavaTemplate = new LavaTemplateCache { Template = template };
+                /* 
+                * 2/19/2020 - JPH
+                * The DotLiquid library's Template object was not originally designed to be thread safe, but a PR has since
+                * been merged into that repository to add this functionality (https://github.com/dotliquid/dotliquid/pull/220).
+                * We have cherry-picked the PR's changes into our DotLiquid project, allowing the Template to operate safely
+                * in a multithreaded context, which can happen often with our cached Template instances.
+                *
+                * Reason: Rock Issue #4084, Weird Behavior with Lava Includes
+                */
+                template.MakeThreadSafe();
 
-            return lavaTemplate;
+                var lavaTemplate = new LavaTemplateCache { Template = template };
+                return lavaTemplate;
+            }
+
+            {
+                ILavaTemplate template;
+
+                LavaEngine.CurrentEngine.TryParseTemplate( content, out template );
+
+                var lavaTemplate = new LavaTemplateCache { Template = template };
+
+                return lavaTemplate;
+            }
         }
 
         #endregion
@@ -185,7 +209,7 @@ namespace Rock.Web.Cache
             }
             else
             {
-                return templateCache.Template;
+                return templateCache.Template as ILavaTemplate;
             }
         }
 
