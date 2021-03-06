@@ -288,14 +288,13 @@ namespace RockWeb.Blocks.Cms
         private Template GetTemplate()
         {
             var cacheTemplate = LavaTemplateCache.Get( CacheKey(), GetAttributeValue( AttributeKey.Template ) );
-            return cacheTemplate != null ? (((DotLiquidTemplateProxy)cacheTemplate.Template).DotLiquidTemplate) : null;
+            return cacheTemplate != null ? cacheTemplate.Template as Template : null;
         }
         #endregion
 
         private ILavaTemplate GetLavaTemplate()
         {
-            var cacheTemplate = LavaTemplateCache.Get( CacheKey(), GetAttributeValue( AttributeKey.Template ) );
-            return cacheTemplate != null ? cacheTemplate.Template : null;
+            return LavaEngine.CurrentEngine.TemplateCacheService.GetOrAddTemplate( GetAttributeValue( AttributeKey.Template ) );
         }
 
         /// <summary>
