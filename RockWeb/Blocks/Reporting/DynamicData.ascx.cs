@@ -478,25 +478,53 @@ namespace RockWeb.Blocks.Reporting
                             return;
                         }
 
-                        foreach ( DataTable dataTable in dataSet.Tables )
+                        if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.Legacy )
                         {
-                            var dropRows = new List<DataRowDrop>();
-                            foreach ( DataRow row in dataTable.Rows )
+                            foreach ( DataTable dataTable in dataSet.Tables )
                             {
-                                dropRows.Add( new DataRowDrop( row ) );
-                            }
+                                var lavaRows = new List<DataRowDrop>();
+                                foreach ( DataRow row in dataTable.Rows )
+                                {
+                                    lavaRows.Add( new DataRowDrop( row ) );
+                                }
 
-                            if ( dataSet.Tables.Count > 1 )
-                            {
-                                var tableField = new Dictionary<string, object>();
-                                tableField.Add( "rows", dropRows );
-                                mergeFields.Add( "table" + i.ToString(), tableField );
+                                if ( dataSet.Tables.Count > 1 )
+                                {
+                                    var tableField = new Dictionary<string, object>();
+                                    tableField.Add( "rows", lavaRows );
+                                    mergeFields.Add( "table" + i.ToString(), tableField );
+                                }
+                                else
+                                {
+                                    mergeFields.Add( "rows", lavaRows );
+                                }
+
+                                i++;
                             }
-                            else
+                        }
+                        else
+                        {
+                            foreach ( DataTable dataTable in dataSet.Tables )
                             {
-                                mergeFields.Add( "rows", dropRows );
+                                var lavaRows = new List<DataRowLavaData>();
+                                foreach ( DataRow row in dataTable.Rows )
+                                {
+                                    lavaRows.Add( new DataRowLavaData( row ) );
+                                }
+
+                                if ( dataSet.Tables.Count > 1 )
+                                {
+                                    var tableField = new Dictionary<string, object>();
+                                    tableField.Add( "rows", lavaRows );
+                                    mergeFields.Add( "table" + i.ToString(), tableField );
+                                }
+                                else
+                                {
+                                    mergeFields.Add( "rows", lavaRows );
+                                }
+
+                                i++;
                             }
-                            i++;
                         }
                     }
 
@@ -969,14 +997,11 @@ namespace RockWeb.Blocks.Reporting
 
         #endregion
 
-        /// <summary>
-        ///
-        /// </summary>
-        private class DataRowDrop : LavaDataObject
+        private class DataRowLavaData : LavaDataObject
         {
             private readonly DataRow _dataRow;
 
-            public DataRowDrop( DataRow dataRow )
+            public DataRowLavaData( DataRow dataRow )
             {
                 _dataRow = dataRow;
             }
@@ -993,5 +1018,32 @@ namespace RockWeb.Blocks.Reporting
                 return false;
             }
         }
+
+        #region Legacy Lava implementation
+
+        /// <summary>
+        ///
+        /// </summary>
+        private class DataRowDrop : DotLiquid.Drop
+        {
+            private readonly DataRow _dataRow;
+
+            public DataRowDrop( DataRow dataRow )
+            {
+                _dataRow = dataRow;
+            }
+
+            public override object BeforeMethod( string method )
+            {
+                if ( _dataRow.Table.Columns.Contains( method ) )
+                {
+                    return _dataRow[method];
+                }
+
+                return null;
+            }
+        }
+
+        #endregion
     }
 }

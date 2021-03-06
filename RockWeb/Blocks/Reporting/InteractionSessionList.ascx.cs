@@ -408,6 +408,7 @@ namespace RockWeb.Blocks.Reporting
     /// <summary>
     /// Helper class for binding sessions
     /// </summary>
+    [DotLiquid.LiquidType( "InteractionSession", "PersonAlias", "StartDateTime", "EndDateTime", "Interactions" )]
     public class WebSession : LavaDataObject
     {
         /// <summary>

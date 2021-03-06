@@ -300,6 +300,7 @@ namespace RockWeb.Blocks.Crm
         /// <summary>
         /// A class to store personal device data for Lava.
         /// </summary>
+        [DotLiquid.LiquidType( "PersonalDevice", "DeviceIconCssClass", "PlatformValue" )]
         public class PersonalDeviceItem : LavaDataObject
         {
             /// <summary>

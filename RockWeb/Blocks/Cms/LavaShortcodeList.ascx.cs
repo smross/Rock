@@ -287,7 +287,7 @@ namespace RockWeb.Blocks.Cms
             var shortcodeList = lavaShortcodes.ToList();
 
             // Start with block items
-            foreach ( var shortcodeInCode in Rock.Reflection.FindTypes( typeof( Rock.Lava.Legacy.Shortcodes.RockLavaShortcodeBlockBase ) ).ToList() )
+            foreach ( var shortcodeInCode in Rock.Reflection.FindTypes( typeof( Rock.Lava.Shortcodes.RockLavaShortcodeBlockBase ) ).ToList() )
             {
                 var shortcode = shortcodeInCode.Value;
                 var shortcodeMetadataAttribute = shortcode.GetCustomAttributes( typeof( LavaShortcodeMetadataAttribute ), true ).FirstOrDefault() as LavaShortcodeMetadataAttribute;

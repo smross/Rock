@@ -26,7 +26,7 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
-
+using DotLiquid;
 using Rock;
 using Rock.Attribute;
 using Rock.Data;
@@ -1083,7 +1083,17 @@ namespace RockWeb.Blocks.Groups
                 // If a map is to be shown
                 if ( showMap && groups.Any() )
                 {
-                    var template = LavaEngine.CurrentEngine.ParseTemplate( GetAttributeValue( "MapInfo" ) );
+                    Template template = null;
+                    ILavaTemplate lavaTemplate = null;
+
+                    if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.Legacy )
+                    {
+                        template = DotLiquid.Template.Parse( GetAttributeValue( "MapInfo" ) );
+                    }
+                    else
+                    {
+                        lavaTemplate = LavaEngine.CurrentEngine.ParseTemplate( GetAttributeValue( "MapInfo" ) );
+                    }
 
                     // Add mapitems for all the remaining valid group locations
                     var groupMapItems = new List<MapItem>();
@@ -1120,7 +1130,16 @@ namespace RockWeb.Blocks.Groups
                             securityActions.Add( "Administrate", group.IsAuthorized( Authorization.ADMINISTRATE, CurrentPerson ) );
                             mergeFields.Add( "AllowedActions", securityActions );
 
-                            string infoWindow = template.Render( mergeFields );
+                            string infoWindow;
+
+                            if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.Legacy )
+                            {
+                                infoWindow = template.Render( Hash.FromDictionary( mergeFields ) );                                
+                            }
+                            else
+                            {
+                                infoWindow = lavaTemplate.Render( mergeFields );
+                            }
 
                             // Add a map item for group
                             var mapItem = new FinderMapItem( gl.Location );
