@@ -31,6 +31,7 @@ using Rock.Web.UI;
 using System.Collections.Generic;
 using System.Web;
 using Rock.Lava;
+using DotLiquid;
 
 namespace RockWeb.Blocks.Core
 {
@@ -121,23 +122,46 @@ namespace RockWeb.Blocks.Core
 
             rockContext.SaveChanges();
 
-            // unregister shortcode
-            var lavaEngine = LavaEngine.CurrentEngine;
-
-            if ( hfOriginalTagName.Value.IsNotNullOrWhiteSpace() )
+            if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.Legacy )
             {
-                lavaEngine.UnregisterShortcode( hfOriginalTagName.Value );
-            }
+                // unregister shortcode
+                if ( hfOriginalTagName.Value.IsNotNullOrWhiteSpace() )
+                {
+                    Template.UnregisterShortcode( hfOriginalTagName.Value );
+                }
 
-            // Re-register the shortcode.
-            if ( lavaShortcode.TagType == TagType.Block )
+                // register shortcode
+                if ( lavaShortcode.TagType == TagType.Block )
+                {
+                    Template.RegisterShortcode<Rock.Lava.Legacy.Shortcodes.DynamicShortcodeBlock>( lavaShortcode.TagName );
+                }
+                else
+                {
+                    Template.RegisterShortcode<Rock.Lava.Legacy.Shortcodes.DynamicShortcodeInline>( lavaShortcode.TagName );
+                }
+
+                // (bug fix) Now we have to clear the entire LavaTemplateCache because it's possible that some other
+                // usage of this shortcode is cached with a key we can't predict.
+                LavaTemplateCache.Clear();
+            }
+            else
             {
-                lavaEngine.RegisterDynamicShortcode( lavaShortcode.TagName, ( shortcodeName ) => WebsiteLavaShortcodeProvider.GetShortcodeDefinition( shortcodeName ) );
-            }
+                // Unregister the existing shortcode.
+                var lavaEngine = LavaEngine.CurrentEngine;
 
-            // (bug fix) Now we have to clear the entire LavaTemplateCache because it's possible that some other
-            // usage of this shortcode is cached with a key we can't predict.
-            lavaEngine.ClearTemplateCache();
+                if ( hfOriginalTagName.Value.IsNotNullOrWhiteSpace() )
+                {
+                    lavaEngine.UnregisterShortcode( hfOriginalTagName.Value );
+                }
+
+                // Register the new shortcode definition.
+                if ( lavaShortcode.TagType == TagType.Block )
+                {
+                    lavaEngine.RegisterDynamicShortcode( lavaShortcode.TagName, ( shortcodeName ) => WebsiteLavaShortcodeProvider.GetShortcodeDefinition( shortcodeName ) );
+                }
+
+                lavaEngine.ClearTemplateCache();
+            }
 
             NavigateToParentPage();
         }

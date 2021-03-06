@@ -26,7 +26,7 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
-
+using DotLiquid;
 using Rock;
 using Rock.Attribute;
 using Rock.Data;
@@ -831,13 +831,22 @@ $(document).ready(function() {
                     }
                 }
 
-                var template = GetTemplate();
+                if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.Legacy )
+                {
+                    var template = GetTemplate();
 
-                var lavaContext = LavaEngine.CurrentEngine.NewRenderContext( mergeFields );
+                    outputContents = template.Render( Hash.FromDictionary( mergeFields ) );
+                }
+                else
+                {
+                    var template = GetLavaTemplate();
 
-                lavaContext.SetEnabledCommands( GetAttributeValue( AttributeKey.EnabledLavaCommands ).SplitDelimitedValues() );
+                    var lavaContext = LavaEngine.CurrentEngine.NewRenderContext( mergeFields );
 
-                outputContents = template.Render( lavaContext );
+                    lavaContext.SetEnabledCommands( GetAttributeValue( AttributeKey.EnabledLavaCommands ).SplitDelimitedValues() );
+
+                    outputContents = template.Render( lavaContext );
+                }
 
                 if ( OutputCacheDuration.HasValue && OutputCacheDuration.Value > 0 )
                 {
@@ -880,7 +889,7 @@ $(document).ready(function() {
         /// </summary>
         /// <returns>a Lava Template</returns>
         /// <returns>A <see cref="Rock.Lava.ILavaTemplate"/></returns>
-        private ILavaTemplate GetTemplate()
+        private ILavaTemplate GetLavaTemplate()
         {
             ILavaTemplate template = null;
 
@@ -910,6 +919,49 @@ $(document).ready(function() {
 
             return template;
         }
+
+        #region Legacy Lava implementation
+
+        /// <summary>
+        /// Gets the template.
+        /// </summary>
+        /// <returns>a DotLiquid Template</returns>
+        /// <returns>A <see cref="DotLiquid.Template"/></returns>
+        private Template GetTemplate()
+        {
+            Template template = null;
+
+            try
+            {
+                // only load from the cache if a cacheDuration was specified
+                if ( ItemCacheDuration.HasValue && ItemCacheDuration.Value > 0 )
+                {
+                    template = GetCacheItem( TEMPLATE_CACHE_KEY, true ) as Template;
+                }
+
+                if ( template == null )
+                {
+                    template = Template.Parse( GetAttributeValue( AttributeKey.Template ) );
+
+                    if ( ItemCacheDuration.HasValue && ItemCacheDuration.Value > 0 )
+                    {
+                        string cacheTags = GetAttributeValue( AttributeKey.CacheTags ) ?? string.Empty;
+                        AddCacheItem( TEMPLATE_CACHE_KEY, template, ItemCacheDuration.Value, cacheTags );
+                    }
+
+                    var enabledLavaCommands = GetAttributeValue( AttributeKey.EnabledLavaCommands );
+                    template.Registers.AddOrReplace( "EnabledCommands", enabledLavaCommands );
+                }
+            }
+            catch ( Exception ex )
+            {
+                template = Template.Parse( string.Format( "Lava error: {0}", ex.Message ) );
+            }
+
+            return template;
+        }
+
+        #endregion
 
         /// <summary>
         /// Gets the content channel items from the item-cache (if there), or from 
