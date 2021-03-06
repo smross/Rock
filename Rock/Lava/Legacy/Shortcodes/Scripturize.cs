@@ -24,6 +24,7 @@ using System.Text.RegularExpressions;
 using DotLiquid;
 
 using Rock.Utility;
+using Rock.Lava.Shortcodes;
 
 namespace Rock.Lava.Legacy.Shortcodes
 {

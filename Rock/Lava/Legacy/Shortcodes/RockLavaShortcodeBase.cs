@@ -25,7 +25,7 @@ namespace Rock.Lava.Shortcodes
     /// <summary>
     /// 
     /// </summary>
-    /// <seealso cref="DotLiquid.Block" />
+    /// <seealso cref="global::DotLiquid.Block" />
     public class RockLavaShortcodeBase : Tag, IRockStartup, IRockShortcode
     {
         

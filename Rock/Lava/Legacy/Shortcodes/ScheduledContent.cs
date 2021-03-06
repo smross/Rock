@@ -28,6 +28,7 @@ using DotLiquid.Util;
 
 using Rock.Data;
 using Rock.Model;
+using Rock.Lava.Shortcodes;
 
 namespace Rock.Lava.Legacy.Shortcodes
 {
