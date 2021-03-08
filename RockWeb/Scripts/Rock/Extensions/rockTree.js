@@ -203,6 +203,7 @@
                     (this.options.expandedCategoryIds && typeof this.options.expandedCategoryIds.length === 'number')) {
                     toExpandParentItems = this.options.expandedIds;
                     toExpandCategories = this.options.expandedCategoryIds;
+                    toExpandCategories ??= [];
                     categoryPrefix = this.options.categoryPrefix;
 
                     // Listen for progress on the Deferred and pass it the handler to
