@@ -39,7 +39,7 @@ namespace Rock.Web.Cache
     /// <seealso cref="Rock.Lava.ILavaDataDictionary" />
     [Serializable]
     [DataContract]
-    public abstract class ModelCache<T, TT> : EntityCache<T, TT>, ISecured, IHasAttributes, ILavaDataDictionary where T : IEntityCache, new()
+    public abstract class ModelCache<T, TT> : EntityCache<T, TT>, ISecured, IHasAttributes, ILavaDataDictionary, DotLiquid.ILiquidizable where T : IEntityCache, new()
         where TT : Model<TT>, new()
     {
 
@@ -392,16 +392,7 @@ namespace Rock.Web.Cache
 
         #endregion
 
-        #region ILiquidizable Implementation
-
-        /// <summary>
-        /// To the liquid.
-        /// </summary>
-        /// <returns></returns>
-        public object ToLiquid()
-        {
-            return this;
-        }
+        #region ILavaDataDictionary Implementation
 
         /// <summary>
         /// Gets the available keys (for debugging info).
@@ -540,6 +531,44 @@ namespace Rock.Web.Cache
             var attribute = Attributes[attributeKey];
 
             return attribute.IsAuthorized( Authorization.VIEW, null );
+        }
+
+        #endregion
+
+        #region ILiquidizable Implementation
+
+        /// <summary>
+        /// To the liquid.
+        /// </summary>
+        /// <returns></returns>
+        public object ToLiquid()
+        {
+            return this;
+        }
+
+        /// <summary>
+        /// Gets the <see cref="System.Object"/> with the specified key.
+        /// </summary>
+        /// <value>
+        /// The <see cref="System.Object"/>.
+        /// </value>
+        /// <param name="key">The key.</param>
+        /// <returns></returns>
+        public object GetValue( object key )
+        {
+            return this[key];
+        }
+
+        /// <summary>
+        /// Determines whether the specified key contains key.
+        /// </summary>
+        /// <remarks>
+        /// </remarks>
+        /// <param name="key">The key.</param>
+        /// <returns></returns>
+        public virtual bool ContainsKey( object key )
+        {
+            return ContainsKey( key.ToStringSafe() );
         }
 
         #endregion

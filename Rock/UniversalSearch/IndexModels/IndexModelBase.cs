@@ -32,7 +32,7 @@ namespace Rock.UniversalSearch.IndexModels
     /// Base Index Model
     /// </summary>
     /// <seealso cref="System.Dynamic.DynamicObject" />
-    public class IndexModelBase : DynamicObject, ILavaDataDictionary
+    public class IndexModelBase : DynamicObject, ILavaDataDictionary, Lava.ILiquidizable
     {
         private Dictionary<string, object> _members = new Dictionary<string, object>();
         object Instance;
@@ -564,11 +564,21 @@ namespace Rock.UniversalSearch.IndexModels
         /// </summary>
         /// <param name="key">The key.</param>
         /// <returns></returns>
-        public bool ContainsKey( string key )
+        public bool ContainsKey( object key )
         {
             return this.GetDynamicMemberNames().Contains( key.ToString() );
         }
 
         #endregion
+
+        /// <summary>
+        /// Determines whether the specified key contains key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns></returns>
+        public bool ContainsKey( string key )
+        {
+            return this.GetDynamicMemberNames().Contains( key.ToString() );
+        }
     }
 }

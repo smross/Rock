@@ -31,7 +31,7 @@ namespace Rock.Utility
     /// </summary>
     /// <seealso cref="System.Dynamic.DynamicObject" />
     /// <seealso cref="Rock.Lava.ILavaDataDictionary" />
-    public class RockDynamic : DynamicObject, ILavaDataDictionary
+    public class RockDynamic : DynamicObject, Lava.ILiquidizable, ILavaDataDictionary
     {
         private Dictionary<string, object> _members = new Dictionary<string, object>();
 
@@ -362,6 +362,29 @@ namespace Rock.Utility
         public bool ContainsKey( string key )
         {
             return this.GetDynamicMemberNames().Contains( key );
+        }
+
+        #endregion
+
+        #region ILiquidizable
+
+        /// <summary>
+        /// Determines whether this object holds a value with the specified key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns></returns>
+        public bool ContainsKey( object key )
+        {
+            return this.GetDynamicMemberNames().Contains( key );
+        }
+
+        /// <summary>
+        /// Returns liquid for the object
+        /// </summary>
+        /// <returns></returns>
+        public object ToLiquid()
+        {
+            return this;
         }
 
         #endregion

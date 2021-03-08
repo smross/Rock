@@ -109,16 +109,48 @@ namespace Rock.CheckIn
             return false;
         }
 
+        #region ILiquidizable
+
+        /// <summary>
+        /// Determines whether the specified key contains key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns></returns>
+        public bool ContainsKey( object key )
+        {
+            var additionalKeys = new List<string> { "MessageText", "MessageType" };
+            if ( additionalKeys.Contains( key.ToStringSafe() ) )
+            {
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Gets the <see cref="System.Object"/> with the specified key.
+        /// </summary>
+        /// <value>
+        /// The <see cref="System.Object"/>.
+        /// </value>
+        /// <param name="key">The key.</param>
+        /// <returns></returns>
+        [Rock.Data.LavaIgnore]
+        public object GetValue( object key )
+        {
+            return this[key];
+        }
+
         /// <summary>
         /// To the liquid.
         /// </summary>
         /// <returns></returns>
         /// <exception cref="System.NotImplementedException"></exception>
-        [Obsolete]
         public object ToLiquid()
         {
             return this;
         }
+
+        #endregion
     }
 
     /// <summary>

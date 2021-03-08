@@ -2663,22 +2663,40 @@ $('#{this.ClientID} .{GRID_SELECT_CELL_CSS_CLASS}').on( 'click', function (event
         /// <returns></returns>
         private List<PropertyInfo> FilterDynamicObjectPropertiesCollection( Type dataSourceObjectType, List<PropertyInfo> additionalMergeProperties )
         {
-            // If this is a dynamic class, don't include any of the properties that are inherited from the base class.
-            Type excludeType = null;
-
-            if ( typeof( LavaDataObject ).IsAssignableFrom( dataSourceObjectType ) )
+            if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.Legacy )
             {
-                excludeType = typeof( LavaDataObject );
+                // If this is a DotLiquid.Drop class, don't include any of the properties that are inherited from DotLiquid.Drop
+                if ( typeof( DotLiquid.Drop ).IsAssignableFrom( dataSourceObjectType ) )
+                {
+                    var dropProperties = typeof( DotLiquid.Drop ).GetProperties().Select( a => a.Name );
+                    additionalMergeProperties = additionalMergeProperties.Where( a => !dropProperties.Contains( a.Name ) ).ToList();
+                }
+                // If this is a RockDynamic class, don't include any of the properties that are inherited from RockDynamic
+                else if ( typeof( RockDynamic ).IsAssignableFrom( dataSourceObjectType ) )
+                {
+                    var dropProperties = typeof( RockDynamic ).GetProperties().Select( a => a.Name );
+                    additionalMergeProperties = additionalMergeProperties.Where( a => !dropProperties.Contains( a.Name ) ).ToList();
+                }
             }
-            else if ( typeof( RockDynamic ).IsAssignableFrom( dataSourceObjectType ) )
+            else
             {
-                excludeType = typeof( RockDynamic );
-            }
+                // If this is a dynamic class, don't include any of the properties that are inherited from the base class.
+                Type excludeType = null;
 
-            if ( excludeType != null )
-            {
-                var excludeProperties = excludeType.GetProperties().Select( a => a.Name );
-                additionalMergeProperties = additionalMergeProperties.Where( a => !excludeProperties.Contains( a.Name ) ).ToList();
+                if ( typeof( LavaDataObject ).IsAssignableFrom( dataSourceObjectType ) )
+                {
+                    excludeType = typeof( LavaDataObject );
+                }
+                else if ( typeof( RockDynamic ).IsAssignableFrom( dataSourceObjectType ) )
+                {
+                    excludeType = typeof( RockDynamic );
+                }
+
+                if ( excludeType != null )
+                {
+                    var excludeProperties = excludeType.GetProperties().Select( a => a.Name );
+                    additionalMergeProperties = additionalMergeProperties.Where( a => !excludeProperties.Contains( a.Name ) ).ToList();
+                }
             }
 
             return additionalMergeProperties;

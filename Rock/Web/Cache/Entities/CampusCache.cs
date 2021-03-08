@@ -339,6 +339,7 @@ namespace Rock.Web.Cache
 		[Serializable]
         [DataContract]
         [LavaType( "Day", "Time" )]
+        [DotLiquid.LiquidType( "Day", "Time" )]
         public class ServiceTime
         {
             /// <summary>
@@ -366,6 +367,7 @@ namespace Rock.Web.Cache
         [Serializable]
         [DataContract]
         [LavaType( "Street1", "Street2", "City", "State", "PostalCode", "Country", "Latitude", "Longitude", "ImageUrl" )]
+        [DotLiquid.LiquidType( "Street1", "Street2", "City", "State", "PostalCode", "Country", "Latitude", "Longitude", "ImageUrl" )]
         public class CampusLocation
         {
             /// <summary>

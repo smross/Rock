@@ -36,7 +36,7 @@ namespace Rock.Web.Cache
     [DataContract]
     [RockObsolete( "1.8" )]
     [Obsolete( "Use ModelCache instead", true )]
-    public abstract class CachedModel<T> : CachedEntity<T>, ISecured, Rock.Attribute.IHasAttributes, ILavaDataDictionary
+    public abstract class CachedModel<T> : CachedEntity<T>, ISecured, Rock.Attribute.IHasAttributes, ILavaDataDictionary, Lava.ILiquidizable
         where T : Rock.Data.Entity<T>, ISecured, Rock.Attribute.IHasAttributes, new()
     {
         /// <summary>
@@ -371,16 +371,7 @@ namespace Rock.Web.Cache
 
         #endregion
 
-        #region ILiquidizable Implementation
-
-        /// <summary>
-        /// To the liquid.
-        /// </summary>
-        /// <returns></returns>
-        public object ToLiquid()
-        {
-            return this;
-        }
+        #region ILavaDataObject Implementation
 
         /// <summary>
         /// Gets the available keys (for debugging info).
@@ -550,6 +541,44 @@ namespace Rock.Web.Cache
             }
 
             return false;
+        }
+
+        #endregion
+
+        #region ILiquidizable Implementation
+
+        /// <summary>
+        /// To the liquid.
+        /// </summary>
+        /// <returns></returns>
+        public object ToLiquid()
+        {
+            return this;
+        }
+
+        /// <summary>
+        /// Gets the <see cref="System.Object"/> with the specified key.
+        /// </summary>
+        /// <value>
+        /// The <see cref="System.Object"/>.
+        /// </value>
+        /// <param name="key">The key.</param>
+        /// <returns></returns>
+        public object GetValue( object key )
+        {
+            return this[key];
+        }
+
+        /// <summary>
+        /// Determines whether the specified key contains key.
+        /// </summary>
+        /// <remarks>
+        /// </remarks>
+        /// <param name="key">The key.</param>
+        /// <returns></returns>
+        public virtual bool ContainsKey( object key )
+        {
+            return ContainsKey( key.ToStringSafe() );
         }
 
         #endregion

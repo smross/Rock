@@ -320,7 +320,7 @@ namespace Rock.Model
     /// <summary>
     /// Statement of Progress for an Achievement Type
     /// </summary>
-    public class ProgressStatement: ILavaDataDictionary
+    public class ProgressStatement: ILiquidizable, ILavaDataDictionary
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ProgressStatement" /> class.
@@ -418,6 +418,19 @@ namespace Rock.Model
         [LavaVisible]
         public List<ProgressStatement> UnmetPrerequisites { get; }
 
+        /// <summary>
+        /// Gets the <see cref="System.Object"/> with the specified key.
+        /// </summary>
+        /// <value>
+        /// The <see cref="System.Object"/>.
+        /// </value>
+        /// <param name="key">The key.</param>
+        /// <returns></returns>
+        public object GetValue( string key )
+        {
+            return this[key];
+        }
+
         #region ILiquidizable
 
         /// <summary>
@@ -462,9 +475,26 @@ namespace Rock.Model
         /// </value>
         /// <param name="key">The key.</param>
         /// <returns></returns>
-        public object GetValue( string key )
+        public object GetValue( object key )
         {
             return this[key];
+        }
+
+        /// <summary>
+        /// Determines whether the specified key contains key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns></returns>
+        public virtual bool ContainsKey( string key )
+        {
+            string propertyKey = key.ToStringSafe();
+            var propInfo = GetType().GetProperty( propertyKey );
+            if ( propInfo != null && LiquidizableProperty( propInfo ) )
+            {
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -514,7 +544,7 @@ namespace Rock.Model
         /// </summary>
         /// <param name="key">The key.</param>
         /// <returns></returns>
-        public virtual bool ContainsKey( string key )
+        public virtual bool ContainsKey( object key )
         {
             string propertyKey = key.ToStringSafe();
             var propInfo = GetType().GetProperty( propertyKey );

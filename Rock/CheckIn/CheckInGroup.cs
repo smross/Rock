@@ -27,7 +27,7 @@ namespace Rock.CheckIn
     /// A group option for the current check-in
     /// </summary>
     [DataContract]
-    public class CheckInGroup : ILavaDataDictionary
+    public class CheckInGroup : ILavaDataDictionary, Lava.ILiquidizable
     {
         /// <summary>
         /// Gets or sets the group.
@@ -187,16 +187,6 @@ namespace Rock.CheckIn
         }
 
         /// <summary>
-        /// To the liquid.
-        /// </summary>
-        /// <returns></returns>
-        /// <exception cref="System.NotImplementedException"></exception>
-        public object ToLiquid()
-        {
-            return this;
-        }
-
-        /// <summary>
         /// Gets the available keys (for debugging info).
         /// </summary>
         /// <value>
@@ -269,5 +259,51 @@ namespace Rock.CheckIn
                 return Group.ContainsKey( key );
             }
         }
+
+        #region ILiquidizable
+
+        /// <summary>
+        /// Determines whether the specified key contains key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns></returns>
+        public bool ContainsKey( object key )
+        {
+            var additionalKeys = new List<string> { "LastCheckIn", "Locations" };
+            if ( additionalKeys.Contains( key.ToStringSafe() ) )
+            {
+                return true;
+            }
+            else
+            {
+                return Group.ContainsKey( key.ToStringSafe() );
+            }
+        }
+
+        /// <summary>
+        /// Gets the <see cref="System.Object"/> with the specified key.
+        /// </summary>
+        /// <value>
+        /// The <see cref="System.Object"/>.
+        /// </value>
+        /// <param name="key">The key.</param>
+        /// <returns></returns>
+        [Rock.Data.LavaIgnore]
+        public object GetValue( object key )
+        {
+            return this[key];
+        }
+
+        /// <summary>
+        /// To the liquid.
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="System.NotImplementedException"></exception>
+        public object ToLiquid()
+        {
+            return this;
+        }
+
+        #endregion
     }
 }
