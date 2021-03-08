@@ -201,7 +201,7 @@
           if (this.options.restUrl) {
                 if ((this.options.expandedIds && typeof this.options.expandedIds.length === 'number') ||
                     (this.options.expandedCategoryIds && typeof this.options.expandedCategoryIds.length === 'number')) {
-                    toExpandParentItems = this.options.expandedIds;
+                    toExpandParentItems = this.options.expandedIds ?? [];
                     toExpandCategories = this.options.expandedCategoryIds ?? [];
                     categoryPrefix = this.options.categoryPrefix;
 
