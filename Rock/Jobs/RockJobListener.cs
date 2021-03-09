@@ -17,11 +17,12 @@
 using System;
 using System.Linq;
 using System.Text;
-
+using DotLiquid;
 using Quartz;
 
 using Rock.Communication;
 using Rock.Data;
+using Rock.Lava;
 using Rock.Model;
 
 namespace Rock.Jobs
@@ -222,7 +223,14 @@ namespace Rock.Jobs
             {
                 if ( jobException != null )
                 {
-                    mergeFields.Add( "Exception", jobException );
+                    if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.Legacy )
+                    {
+                        mergeFields.Add( "Exception", Hash.FromAnonymousObject( jobException ) );
+                    }
+                    else
+                    {
+                        mergeFields.Add( "Exception", jobException );
+                    }
                 }
 
             }
