@@ -35,7 +35,7 @@ namespace Rock.Data
     /// </summary>
     /// <typeparam name="T">The Type entity that is being referenced <example>Entity&lt;Person&gt;</example></typeparam>
     [DataContract]
-    public abstract class Entity<T> : IEntity, ILavaDataDictionary
+    public abstract class Entity<T> : IEntity, ILavaDataDictionary, Lava.ILiquidizable
         where T : Entity<T>, new()
     {
         #region Entity Properties
@@ -345,15 +345,6 @@ namespace Rock.Data
         }
 
         /// <summary>
-        /// Creates a DotLiquid compatible dictionary that represents the current entity object. 
-        /// </summary>
-        /// <returns>DotLiquid compatible dictionary.</returns>
-        public object ToLiquid()
-        {
-            return this;
-        }
-
-        /// <summary>
         /// Gets the available keys (for debugging info).
         /// </summary>
         /// <value>
@@ -585,6 +576,39 @@ namespace Rock.Data
 
         #endregion
 
+        #region ILiquidizable
+
+        /// <summary>
+        /// Determines whether the specified key contains key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns></returns>
+        public virtual bool ContainsKey( object key )
+        {
+            string propertyKey = key.ToStringSafe();
+            var propInfo = GetBaseType().GetProperty( propertyKey );
+            if ( propInfo != null && LiquidizableProperty( propInfo ) )
+            {
+                return true;
+            }
+            else if ( this.AdditionalLavaFields != null && this.AdditionalLavaFields.ContainsKey( propertyKey ) )
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Creates a DotLiquid compatible dictionary that represents the current entity object. 
+        /// </summary>
+        /// <returns>DotLiquid compatible dictionary.</returns>
+        public object ToLiquid()
+        {
+            return this;
+        }
+
+        #endregion
     }
 
     #region KeyEntity

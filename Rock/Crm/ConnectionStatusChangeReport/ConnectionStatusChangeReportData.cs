@@ -26,6 +26,7 @@ namespace Rock.Crm.ConnectionStatusChangeReport
     /// </summary>
     [Serializable]
     [LavaType]
+    [DotLiquid.LiquidType]
     public class ConnectionStatusChangeReportData
     {
         /// <summary>

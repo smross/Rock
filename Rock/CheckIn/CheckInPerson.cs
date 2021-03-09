@@ -29,7 +29,7 @@ namespace Rock.CheckIn
     /// A person option for the current check-in
     /// </summary>
     [DataContract]
-    public class CheckInPerson : ILavaDataDictionary, IHasAttributesWrapper
+    public class CheckInPerson : ILavaDataDictionary, Lava.ILiquidizable, IHasAttributesWrapper
     {
         /// <summary>
         /// Gets or sets the person.
@@ -315,16 +315,6 @@ namespace Rock.CheckIn
         }
 
         /// <summary>
-        /// To the liquid.
-        /// </summary>
-        /// <returns></returns>
-        /// <exception cref="System.NotImplementedException"></exception>
-        public object ToLiquid()
-        {
-            return this;
-        }
-
-        /// <summary>
         /// Gets the available keys (for debugging info).
         /// </summary>
         /// <value>
@@ -408,12 +398,60 @@ namespace Rock.CheckIn
         {
             get { return Person; }
         }
+
+        #region ILiquidizable
+
+        /// <summary>
+        /// Determines whether the specified key contains key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns></returns>
+        public bool ContainsKey( object key )
+        {
+            var additionalKeys = new List<string> { "FamilyMember", "LastCheckIn", "FirstTime", "SecurityCode", "GroupTypes", "SelectedOptions" };
+            if ( additionalKeys.Contains( key.ToStringSafe() ) )
+            {
+                return true;
+            }
+            else
+            {
+                return Person.ContainsKey( key.ToStringSafe() );
+            }
+        }
+
+        /// <summary>
+        /// Gets the <see cref="System.Object"/> with the specified key.
+        /// </summary>
+        /// <value>
+        /// The <see cref="System.Object"/>.
+        /// </value>
+        /// <param name="key">The key.</param>
+        /// <returns></returns>
+        [Rock.Data.LavaIgnore]
+        public object GetValue( object key )
+        {
+            return this[key];
+        }
+
+        /// <summary>
+        /// To the liquid.
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="System.NotImplementedException"></exception>
+        public object ToLiquid()
+        {
+            return this;
+        }
+
+        #endregion
+
     }
 
     /// <summary>
     /// Helper class for summarizing the selected check-in
     /// </summary>
     [LavaType( "Schedule", "GroupType", "Group", "Location", "GroupTypeConfiguredForLabel" )]
+    [DotLiquid.LiquidType( "Schedule", "GroupType", "Group", "Location", "GroupTypeConfiguredForLabel" )]
     public class CheckInPersonSummary
     {
         /// <summary>
@@ -534,6 +572,7 @@ namespace Rock.CheckIn
                 }
             }
         }
+
 
     }
 }

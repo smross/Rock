@@ -25,7 +25,7 @@ namespace Rock.Communication.SmsActions
     /// <summary>
     /// 
     /// </summary>
-    public class SmsMessage : ILavaDataDictionary
+    public class SmsMessage : ILavaDataDictionary, Lava.ILiquidizable
     {
         /// <summary>
         /// Gets or sets the number the message was sent to.
@@ -169,14 +169,46 @@ namespace Rock.Communication.SmsActions
 
         #endregion
 
+        #region ILiquidizable
+
         /// <summary>
-        /// Creates a DotLiquid compatible dictionary that represents the current entity object. 
+        /// Determines whether the specified key contains key.
         /// </summary>
-        /// <returns>DotLiquid compatible dictionary.</returns>
-        [Obsolete]
+        /// <param name="key">The key.</param>
+        /// <returns></returns>
+        public bool ContainsKey( object key )
+        {
+            string propertyKey = key.ToStringSafe();
+            var propInfo = GetType().GetProperty( propertyKey );
+
+            return propInfo != null;
+        }
+
+        /// <summary>
+        /// Gets the <see cref="System.Object"/> with the specified key.
+        /// </summary>
+        /// <value>
+        /// The <see cref="System.Object"/>.
+        /// </value>
+        /// <param name="key">The key.</param>
+        /// <returns></returns>
+        [Rock.Data.LavaIgnore]
+        public object GetValue( object key )
+        {
+            return this[key];
+        }
+
+        /// <summary>
+        /// To the liquid.
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="System.NotImplementedException"></exception>
         public object ToLiquid()
         {
             return this;
         }
+
+        #endregion
+
     }
 }
