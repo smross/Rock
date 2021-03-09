@@ -397,7 +397,7 @@ namespace RockWeb.Blocks.CheckIn.Manager
             lElapsedCheckInTime.Text = string.Format(
                 "<span title='{0}'>{1}</span>",
                 attendee.CheckInTime.ToShortTimeString(),
-                RockFilters.HumanizeTimeSpan( attendee.CheckInTime, DateTime.Now, unit: "Second" ) );
+                RockFilters.HumanizeTimeSpan( attendee.CheckInTime, RockDateTime.Now, unit: "Second" ) );
 
             // Desktop only.
             var lStatusTag = e.Row.FindControl( "lStatusTag" ) as Literal;

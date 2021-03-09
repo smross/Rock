@@ -282,7 +282,8 @@ namespace RockWeb.Blocks.CheckIn.Manager
             var selectedGroupTypeIds = checkinAreaPaths.Select( a => a.GroupTypeId ).Distinct().ToArray();
 
             var groupLocationService = new GroupLocationService( rockContext );
-            var groupLocationsQuery = groupLocationService.Queryable().Where( gl => selectedGroupTypeIds.Contains( gl.Group.GroupTypeId ) );
+            var groupLocationsQuery = groupLocationService.Queryable()
+                    .Where( gl => selectedGroupTypeIds.Contains( gl.Group.GroupTypeId ) && gl.Group.IsActive && ( !gl.Group.IsArchived ) );
 
             var parentLocationIdParameter = PageParameter( PageParameterKey.ParentLocationId ).AsIntegerOrNull();
             var locationIdParameter = PageParameter( PageParameterKey.LocationId ).AsIntegerOrNull();
@@ -519,7 +520,7 @@ namespace RockWeb.Blocks.CheckIn.Manager
         private void AddToRoomList( List<RoomInfo> roomList, GroupLocationInfo groupLocation )
         {
             Dictionary<int, List<AttendanceCheckinTimeInfo>> attendancesForLocationByGroupId = _attendancesByLocationIdAndGroupId.GetValueOrNull( groupLocation.LocationId );
-            
+
             List<AttendanceCheckinTimeInfo> attendancesForLocationAndGroup;
             if ( attendancesForLocationByGroupId != null )
             {
@@ -542,7 +543,7 @@ namespace RockWeb.Blocks.CheckIn.Manager
             {
                 // no attendances for this Location (Room)
                 attendancesForLocationByGroupId = new Dictionary<int, List<AttendanceCheckinTimeInfo>>();
-                attendancesForLocationAndGroup = new List<AttendanceCheckinTimeInfo>(); 
+                attendancesForLocationAndGroup = new List<AttendanceCheckinTimeInfo>();
             }
 
             var roomCounts = new RoomCounts
