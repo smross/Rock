@@ -383,33 +383,6 @@ namespace Rock.Lava
             return LavaSecurityHelper.IsAuthorized( context, command );
         }
 
-        #region Legacy Lava implementation
-
-        /// <summary>
-        /// Determines whether the specified command is authorized within the context.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="command">The command.</param>
-        /// <returns>
-        ///   <c>true</c> if the specified command is authorized; otherwise, <c>false</c>.
-        /// </returns>
-        public static bool IsAuthorized( Context context, string command )
-        {
-            if ( context?.Registers?.ContainsKey( "EnabledCommands" ) == true && command.IsNotNullOrWhiteSpace() )
-            {
-                var enabledCommands = context.Registers["EnabledCommands"].ToString().Split( ',' ).ToList();
-
-                if ( enabledCommands.Contains( "All" ) || enabledCommands.Contains( command ) )
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        #endregion
-
         /// <summary>
         /// Returns a flag indicating if the target object is capable of being used as a data source in a Lava template.
         /// </summary>
@@ -422,12 +395,10 @@ namespace Rock.Lava
                 return false;
             }
 
-            #region DotLiquidLegacy Code
             if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.Legacy )
             {
                 return obj != null && obj is Rock.Lava.ILavaDataDictionary;
             }
-            #endregion
 
             if ( obj is ILavaDataDictionary || obj is ILavaDataDictionarySource )
             {
@@ -503,6 +474,29 @@ namespace Rock.Lava
         #endregion
 
         #region Legacy Lava Code
+
+        /// <summary>
+        /// Determines whether the specified command is authorized within the context.
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="command">The command.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified command is authorized; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsAuthorized( Context context, string command )
+        {
+            if ( context?.Registers?.ContainsKey( "EnabledCommands" ) == true && command.IsNotNullOrWhiteSpace() )
+            {
+                var enabledCommands = context.Registers["EnabledCommands"].ToString().Split( ',' ).ToList();
+
+                if ( enabledCommands.Contains( "All" ) || enabledCommands.Contains( command ) )
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
 
         /// <summary>
         /// Gets the current person.
