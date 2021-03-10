@@ -628,7 +628,7 @@ namespace Rock.WebStartup
 
                 Template.FileSystem = new LavaFileSystem();
 
-                Template.RegisterFilter( typeof( Rock.Lava.RockFiltersLegacy ) );
+                Template.RegisterFilter( typeof( Rock.Lava.Legacy.RockFiltersLegacy ) );
             }
             else
             {

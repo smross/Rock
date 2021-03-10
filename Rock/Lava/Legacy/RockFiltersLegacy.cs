@@ -60,7 +60,7 @@ using Rock.Web.UI;
 
 using UAParser;
 
-namespace Rock.Lava
+namespace Rock.Lava.Legacy
 {
     /// <summary>
     ///
