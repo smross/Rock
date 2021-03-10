@@ -98,7 +98,7 @@ namespace Rock.Lava
                 foreach ( var contextEntityType in rockPage.GetContextEntityTypes() )
                 {
                     var contextEntity = rockPage.GetCurrentContext( contextEntityType );
-                    if ( contextEntity != null && contextEntity is ILavaDataDictionary )
+                    if ( contextEntity != null && IsLavaDataObject( contextEntity ) )
                     {
                         var type = Type.GetType( contextEntityType.AssemblyName ?? contextEntityType.Name );
                         if ( type != null )
@@ -217,12 +217,12 @@ namespace Rock.Lava
             {
                 return false;
             }
-#pragma warning disable CS0618 // Type or member is obsolete
-            if ( propInfo.GetCustomAttributes( typeof( LavaIgnoreAttribute ) ).Count() > 0 )
+
+            // If property has a [LavaVisible] attribute return true
+            if ( propInfo.GetCustomAttributes( typeof( LavaVisibleAttribute ) ).Count() > 0 )
             {
-                return false;
+                return true;
             }
-#pragma warning restore CS0618 // Type or member is obsolete
 
             // If property has a [DataMember] attribute return true
             if ( propInfo.GetCustomAttributes( typeof( System.Runtime.Serialization.DataMemberAttribute ) ).Count() > 0 )
@@ -230,12 +230,11 @@ namespace Rock.Lava
                 return true;
             }
 
-            // If property has a [LavaVisible] attribute return true
-            if ( propInfo.GetCustomAttributes( typeof( LavaVisibleAttribute ) ).Count() > 0 )
-            {
-                return true;
-            }
 #pragma warning disable CS0618 // Type or member is obsolete
+            if ( propInfo.GetCustomAttributes( typeof( LavaIgnoreAttribute ) ).Count() > 0 )
+            {
+                return false;
+            }
             if ( propInfo.GetCustomAttributes( typeof( LavaIncludeAttribute ) ).Count() > 0 )
             {
                 return true;
@@ -397,7 +396,7 @@ namespace Rock.Lava
 
             if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.Legacy )
             {
-                return obj != null && obj is Rock.Lava.ILavaDataDictionary;
+                return obj != null && obj is Rock.Lava.ILiquidizable;
             }
 
             if ( obj is ILavaDataDictionary || obj is ILavaDataDictionarySource )
