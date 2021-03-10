@@ -194,7 +194,7 @@ namespace Rock.Model
         /// <value>
         /// <c>true</c> if this schedule is currently active; otherwise, <c>false</c>.
         /// </value>
-        [LavaInclude]
+        [LavaVisible]
         public virtual bool IsScheduleActive
         {
             get
@@ -209,7 +209,7 @@ namespace Rock.Model
         /// <value>
         ///  A <see cref="System.Boolean"/> that is  <c>true</c> if Check-in is currently active for this Schedule ; otherwise, <c>false</c>.
         /// </value>
-        [LavaInclude]
+        [LavaVisible]
         public virtual bool IsCheckInActive
         {
             get
