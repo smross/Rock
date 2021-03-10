@@ -7,7 +7,7 @@
   </RunConfiguration>
   
   <TestRunParameters>
-    <!-- [DotLiquid] | Fluid: lava engine to be tested -->
-    <Parameter name="LavaEngineType" value="DotLiquid" />
+    <!-- [DotLiquid] | Fluid | Legacy: lava engine to be tested -->
+    <Parameter name="LavaEngineType" value="Legacy" />
   </TestRunParameters>
 </RunSettings>

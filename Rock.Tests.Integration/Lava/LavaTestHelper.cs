@@ -46,8 +46,7 @@ namespace Rock.Tests.Integration.Lava
 
             engine.ExceptionHandlingStrategy = ExceptionHandlingStrategySpecifier.RenderToOutput;
 
-            engine.RegisterFilters( typeof( Rock.Lava.RockFilters ) );
-
+            RegisterFilters( engine );
             RegisterBlocks( engine );
             RegisterTags( engine );
 
@@ -57,6 +56,18 @@ namespace Rock.Tests.Integration.Lava
             var helper = new LavaTestHelper();
 
             return helper;
+        }
+
+        private static void RegisterFilters( ILavaEngine engine )
+        {
+            if ( engine.EngineType == LavaEngineTypeSpecifier.Legacy )
+            {
+                engine.RegisterFilters( typeof( Rock.Lava.Legacy.RockFiltersLegacy ) );
+            }
+            else
+            {
+                engine.RegisterFilters( typeof( Rock.Lava.RockFilters ) );
+            }
         }
 
         private static void RegisterTags( ILavaEngine engine )

@@ -41,9 +41,17 @@ namespace Rock.Tests.UnitTests.Lava
 
             var engine = global::Rock.Lava.LavaEngine.CurrentEngine;
 
-            // Register the common Rock.Lava filters first, then overwrite with the web-based RockFilters as needed.
-            engine.RegisterFilters( typeof( global::Rock.Lava.Filters.TemplateFilters ) );
-            engine.RegisterFilters( typeof( global::Rock.Lava.RockFilters ) );
+            if ( engine.EngineType == LavaEngineTypeSpecifier.Legacy )
+            {
+                engine.RegisterFilters( typeof( global::Rock.Lava.Filters.TemplateFilters ) );
+                engine.RegisterFilters( typeof( global::Rock.Lava.Legacy.RockFiltersLegacy ) );
+            }
+            else
+            {
+                // Register the common Rock.Lava filters first, then overwrite with the web-based RockFilters as needed.
+                engine.RegisterFilters( typeof( global::Rock.Lava.Filters.TemplateFilters ) );
+                engine.RegisterFilters( typeof( global::Rock.Lava.RockFilters ) );
+            }
 
             var helper = new LavaTestHelper();
 

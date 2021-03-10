@@ -1302,6 +1302,18 @@ namespace Rock.Lava.Legacy
         /// <param name="amount">The amount.</param>
         /// <param name="interval">The interval.</param>
         /// <returns></returns>
+        public static DateTime? DateAdd( object input, object amount, object interval )
+        {
+            return DateAdd( input, amount.ToStringSafe().AsInteger(), interval.ToStringSafe() );
+        }
+
+        /// <summary>
+        /// Adds a time interval to a date
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <param name="amount">The amount.</param>
+        /// <param name="interval">The interval.</param>
+        /// <returns></returns>
         public static DateTime? DateAdd( object input, int amount, string interval = "d" )
         {
             DateTime? date = null;
