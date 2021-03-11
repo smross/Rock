@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using DotLiquid;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Rock.Data;
 using Rock.Lava;
@@ -228,9 +229,9 @@ namespace Rock.Tests.UnitTests.Lava
             var personList = new List<TestPerson>();
 
             personList.Add( GetTestPersonTedDecker() );
-            personList.Add( new TestPerson { FirstName = "Cindy", LastName = "Decker", Id = 2 } );
-            personList.Add( new TestPerson { FirstName = "Noah", LastName = "Decker", Id = 3 } );
-            personList.Add( new TestPerson { FirstName = "Alex", LastName = "Decker", Id = 4 } );
+            personList.Add( new TestPerson { FirstName = "Cindy", NickName = "Cindy", LastName = "Decker", Id = 2 } );
+            personList.Add( new TestPerson { FirstName = "Noah", NickName = "Noah", LastName = "Decker", Id = 3 } );
+            personList.Add( new TestPerson { FirstName = "Alex", NickName = "Alex", LastName = "Decker", Id = 4 } );
 
             return personList;
         }
@@ -244,9 +245,9 @@ namespace Rock.Tests.UnitTests.Lava
             var personList = new List<TestPerson>();
 
             personList.Add( GetTestPersonTedDecker() );
-            personList.Add( new TestPerson { FirstName = "Cindy", LastName = "Decker", Id = 2 } );
-            personList.Add( new TestPerson { FirstName = "Noah", LastName = "Decker", Id = 3 } );
-            personList.Add( new TestPerson { FirstName = "Alex", LastName = "Decker", Id = 4 } );
+            personList.Add( new TestPerson { FirstName = "Cindy", NickName = "Cindy", LastName = "Decker", Id = 2 } );
+            personList.Add( new TestPerson { FirstName = "Noah", NickName = "Noah", LastName = "Decker", Id = 3 } );
+            personList.Add( new TestPerson { FirstName = "Alex", NickName = "Alex", LastName = "Decker", Id = 4 } );
 
             personList.Add( GetTestPersonBillMarble() );
             personList.Add( GetTestPersonAlishaMarble() );
@@ -318,6 +319,70 @@ namespace Rock.Tests.UnitTests.Lava
             public override string ToString()
             {
                 return $"{NickName} {LastName}";
+            }
+        }
+
+        #endregion
+
+        #region Legacy Data Objects
+
+        /// <summary>
+        /// Return a collection of initialized Person objects for the Decker family.
+        /// </summary>
+        /// <returns></returns>
+        public List<TestPersonLegacy> GetTestPersonCollectionForDeckerLegacy()
+        {
+            var personList = new List<TestPersonLegacy>();
+
+            personList.Add( GetTestPersonTedDeckerLegacy() );
+            personList.Add( new TestPersonLegacy { FirstName = "Cindy", NickName = "Cindy", LastName = "Decker", Id = 2 } );
+            personList.Add( new TestPersonLegacy { FirstName = "Noah", NickName = "Noah", LastName = "Decker", Id = 3 } );
+            personList.Add( new TestPersonLegacy { FirstName = "Alex", NickName = "Alex", LastName = "Decker", Id = 4 } );
+
+            return personList;
+        }
+
+
+        /// <summary>
+        /// Return an initialized Person object for test subject Ted Decker.
+        /// </summary>
+        /// <returns></returns>
+        public TestPersonLegacy GetTestPersonTedDeckerLegacy()
+        {
+            var campus = new TestCampusLegacy { Name = "North Campus", Id = 1 };
+            var person = new TestPersonLegacy { FirstName = "Edward", NickName = "Ted", LastName = "Decker", Campus = campus, Id = 1 };
+
+            return person;
+        }
+
+        /// <summary>
+        /// A representation of a Person used for testing purposes.
+        /// </summary>
+        public class TestPersonLegacy : RockDynamic
+        {
+            public int Id { get; set; }
+            public string NickName { get; set; }
+            public string FirstName { get; set; }
+            public string LastName { get; set; }
+            public TestCampusLegacy Campus { get; set; }
+
+            public override string ToString()
+            {
+                return $"{NickName} {LastName}";
+            }
+        }
+
+        /// <summary>
+        /// A representation of a Campus used for testing purposes.
+        /// </summary>
+        public class TestCampusLegacy : RockDynamic
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+
+            public override string ToString()
+            {
+                return Name;
             }
         }
 

@@ -391,9 +391,16 @@ Total: {{ '3,5,7' | Split:',' | Sum }}
         [TestMethod]
         public void Select_ValidItemPropertyFromItemCollection_ReturnsValueCollection()
         {
-            var personList = TestHelper.GetTestPersonCollectionForDecker();
+            LavaDataDictionary mergeValues;
 
-            var mergeValues = new LavaDataDictionary { { "People", personList } };
+            if ( TestHelper.LavaEngine.EngineType == LavaEngineTypeSpecifier.Legacy )
+            {
+                mergeValues = new LavaDataDictionary { { "People", TestHelper.GetTestPersonCollectionForDeckerLegacy() } };
+            }
+            else
+            {
+                mergeValues = new LavaDataDictionary { { "People", TestHelper.GetTestPersonCollectionForDecker() } };
+            }
 
             TestHelper.AssertTemplateOutput( "Edward;Cindy;Noah;Alex;",
                 "{% assign names = People | Select:'FirstName' %}{% for name in names %}{{ name }};{% endfor %}",
