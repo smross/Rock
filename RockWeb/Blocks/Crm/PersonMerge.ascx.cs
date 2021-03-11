@@ -260,7 +260,7 @@ namespace RockWeb.Blocks.Crm
 
                 // Load the set of people specified by query string parameters.
                 if ( selectedPersonIds != null )
-                { 
+                {
                     if ( selectedPersonIds.Count == 0 )
                     {
                         ScriptManager.RegisterStartupScript( this, this.GetType(), "goBack", "history.go(-1);", true );
@@ -275,7 +275,7 @@ namespace RockWeb.Blocks.Crm
 
                     // Create the data structure used to build the grid.
                     MergeData = new MergeData( people, headingKeys, CurrentPerson, IsUserAuthorized( PersonMerge.SecurityActionKey.ViewAllAttributes ) );
-                    
+
                     if ( setId != null )
                     {
                         MergeData.EntitySetId = setId.Value;
@@ -424,7 +424,7 @@ namespace RockWeb.Blocks.Crm
             {
                 if ( headingKeys.Contains( gValues.DataKeys[e.Row.RowIndex].Value.ToString() ) )
                 {
-                    e.Row.AddCssClass( "merge-grid-section-header" );
+                    e.Row.AddCssClass( "grid-section-header" );
                 }
                 else
                 {
@@ -1188,7 +1188,7 @@ namespace RockWeb.Blocks.Crm
             if ( MergeData != null && MergeData.People != null && MergeData.People.Any() )
             {
                 var maxAccountProtectionProfile = MergeData.People.Max( p => p.AccountProtectionProfile );
-                //var hasRequiredPermission = 
+                //var hasRequiredPermission =
                 // If the people have different email addresses and any logins, display security alert box
                 var showAlert =
                     MergeData.People.Select( p => p.Email ).Where( e => e != null && e != string.Empty ).Distinct( StringComparer.CurrentCultureIgnoreCase ).Count() > 1 &&
@@ -1564,7 +1564,7 @@ namespace RockWeb.Blocks.Crm
                     var hasViewPermission = attribute.Value.IsAuthorized( Rock.Security.Authorization.VIEW, currentPerson )
                                             || grantPermissionForAllAttributes;
 
-                    AddProperty( "attr_" + attribute.Key, attribute.Value.Name, person.Id, value, formattedValue, hasViewPermission, selected: false, attribute: attribute.Value );                    
+                    AddProperty( "attr_" + attribute.Key, attribute.Value.Name, person.Id, value, formattedValue, hasViewPermission, selected: false, attribute: attribute.Value );
                 }
             }
 
@@ -1578,7 +1578,7 @@ namespace RockWeb.Blocks.Crm
                 {
                     AddProperty( FAMILY_VALUES, FAMILY_VALUES.SplitCase(), 0, string.Empty );
                 }
-                
+
                 var family = person.GetFamily();
                 if ( family != null )
                 {
