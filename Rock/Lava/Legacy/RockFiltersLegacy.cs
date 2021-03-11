@@ -1302,20 +1302,10 @@ namespace Rock.Lava.Legacy
         /// <param name="amount">The amount.</param>
         /// <param name="interval">The interval.</param>
         /// <returns></returns>
-        public static DateTime? DateAdd( object input, object amount, object interval )
+        public static DateTime? DateAdd( object input, object amount, string interval = "d" )
         {
-            return DateAdd( input, amount.ToStringSafe().AsInteger(), interval.ToStringSafe() );
-        }
+            var integerAmount = amount.ToStringSafe().AsInteger();
 
-        /// <summary>
-        /// Adds a time interval to a date
-        /// </summary>
-        /// <param name="input">The input.</param>
-        /// <param name="amount">The amount.</param>
-        /// <param name="interval">The interval.</param>
-        /// <returns></returns>
-        public static DateTime? DateAdd( object input, int amount, string interval = "d" )
-        {
             DateTime? date = null;
 
             if ( input == null )
@@ -1342,25 +1332,25 @@ namespace Rock.Lava.Legacy
                 switch ( interval )
                 {
                     case "y":
-                        date = date.Value.AddYears( amount );
+                        date = date.Value.AddYears( integerAmount );
                         break;
                     case "M":
-                        date = date.Value.AddMonths( amount );
+                        date = date.Value.AddMonths( integerAmount );
                         break;
                     case "w":
-                        date = date.Value.AddDays( amount * 7 );
+                        date = date.Value.AddDays( integerAmount * 7 );
                         break;
                     case "d":
-                        date = date.Value.AddDays( amount );
+                        date = date.Value.AddDays( integerAmount );
                         break;
                     case "h":
-                        date = date.Value.AddHours( amount );
+                        date = date.Value.AddHours( integerAmount );
                         break;
                     case "m":
-                        date = date.Value.AddMinutes( amount );
+                        date = date.Value.AddMinutes( integerAmount );
                         break;
                     case "s":
-                        date = date.Value.AddSeconds( amount );
+                        date = date.Value.AddSeconds( integerAmount );
                         break;
                 }
             }
@@ -1743,8 +1733,11 @@ namespace Rock.Lava.Legacy
         /// <param name="includeCurrentDay">if set to <c>true</c> includes the current day as the current week.</param>
         /// <param name="numberOfWeeks">The number of weeks (must be non-zero).</param>
         /// <returns></returns>
-        public static DateTime? NextDayOfTheWeek( object input, string sDayOfWeek, bool includeCurrentDay = false, int numberOfWeeks = 1 )
+        public static DateTime? NextDayOfTheWeek( object input, string sDayOfWeek, object includeCurrentDay = null, object numberOfWeeks = null )
         {
+            int weeks = numberOfWeeks.ToStringSafe().AsIntegerOrNull() ?? 1;
+            bool includeCurrent = includeCurrentDay.ToStringSafe().AsBoolean( false );
+
             DateTime date;
             DayOfWeek dayOfWeek;
 
@@ -1754,7 +1747,7 @@ namespace Rock.Lava.Legacy
             }
 
             // Check for invalid number of weeks
-            if ( numberOfWeeks == 0 )
+            if ( weeks == 0 )
             {
                 return null;
             }
@@ -1790,7 +1783,7 @@ namespace Rock.Lava.Legacy
             // Calculate the offset
             int daysUntilWeekDay;
 
-            if ( includeCurrentDay )
+            if ( includeCurrent )
             {
                 daysUntilWeekDay = ( (int)dayOfWeek - (int)date.DayOfWeek + 7 ) % 7;
             }
@@ -1802,12 +1795,12 @@ namespace Rock.Lava.Legacy
             // When a positive number of weeks is given, since the number of weeks defaults to 1
             // (which means the current week) we need to shift the numberOfWeeks down by 1 so
             // the calculation below is correct.
-            if ( numberOfWeeks >= 1 )
+            if ( weeks >= 1 )
             {
-                numberOfWeeks--;
+                weeks--;
             }
 
-            return date.AddDays( daysUntilWeekDay + ( numberOfWeeks * 7 ) );
+            return date.AddDays( daysUntilWeekDay + ( weeks * 7 ) );
         }
 
         /// <summary>
