@@ -586,11 +586,13 @@ namespace RockWeb.Blocks.CheckIn.Manager
 
             attendanceList = CheckinManagerHelper.FilterByActiveCheckins( currentDateTime, attendanceList );
             attendanceList = attendanceList.Where( a => a.PersonAlias != null && a.PersonAlias.Person != null ).ToList();
-            var attendees = RosterAttendee.GetFromAttendanceList( attendanceList, checkinAreaFilter );
+            var unfilteredAttendees = RosterAttendee.GetFromAttendanceList( attendanceList, checkinAreaFilter );
 
-            UpdateStatusFilterTabs( attendees );
+            UpdateStatusFilterTabs( unfilteredAttendees );
 
-            var attendeesForCurrentStatusFilter = attendees.Where( a => a.MeetsRosterStatusFilter( currentStatusFilter ) ).ToList();
+            var attendanceListForCurrentStatusFilter = attendanceList.Where( a => RosterAttendee.AttendanceMeetsRosterStatusFilter( a, currentStatusFilter ) ).ToList();
+
+            var attendeesForCurrentStatusFilter = RosterAttendee.GetFromAttendanceList( attendanceListForCurrentStatusFilter, checkinAreaFilter );
 
             return attendeesForCurrentStatusFilter;
         }
@@ -602,10 +604,12 @@ namespace RockWeb.Blocks.CheckIn.Manager
         /// <param name="currentDateTime">The current date time.</param>
         private void UpdateStatusFilterTabs( IList<RosterAttendee> attendees )
         {
-            var checkedInCount = attendees.Where( x => x.Status == RosterAttendeeStatus.CheckedIn ).Count();
-            var presentCount = attendees.Where( x => x.Status == RosterAttendeeStatus.Present ).Count();
-            var checkedOutCount = attendees.Where( x => x.Status == RosterAttendeeStatus.CheckedOut ).Count();
-            var allCount = checkedInCount + presentCount + checkedOutCount;
+            var checkedInCount = attendees.Where( x => x.MeetsRosterStatusFilter( RosterStatusFilter.CheckedIn )).Count();
+            var presentCount = attendees.Where( x => x.MeetsRosterStatusFilter(RosterStatusFilter.Present )).Count();
+            var checkedOutCount = attendees.Where( x => x.MeetsRosterStatusFilter( RosterStatusFilter.CheckedOut ) ).Count();
+
+            //var allCount = checkedInCount + presentCount + checkedOutCount;
+            var allCount = attendees.Where( x => x.MeetsRosterStatusFilter( RosterStatusFilter.All ) ).Count();
 
             UpdateStatusFilterTabText( RosterStatusFilter.All, allCount );
             UpdateStatusFilterTabText( RosterStatusFilter.CheckedIn, checkedInCount );
