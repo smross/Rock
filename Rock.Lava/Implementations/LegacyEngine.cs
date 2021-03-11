@@ -118,6 +118,11 @@ namespace Rock.Lava.Legacy
         /// <param name="allowedMembers"></param>
         public override void RegisterSafeType( Type type, IEnumerable<string> allowedMembers )
         {
+            if ( allowedMembers == null )
+            {
+                allowedMembers = new string[0];
+            }
+
             Template.RegisterSafeType( type, allowedMembers.ToArray() );
         }
 
