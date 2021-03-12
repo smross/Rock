@@ -162,7 +162,8 @@ namespace Rock.Tests.UnitTests.Lava
 
         /// <summary>
         /// A representation of a Person used for testing purposes.
-        /// </summary>
+        /// </summary
+        [DotLiquid.LiquidType("Id", "NickName", "FirstName", "LastName", "Campus")]
         public class PersonRockDynamic : RockDynamic
         {
             public int Id { get; set; }
@@ -180,6 +181,7 @@ namespace Rock.Tests.UnitTests.Lava
         /// <summary>
         /// A representation of a Campus used for testing purposes.
         /// </summary>
+        [DotLiquid.LiquidType("Id", "Name" )]
         public class CampusRockDynamic : RockDynamic
         {
             public int Id { get; set; }

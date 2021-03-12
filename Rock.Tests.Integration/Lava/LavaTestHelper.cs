@@ -47,8 +47,8 @@ namespace Rock.Tests.Integration.Lava
             engine.ExceptionHandlingStrategy = ExceptionHandlingStrategySpecifier.RenderToOutput;
 
             RegisterFilters( engine );
-            RegisterBlocks( engine );
             RegisterTags( engine );
+            RegisterBlocks( engine );
 
             RegisterStaticShortcodes( engine );
             RegisterDynamicShortcodes( engine );
@@ -62,20 +62,58 @@ namespace Rock.Tests.Integration.Lava
         {
             if ( engine.EngineType == LavaEngineTypeSpecifier.Legacy )
             {
-                engine.RegisterFilters( typeof( Rock.Lava.Legacy.RockFiltersLegacy ) );
+                engine.RegisterFilters( typeof( global::Rock.Lava.Filters.TemplateFilters ) );
+                engine.RegisterFilters( typeof( Rock.Lava.Legacy.RockFiltersLegacy ) );                
             }
             else
             {
                 engine.RegisterFilters( typeof( Rock.Lava.RockFilters ) );
+                engine.RegisterFilters( typeof( global::Rock.Lava.Filters.TemplateFilters ) );
             }
         }
 
         private static void RegisterTags( ILavaEngine engine )
         {
-            // Get all blocks and call OnStartup methods
+            // Get all tags and call OnStartup methods
+            if ( engine.EngineType == LavaEngineTypeSpecifier.Legacy )
+            {
+                // Find all tag elements that implement IRockStartup.
+                var elementTypes = Rock.Reflection.FindTypes( typeof( DotLiquid.Tag ) ).Select( a => a.Value ).ToList();
+
+                foreach ( var elementType in elementTypes )
+                {
+                    var instance = Activator.CreateInstance( elementType ) as IRockStartup;
+
+                    if ( instance == null )
+                    {
+                        continue;
+                    }
+
+                    try
+                    {
+                        // Legacy blocks register themselves with the DotLiquid framework during their startup process.
+                        instance.OnStartup();
+                    }
+                    catch ( Exception ex )
+                    {
+                        var lavaException = new Exception( string.Format( "Lava component initialization failure. Startup failed for Lava Tag \"{0}\".", elementType.FullName ), ex );
+
+                        ExceptionLogService.LogException( lavaException, null );
+                    }
+                }
+            }
+
+            if ( engine.EngineType == LavaEngineTypeSpecifier.Legacy )
+            {
+                return;
+            }
+
+            // Get all Lava tags and call the OnStartup method.
             try
             {
-                var elementTypes = Rock.Reflection.FindTypes( typeof( ILavaTag ) ).Select( a => a.Value ).ToList();
+                List<Type> elementTypes;
+
+                elementTypes = Rock.Reflection.FindTypes( typeof( ILavaTag ) ).Select( a => a.Value ).ToList();
 
                 foreach ( var elementType in elementTypes )
                 {
@@ -116,43 +154,73 @@ namespace Rock.Tests.Integration.Lava
         private static void RegisterBlocks( ILavaEngine engine )
         {
             // Get all blocks and call OnStartup methods
-            try
+            if ( engine.EngineType == LavaEngineTypeSpecifier.Legacy )
             {
-                var elementTypes = Rock.Reflection.FindTypes( typeof( ILavaBlock ) ).Select( a => a.Value ).ToList();
+                // Find all tag elements that implement IRockStartup.
+                var elementTypes = Rock.Reflection.FindTypes( typeof( DotLiquid.Block ) ).Select( a => a.Value ).ToList();
 
                 foreach ( var elementType in elementTypes )
                 {
-                    var instance = Activator.CreateInstance( elementType ) as ILavaBlock;
+                    var instance = Activator.CreateInstance( elementType ) as IRockStartup;
 
-                    var name = instance.SourceElementName;
-
-                    if ( string.IsNullOrWhiteSpace( name ) )
+                    if ( instance == null )
                     {
-                        name = elementType.Name;
+                        continue;
                     }
-
-                    engine.RegisterBlock( name, ( shortcodeName ) =>
-                    {
-                        var shortcode = Activator.CreateInstance( elementType ) as ILavaBlock;
-
-                        return shortcode;
-                    } );
 
                     try
                     {
+                        // Legacy blocks register themselves with the DotLiquid framework during their startup process.
                         instance.OnStartup();
                     }
                     catch ( Exception ex )
                     {
-                        var lavaException = new Exception( string.Format( "Lava component initialization failure. Startup failed for Lava Block \"{0}\".", elementType.FullName ), ex );
+                        var lavaException = new Exception( string.Format( "Lava component initialization failure. Startup failed for Lava Tag \"{0}\".", elementType.FullName ), ex );
 
                         ExceptionLogService.LogException( lavaException, null );
                     }
                 }
             }
-            catch ( Exception ex )
+            else
             {
-                ExceptionLogService.LogException( ex, null );
+                try
+                {
+                    var elementTypes = Rock.Reflection.FindTypes( typeof( ILavaBlock ) ).Select( a => a.Value ).ToList();
+
+                    foreach ( var elementType in elementTypes )
+                    {
+                        var instance = Activator.CreateInstance( elementType ) as ILavaBlock;
+
+                        var name = instance.SourceElementName;
+
+                        if ( string.IsNullOrWhiteSpace( name ) )
+                        {
+                            name = elementType.Name;
+                        }
+
+                        engine.RegisterBlock( name, ( shortcodeName ) =>
+                        {
+                            var shortcode = Activator.CreateInstance( elementType ) as ILavaBlock;
+
+                            return shortcode;
+                        } );
+
+                        try
+                        {
+                            instance.OnStartup();
+                        }
+                        catch ( Exception ex )
+                        {
+                            var lavaException = new Exception( string.Format( "Lava component initialization failure. Startup failed for Lava Block \"{0}\".", elementType.FullName ), ex );
+
+                            ExceptionLogService.LogException( lavaException, null );
+                        }
+                    }
+                }
+                catch ( Exception ex )
+                {
+                    ExceptionLogService.LogException( ex, null );
+                }
             }
         }
 
@@ -334,6 +402,8 @@ namespace Rock.Tests.Integration.Lava
         public void AssertTemplateOutputRegex( string expectedOutputRegex, string inputTemplate, LavaDataDictionary mergeValues = null )
         {
             var outputString = GetTemplateOutput( inputTemplate, mergeValues );
+
+            Assert.IsNotNull( outputString, "Template failed to render." );
 
             var regex = new Regex( expectedOutputRegex );
 

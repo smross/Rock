@@ -675,7 +675,8 @@ namespace Rock
                 if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.Legacy )
                 {
                     Template template = GetTemplate( content );
-                    template.Registers.AddOrReplace( "EnabledCommands", enabledLavaCommands );
+
+                    template.Registers.AddOrReplace( "EnabledCommands", enabledLavaCommands == null ? string.Empty : enabledLavaCommands.JoinStrings(",") );
 
                     string result;
 
