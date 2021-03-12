@@ -488,7 +488,7 @@ namespace Rock.Lava
             {
                 var enabledCommands = context.Registers["EnabledCommands"].ToString().Split( ',' ).ToList();
 
-                if ( enabledCommands.Contains( "All" ) || enabledCommands.Contains( command ) )
+                if ( enabledCommands.Contains( "All", StringComparer.OrdinalIgnoreCase ) || enabledCommands.Contains( command, StringComparer.OrdinalIgnoreCase ) )
                 {
                     return true;
                 }
