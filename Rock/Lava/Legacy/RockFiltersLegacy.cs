@@ -194,6 +194,12 @@ namespace Rock.Lava.Legacy
             var wordsPerSecond = wordPerMinute / 60;
             var wordsInString = inputString.WordCount();
 
+            // Verify that the reading speed is set to a reasonable minimum.
+            if ( wordsPerSecond < 1 )
+            {
+                wordsPerSecond = 1;
+            }
+
             var readTimeInSeconds = wordsInString / wordsPerSecond;
 
             // Adjust the read time for images. We will start with the provided seconds per image (default 12) and subject a second for each additional image until we reach 10 then every image is 3 seconds.
@@ -502,22 +508,22 @@ namespace Rock.Lava.Legacy
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        public static string NumberToOrdinal( string input )
+        public static string NumberToOrdinal( object input )
         {
             if ( input == null )
             {
-                return input;
+                return string.Empty;
             }
 
             int number;
 
-            if ( int.TryParse( input, out number ) )
+            if ( int.TryParse( input.ToString(), out number ) )
             {
                 return number.Ordinalize();
             }
             else
             {
-                return input;
+                return input.ToString();
             }
         }
 
@@ -526,22 +532,22 @@ namespace Rock.Lava.Legacy
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        public static string NumberToWords( string input )
+        public static string NumberToWords( object input )
         {
             if ( input == null )
             {
-                return input;
+                return string.Empty;
             }
 
             int number;
 
-            if ( int.TryParse( input, out number ) )
+            if ( int.TryParse( input.ToString(), out number ) )
             {
                 return number.ToWords();
             }
             else
             {
-                return input;
+                return input.ToString();
             }
         }
 
@@ -550,22 +556,22 @@ namespace Rock.Lava.Legacy
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        public static string NumberToOrdinalWords( string input )
+        public static string NumberToOrdinalWords( object input )
         {
             if ( input == null )
             {
-                return input;
+                return string.Empty;
             }
 
             int number;
 
-            if ( int.TryParse( input, out number ) )
+            if ( int.TryParse( input.ToString(), out number ) )
             {
                 return number.ToOrdinalWords();
             }
             else
             {
-                return input;
+                return input.ToString();
             }
         }
 
@@ -574,22 +580,22 @@ namespace Rock.Lava.Legacy
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        public static string NumberToRomanNumerals( string input )
+        public static string NumberToRomanNumerals( object input )
         {
             if ( input == null )
             {
-                return input;
+                return string.Empty;
             }
 
             int number;
 
-            if ( int.TryParse( input, out number ) )
+            if ( int.TryParse( input.ToString(), out number ) )
             {
                 return number.ToRoman();
             }
             else
             {
-                return input;
+                return input.ToString();
             }
         }
 
@@ -715,7 +721,7 @@ namespace Rock.Lava.Legacy
             }
 
             int place = inputAsString.LastIndexOf( search );
-            if ( place > 0 )
+            if ( place >= 0 )
             {
                 return inputAsString.Remove( place, search.Length ).Insert( place, replacement );
             }
@@ -979,6 +985,37 @@ namespace Rock.Lava.Legacy
                         .Select( c => c.Value ) );
 
             return captured.ToList();
+        }
+
+        /// <summary>
+        /// Run RegEx replacing on a string.
+        /// </summary>
+        /// <param name="input">The lava source to process.</param>
+        /// <param name="pattern">The regex pattern to use when matching.</param>
+        /// <param name="replacement">The string to use when doing replacement.</param>
+        /// <param name="options">The regex options to modify the matching.</param>
+        /// <example><![CDATA[
+        /// {{ 'The Rock is awesome.' | RegExReplace:'the rock','Rock','i' }}
+        /// {{ 'Hello Ted, how are you?' | RegExReplace:'[Hh]ello (\w+)','Greetings $1' }}
+        /// ]]></example>
+        public static object RegExReplace( object input, object pattern, object replacement, string options = null )
+        {
+            RegexOptions regexOptions = RegexOptions.None;
+            var inputString = input.ToString();
+
+            options = options ?? string.Empty;
+
+            if ( options.Contains( 'm' ) )
+            {
+                regexOptions |= RegexOptions.Multiline;
+            }
+
+            if ( options.Contains( 'i' ) )
+            {
+                regexOptions |= RegexOptions.IgnoreCase;
+            }
+
+            return Regex.Replace( inputString, pattern.ToString(), replacement.ToString(), regexOptions );
         }
 
         /// <summary>
@@ -1863,18 +1900,24 @@ namespace Rock.Lava.Legacy
         /// <returns></returns>
         public static string Format( object input, string format )
         {
-            if ( input == null )
+            var inputString = input.ToStringSafe();
+
+            if ( string.IsNullOrWhiteSpace( format ) )
             {
-                return null;
-            }
-            else if ( string.IsNullOrWhiteSpace( format ) )
-            {
-                return input.ToString();
+                return inputString;
             }
 
-            return string.Format( "{0:" + format + "}", input );
+            var decimalValue = inputString.AsDecimalOrNull();
+
+            if ( decimalValue == null )
+            {
+                return string.Format( "{0:" + format + "}", inputString );
+            }
+            else
+            {
+                return string.Format( "{0:" + format + "}", decimalValue );
+            }
         }
-
         /// <summary>
         /// Formats the specified input as currency using the CurrencySymbol from Global Attributes
         /// </summary>
@@ -5085,6 +5128,39 @@ namespace Rock.Lava.Legacy
             }
 
             return $"Configuration setting \"{ input }\" is not available.";
+        }
+
+        /// <summary>
+        /// Processes the Lava code in the source string.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="input">The lava source to process.</param>
+        /// <example><![CDATA[
+        /// {% capture lava %}{% raw %}{% assign test = "hello" %}{{ test }}{% endraw %}{% endcapture %}
+        /// {{ lava | BBM_RunLava }}
+        /// ]]></example>
+        public static string RunLava( Context context, object input )
+        {
+            if ( input == null )
+            {
+                return null;
+            }
+
+            var template = Template.Parse( input.ToString() );
+
+            //
+            // Copy over any Registers, which often contain "internal" context information.
+            //
+            foreach ( var key in context.Registers.Keys )
+            {
+                template.Registers.Add( key, context.Registers[key] );
+            }
+
+            var mergeFields = context.Environments.SelectMany( a => a ).ToDictionary( k => k.Key, v => v.Value );
+
+            System.Runtime.CompilerServices.RuntimeHelpers.EnsureSufficientExecutionStack();
+
+            return template.Render( Hash.FromDictionary( mergeFields ) );
         }
 
         #endregion Misc Filters
