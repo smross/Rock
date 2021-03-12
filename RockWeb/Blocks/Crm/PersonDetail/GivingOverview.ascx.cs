@@ -164,6 +164,7 @@ namespace RockWeb.Blocks.Crm.PersonDetail
             else
             {
                 pnlNoGiving.Visible = true;
+                return;
             }
 
             var contributionByMonths = new Dictionary<DateTime, decimal>();
@@ -201,8 +202,8 @@ namespace RockWeb.Blocks.Crm.PersonDetail
             var last12MonthQry = qry.Where( a => a.Transaction.TransactionDateTime.Value >= last12MonthStartDate );
             var last90DaysQry = qry.Where( a => a.Transaction.TransactionDateTime.Value >= last90DaysStartDate );
             var baseGrowthQry = qry.Where( a => a.Transaction.TransactionDateTime.Value >= last180DaysStartDate && a.Transaction.TransactionDateTime.Value < last90DaysStartDate );
-            var baseGrowthContribution = baseGrowthQry.Sum( a => a.Amount );
-            var last90DaysContribution = last90DaysQry.Sum( a => a.Amount );
+            var baseGrowthContribution = baseGrowthQry.Select( a => a.Amount ).DefaultIfEmpty().Sum();
+            var last90DaysContribution = last90DaysQry.Select( a => a.Amount ).DefaultIfEmpty().Sum();
             decimal growthPercent = 0;
             if ( baseGrowthContribution == 0 )
             {
@@ -254,8 +255,11 @@ namespace RockWeb.Blocks.Crm.PersonDetail
             givingAnalytics += GetKpiShortCode( "Gives As", givesAs, icon: givesAsIcon );
 
             var frequencyLabelAttribute = AttributeCache.Get( Rock.SystemGuid.Attribute.PERSON_GIVING_FREQUENCY_LABEL );
-            var frequencyLabel = frequencyLabelAttribute.FieldType.Field.FormatValue( null, Person.GetAttributeValue( "FrequencyLabel" ), frequencyLabelAttribute.QualifierValues, false );
-            givingAnalytics += GetKpiShortCode( "Frequency", frequencyLabel, icon: "fa-fw fa-calendar-alt", textAlign: "left" );
+            if ( frequencyLabelAttribute != null )
+            {
+                var frequencyLabel = frequencyLabelAttribute.FieldType.Field.FormatValue( null, Person.GetAttributeValue( "FrequencyLabel" ), frequencyLabelAttribute.QualifierValues, false );
+                givingAnalytics += GetKpiShortCode( "Frequency", frequencyLabel, icon: "fa-fw fa-calendar-alt", textAlign: "left" );
+            }
 
             var preferredCurrencyGuidValue = Person.GetAttributeValue( "PreferredCurrency" ).AsGuidOrNull();
             if ( preferredCurrencyGuidValue.HasValue )
