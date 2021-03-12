@@ -76,7 +76,13 @@ namespace Rock.Lava.Legacy.Blocks
         /// <param name="result">The result.</param>
         public override void Render( Context context, TextWriter result )
         {
-            RockPage page = HttpContext.Current.Handler as RockPage;
+            // Get the current page object if it is available.
+            RockPage page = null;
+
+            if ( HttpContext.Current != null )
+            {
+                page = HttpContext.Current.Handler as RockPage;
+            }
 
             var parms = ParseMarkup( _markup, context );
 
@@ -99,50 +105,85 @@ namespace Rock.Lava.Legacy.Blocks
                         javascript = twJavascript.ToString();
                     }
 
+                    var scriptText = $"{Environment.NewLine}<script>{javascript}</script>{Environment.NewLine}";
+
                     if ( parms.ContainsKey( "id" ) )
                     {
                         var identifier = parms["id"];
                         if ( identifier.IsNotNullOrWhiteSpace() )
                         {
                             var controlId = "js-" + identifier;
+                            System.Web.UI.Control scriptControl = null;
 
-                            var scriptControl = page.Header.FindControl( controlId );
-                            if ( scriptControl == null )
+                            if ( page != null )
                             {
-                                scriptControl = new System.Web.UI.LiteralControl( $"{Environment.NewLine}<script>{javascript}</script>{Environment.NewLine}" );
-                                scriptControl.ID = controlId;
-                                page.Header.Controls.Add( scriptControl );
+                                scriptControl = page.Header.FindControl( controlId );
+
+                                if ( scriptControl == null )
+                                {
+                                    scriptControl = new System.Web.UI.LiteralControl( scriptText );
+                                    scriptControl.ID = controlId;
+                                    page.Header.Controls.Add( scriptControl );
+                                }
+                            }
+                            else
+                            {
+                                result.Write( scriptText );
                             }
                         }
                     }
                     else
                     {
-                        page.Header.Controls.Add( new System.Web.UI.LiteralControl( $"{Environment.NewLine}<script>{javascript}</script>{Environment.NewLine}" ) );
+                        if ( page != null )
+                        {
+                            page.Header.Controls.Add( new System.Web.UI.LiteralControl( scriptText ) );
+                        }
+                        else
+                        {
+                            result.Write( scriptText );
+                        }
                     }
                 }
                 else
                 {
                     var url = ResolveRockUrl( parms["url"] );
 
+                    var scriptText = $"{Environment.NewLine}<script src='{url}' type='text/javascript'></script>{Environment.NewLine}";
                     if ( parms.ContainsKey( "id" ) )
                     {
                         var identifier = parms["id"];
                         if ( identifier.IsNotNullOrWhiteSpace() )
                         {
                             var controlId = "js-" + identifier;
+                            System.Web.UI.Control scriptControl = null;
 
-                            var scriptControl = page.Header.FindControl( controlId );
-                            if ( scriptControl == null )
+                            if ( page != null )
                             {
-                                scriptControl = new System.Web.UI.LiteralControl( $"{Environment.NewLine}<script src='{url}' type='text/javascript'></script>{Environment.NewLine}" );
-                                scriptControl.ID = controlId;
-                                page.Header.Controls.Add( scriptControl );
+                                scriptControl = page.Header.FindControl( controlId );
+
+                                if ( scriptControl == null )
+                                {
+                                    scriptControl = new System.Web.UI.LiteralControl( scriptText );
+                                    scriptControl.ID = controlId;
+                                    page.Header.Controls.Add( scriptControl );
+                                }
+                            }
+                            else
+                            {
+                                result.Write( scriptText );
                             }
                         }
                     }
                     else
                     {
-                        page.Header.Controls.Add( new System.Web.UI.LiteralControl( $"{Environment.NewLine}<script src='{url}' type='text/javascript'></script>{Environment.NewLine}" ) );
+                        if ( page != null )
+                        {
+                            page.Header.Controls.Add( new System.Web.UI.LiteralControl( scriptText ) );
+                        }
+                        else
+                        {
+                            result.Write( scriptText );
+                        }
                     }
                 }
             }
