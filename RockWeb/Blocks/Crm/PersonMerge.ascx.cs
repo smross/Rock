@@ -1258,6 +1258,11 @@ namespace RockWeb.Blocks.Crm
 
         private void ShowMessages( CanMergeResult canMergeResult )
         {
+            if ( !canMergeResult.CanMerge )
+            {
+                return;
+            }
+
             var hasDifferentEmailAddresses = MergeData
                 .People
                 .Select( p => p.Email )
