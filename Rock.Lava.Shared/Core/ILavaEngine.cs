@@ -52,12 +52,44 @@ namespace Rock.Lava
         LavaEngineTypeSpecifier EngineType { get; }
 
         /// <summary>
-        /// Gets a new render context instance containing the specified merge values.
+        /// Creates a new render context instance containing the specified merge values.
         /// </summary>
         /// <param name="values"></param>
         /// <param name="enabledCommands"></param>
         /// <returns></returns>
-        ILavaRenderContext NewRenderContext( IDictionary<string, object> values = null, IEnumerable<string> enabledCommands = null );
+        ILavaRenderContext NewRenderContext();
+
+        /// <summary>
+        /// Creates a new render context instance with the specified Lava commands enabled.
+        /// </summary>
+        /// <param name="enabledCommands"></param>
+        /// <returns></returns>
+        ILavaRenderContext NewRenderContext( IEnumerable<string> enabledCommands );
+
+        /// <summary>
+        /// Creates a new render context instance containing the specified merge values.
+        /// </summary>
+        /// <param name="mergeFields"></param>
+        /// <param name="enabledCommands"></param>
+        /// <returns></returns>
+        ILavaRenderContext NewRenderContext( IDictionary<string, object> mergeFields, IEnumerable<string> enabledCommands = null );
+
+        /// <summary>
+        /// Creates a new render context instance containing the specified merge values.
+        /// </summary>
+        /// <param name="mergeFields"></param>
+        /// <param name="enabledCommands"></param>
+        /// <returns></returns>
+        ILavaRenderContext NewRenderContext( ILavaDataDictionary mergeFields, IEnumerable<string> enabledCommands = null );
+
+        /// <summary>
+        /// Creates a new render context instance containing the specified merge values.
+        /// </summary>
+        /// <param name="mergeFields"></param>
+        /// <param name="enabledCommands"></param>
+        /// <returns></returns>
+        /// <remarks>This method overload exists to disambiguate calls using the LavaDataDictionary parameter.</remarks>
+        ILavaRenderContext NewRenderContext( LavaDataDictionary mergeFields, IEnumerable<string> enabledCommands = null );
 
         /// <summary>
         /// Register one or more filter functions that are implemented by the supplied Type.
@@ -138,7 +170,7 @@ namespace Rock.Lava
         /// The rendered output of the template.
         /// If the template is invalid, returns an error message or an empty string according to the current ExceptionHandlingStrategy setting.
         /// </returns>
-        string RenderTemplate( string inputTemplate, LavaDataDictionary mergeFields );
+        string RenderTemplate( string inputTemplate, ILavaDataDictionary mergeFields );
 
         /// <summary>
         /// Try to render the provided template.
@@ -155,7 +187,7 @@ namespace Rock.Lava
         /// <param name="mergeFields"></param>
         /// <param name="output"></param>
         /// <returns></returns>
-        bool TryRenderTemplate( string inputTemplate, LavaDataDictionary mergeFields, out string output, out List<Exception> errors );
+        bool TryRenderTemplate( string inputTemplate, ILavaDataDictionary mergeFields, out string output, out List<Exception> errors );
 
         /// <summary>
         /// Try to render the provided template in the specified context.

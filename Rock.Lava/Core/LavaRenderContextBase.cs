@@ -52,7 +52,7 @@ namespace Rock.Lava
         /// Internal values are not available to be resolved in the Lava Template.
         /// </summary>
         /// <param name="values"></param>
-        public void SetInternalFields( LavaDataDictionary values )
+        public void SetInternalFields( ILavaDataDictionary values )
         {
             SetInternalFields( values as IDictionary<string, object> );
         }
@@ -61,18 +61,28 @@ namespace Rock.Lava
         /// Sets a collection of named values for internal use only.
         /// Internal values are not available to be resolved in the Lava Template.
         /// </summary>
-        /// <param name="values"></param>
-        public virtual void SetInternalFields( IDictionary<string, object> values )
+        /// <param name="fieldValues"></param>
+        public virtual void SetInternalFields( IDictionary<string, object> fieldValues )
         {
-            if ( values == null )
+            if ( fieldValues == null )
             {
                 return;
             }
 
-            foreach ( var kvp in values )
+            foreach ( var kvp in fieldValues )
             {
                 SetInternalField( kvp.Key, kvp.Value );
             }
+        }
+
+        /// <summary>
+        /// Sets a collection of named values for internal use only.
+        /// Internal values are not available to be resolved in the Lava Template.
+        /// </summary>
+        /// <param name="values"></param>
+        public void SetInternalFields( LavaDataDictionary values )
+        {
+            SetInternalFields( values as IDictionary<string, object> );
         }
 
         /// <summary>
@@ -99,27 +109,45 @@ namespace Rock.Lava
         /// <summary>
         /// Sets the user-defined variables in the current context that are internally available to custom filters and tags.
         /// </summary>
-        /// <param name="values"></param>
-        public void SetMergeFields( LavaDataDictionary values )
+        /// <param name="fieldValues"></param>
+        public void SetMergeFields( ILavaDataDictionary fieldValues )
         {
-            SetMergeFields( values as IDictionary<string, object> );
+            if ( fieldValues == null )
+            {
+                return;
+            }
+
+            foreach ( var key in fieldValues.AvailableKeys )
+            {
+                SetMergeField( key, fieldValues.GetValue( key ) );
+            }
         }
 
         /// <summary>
         /// Sets the user-defined variables in the current context that are internally available to custom filters and tags.
         /// </summary>
-        /// <param name="values"></param>
-        public virtual void SetMergeFields( IDictionary<string, object> values )
+        /// <param name="fieldValues"></param>
+        public virtual void SetMergeFields( IDictionary<string, object> fieldValues )
         {
-            if ( values == null )
+            if ( fieldValues == null )
             {
                 return;
             }
 
-            foreach ( var kvp in values )
+            foreach ( var kvp in fieldValues )
             {
                 SetMergeField( kvp.Key, kvp.Value );
             }
+        }
+
+        /// <summary>
+        /// Sets the user-defined variables in the current context that are internally available to custom filters and tags.
+        /// </summary>
+        /// <param name="fieldValues"></param>
+        /// <remarks>This method overload exists to disambiguate calls using the LavaDataDictionary parameter.</remarks>
+        public void SetMergeFields( LavaDataDictionary fieldValues )
+        {
+            SetMergeFields( (ILavaDataDictionary)fieldValues );
         }
 
         /// <summary>

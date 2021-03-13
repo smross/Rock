@@ -60,15 +60,23 @@ namespace Rock.Lava
         /// Sets a collection of named values for internal use only.
         /// Internal values are not available to be resolved in the Lava Template.
         /// </summary>
-        /// <param name="values"></param>
-        void SetInternalFields( IDictionary<string, object> values );
+        /// <param name="fieldValues"></param>
+        void SetInternalFields( IDictionary<string, object> fieldValues );
 
         /// <summary>
         /// Sets a collection of named values for internal use only.
         /// Internal values are not available to be resolved in the Lava Template.
         /// </summary>
-        /// <param name="values"></param>
-        void SetInternalFields( LavaDataDictionary values );
+        /// <param name="fieldValues"></param>
+        void SetInternalFields( ILavaDataDictionary fieldValues );
+
+        /// <summary>
+        /// Sets a collection of named values for internal use only.
+        /// Internal values are not available to be resolved in the Lava Template.
+        /// </summary>
+        /// <param name="fieldValues"></param>
+        /// <remarks>This method overload exists to disambiguate calls using the LavaDataDictionary parameter.</remarks>
+        void SetInternalFields( LavaDataDictionary fieldValues );
 
         /// <summary>
         /// Gets the value of a field that is accessible for merging into a template.
@@ -95,14 +103,21 @@ namespace Rock.Lava
         /// <summary>
         /// Sets the user-defined variables in the current context that are internally available to custom filters and tags.
         /// </summary>
-        /// <param name="values"></param>
-        void SetMergeFields( LavaDataDictionary values );
+        /// <param name="fieldValues"></param>
+        void SetMergeFields( ILavaDataDictionary fieldValues );
 
         /// <summary>
         /// Sets the user-defined variables in the current context that are internally available to custom filters and tags.
         /// </summary>
-        /// <param name="values"></param>
-        void SetMergeFields( IDictionary<string, object> values );
+        /// <param name="fieldValues"></param>
+        void SetMergeFields( IDictionary<string, object> fieldValues );
+
+        /// <summary>
+        /// Sets the user-defined variables in the current context that are internally available to custom filters and tags.
+        /// </summary>
+        /// <param name="fieldValues"></param>
+        /// <remarks>This method overload exists to disambiguate calls using the LavaDataDictionary parameter.</remarks>
+        void SetMergeFields( LavaDataDictionary fieldValues );
 
         /// <summary>
         /// Get or set the value of a field that is accessible for merging into a template.

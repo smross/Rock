@@ -70,29 +70,100 @@ namespace Rock.Lava
         public abstract string EngineName { get; }
 
         /// <summary>
+        /// Create a new template context.
+        /// </summary>
+        /// <returns></returns>
+        public ILavaRenderContext NewRenderContext()
+        {
+            var context = OnCreateRenderContext();
+
+            if ( context == null )
+            {
+                throw new LavaException( "Failed to create a new render context." );
+            }
+
+            context.SetEnabledCommands( this.DefaultEnabledCommands );
+
+            return context;
+        }
+
+        /// <summary>
+        /// Create a new template context and add the specified merge fields.
+        /// </summary>
+        /// <param name="enabledCommands"></param>
+        /// <returns></returns>
+        public ILavaRenderContext NewRenderContext( IEnumerable<string> enabledCommands )
+        {
+            var context = OnCreateRenderContext();
+
+            if ( context == null )
+            {
+                throw new LavaException( "Failed to create a new render context." );
+            }
+
+            enabledCommands = enabledCommands ?? this.DefaultEnabledCommands;
+
+            context.SetEnabledCommands( enabledCommands );
+
+            return context;
+        }
+
+        /// <summary>
         /// Create a new template context and add the specified merge fields.
         /// </summary>
         /// <param name="mergeFields"></param>
         /// <returns></returns>
-        public ILavaRenderContext NewRenderContext( IDictionary<string, object> mergeFields = null, IEnumerable<string> enabledCommands = null )
+        public ILavaRenderContext NewRenderContext( ILavaDataDictionary mergeFields, IEnumerable<string> enabledCommands = null )
         {
             var context = OnCreateRenderContext();
 
-            if (context == null )
+            if ( context == null )
             {
                 throw new LavaException( "Failed to create a new render context." );
             }
 
             context.SetMergeFields( mergeFields );
 
-            if ( enabledCommands == null )
-            {
-                enabledCommands = this.DefaultEnabledCommands;
-            }
+            enabledCommands = enabledCommands ?? this.DefaultEnabledCommands;
 
             context.SetEnabledCommands( enabledCommands );
 
             return context;
+        }
+
+        /// <summary>
+        /// Create a new template context and add the specified merge fields.
+        /// </summary>
+        /// <param name="mergeFields"></param>
+        /// <returns></returns>
+        public ILavaRenderContext NewRenderContext( IDictionary<string, object> mergeFields, IEnumerable<string> enabledCommands = null )
+        {
+            var context = OnCreateRenderContext();
+
+            if ( context == null )
+            {
+                throw new LavaException( "Failed to create a new render context." );
+            }
+
+            context.SetMergeFields( mergeFields );
+
+            enabledCommands = enabledCommands ?? this.DefaultEnabledCommands;
+
+            context.SetEnabledCommands( enabledCommands );
+
+            return context;
+        }
+
+        /// <summary>
+        /// Create a new template context and add the specified merge fields.
+        /// </summary>
+        /// <param name="mergeFields"></param>
+        /// <returns></returns>
+        public ILavaRenderContext NewRenderContext( LavaDataDictionary mergeFields, IEnumerable<string> enabledCommands = null )
+        {
+            // This method exists as a convenience to disambiguate method calls using the LavaDataDictionary parameter, because
+            //  it supports both the ILavaDataDictionary and IDictionary<string, object> interfaces.
+            return NewRenderContext( (ILavaDataDictionary)mergeFields, enabledCommands );
         }
 
         /// <summary>
@@ -312,7 +383,7 @@ namespace Rock.Lava
         /// The rendered output of the template.
         /// If the template is invalid, returns an error message or an empty string according to the current ExceptionHandlingStrategy setting.
         /// </returns>
-        public string RenderTemplate( string inputTemplate, LavaDataDictionary mergeFields )
+        public string RenderTemplate( string inputTemplate, ILavaDataDictionary mergeFields )
         {
             string output;
             List<Exception> errors;
@@ -339,7 +410,7 @@ namespace Rock.Lava
         /// <param name="mergeFields"></param>
         /// <param name="output"></param>
         /// <returns></returns>
-        public bool TryRenderTemplate( string inputTemplate, LavaDataDictionary mergeFields, out string output, out List<Exception> errors )
+        public bool TryRenderTemplate( string inputTemplate, ILavaDataDictionary mergeFields, out string output, out List<Exception> errors )
         {
             ILavaRenderContext context;
 
