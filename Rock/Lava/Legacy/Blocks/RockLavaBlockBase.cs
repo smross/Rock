@@ -27,7 +27,6 @@ namespace Rock.Lava.Blocks
     /// <summary>
     /// 
     /// </summary>
-    /// <seealso cref="DotLiquid.Block" />
     public class RockLavaBlockBase : Block, IRockStartup
     {
         /// <summary>

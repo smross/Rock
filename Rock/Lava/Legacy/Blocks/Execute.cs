@@ -30,7 +30,6 @@ namespace Rock.Lava.Legacy.Blocks
     /// <summary>
     ///
     /// </summary>
-    /// <seealso cref="DotLiquid.Block" />
     public class Execute : RockLavaBlockBase
     {
         private RuntimeType _runtimeType = RuntimeType.SCRIPT;

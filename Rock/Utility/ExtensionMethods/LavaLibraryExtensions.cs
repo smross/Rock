@@ -19,9 +19,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Reflection;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using Rock.Attribute;
@@ -50,7 +48,6 @@ namespace Rock
         /// <returns></returns>
         public static string GetLavaDataObjectInfo( this object lavaObject, RockContext rockContext = null, string preText = "", string postText = "" )
         {
-            //return liquidObject.GetLavaDataObjectChildInfo( 0, rockContext ).ToJson();
             StringBuilder lavaDebugPanel = new StringBuilder();
             lavaDebugPanel.Append( "<div class='alert alert-info lava-debug'><h4>Lava Debug Info</h4>" );
 
@@ -489,27 +486,6 @@ namespace Rock
         }
 
         /// <summary>
-        /// Uses reflection to figure out the DbContext associated with the entity
-        /// NOTE: the entity needs to be a DynamicProxy
-        /// from https://stackoverflow.com/a/43667414/1755417
-        /// </summary>
-        /// <param name="entity">The entity.</param>
-        /// <returns></returns>
-        //private static Data.DbContext GetDbContextFromEntity( object entity )
-        //{
-        //    FieldInfo entityWrapperField = entity.GetType().GetField( "_entityWrapper" );
-
-        //    if ( entityWrapperField == null )
-        //        return null;
-
-        //    var entityWrapper = entityWrapperField.GetValue( entity );
-        //    PropertyInfo entityWrapperContextProperty = entityWrapper.GetType().GetProperty( "Context" );
-        //    var context = ( System.Data.Entity.Core.Objects.ObjectContext ) entityWrapperContextProperty.GetValue( entityWrapper, null );
-
-        //    return context?.TransactionHandler?.DbContext as Data.DbContext;
-        //}
-
-        /// <summary>
         /// Use Lava to resolve any merge codes within the content using the values in the merge objects.
         /// </summary>
         /// <param name="content">The content.</param>
@@ -564,25 +540,6 @@ namespace Rock
                 return "Error resolving Lava merge fields: " + ex.Message;
             }
         }
-
-        /// <summary>
-        /// HTML Encodes string values that are processed by a lava filter
-        /// </summary>
-        /// <param name="s">The s.</param>
-        /// <returns></returns>
-        //private static object EncodeStringTransformer( object s )
-        //{
-        //    string val = ( s as string );
-        //    if ( !string.IsNullOrEmpty( val ) )
-        //    {
-        //        // we technically want to XML encode, but Html Encode does the trick
-        //        return val.EncodeHtml();
-        //    }
-        //    else
-        //    {
-        //        return s;
-        //    }
-        //}
 
         /// <summary>
         /// Uses Lava to resolve any merge codes within the content using the values in the merge objects.
@@ -698,35 +655,6 @@ namespace Rock
         }
 
         /// <summary>
-        /// Resolve any client ids in the string. This is used with Lava when writing out postback commands.
-        /// </summary>
-        /// <param name="content">The content.</param>
-        /// <param name="clientId">The client identifier.</param>
-        /// <returns></returns>
-        //public static string ResolveClientIds( this string content, string clientId )
-        //{
-        //    return content.Replace( "[ClientId]", clientId );
-        //}
-
-        /// <summary>
-        /// Compiled RegEx for detecting if a string has Lava merge fields
-        /// regex from some ideas in 
-        ///  http://stackoverflow.com/a/16538131/1755417 
-        ///  http://stackoverflow.com/a/25776530/1755417 
-        /// </summary>
-        //private static Regex hasLavaMergeFields = new Regex( @"(?<=\{).+(?<=\})", RegexOptions.Compiled );
-
-        /// <summary>
-        /// Compiled RegEx for detecting if a string has Lava {% %} command fields
-        /// </summary>
-        //private static Regex hasLavaCommandFields = new Regex( @"(?<=\{%).+(?<=%\})", RegexOptions.Compiled );
-
-        /// <summary>
-        /// Compiled RegEx for detecting if a string uses the Legacy "GlobalAttribute." syntax
-        /// </summary>
-        //private static Regex hasLegacyGlobalAttributeLavaMergeFields = new Regex( @"(?<=\{).+GlobalAttribute.+(?<=\})", RegexOptions.Compiled );
-
-        /// <summary>
         /// Determines whether the string potentially has lava merge fields in it.
         /// NOTE: Might return true even though it doesn't really have merge fields, but something like looks like it. For example '{56408602-5E41-4D66-98C7-BD361CD93AED}'
         /// </summary>
@@ -748,52 +676,6 @@ namespace Rock
             return true;
         }
 
-        /// <summary>
-        /// Determines whether the string potentially has lava command {% %} fields in it.
-        /// </summary>
-        /// <param name="content">The content.</param>
-        /// <returns></returns>
-        //public static bool HasLavaCommandFields( this string content )
-        //{
-        //    if ( content == null )
-        //    {
-        //        return false;
-        //    }
-
-        //    // If there are no lava command fields, return false
-        //    if ( !hasLavaCommandFields.IsMatch( content ) )
-        //    {
-        //        return false;
-        //    }
-
-        //    return true;
-        //}
-
         #endregion Lava Extensions
-
-        //#region Dictionary<string, object> (liquid) extension methods
-
-        ///// <summary>
-        ///// Adds a new key/value to dictionary or if key already exists will update existing value.
-        ///// </summary>
-        ///// <param name="dictionary">The dictionary.</param>
-        ///// <param name="key">The key.</param>
-        ///// <param name="value">The value.</param>
-        //public static void Update( this Dictionary<string, object> dictionary, string key, object value )
-        //{
-        //    if ( dictionary != null )
-        //    {
-        //        if ( dictionary.ContainsKey( key ) )
-        //        {
-        //            dictionary[key] = value;
-        //        }
-        //        else
-        //        {
-        //            dictionary.Add( key, value );
-        //        }
-        //    }
-        //}
-
-        //#endregion Dictionary<string, object> (liquid) extension methods
     }
 }

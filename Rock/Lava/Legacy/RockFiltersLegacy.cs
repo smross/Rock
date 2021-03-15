@@ -6091,10 +6091,10 @@ namespace Rock.Lava.Legacy
         #endregion Color Filters
 
         #region POCOs
+
         /// <summary>
         /// POCO to translate an HTTP cookie in to a Liquidizable form
         /// </summary>
-        /// <seealso cref="DotLiquid.Drop" />
         public class HttpCookieDrop : Drop
         {
             private readonly HttpCookie _cookie;

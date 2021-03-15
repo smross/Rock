@@ -42,7 +42,6 @@ namespace Rock.Lava.Legacy.Blocks
     /// <summary>
     ///
     /// </summary>
-    /// <seealso cref="DotLiquid.Block" />
     public class RockEntity : RockLavaBlockBase
     {
         string _entityName = string.Empty;
