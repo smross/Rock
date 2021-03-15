@@ -60,10 +60,10 @@ namespace Rock.Tests.Integration.Lava
 
         private static void RegisterFilters( ILavaEngine engine )
         {
-            if ( engine.EngineType == LavaEngineTypeSpecifier.Legacy )
+            if ( engine.EngineType == LavaEngineTypeSpecifier.RockLiquid )
             {
                 engine.RegisterFilters( typeof( global::Rock.Lava.Filters.TemplateFilters ) );
-                engine.RegisterFilters( typeof( Rock.Lava.Legacy.RockFiltersLegacy ) );
+                engine.RegisterFilters( typeof( Rock.Lava.RockLiquid.RockLiquidFilters ) );
             }
             else
             {
@@ -75,7 +75,7 @@ namespace Rock.Tests.Integration.Lava
         private static void RegisterTags( ILavaEngine engine )
         {
             // Get all tags and call OnStartup methods
-            if ( engine.EngineType == LavaEngineTypeSpecifier.Legacy )
+            if ( engine.EngineType == LavaEngineTypeSpecifier.RockLiquid )
             {
                 // Find all tag elements that implement IRockStartup.
                 var elementTypes = Rock.Reflection.FindTypes( typeof( DotLiquid.Tag ) ).Select( a => a.Value ).ToList();
@@ -91,7 +91,7 @@ namespace Rock.Tests.Integration.Lava
 
                     try
                     {
-                        // Legacy blocks register themselves with the DotLiquid framework during their startup process.
+                        // RockLiquid blocks register themselves with the DotLiquid framework during their startup process.
                         instance.OnStartup();
                     }
                     catch ( Exception ex )
@@ -103,7 +103,7 @@ namespace Rock.Tests.Integration.Lava
                 }
             }
 
-            if ( engine.EngineType == LavaEngineTypeSpecifier.Legacy )
+            if ( engine.EngineType == LavaEngineTypeSpecifier.RockLiquid )
             {
                 return;
             }
@@ -154,7 +154,7 @@ namespace Rock.Tests.Integration.Lava
         private static void RegisterBlocks( ILavaEngine engine )
         {
             // Get all blocks and call OnStartup methods
-            if ( engine.EngineType == LavaEngineTypeSpecifier.Legacy )
+            if ( engine.EngineType == LavaEngineTypeSpecifier.RockLiquid )
             {
                 // Find all tag elements that implement IRockStartup.
                 var elementTypes = Rock.Reflection.FindTypes( typeof( DotLiquid.Block ) ).Select( a => a.Value ).ToList();
@@ -170,7 +170,7 @@ namespace Rock.Tests.Integration.Lava
 
                     try
                     {
-                        // Legacy blocks register themselves with the DotLiquid framework during their startup process.
+                        // RockLiquid blocks register themselves with the DotLiquid framework during their startup process.
                         instance.OnStartup();
                     }
                     catch ( Exception ex )

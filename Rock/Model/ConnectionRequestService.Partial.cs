@@ -596,7 +596,7 @@ namespace Rock.Model
                 viewModel.IsUnassigned
             };
 
-            if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.Legacy )
+            if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.RockLiquid )
             {
                 mergeFields.Add( "ConnectionRequestStatusIcons", DotLiquid.Hash.FromAnonymousObject( connectionRequestStatusIcons ) );
             }

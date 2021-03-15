@@ -347,7 +347,7 @@ namespace Rock.Lava.Fluid
             }
             else
             {
-                throw new ArgumentOutOfRangeException( argumentType.Name, $"Parameter type '{argumentType.Name}' is not supported for legacy filters." );
+                throw new ArgumentOutOfRangeException( argumentType.Name, $"Parameter type '{argumentType.Name}' is not supported for RockLiquid filters." );
             }
 
             return lavaArgument;

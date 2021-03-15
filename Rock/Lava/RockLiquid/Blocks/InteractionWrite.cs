@@ -24,7 +24,7 @@ using Rock.Transactions;
 using Rock.Web.Cache;
 using Rock.Lava.Blocks;
 
-namespace Rock.Lava.Legacy.Blocks
+namespace Rock.Lava.RockLiquid.Blocks
 {
     /// <summary>
     /// Tag which allows an Interaction to be written.

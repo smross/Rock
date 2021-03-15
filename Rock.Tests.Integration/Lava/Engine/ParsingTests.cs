@@ -53,7 +53,7 @@ Slow
         public void Parsing_ConditionalExpressionUsingDoubleAmpersand_EmitsErrorMessage()
         {
             // This test does not apply to the DotLiquid framework.
-            if ( TestHelper.LavaEngine.EngineType == LavaEngineTypeSpecifier.Legacy
+            if ( TestHelper.LavaEngine.EngineType == LavaEngineTypeSpecifier.RockLiquid
                  || TestHelper.LavaEngine.EngineType == LavaEngineTypeSpecifier.DotLiquid )
             {
                 return;

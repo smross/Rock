@@ -228,7 +228,7 @@
     <Compile Include="Engine\LavaUtilityHelper.cs" />
     <Compile Include="Filters\Generic\TemplateFilters.Utility.cs" />
     <Compile Include="Filters\Generic\TemplateFilters.Dictionaries.cs" />
-    <Compile Include="Implementations\LegacyEngine.cs" />
+    <Compile Include="Implementations\RockLiquidEngine.cs" />
     <Compile Include="Utilities\LavaDataObjectHelper.cs" />
     <Compile Include="Implementations\Fluid\FluidFileSystem.cs" />
     <Compile Include="Engine\LavaEngine.cs" />

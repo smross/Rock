@@ -596,11 +596,11 @@ Color 4: blue
 
             output = output.Replace( " ", string.Empty );
 
-            if ( TestHelper.LavaEngine.EngineType == Rock.Lava.LavaEngineTypeSpecifier.Legacy )
+            if ( TestHelper.LavaEngine.EngineType == Rock.Lava.LavaEngineTypeSpecifier.RockLiquid )
             {
-                Assert.IsTrue( output.Contains( "person-Rock.Lava.Legacy.Blocks.RockEntity" ), "Expected Entity Tag not found." );
-                Assert.IsTrue( output.Contains( "cache-Rock.Lava.Legacy.Blocks.Cache" ), "Expected Command Block not found." );
-                Assert.IsTrue( output.Contains( "interactionwrite-Rock.Lava.Legacy.Blocks.InteractionWrite" ), "Expected Command Tag not found." );
+                Assert.IsTrue( output.Contains( "person-Rock.Lava.RockLiquid.Blocks.RockEntity" ), "Expected Entity Tag not found." );
+                Assert.IsTrue( output.Contains( "cache-Rock.Lava.RockLiquid.Blocks.Cache" ), "Expected Command Block not found." );
+                Assert.IsTrue( output.Contains( "interactionwrite-Rock.Lava.RockLiquid.Blocks.InteractionWrite" ), "Expected Command Tag not found." );
             }
             else
             {

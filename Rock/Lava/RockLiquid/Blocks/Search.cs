@@ -27,7 +27,7 @@ using Rock.UniversalSearch;
 using Rock.Web.Cache;
 using Rock.Lava.Blocks;
 
-namespace Rock.Lava.Legacy.Blocks
+namespace Rock.Lava.RockLiquid.Blocks
 {
 
     /// <summary>

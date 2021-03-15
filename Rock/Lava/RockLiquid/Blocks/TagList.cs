@@ -26,7 +26,7 @@ using DotLiquid;
 using Rock.Utility;
 using Rock.Lava.Blocks;
 
-namespace Rock.Lava.Legacy.Blocks
+namespace Rock.Lava.RockLiquid.Blocks
 {
     /// <summary>
     /// Tag which allows you to list all of the registered Lava commands on your server.

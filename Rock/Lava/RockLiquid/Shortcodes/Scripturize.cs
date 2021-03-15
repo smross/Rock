@@ -26,7 +26,7 @@ using DotLiquid;
 using Rock.Utility;
 using Rock.Lava.Shortcodes;
 
-namespace Rock.Lava.Legacy.Shortcodes
+namespace Rock.Lava.RockLiquid.Shortcodes
 {
     /// <summary>
     /// Lava shortcode for displaying scripture links

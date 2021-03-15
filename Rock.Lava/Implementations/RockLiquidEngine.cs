@@ -21,14 +21,14 @@ using DotLiquid;
 using Rock.Common;
 using Rock.Lava.DotLiquid;
 
-namespace Rock.Lava.Legacy
+namespace Rock.Lava.RockLiquid
 {
     /// <summary>
-    /// Initialization class for the Legacy Lava Templating Engine.
-    /// This engine provides pass-through execution of legacy Lava code in Rock v12 or below.
-    /// It is intended as a fall-back option to help troubleshoot issues with other engine implementations.
+    /// Initialization class for the RockLiquid Lava Templating Engine.
+    /// This engine provides pass-through execution of Lava code in Rock v12 or below, using a Rock-specific fork of the DotLiquid framework.
+    /// It is intended as a fall-back option to help troubleshoot issues with more recent engine implementations.
     /// </summary>
-    public class LegacyEngine : LavaEngineBase
+    public class RockLiquidEngine : LavaEngineBase
     {
         /// <summary>
         /// The descriptive name of the engine.
@@ -37,7 +37,7 @@ namespace Rock.Lava.Legacy
         {
             get
             {
-                return "Legacy (DotLiquid)";
+                return "RockLiquid";
             }
         }
 
@@ -48,7 +48,7 @@ namespace Rock.Lava.Legacy
         {
             get
             {
-                return LavaEngineTypeSpecifier.Legacy;
+                return LavaEngineTypeSpecifier.RockLiquid;
             }
         }
 
@@ -264,7 +264,7 @@ namespace Rock.Lava.Legacy
 
         private Template CreateNewDotLiquidTemplate( string inputTemplate )
         {
-            // Remove custom comments from the source, but make no other changes because we are using the legacy Lava framework.
+            // Remove custom comments from the source, but make no other changes because we are using the RockLiquid framework.
             var converter = new LavaToLiquidTemplateConverter();
 
             var liquidTemplate = converter.RemoveLavaComments( inputTemplate );
@@ -283,11 +283,6 @@ namespace Rock.Lava.Legacy
             template.MakeThreadSafe();
 
             return template;
-        }
-
-        private void HandleFeatureNotImplemented()
-        {
-            //throw new NotImplementedException( "This feature is not implemented for the Legacy Lava Engine." );
         }
     }
 }

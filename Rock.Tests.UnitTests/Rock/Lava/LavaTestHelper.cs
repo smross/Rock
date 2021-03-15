@@ -42,10 +42,10 @@ namespace Rock.Tests.UnitTests.Lava
 
             var engine = global::Rock.Lava.LavaEngine.CurrentEngine;
 
-            if ( engine.EngineType == LavaEngineTypeSpecifier.Legacy )
+            if ( engine.EngineType == LavaEngineTypeSpecifier.RockLiquid )
             {
                 engine.RegisterFilters( typeof( global::Rock.Lava.Filters.TemplateFilters ) );
-                engine.RegisterFilters( typeof( global::Rock.Lava.Legacy.RockFiltersLegacy ) );
+                engine.RegisterFilters( typeof( global::Rock.Lava.RockLiquid.RockLiquidFilters ) );
             }
             else
             {
@@ -324,20 +324,20 @@ namespace Rock.Tests.UnitTests.Lava
 
         #endregion
 
-        #region Legacy Data Objects
+        #region RockLiquid Data Objects
 
         /// <summary>
         /// Return a collection of initialized Person objects for the Decker family.
         /// </summary>
         /// <returns></returns>
-        public List<TestPersonLegacy> GetTestPersonCollectionForDeckerLegacy()
+        public List<TestPersonRockLiquid> GetTestPersonCollectionForDeckerRockLiquid()
         {
-            var personList = new List<TestPersonLegacy>();
+            var personList = new List<TestPersonRockLiquid>();
 
-            personList.Add( GetTestPersonTedDeckerLegacy() );
-            personList.Add( new TestPersonLegacy { FirstName = "Cindy", NickName = "Cindy", LastName = "Decker", Id = 2 } );
-            personList.Add( new TestPersonLegacy { FirstName = "Noah", NickName = "Noah", LastName = "Decker", Id = 3 } );
-            personList.Add( new TestPersonLegacy { FirstName = "Alex", NickName = "Alex", LastName = "Decker", Id = 4 } );
+            personList.Add( GetTestPersonTedDeckerRockLiquid() );
+            personList.Add( new TestPersonRockLiquid { FirstName = "Cindy", NickName = "Cindy", LastName = "Decker", Id = 2 } );
+            personList.Add( new TestPersonRockLiquid { FirstName = "Noah", NickName = "Noah", LastName = "Decker", Id = 3 } );
+            personList.Add( new TestPersonRockLiquid { FirstName = "Alex", NickName = "Alex", LastName = "Decker", Id = 4 } );
 
             return personList;
         }
@@ -347,10 +347,10 @@ namespace Rock.Tests.UnitTests.Lava
         /// Return an initialized Person object for test subject Ted Decker.
         /// </summary>
         /// <returns></returns>
-        public TestPersonLegacy GetTestPersonTedDeckerLegacy()
+        public TestPersonRockLiquid GetTestPersonTedDeckerRockLiquid()
         {
-            var campus = new TestCampusLegacy { Name = "North Campus", Id = 1 };
-            var person = new TestPersonLegacy { FirstName = "Edward", NickName = "Ted", LastName = "Decker", Campus = campus, Id = 1 };
+            var campus = new TestCampusRockLiquid { Name = "North Campus", Id = 1 };
+            var person = new TestPersonRockLiquid { FirstName = "Edward", NickName = "Ted", LastName = "Decker", Campus = campus, Id = 1 };
 
             return person;
         }
@@ -358,13 +358,13 @@ namespace Rock.Tests.UnitTests.Lava
         /// <summary>
         /// A representation of a Person used for testing purposes.
         /// </summary>
-        public class TestPersonLegacy : RockDynamic
+        public class TestPersonRockLiquid : RockDynamic
         {
             public int Id { get; set; }
             public string NickName { get; set; }
             public string FirstName { get; set; }
             public string LastName { get; set; }
-            public TestCampusLegacy Campus { get; set; }
+            public TestCampusRockLiquid Campus { get; set; }
 
             public override string ToString()
             {
@@ -375,7 +375,7 @@ namespace Rock.Tests.UnitTests.Lava
         /// <summary>
         /// A representation of a Campus used for testing purposes.
         /// </summary>
-        public class TestCampusLegacy : RockDynamic
+        public class TestCampusRockLiquid : RockDynamic
         {
             public int Id { get; set; }
             public string Name { get; set; }

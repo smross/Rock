@@ -34,7 +34,7 @@ namespace Rock.Tests.Integration.Lava
         [TestMethod]
         public void ParallelExecution_ShortcodeWithParameters_ResolvesParameterCorrectly()
         {
-            if ( AssertCurrentEngineIs( LavaEngineTypeSpecifier.Legacy ) )
+            if ( AssertCurrentEngineIs( LavaEngineTypeSpecifier.RockLiquid ) )
             {
                 return;
             }
@@ -88,7 +88,7 @@ Font Bold: true
         [TestMethod]
         public void ParallelExecution_ShortcodeWithChildItems_EmitsCorrectHtml()
         {
-            if ( AssertCurrentEngineIs( LavaEngineTypeSpecifier.Legacy ) )
+            if ( AssertCurrentEngineIs( LavaEngineTypeSpecifier.RockLiquid ) )
             {
                 return;
             }

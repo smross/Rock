@@ -217,7 +217,7 @@ namespace RockWeb.Blocks.Reporting
                 Template defaultTemplate = null;
                 ILavaTemplate defaultLavaTemplate = null;
 
-                if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.Legacy )
+                if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.RockLiquid )
                 {
                     defaultTemplate = Template.Parse( GetAttributeValue( "DefaultTemplate" ) );
                 }
@@ -235,7 +235,7 @@ namespace RockWeb.Blocks.Reporting
 
                 var channelItems = new List<ChannelItem>();
 
-                if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.Legacy )
+                if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.RockLiquid )
                 {
                     foreach ( var channel in channelQry )
                     {

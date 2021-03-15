@@ -210,7 +210,7 @@ namespace RockWeb.Blocks.Cms
                     pageProperties.Add( "Page", rootPage.GetMenuProperties( levelsDeep, CurrentPerson, rockContext, pageHeirarchy, pageParameters, queryString ) );
                 }
 
-                if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.Legacy )
+                if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.RockLiquid )
                 {
                     var lavaTemplate = GetTemplate();
 
@@ -284,7 +284,7 @@ namespace RockWeb.Blocks.Cms
             return string.Format( "Rock:PageMenu:{0}", BlockId );
         }
 
-        #region Lava Legacy code
+        #region RockLiquid Lava code
         private Template GetTemplate()
         {
             var cacheTemplate = LavaTemplateCache.Get( CacheKey(), GetAttributeValue( AttributeKey.Template ) );

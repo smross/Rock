@@ -598,12 +598,12 @@ namespace Rock.WebStartup
 
             if ( string.IsNullOrWhiteSpace( liquidEngineTypeValue ) || liquidEngineTypeValue == "default" )
             {
-                // If no engine specified, use the Legacy implementation as the default.
-                engineType = LavaEngineTypeSpecifier.Legacy;
+                // If no engine specified, use the legacy implementation as the default.
+                engineType = LavaEngineTypeSpecifier.RockLiquid;
             }
-            else if ( liquidEngineTypeValue == "legacy" )
+            else if ( liquidEngineTypeValue == "rockliquid" )
             {
-                engineType = LavaEngineTypeSpecifier.Legacy;
+                engineType = LavaEngineTypeSpecifier.RockLiquid;
             }
             else if ( liquidEngineTypeValue == "dotliquid" )
             {
@@ -618,17 +618,17 @@ namespace Rock.WebStartup
             {
                 // Log an error for the invalid configuration setting, and continue with the default value.
                 ExceptionLogService.LogException( $"Invalid Lava Engine Type. The value \"{liquidEngineTypeValue}\" is not valid, must be [default|dotliquid|fluid]." );
-                engineType = LavaEngineTypeSpecifier.Legacy;
+                engineType = LavaEngineTypeSpecifier.RockLiquid;
             }
 
-            if ( engineType == LavaEngineTypeSpecifier.Legacy )
+            if ( engineType == LavaEngineTypeSpecifier.RockLiquid )
             {
                 // Initialize the legacy implementation of the DotLiquid Engine.
-                LavaEngine.Initialize( LavaEngineTypeSpecifier.Legacy, null );
+                LavaEngine.Initialize( LavaEngineTypeSpecifier.RockLiquid, null );
 
                 Template.FileSystem = new LavaFileSystem();
 
-                Template.RegisterFilter( typeof( Rock.Lava.Legacy.RockFiltersLegacy ) );
+                Template.RegisterFilter( typeof( Rock.Lava.RockLiquid.RockLiquidFilters ) );
             }
             else
             {

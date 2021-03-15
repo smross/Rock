@@ -68,7 +68,7 @@ namespace Rock.Store
                     propValue = ( (Guid)propValue ).ToString();
                 }
 
-                if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.Legacy )
+                if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.RockLiquid )
                 {
                     if ( debug && propValue is DotLiquid.ILiquidizable )
                     {

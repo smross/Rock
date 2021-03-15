@@ -22,14 +22,19 @@ using System.Text.RegularExpressions;
 
 using DotLiquid;
 
-using Rock.Lava.Shortcodes;
+using Rock.Data;
+using Rock.Lava.Blocks;
 
-namespace Rock.Lava.Legacy.Shortcodes
+namespace Rock.Lava.RockLiquid.Blocks
 {
     /// <summary>
+    /// Sql stores the result of provided SQL query into a variable.
     ///
+    /// {% sql results %}
+    /// SELECT [FirstName], [LastName] FROM [Person]
+    /// {% endsql %}
     /// </summary>
-    public class BootstrapAlert : RockLavaShortcodeBlockBase
+    public class Sql : RockLavaBlockBase
     {
         private static readonly Regex Syntax = new Regex( @"(\w+)" );
 
@@ -40,7 +45,7 @@ namespace Rock.Lava.Legacy.Shortcodes
         /// </summary>
         public override void OnStartup()
         {
-            Template.RegisterShortcode<BootstrapAlert>( "bootstrapalert" );
+            Template.RegisterTag<Sql>( "sql" );
         }
 
         /// <summary>
@@ -64,21 +69,55 @@ namespace Rock.Lava.Legacy.Shortcodes
         /// <param name="result">The result.</param>
         public override void Render( Context context, TextWriter result )
         {
-
-            using ( TextWriter writer = new StringWriter() )
+            // first ensure that sql commands are allowed in the context
+            if ( !this.IsAuthorized( context ) )
             {
-                base.Render( context, writer );
+                result.Write( string.Format( RockLavaBlockBase.NotAuthorizedMessage, this.Name ) );
+                base.Render( context, result );
+                return;
+            }
+
+            using ( TextWriter sql = new StringWriter() )
+            {
+                base.Render( context, sql );
 
                 var parms = ParseMarkup( _markup, context );
 
-                string className = "alert alert-info";
-
-                if ( parms.Any( p => p.Key == "type" ) )
+                var sqlTimeout = ( int? ) null;
+                if ( parms.ContainsKey( "timeout" ) )
                 {
-                    className = $"alert alert-{ parms["type"] }";
+                    sqlTimeout = parms["timeout"].AsIntegerOrNull();
                 }
+                
+                switch ( parms["statement"] )
+                {
+                    case "select":
+                        var results = DbService.GetDataSet( sql.ToString(), CommandType.Text, parms.ToDictionary( i => i.Key, i => ( object ) i.Value ), sqlTimeout );
 
-                result.Write( $"<div class='{className}'>{(writer.ToString())}</div>" );
+                        context.Scopes.Last()[parms["return"]] = results.Tables[0].ToDynamic();
+                        break;
+                    case "command":
+                        var sqlParameters = new List<System.Data.SqlClient.SqlParameter>();
+
+                        foreach ( var p in parms )
+                        {
+                            sqlParameters.Add( new System.Data.SqlClient.SqlParameter( p.Key, p.Value ) );
+                        }
+
+                        using ( var rockContext = new RockContext() )
+                        {
+                            if ( sqlTimeout != null )
+                            {
+                                rockContext.Database.CommandTimeout = sqlTimeout;
+                            }
+                            int numOfRowEffected = rockContext.Database.ExecuteSqlCommand( sql.ToString(), sqlParameters.ToArray() );
+
+                            context.Scopes.Last()[parms["return"]] = numOfRowEffected;
+                        }
+                        break;
+                    default:
+                        break;
+                }
             }
         }
 
@@ -110,13 +149,12 @@ namespace Rock.Lava.Legacy.Shortcodes
                     internalMergeFields.AddOrReplace( item.Key, item.Value );
                 }
             }
-            var resolvedMarkup = markup.ResolveMergeFields( internalMergeFields );
 
             var parms = new Dictionary<string, string>();
             parms.Add( "return", "results" );
             parms.Add( "statement", "select" );
-
-            var markupItems = Regex.Matches( resolvedMarkup, @"(\S*?:'[^']+')" )
+            
+            var markupItems = Regex.Matches( markup, @"(\S*?:'[^']+')" )
                 .Cast<Match>()
                 .Select( m => m.Value )
                 .ToList();
@@ -126,10 +164,18 @@ namespace Rock.Lava.Legacy.Shortcodes
                 var itemParts = item.ToString().Split( new char[] { ':' }, 2 );
                 if ( itemParts.Length > 1 )
                 {
-                    parms.AddOrReplace( itemParts[0].Trim().ToLower(), itemParts[1].Trim().Substring( 1, itemParts[1].Length - 2 ) );
+                    var value = itemParts[1];
+
+                    if ( value.HasMergeFields() )
+                    {
+                        value = value.ResolveMergeFields( internalMergeFields );
+                    }
+
+                    parms.AddOrReplace( itemParts[0].Trim().ToLower(), value.Substring( 1, value.Length - 2 ).Trim() );
                 }
             }
             return parms;
         }
+
     }
 }

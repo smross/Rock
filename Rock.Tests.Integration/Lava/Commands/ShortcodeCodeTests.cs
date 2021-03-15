@@ -28,7 +28,7 @@ namespace Rock.Tests.Integration.Lava
         [TestMethod]
         public void Shortcode_WithMergeFieldAsParameter_CorrectlyResolvesParameters()
         {
-            if ( AssertCurrentEngineIs( LavaEngineTypeSpecifier.Legacy ) )
+            if ( AssertCurrentEngineIs( LavaEngineTypeSpecifier.RockLiquid ) )
             {
                 return;
             }

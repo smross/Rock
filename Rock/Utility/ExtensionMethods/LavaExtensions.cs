@@ -46,7 +46,7 @@ namespace Rock
         /// </summary>
         static ExtensionMethods()
         {
-            if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.Legacy )
+            if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.RockLiquid )
             {
                 //
                 // Register any 3rd party library classes that are safe to use.
@@ -553,7 +553,7 @@ namespace Rock
         {
             try
             {
-                if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.Legacy )
+                if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.RockLiquid )
                 {
                     Template template = GetTemplate( content );
                     template.Registers.AddOrReplace( "EnabledCommands", enabledLavaCommands );
@@ -672,7 +672,7 @@ namespace Rock
                     }
                 }
 
-                if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.Legacy )
+                if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.RockLiquid )
                 {
                     Template template = GetTemplate( content );
 

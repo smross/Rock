@@ -478,7 +478,7 @@ namespace RockWeb.Blocks.Reporting
                             return;
                         }
 
-                        if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.Legacy )
+                        if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.RockLiquid )
                         {
                             foreach ( DataTable dataTable in dataSet.Tables )
                             {
@@ -1019,7 +1019,7 @@ namespace RockWeb.Blocks.Reporting
             }
         }
 
-        #region Legacy Lava implementation
+        #region RockLiquid Lava implementation
 
         /// <summary>
         ///

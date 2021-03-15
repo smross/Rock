@@ -23,20 +23,20 @@ using DotLiquid;
 using Rock.Model;
 using Rock.Lava.Blocks;
 
-namespace Rock.Lava.Legacy.Blocks
+namespace Rock.Lava.RockLiquid.Blocks
 {
     /// <summary>
     /// A Lava Block that provides access to a filtered set of events from a specified calendar.
-    /// Lava objects are created in the block context to provide access to the set of event occurrences matching the filter parameters.
+    /// Lava objects are created in the block context to provide access to the set of events matching the filter parmeters.
     /// The <c>EventItems</c> collection contains information about the Event instances.
-    /// The <c>EventScheduledInstances</c> collection contains the occurrences of the Event that match the filter parameters.
+    /// The <c>EventScheduledInstances</c> collection contains the actual occurrences of the event that match the filter.
     /// </summary>
-    public class EventScheduledInstance : RockLavaBlockBase
+    public class CalendarEvents : RockLavaBlockBase
     {
         /// <summary>
         /// The name of the element as it is used in the source document.
         /// </summary>
-        public static readonly string TagSourceName = "eventscheduledinstance";
+        public static readonly string TagSourceName = "calendarevents";
 
         private string _attributesMarkup;
         private bool _renderErrors = true;
@@ -48,7 +48,7 @@ namespace Rock.Lava.Legacy.Blocks
         /// </summary>
         public override void OnStartup()
         {
-            Template.RegisterTag<EventScheduledInstance>( TagSourceName );
+            Template.RegisterTag<CalendarEvents>( TagSourceName );
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace Rock.Lava.Legacy.Blocks
 
                 _settings.ParseFromMarkup( _attributesMarkup, context );
 
-                var events = dataSource.GetEventOccurrencesForEvent( _settings );
+                var events = dataSource.GetEventOccurrencesForCalendar( _settings );
 
                 AddLavaMergeFieldsToContext( context, events );
 
@@ -85,7 +85,7 @@ namespace Rock.Lava.Legacy.Blocks
             }
             catch ( Exception ex )
             {
-                var message = "Event Occurrences not available. " + ex.Message;
+                var message = "Calendar Events not available. " + ex.Message;
 
                 if ( _renderErrors )
                 {

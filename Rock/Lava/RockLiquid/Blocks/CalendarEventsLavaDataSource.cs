@@ -25,7 +25,7 @@ using Ical.Net.DataTypes;
 using Rock.Utility;
 using Rock.Lava.Blocks;
 
-namespace Rock.Lava.Legacy.Blocks
+namespace Rock.Lava.RockLiquid.Blocks
 {
     /// <summary>
     /// Creates filtered sets of calendar events as Lava data objects suitable for use in a Lava template.

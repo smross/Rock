@@ -26,7 +26,7 @@ using Rock.Model;
 using Rock.Web.Cache;
 using Rock.Lava.Blocks;
 
-namespace Rock.Lava.Legacy.Blocks
+namespace Rock.Lava.RockLiquid.Blocks
 {
     /// <summary>
     /// Tag which allows a snippet of Lava code to fire off a new Workflow or a new

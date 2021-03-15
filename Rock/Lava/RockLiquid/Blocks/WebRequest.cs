@@ -31,7 +31,7 @@ using RestSharp;
 using RestSharp.Authenticators;
 using Rock.Lava.Blocks;
 
-namespace Rock.Lava.Legacy.Blocks
+namespace Rock.Lava.RockLiquid.Blocks
 {
     /// <summary>
     /// Web

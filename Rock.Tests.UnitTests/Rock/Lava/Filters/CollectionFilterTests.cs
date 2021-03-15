@@ -393,9 +393,9 @@ Total: {{ '3,5,7' | Split:',' | Sum }}
         {
             LavaDataDictionary mergeValues;
 
-            if ( TestHelper.LavaEngine.EngineType == LavaEngineTypeSpecifier.Legacy )
+            if ( TestHelper.LavaEngine.EngineType == LavaEngineTypeSpecifier.RockLiquid )
             {
-                mergeValues = new LavaDataDictionary { { "People", TestHelper.GetTestPersonCollectionForDeckerLegacy() } };
+                mergeValues = new LavaDataDictionary { { "People", TestHelper.GetTestPersonCollectionForDeckerRockLiquid() } };
             }
             else
             {

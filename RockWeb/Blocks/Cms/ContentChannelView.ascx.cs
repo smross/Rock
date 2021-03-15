@@ -831,7 +831,7 @@ $(document).ready(function() {
                     }
                 }
 
-                if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.Legacy )
+                if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.RockLiquid )
                 {
                     var template = GetTemplate();
 
@@ -920,7 +920,7 @@ $(document).ready(function() {
             return template;
         }
 
-        #region Legacy Lava implementation
+        #region RockLiquid Lava implementation
 
         /// <summary>
         /// Gets the template.

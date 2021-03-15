@@ -214,7 +214,7 @@ namespace Rock.Lava
         #endregion
 
 
-        #region Legacy Lava implementation
+        #region RockLiquid Lava implementation
 
         /// <summary>
         /// Parse the attributes markup of a Lava element tag to produce a collection of settings.

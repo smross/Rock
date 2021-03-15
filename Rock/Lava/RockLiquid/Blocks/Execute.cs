@@ -25,7 +25,7 @@ using CSScriptLibrary;
 using DotLiquid;
 using Rock.Lava.Blocks;
 
-namespace Rock.Lava.Legacy.Blocks
+namespace Rock.Lava.RockLiquid.Blocks
 {
     /// <summary>
     ///

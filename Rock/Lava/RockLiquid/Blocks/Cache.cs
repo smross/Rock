@@ -29,7 +29,7 @@ using DotLiquid.Util;
 using Rock.Lava.Blocks;
 using Rock.Web.Cache;
 
-namespace Rock.Lava.Legacy.Blocks
+namespace Rock.Lava.RockLiquid.Blocks
 {
     /// <summary>
     /// Cache allows you to cache the results of a Lava template.

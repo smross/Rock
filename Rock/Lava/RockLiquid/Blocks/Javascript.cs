@@ -28,7 +28,7 @@ using Rock.Utility;
 using Rock.Web.UI;
 using Rock.Lava.Blocks;
 
-namespace Rock.Lava.Legacy.Blocks
+namespace Rock.Lava.RockLiquid.Blocks
 {
     /// <summary>
     /// Tag which allows a snippet of JavaScript to be executed in the browser.

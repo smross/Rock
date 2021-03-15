@@ -205,7 +205,7 @@ namespace RockWeb.Blocks.Cms
         /// </summary>
         private void LoadLavaShortcodes()
         {
-            if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.Legacy )
+            if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.RockLiquid )
             {
                 LoadShortcodes();
                 return;
@@ -267,7 +267,7 @@ namespace RockWeb.Blocks.Cms
 
         #endregion
 
-        #region Legacy Lava Implementation
+        #region RockLiquid Lava implementation
 
         /// <summary>
         /// Loads the shortcodes.

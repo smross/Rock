@@ -32,7 +32,7 @@ using Rock.Utility;
 using Rock.Web.Cache;
 using Rock.Web.UI;
 using Rock.Lava.Blocks;
-namespace Rock.Lava.Legacy.Blocks
+namespace Rock.Lava.RockLiquid.Blocks
 {
     /// <summary>
     /// Sql stores the result of provided SQL query into a variable.

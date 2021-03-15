@@ -16,7 +16,7 @@
 //
 using Rock.Lava.DotLiquid;
 using Rock.Lava.Fluid;
-using Rock.Lava.Legacy;
+using Rock.Lava.RockLiquid;
 
 namespace Rock.Lava
 {
@@ -65,8 +65,8 @@ namespace Rock.Lava
                 }
                 else
                 {
-                    // If no engine type specified, default to the legacy engine.
-                    engine = new LegacyEngine();
+                    // If no engine type specified, default to the RockLiquid engine.
+                    engine = new RockLiquidEngine();
 
                     options = options ?? new LavaEngineConfigurationOptions();
                 }

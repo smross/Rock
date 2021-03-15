@@ -260,12 +260,12 @@ namespace Rock.Lava
 
     public enum LavaEngineTypeSpecifier
     {
+        // A fork of the DotLiquid framework, customised to include Lava syntax and features.
+        RockLiquid = 1,
         // DotLiquid is an open-source implementation of the Liquid templating language. [https://github.com/dotliquid/dotliquid]
-        DotLiquid = 1,
+        DotLiquid = 2,
         // Fluid is an open-source implementation of the Liquid templating language. [https://github.com/sebastienros/fluid]
-        Fluid = 2,
-        // The original implementation of DotLiquid in Rock.
-        Legacy = 3
+        Fluid = 3,
     }
 
     /// <summary>

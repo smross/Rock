@@ -394,7 +394,7 @@ namespace Rock.Lava
                 return false;
             }
 
-            if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.Legacy )
+            if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.RockLiquid )
             {
                 return obj != null && obj is Rock.Lava.ILiquidizable;
             }
@@ -472,7 +472,7 @@ namespace Rock.Lava
 
         #endregion
 
-        #region Legacy Lava Code
+        #region RockLiquid Lava Code
 
         /// <summary>
         /// Determines whether the specified command is authorized within the context.

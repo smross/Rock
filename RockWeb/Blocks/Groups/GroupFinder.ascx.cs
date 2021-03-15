@@ -1086,7 +1086,7 @@ namespace RockWeb.Blocks.Groups
                     Template template = null;
                     ILavaTemplate lavaTemplate = null;
 
-                    if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.Legacy )
+                    if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.RockLiquid )
                     {
                         template = DotLiquid.Template.Parse( GetAttributeValue( "MapInfo" ) );
                     }
@@ -1132,7 +1132,7 @@ namespace RockWeb.Blocks.Groups
 
                             string infoWindow;
 
-                            if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.Legacy )
+                            if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.RockLiquid )
                             {
                                 infoWindow = template.Render( Hash.FromDictionary( mergeFields ) );                                
                             }

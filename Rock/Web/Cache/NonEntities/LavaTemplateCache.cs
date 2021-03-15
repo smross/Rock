@@ -123,7 +123,7 @@ namespace Rock.Web.Cache
 
         private static LavaTemplateCache Load( string content )
         {
-            if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.Legacy )
+            if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.RockLiquid )
             {
                 // Strip out Lava comments before parsing the template because they are not recognized by standard Liquid syntax.
                 content = LavaHelper.RemoveLavaComments( content );

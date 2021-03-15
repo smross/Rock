@@ -300,7 +300,7 @@ namespace RockWeb.Blocks.Cms
                     {
                         string content;
 
-                        if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.Legacy )
+                        if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.RockLiquid )
                         {
                             content = GetTemplate().Render( Hash.FromDictionary( feedFinal ) );
                         }

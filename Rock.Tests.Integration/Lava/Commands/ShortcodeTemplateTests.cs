@@ -34,9 +34,9 @@ namespace Rock.Tests.Integration.Lava
         [TestMethod]
         public void ShortcodeBlock_WithChildItems_EmitsCorrectHtml()
         {
-            if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.Legacy )
+            if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.RockLiquid )
             {
-                Debug.Print( "This test is not implemented for the Legacy Lava Engine." );
+                Debug.Print( "This test is not implemented for the RockLiquid Lava Engine." );
                 return;
             }
 
@@ -94,9 +94,9 @@ Panel 3 - Panel 3 content.
         [TestMethod]
         public void ShortcodeBlock_WithEntityCommandEnabledAndEmbeddedEntityCommand_EmitsCorrectHtml()
         {
-            if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.Legacy )
+            if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.RockLiquid )
             {
-                Debug.Print( "This test is not implemented for the Legacy Lava Engine." );
+                Debug.Print( "This test is not implemented for the RockLiquid Lava Engine." );
                 return;
             }
 
@@ -151,9 +151,9 @@ Potty Trained --- Id: 141 - Guid: e6905502-4c23-4879-a60f-8c4ceb3ee2e9
         [TestMethod]
         public void ShortcodeBlock_WithParameters_CanResolveParameters()
         {
-            if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.Legacy )
+            if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.RockLiquid )
             {
-                Debug.Print( "This test is not implemented for the Legacy Lava Engine." );
+                Debug.Print( "This test is not implemented for the RockLiquid Lava Engine." );
                 return;
             }
 
@@ -194,9 +194,9 @@ Font Bold: true
         [TestMethod]
         public void ShortcodeBlock_RepeatedShortcodeBlock_ProducesExpectedOutput()
         {
-            if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.Legacy )
+            if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.RockLiquid )
             {
-                System.Diagnostics.Debug.Print( "This test is not implemented for the Legacy Lava Engine." );
+                System.Diagnostics.Debug.Print( "This test is not implemented for the RockLiquid Lava Engine." );
                 return;
             }
 

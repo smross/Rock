@@ -31,7 +31,7 @@ using Rock.Model;
 using Rock.Utility;
 using Rock.Web.Cache;
 
-namespace Rock.Lava.Legacy.Shortcodes
+namespace Rock.Lava.RockLiquid.Shortcodes
 {
     /// <summary>
     ///

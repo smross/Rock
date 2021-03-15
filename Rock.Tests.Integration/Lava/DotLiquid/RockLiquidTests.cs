@@ -24,29 +24,11 @@ using Rock.Tests.Shared;
 
 namespace Rock.Tests.Integration.Lava
 {
-    public static class TestDotLiquidFilter
-    {
-        public static string GetVariableType( object input )
-        {
-            if ( input == null )
-            {
-                return "null";
-            }
-            else
-            {
-                var inputType = input.GetType();
-
-                // If this is an Entity Framework proxy, get the proxied type.
-                inputType = System.Data.Entity.Core.Objects.ObjectContext.GetObjectType( inputType );
-
-                return inputType.Name;
-            }
-        }
-    }
-
-
+    /// <summary>
+    /// Tests that are specifically intended for the RockLiquid implementation of Lava.
+    /// </summary>
     [TestClass]
-    public class DotLiquidLegacyTests : LavaIntegrationTestBase
+    public class RockLiquidTests : LavaIntegrationTestBase
     {
         #region Filter Tests: GetVariableType
 
@@ -81,4 +63,28 @@ namespace Rock.Tests.Integration.Lava
 
         #endregion
     }
+
+    #region Support Classes
+
+    public static class TestDotLiquidFilter
+    {
+        public static string GetVariableType( object input )
+        {
+            if ( input == null )
+            {
+                return "null";
+            }
+            else
+            {
+                var inputType = input.GetType();
+
+                // If this is an Entity Framework proxy, get the proxied type.
+                inputType = System.Data.Entity.Core.Objects.ObjectContext.GetObjectType( inputType );
+
+                return inputType.Name;
+            }
+        }
+    }
+
+    #endregion
 }

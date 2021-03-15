@@ -60,12 +60,12 @@ using Rock.Web.UI;
 
 using UAParser;
 
-namespace Rock.Lava.Legacy
+namespace Rock.Lava.RockLiquid
 {
     /// <summary>
     ///
     /// </summary>
-    public static class RockFiltersLegacy
+    public static class RockLiquidFilters
     {
         static Random _randomNumberGenerator = new Random();
 
