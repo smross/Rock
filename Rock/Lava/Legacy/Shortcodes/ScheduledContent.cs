@@ -84,6 +84,7 @@ namespace Rock.Lava.Legacy.Shortcodes
         const string ROLE_ID = "roleid";
         const string LOOK_AHEAD_DAYS = "lookaheaddays";
         const string SCHEDULE_CATEGORY_ID = "schedulecategoryid";
+        const string AS_AT_DATE = "asatdate";
 
         /// <summary>
         /// Method that will be run at Rock startup
@@ -190,13 +191,14 @@ namespace Rock.Lava.Legacy.Shortcodes
             {
                 bool filterProvided = false;
 
-                var now = RockDateTime.Now;
-
                 base.Render( context, writer );
 
                 var parms = ParseMarkup( _markup, context );
                 var lookAheadDays = parms[ LOOK_AHEAD_DAYS ].AsInteger();
                 var scheduleCategoryId = parms[ SCHEDULE_CATEGORY_ID ].AsIntegerOrNull();
+                var asAtDate = parms[AS_AT_DATE].AsDateTime();
+
+                var now = asAtDate ?? RockDateTime.Now;
 
                 var scheduleIds = new List<int>();
 
@@ -363,6 +365,7 @@ namespace Rock.Lava.Legacy.Shortcodes
             parms.Add( SHOW_WHEN, "live" );
             parms.Add( LOOK_AHEAD_DAYS, "30" );
             parms.Add( SCHEDULE_CATEGORY_ID, "" );
+            parms.Add( AS_AT_DATE, "" );
 
             var markupItems = Regex.Matches( resolvedMarkup, @"(\S*?:'[^']+')" )
                 .Cast<Match>()

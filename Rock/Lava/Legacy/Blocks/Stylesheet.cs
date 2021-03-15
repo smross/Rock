@@ -84,7 +84,13 @@ namespace Rock.Lava.Legacy.Blocks
         /// <param name="result">The result.</param>
         public override void Render( Context context, TextWriter result )
         {
-            RockPage page = HttpContext.Current.Handler as RockPage;
+            // Get the current page object if it is available.
+            RockPage page = null;
+
+            if ( HttpContext.Current != null )
+            {
+                page = HttpContext.Current.Handler as RockPage;
+            }
 
             var parms = ParseMarkup( _markup, context );
 
@@ -122,13 +128,16 @@ namespace Rock.Lava.Legacy.Blocks
                                     filePath = importFile;
                                 }
 
-                                filePath = page.ResolveRockUrl( filePath );
-
-                                var fullPath = page.MapPath( "~/" ) + filePath;
-
-                                if (File.Exists( fullPath ) )
+                                if ( page != null )
                                 {
-                                    importStatements = $"{importStatements}{Environment.NewLine}@import \"{fullPath}\";";
+                                    filePath = page.ResolveRockUrl( filePath );
+
+                                    var fullPath = page.MapPath( "~/" ) + filePath;
+
+                                    if ( File.Exists( fullPath ) )
+                                    {
+                                        importStatements = $"{importStatements}{Environment.NewLine}@import \"{fullPath}\";";
+                                    }
                                 }
                             }
 
@@ -183,25 +192,34 @@ namespace Rock.Lava.Legacy.Blocks
                     }
                 }
 
-                if ( parms.ContainsKey("id") )
-                {
-                    var identifier = parms["id"];
-                    if ( identifier.IsNotNullOrWhiteSpace() )
-                    {
-                        var controlId = "css-" + identifier;
+                var styleText = $"{Environment.NewLine}<style>{stylesheet}</style>{Environment.NewLine}";
 
-                        var cssControl = page.Header.FindControl( controlId );
-                        if (cssControl == null )
+                if ( page != null )
+                {
+                    if ( parms.ContainsKey( "id" ) )
+                    {
+                        var identifier = parms["id"];
+                        if ( identifier.IsNotNullOrWhiteSpace() )
                         {
-                            cssControl = new System.Web.UI.LiteralControl( $"{Environment.NewLine}<style>{stylesheet}</style>{Environment.NewLine}" );
-                            cssControl.ID = controlId;
-                            page.Header.Controls.Add( cssControl );
+                            var controlId = "css-" + identifier;
+
+                            var cssControl = page.Header.FindControl( controlId );
+                            if ( cssControl == null )
+                            {
+                                cssControl = new System.Web.UI.LiteralControl( styleText );
+                                cssControl.ID = controlId;
+                                page.Header.Controls.Add( cssControl );
+                            }
                         }
+                    }
+                    else
+                    {
+                        page.Header.Controls.Add( new System.Web.UI.LiteralControl( styleText ) );
                     }
                 }
                 else
                 {
-                    page.Header.Controls.Add( new System.Web.UI.LiteralControl( $"{Environment.NewLine}<style>{stylesheet}</style>{Environment.NewLine}" ) );
+                    result.Write( styleText );
                 }
             }
         }

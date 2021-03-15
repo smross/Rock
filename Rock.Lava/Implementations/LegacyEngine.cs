@@ -264,7 +264,10 @@ namespace Rock.Lava.Legacy
 
         private Template CreateNewDotLiquidTemplate( string inputTemplate )
         {
-            var liquidTemplate = ConvertToLiquid( inputTemplate );
+            // Remove custom comments from the source, but make no other changes because we are using the legacy Lava framework.
+            var converter = new LavaToLiquidTemplateConverter();
+
+            var liquidTemplate = converter.RemoveLavaComments( inputTemplate );
 
             var template = Template.Parse( liquidTemplate );
 

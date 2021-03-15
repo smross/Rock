@@ -4503,10 +4503,13 @@ namespace Rock.Lava.Legacy
         /// <returns></returns>
         public static string AddScriptLink( string input, bool fingerprintLink = false )
         {
-            RockPage page = HttpContext.Current.Handler as RockPage;
-            RockPage.AddScriptLink( page, ResolveRockUrl( input ), fingerprintLink );
+            if ( HttpContext.Current != null )
+            {
+                RockPage page = HttpContext.Current.Handler as RockPage;
+                RockPage.AddScriptLink( page, ResolveRockUrl( input ), fingerprintLink );
+            }
 
-            return String.Empty;
+            return string.Empty;
         }
 
         /// <summary>
@@ -4517,10 +4520,13 @@ namespace Rock.Lava.Legacy
         /// <returns></returns>
         public static string AddCssLink( string input, bool fingerprintLink = false )
         {
-            RockPage page = HttpContext.Current.Handler as RockPage;
-            RockPage.AddCSSLink( page, ResolveRockUrl( input ), fingerprintLink );
+            if ( HttpContext.Current != null )
+            {
+                RockPage page = HttpContext.Current.Handler as RockPage;
+                RockPage.AddCSSLink( page, ResolveRockUrl( input ), fingerprintLink );
+            }
 
-            return String.Empty;
+            return string.Empty;
         }
 
         /// <summary>
@@ -5789,6 +5795,17 @@ namespace Rock.Lava.Legacy
             }
 
             return currentPerson;
+        }
+
+        /// <summary>
+        /// Base64 encodes a binary file
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="input">The input.</param>
+        /// <returns></returns>
+        public static string Base64Encode( Context context, object input )
+        {
+            return Base64Encode( context, input, null );
         }
 
         /// <summary>
