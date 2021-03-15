@@ -66,7 +66,7 @@ Email: ted@rocksolidchurch.com
 **
 ";
 
-            TestHelper.AssertTemplateOutput( expectedOutput, input, mergeValues, ignoreWhitespace:true );
+            TestHelper.AssertTemplateOutput( expectedOutput, input, mergeValues, ignoreWhiteSpace:true );
         }
 
         [TestMethod]

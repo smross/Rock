@@ -28,6 +28,11 @@ namespace Rock.Tests.Integration.Lava
         [TestMethod]
         public void Shortcode_WithMergeFieldAsParameter_CorrectlyResolvesParameters()
         {
+            if ( AssertCurrentEngineIs( LavaEngineTypeSpecifier.Legacy ) )
+            {
+                return;
+            }
+
             var shortcodeTemplate = @"
 Font Name: {{ fontname }}
 Font Size: {{ fontsize }}
@@ -96,7 +101,7 @@ Schedule Live: {{ IsLive }}
 ScheduleName:Saturday4:30pm<br>ScheduleLive:true<br>
 ";
 
-            TestHelper.AssertTemplateOutput( expectedOutput, input, ignoreWhitespace: true );
+            TestHelper.AssertTemplateOutput( expectedOutput, input, ignoreWhiteSpace: true );
         }
 
         [TestMethod]

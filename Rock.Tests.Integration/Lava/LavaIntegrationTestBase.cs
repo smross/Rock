@@ -15,6 +15,9 @@
 // </copyright>
 //
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Rock.Lava;
 
@@ -37,6 +40,40 @@ namespace Rock.Tests.Integration.Lava
             {
                 return IntegrationTestHelper.LavaTestHelper;
             }
+        }
+
+        protected bool AssertCurrentEngineIs( LavaEngineTypeSpecifier validEngine )
+        {
+            return AssertCurrentEngineIs( new LavaEngineTypeSpecifier[] { validEngine } );
+        }
+
+        protected bool AssertCurrentEngineIsNot( LavaEngineTypeSpecifier invalidEngine)
+        {
+            return AssertCurrentEngineIsNot( new LavaEngineTypeSpecifier[] { invalidEngine } );
+        }
+
+        protected bool AssertCurrentEngineIs( IEnumerable<LavaEngineTypeSpecifier> validEngines )
+        {            
+            if ( validEngines == null
+                 || !validEngines.Contains( LavaEngine.CurrentEngine.EngineType ) )
+            {
+                Debug.Write( $"This test is not applicable for the current Lava Engine \"{ LavaEngine.CurrentEngine.EngineName }\".", "warning" );
+                return false;
+            }
+
+            return true;
+        }
+
+        protected bool AssertCurrentEngineIsNot( IEnumerable<LavaEngineTypeSpecifier> invalidEngines )
+        {
+            if ( invalidEngines != null
+                 && invalidEngines.Contains( LavaEngine.CurrentEngine.EngineType ) )
+            {
+                Debug.Write( $"This test is not applicable for the current Lava Engine \"{ LavaEngine.CurrentEngine.EngineName }\".", "warning" );
+                return true;
+            }
+            
+            return false;
         }
     }
 }

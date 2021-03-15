@@ -65,8 +65,6 @@ namespace Rock.Tests.Integration.Lava
 
             var lavaContext = LavaEngine.CurrentEngine.NewRenderContext( enabledCommands: new List<string> { "RockEntity" } );
 
-            //lavaContext.SetEnabledCommands( "rockentity" );
-
             TestHelper.AssertTemplateOutputWithWildcard( expectedOutput, inputTemplate, lavaContext, wildCard: "{moreBase64Data}" );
         }
 

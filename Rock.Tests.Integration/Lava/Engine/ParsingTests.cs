@@ -47,13 +47,14 @@ Slow
         /// <summary>
         /// The double-ampersand (&&) boolean comparison syntax for "and" is not recognized Liquid syntax.
         /// It is also not part of the documented Lava syntax, but it is supported by the DotLiquid framework and has been found in some existing core templates.
-        /// This test ensures that the documented behavior is enforced and the invalid syntax produces an error.
+        /// This test is designed to document the expected behavior.
         /// </summary>
         [TestMethod]
         public void Parsing_ConditionalExpressionUsingDoubleAmpersand_EmitsErrorMessage()
         {
             // This test does not apply to the DotLiquid framework.
-            if ( TestHelper.LavaEngine.EngineType == LavaEngineTypeSpecifier.DotLiquid )
+            if ( TestHelper.LavaEngine.EngineType == LavaEngineTypeSpecifier.Legacy
+                 || TestHelper.LavaEngine.EngineType == LavaEngineTypeSpecifier.DotLiquid )
             {
                 return;
             };

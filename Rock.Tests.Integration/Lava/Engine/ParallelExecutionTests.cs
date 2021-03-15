@@ -21,6 +21,7 @@ using Rock.Model;
 using Rock.Lava;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace Rock.Tests.Integration.Lava
 {
@@ -33,6 +34,12 @@ namespace Rock.Tests.Integration.Lava
         [TestMethod]
         public void ParallelExecution_ShortcodeWithParameters_ResolvesParameterCorrectly()
         {
+            if ( AssertCurrentEngineIs( LavaEngineTypeSpecifier.Legacy ) )
+            {
+                return;
+            }
+
+            Debug.Write( TestHelper, "warning" );
             var shortcodeTemplate = @"
 Font Name: {{ fontname }}
 Font Size: {{ fontsize }}
@@ -81,6 +88,11 @@ Font Bold: true
         [TestMethod]
         public void ParallelExecution_ShortcodeWithChildItems_EmitsCorrectHtml()
         {
+            if ( AssertCurrentEngineIs( LavaEngineTypeSpecifier.Legacy ) )
+            {
+                return;
+            }
+
             var shortcodeTemplate = @"
 Parameter 1: {{ parameter1 }}
 Parameter 2: {{ parameter2 }}

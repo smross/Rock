@@ -21,6 +21,7 @@ using Rock.Model;
 using Rock.Lava;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace Rock.Tests.Integration.Lava
 {
@@ -33,6 +34,12 @@ namespace Rock.Tests.Integration.Lava
         [TestMethod]
         public void ShortcodeBlock_WithChildItems_EmitsCorrectHtml()
         {
+            if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.Legacy )
+            {
+                Debug.Print( "This test is not implemented for the Legacy Lava Engine." );
+                return;
+            }
+
             var shortcodeTemplate = @"
 Parameter 1: {{ parameter1 }}
 Parameter 2: {{ parameter2 }}
@@ -81,12 +88,18 @@ Panel 3 - Panel 3 content.
 
             expectedOutput = expectedOutput.Replace( "``", @"""" );
 
-            TestHelper.AssertTemplateOutput( expectedOutput, input, null, ignoreWhiteSpace: true );
+            TestHelper.AssertTemplateOutput( expectedOutput, input, ignoreWhiteSpace: true );
         }
 
         [TestMethod]
         public void ShortcodeBlock_WithEntityCommandEnabledAndEmbeddedEntityCommand_EmitsCorrectHtml()
         {
+            if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.Legacy )
+            {
+                Debug.Print( "This test is not implemented for the Legacy Lava Engine." );
+                return;
+            }
+
             var shortcodeTemplate = @"
 {% for item in items %}
 <Item>
@@ -132,12 +145,18 @@ Potty Trained --- Id: 141 - Guid: e6905502-4c23-4879-a60f-8c4ceb3ee2e9
 
             expectedOutput = expectedOutput.Replace( "``", @"""" );
 
-            TestHelper.AssertTemplateOutput( expectedOutput, input, null, ignoreWhiteSpace: true );
+            TestHelper.AssertTemplateOutput( expectedOutput, input, ignoreWhiteSpace: true );
         }
 
         [TestMethod]
         public void ShortcodeBlock_WithParameters_CanResolveParameters()
         {
+            if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.Legacy )
+            {
+                Debug.Print( "This test is not implemented for the Legacy Lava Engine." );
+                return;
+            }
+
             var shortcodeTemplate = @"
 Font Name: {{ fontname }}
 Font Size: {{ fontsize }}
@@ -167,7 +186,7 @@ Font Bold: true
 
             expectedOutput = expectedOutput.Replace( "``", @"""" );
 
-            TestHelper.AssertTemplateOutput( expectedOutput, input, null, ignoreWhiteSpace: true );
+            TestHelper.AssertTemplateOutput( expectedOutput, input, ignoreWhiteSpace: true );
         }
 
         #region Accordion
@@ -175,6 +194,12 @@ Font Bold: true
         [TestMethod]
         public void ShortcodeBlock_RepeatedShortcodeBlock_ProducesExpectedOutput()
         {
+            if ( LavaEngine.CurrentEngine.EngineType == LavaEngineTypeSpecifier.Legacy )
+            {
+                System.Diagnostics.Debug.Print( "This test is not implemented for the Legacy Lava Engine." );
+                return;
+            }
+
             var shortcodeTemplate = @"
 Font Name: {{ fontname }}
 Font Size: {{ fontsize }}
@@ -214,29 +239,7 @@ Font Bold: true
 
             var parallelOptions = new ParallelOptions { MaxDegreeOfParallelism = 30 };
 
-            Parallel.For( 0, 1000, parallelOptions, ( x ) => TestHelper.AssertTemplateOutput( expectedOutput, input, null, ignoreWhiteSpace: true ) );
-
-
-
-
-
-//            _helper.AssertTemplateOutput( expectedOutput, input, null, ignoreWhiteSpace: true );
-
-//        var input2 = @"
-//{[ shortcodetest1 fontname:'Courier' fontsize:'16' fontbold:'false' ]}
-//{[ endshortcodetest1 ]}
-//";
-
-//            var expectedOutput2 = @"
-//Font Name: Courier
-//Font Size: 16
-//Font Bold: false
-//";
-
-//            expectedOutput2 = expectedOutput2.Replace( "``", @"""" );
-
-//            _helper.AssertTemplateOutput( expectedOutput2, input2, null, ignoreWhiteSpace: true );
-
+            Parallel.For( 0, 1000, parallelOptions, ( x ) => TestHelper.AssertTemplateOutput( expectedOutput, input, ignoreWhiteSpace: true ) );
         }
 
         [TestMethod]

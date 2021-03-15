@@ -68,7 +68,7 @@ namespace Rock.Lava
                     // If no engine type specified, default to the legacy engine.
                     engine = new LegacyEngine();
 
-                    options = null;
+                    options = options ?? new LavaEngineConfigurationOptions();
                 }
 
                 engine.Initialize( options );

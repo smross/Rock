@@ -63,7 +63,7 @@ namespace Rock.Tests.Integration.Lava
             if ( engine.EngineType == LavaEngineTypeSpecifier.Legacy )
             {
                 engine.RegisterFilters( typeof( global::Rock.Lava.Filters.TemplateFilters ) );
-                engine.RegisterFilters( typeof( Rock.Lava.Legacy.RockFiltersLegacy ) );                
+                engine.RegisterFilters( typeof( Rock.Lava.Legacy.RockFiltersLegacy ) );
             }
             else
             {
@@ -331,9 +331,37 @@ namespace Rock.Tests.Integration.Lava
         /// </summary>
         /// <param name="expectedOutput"></param>
         /// <param name="inputTemplate"></param>
+        public void AssertTemplateOutput( string expectedOutput, string inputTemplate, ILavaDataDictionary mergeFields, bool ignoreWhiteSpace = false )
+        {
+            var context = LavaEngine.NewRenderContext( mergeFields );
+
+            context.SetInternalFields( mergeFields );
+
+            AssertTemplateOutput( expectedOutput, inputTemplate, context, ignoreWhiteSpace );
+        }
+
+        /// <summary>
+        /// Process the specified input template and verify against the expected output.
+        /// </summary>
+        /// <param name="expectedOutput"></param>
+        /// <param name="inputTemplate"></param>
+        public void AssertTemplateOutput( string expectedOutput, string inputTemplate, bool ignoreWhiteSpace = false )
+        {
+            var context = LavaEngine.NewRenderContext();
+
+            AssertTemplateOutput( expectedOutput, inputTemplate, context, ignoreWhiteSpace );
+        }
+
+        /// <summary>
+        /// Process the specified input template and verify against the expected output.
+        /// </summary>
+        /// <param name="expectedOutput"></param>
+        /// <param name="inputTemplate"></param>
         public void AssertTemplateOutput( string expectedOutput, string inputTemplate, ILavaRenderContext context, bool ignoreWhiteSpace = false )
         {
             var outputString = GetTemplateOutput( inputTemplate, context );
+
+            Assert.IsNotNull( outputString, "Template failed to render." );
 
             WriteTemplateRenderToDebug( inputTemplate, outputString );
 
@@ -343,25 +371,6 @@ namespace Rock.Tests.Integration.Lava
                 expectedOutput = Regex.Replace( expectedOutput, @"\s*", string.Empty );
             }
 
-            Assert.That.Equal( expectedOutput, outputString );
-        }
-
-        /// <summary>
-        /// Process the specified input template and verify against the expected output.
-        /// </summary>
-        /// <param name="expectedOutput"></param>
-        /// <param name="inputTemplate"></param>
-        public void AssertTemplateOutput( string expectedOutput, string inputTemplate, LavaDataDictionary mergeValues = null, bool ignoreWhitespace = false )
-        {
-            var outputString = GetTemplateOutput( inputTemplate, mergeValues );
-
-            if ( ignoreWhitespace )
-            {
-                outputString = Regex.Replace( outputString, @"\s*", string.Empty );
-                expectedOutput = Regex.Replace( expectedOutput, @"\s*", string.Empty );
-            }
-
-            WriteTemplateRenderToDebug( inputTemplate, outputString );
             Assert.That.Equal( expectedOutput, outputString );
         }
 
@@ -431,6 +440,8 @@ namespace Rock.Tests.Integration.Lava
         public void AssertTemplateOutputWithWildcard( string expectedOutput, string inputTemplate, ILavaRenderContext context, bool ignoreWhiteSpace = false, string wildCard = "*" )
         {
             var outputString = GetTemplateOutput( inputTemplate, context );
+
+            Assert.IsNotNull( outputString, "Template contains no output." );
 
             // Replace the wildcards with a non-Regex symbol.
             expectedOutput = expectedOutput.Replace( wildCard, "<<<wildCard>>>" );

@@ -26,16 +26,6 @@ namespace Rock.Tests.Integration.Lava
     [TestClass]
     public class LavaCommentsFilterTests
     {
-        [ClassInitialize]
-        public static void ClassInitialize( TestContext testContext )
-        {
-            // Initialize the Lava Engine.
-            Liquid.UseRubyDateFormat = false;
-            Template.NamingConvention = new DotLiquid.NamingConventions.CSharpNamingConvention();
-
-            Template.RegisterFilter( typeof( Rock.Lava.RockFilters ) );
-        }
-
         [TestMethod]
         public void RemoveLavaCommentsReturnsEmptyStringForNullInput()
         {

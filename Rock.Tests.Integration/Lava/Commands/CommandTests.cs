@@ -54,7 +54,7 @@ namespace Rock.Tests.Integration.Lava
 
 ";
 
-            TestHelper.AssertTemplateOutput( expectedOutput, input, ignoreWhitespace: true );
+            TestHelper.AssertTemplateOutput( expectedOutput, input, ignoreWhiteSpace: true );
         }
 
         #endregion
@@ -464,7 +464,7 @@ Color 4: blue
 </script>
 ";
 
-            TestHelper.AssertTemplateOutput( expectedOutput, input, ignoreWhitespace: true );
+            TestHelper.AssertTemplateOutput( expectedOutput, input, ignoreWhiteSpace: true );
         }
 
         #endregion
@@ -576,7 +576,7 @@ Color 4: blue
 </style> 
 ";
 
-            TestHelper.AssertTemplateOutput( expectedOutput, input, ignoreWhitespace: true );
+            TestHelper.AssertTemplateOutput( expectedOutput, input, ignoreWhiteSpace: true );
         }
 
         #endregion

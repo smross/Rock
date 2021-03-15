@@ -28,20 +28,6 @@ namespace Rock.Tests.Integration.Lava
     [TestClass]
     public class WebSiteFilterTests : LavaIntegrationTestBase
     {
-        #region Initialization
-
-        [ClassInitialize]
-        public static void ClassInitialize( TestContext testContext )
-        {
-            // Initialize the Lava Engine.
-            Liquid.UseRubyDateFormat = false;
-            Template.NamingConvention = new DotLiquid.NamingConventions.CSharpNamingConvention();
-
-            Template.RegisterFilter( typeof( Rock.Lava.RockFilters ) );
-        }
-
-        #endregion
-
         #region AddResponseHeader
 
         [TestMethod]

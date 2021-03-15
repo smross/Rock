@@ -71,12 +71,12 @@ namespace Rock.Tests.Integration.Lava
 
             var inputTemplate = @"
 {% assign image = Item | Attribute:'Image','Object' %}
-Type: {{ image | GetVariableType }}<br/>
+{{ image | GetVariableType }}
 ";
 
             var expectedOutput = @"BinaryFile";
 
-            TestHelper.AssertTemplateOutputWithWildcard( expectedOutput, inputTemplate, values, wildCard: "{moreBase64Data}" );
+            TestHelper.AssertTemplateOutput( expectedOutput, inputTemplate, values, ignoreWhiteSpace: true );
         }
 
         #endregion
