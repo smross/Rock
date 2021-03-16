@@ -38,6 +38,7 @@ using Rock.UniversalSearch.IndexModels;
 using Rock.Utility.Enums;
 using Rock.Web.Cache;
 using Rock.Lava;
+using Rock.Security;
 
 namespace Rock.Model
 {
@@ -3443,6 +3444,7 @@ namespace Rock.Model
 
     public static partial class PersonExtensionMethods
     {
+
         /// <summary>
         /// Gets the families sorted by the person's GroupOrder (GroupMember.GroupOrder)
         /// </summary>
@@ -3849,6 +3851,13 @@ namespace Rock.Model
             }
 
             return qryWithGradeOffset.Select( a => a.Person );
+        }
+
+        public static bool IsPersonAccountProtectionProfileDisabled( this Person person )
+        {
+            var rockSecuritySettings = new SecuritySettings();
+
+            return rockSecuritySettings.DisableTokensForAccountProtectionProfiles.Contains( person.AccountProtectionProfile );
         }
     }
 

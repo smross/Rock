@@ -2735,6 +2735,11 @@ namespace Rock.Model
 
             if ( person != null )
             {
+                if ( person.IsPersonAccountProtectionProfileDisabled() )
+                {
+                    return null;
+                }
+
                 return person;
             }
 
@@ -2744,6 +2749,10 @@ namespace Rock.Model
                 var personAlias = new PersonAliasService( this.Context as RockContext ).GetByAliasEncryptedKey( encryptedKey );
                 if ( personAlias != null )
                 {
+                    if ( personAlias.Person.IsPersonAccountProtectionProfileDisabled() )
+                    {
+                        return null;
+                    }
                     return personAlias.Person;
                 }
             }
