@@ -611,6 +611,7 @@
     <Compile Include="Communication\Transport\ThrottleHelper.cs" />
     <Compile Include="Data\LavaIgnoreAttribute.cs" />
     <Compile Include="Data\LavaIncludeAttribute.cs" />
+    <Compile Include="Jobs\PostUpdateDataMigrations.cs" />
     <Compile Include="Lava\RockLiquid\Blocks\Cache.cs" />
     <Compile Include="Lava\RockLiquid\Blocks\CalendarEvents.cs" />
     <Compile Include="Lava\RockLiquid\Blocks\CalendarEventsLavaDataSource.cs" />
