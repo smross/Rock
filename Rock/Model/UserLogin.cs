@@ -26,10 +26,9 @@ using System.Security.Principal;
 using System.Threading;
 using System.Web;
 using System.Web.Hosting;
-
 using Rock.Data;
-using Rock.Web.Cache;
 using Rock.Lava;
+using Rock.Web.Cache;
 
 namespace Rock.Model
 {
@@ -53,7 +52,7 @@ namespace Rock.Model
         [Required]
         [DataMember( IsRequired = true )]
         public int? EntityTypeId { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the UserName that is associated with this UserLogin. This property is required.
         /// </summary>
@@ -64,7 +63,7 @@ namespace Rock.Model
         [MaxLength( 255 )]
         [DataMember( IsRequired = true )]
         public string UserName { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the Password.  Stored as a BCrypt hash for Rock Database Auth, but possibly a different hashtype for other ServiceTypes
         /// </summary>
@@ -74,7 +73,7 @@ namespace Rock.Model
         [MaxLength( 128 )]
         [HideFromReporting]
         public string Password { get; set; }
-        
+
         /// <summary>
         /// Gets or sets a flag indicating if the UserLogin has been confirmed.
         /// </summary>
@@ -123,7 +122,7 @@ namespace Rock.Model
         [NotAudited]
         [DataMember]
         public bool? IsOnLine { get; set; }
-        
+
         /// <summary>
         /// Gets or sets a flag indicating if the UserLogin is currently locked out.
         /// </summary>
@@ -151,7 +150,7 @@ namespace Rock.Model
         [NotAudited]
         [DataMember]
         public DateTime? LastLockedOutDateTime { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the number of failed password attempts within the failed password attempt window.
         /// </summary>
@@ -189,7 +188,7 @@ namespace Rock.Model
         [DataMember]
         [HideFromReporting]
         public string ApiKey { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the Id of the <see cref="Rock.Model.Person"/> who this UserLogin belongs to.
         /// </summary>
@@ -269,7 +268,7 @@ namespace Rock.Model
             {
                 string identifier = string.Format( "ROCK|{0}|{1}|{2}", this.EncryptedKey.ToString(), this.UserName, RockDateTime.Now.Ticks );
                 string encryptedCode;
-                if (Rock.Security.Encryption.TryEncryptString(identifier, out encryptedCode))
+                if ( Rock.Security.Encryption.TryEncryptString( identifier, out encryptedCode ) )
                 {
                     return encryptedCode;
                 }
@@ -384,8 +383,8 @@ namespace Rock.Model
                         // Change the caption if this is a sensitive user account
                         if ( HistoryChanges.Count > 0 && isUserNameSensitive )
                         {
-                                var change = HistoryChanges.FirstOrDefault();
-                                change.SetCaption( "User Account" );
+                            var change = HistoryChanges.FirstOrDefault();
+                            change.SetCaption( "User Account" );
                         }
 
                         break;
@@ -404,7 +403,7 @@ namespace Rock.Model
                                 var entityType = EntityTypeCache.Get( userLogin.EntityTypeId ?? 0 );
                                 var isUserNameSensitive = ( entityType?.Guid == Rock.SystemGuid.EntityType.AUTHENTICATION_PIN.AsGuid() ) ? true : false;
 
-                                if ( ! isUserNameSensitive )
+                                if ( !isUserNameSensitive )
                                 {
                                     HistoryChanges.AddChange( History.HistoryVerb.Delete, History.HistoryChangeType.Record, "User Login" ).SetOldValue( userLogin.UserName );
                                     HistoryService.SaveChanges( newRockContext, typeof( Person ), Rock.SystemGuid.Category.HISTORY_PERSON_ACTIVITY.AsGuid(), userLogin.PersonId.Value, HistoryChanges, UserName, typeof( UserLogin ), this.Id, true, userLogin.ModifiedByPersonAliasId, null );
@@ -438,12 +437,18 @@ namespace Rock.Model
         {
             var rockContext = ( RockContext ) dbContext;
 
+            if ( Person != null && Person.AccountProtectionProfile < Utility.Enums.AccountProtectionProfile.Medium)
+            {
+                Person.AccountProtectionProfile = Utility.Enums.AccountProtectionProfile.Medium;
+                rockContext.SaveChanges();
+            }
+
             // It is possible that we have a UserLogin without a PersonId, in these cases we don't want to save a person history record.
             if ( HistoryChanges?.Any() == true && this.PersonId.HasValue )
             {
                 try
                 {
-                    HistoryService.SaveChanges( ( RockContext ) dbContext, typeof( Person ), Rock.SystemGuid.Category.HISTORY_PERSON_ACTIVITY.AsGuid(), this.PersonId.Value, HistoryChanges, this.UserName, typeof( UserLogin ), this.Id, true, this.ModifiedByPersonAliasId, null );
+                    HistoryService.SaveChanges( rockContext, typeof( Person ), Rock.SystemGuid.Category.HISTORY_PERSON_ACTIVITY.AsGuid(), this.PersonId.Value, HistoryChanges, this.UserName, typeof( UserLogin ), this.Id, true, this.ModifiedByPersonAliasId, null );
                 }
                 catch ( Exception ex )
                 {
@@ -489,7 +494,7 @@ namespace Rock.Model
     /// </summary>
     [DataContract]
     [NotMapped]
-    [RockClientInclude("Use Rock.Client.UserLoginWithPlainTextPassword and set PlainTextPassword to set a new password as part of a api/UserLogins POST or PUT")]
+    [RockClientInclude( "Use Rock.Client.UserLoginWithPlainTextPassword and set PlainTextPassword to set a new password as part of a api/UserLogins POST or PUT" )]
     public class UserLoginWithPlainTextPassword : UserLogin
     {
         /// <summary>
@@ -514,7 +519,7 @@ namespace Rock.Model
         /// </summary>
         public UserLoginConfiguration()
         {
-            this.HasOptional( p => p.Person ).WithMany( p => p.Users ).HasForeignKey( p => p.PersonId ).WillCascadeOnDelete(true);
+            this.HasOptional( p => p.Person ).WithMany( p => p.Users ).HasForeignKey( p => p.PersonId ).WillCascadeOnDelete( true );
             this.HasRequired( p => p.EntityType ).WithMany().HasForeignKey( p => p.EntityTypeId ).WillCascadeOnDelete( false );
         }
     }

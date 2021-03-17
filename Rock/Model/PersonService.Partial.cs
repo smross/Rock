@@ -26,6 +26,7 @@ using System.Web.UI.WebControls;
 using Rock;
 using Rock.BulkExport;
 using Rock.Data;
+using Rock.Security;
 using Rock.Web.Cache;
 using Rock.Web.UI.Controls;
 
@@ -301,6 +302,9 @@ namespace Rock.Model
                 .AsNoTracking()
                 .Where( p => p.LastName == searchParameters.LastName );
 
+            // Make sure people with an ignored account protection profile are ignored.
+            var securitySettingsService = new SecuritySettingsService();
+            query = query.Where( p => !securitySettingsService.SecuritySettings.AccountProtectionProfilesForDuplicateDetectionToIgnore.Contains( p.AccountProtectionProfile ) );
 
             if ( searchParameters.SuffixValueId.HasValue )
             {
@@ -352,7 +356,9 @@ namespace Rock.Model
                 this.Queryable( includeDeceased, includeBusinesses )
                     .AsNoTracking()
                     .Where(
-                        p => previousEmailQry.Any( a => a.PersonAlias.PersonId == p.Id && a.SearchValue == searchParameters.Email && a.SearchTypeValueId == searchTypeValueId )
+                        p => previousEmailQry.Any( a => a.PersonAlias.PersonId == p.Id
+                            && a.SearchValue == searchParameters.Email
+                            && a.SearchTypeValueId == searchTypeValueId )
                     )
                     .Select( p => new PersonSummary()
                     {
@@ -606,7 +612,7 @@ namespace Rock.Model
                 GenderMatched = query.Gender.HasValue & query.Gender == person.Gender;
 
                 EmailSearchSpecified = query.Email.IsNotNullOrWhiteSpace();
-                PrimaryEmailMatched = query.Email.IsNotNullOrWhiteSpace() && person.Email.IsNotNullOrWhiteSpace() && query.Email == person.Email;
+                PrimaryEmailMatched = query.Email.IsNotNullOrWhiteSpace() && person.Email.IsNotNullOrWhiteSpace() && query.Email.ToLowerInvariant() == person.Email.ToLowerInvariant();
 
                 if ( query.BirthDate.HasValue && person.BirthDate.HasValue )
                 {
