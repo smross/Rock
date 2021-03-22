@@ -78,6 +78,10 @@
                     <asp:Panel ID="pnlNoGiving" runat="server">
                         <p>No giving data available.</p>
                     </asp:Panel>
+                    <div id="pnlInactiveGiver" runat="server">
+                        Inactive Giver <br />
+                        Last Gift: <asp:Literal ID="lLastGiver" runat="server" />
+                    </div>
                 </div>
             </div>
         </asp:Panel>
