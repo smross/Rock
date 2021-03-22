@@ -152,12 +152,11 @@ namespace Rock.WebStartup
             ShowDebugTimingMessage( "Web Farm (stage 1)" );
 
             RegisterHttpModules();
+            ShowDebugTimingMessage( "Register HTTP Modules" );
 
             // Initialize the Lava engine.
             InitializeLava();
             ShowDebugTimingMessage( $"Initialize Lava Engine ({LavaEngine.CurrentEngine.EngineName})" );
-
-            ShowDebugTimingMessage( "Startup Components" );
 
             // setup and launch the jobs infrastructure if running under IIS
             bool runJobsInContext = Convert.ToBoolean( ConfigurationManager.AppSettings["RunJobsInIISContext"] );
@@ -628,7 +627,7 @@ namespace Rock.WebStartup
 
                 Template.FileSystem = new LavaFileSystem();
 
-                Template.RegisterFilter( typeof( Rock.Lava.RockLiquid.RockLiquidFilters ) );
+                Template.RegisterFilter( typeof( Rock.Lava.RockFilters ) );
             }
             else
             {
@@ -638,7 +637,7 @@ namespace Rock.WebStartup
                 var engineOptions = new LavaEngineConfigurationOptions
                 {
                     FileSystem = new WebsiteLavaFileSystem(),
-                    CacheService = new LavaTemplateCache(),
+                    CacheService = new WebsiteLavaTemplateCache(),
                     DefaultEnabledCommands = defaultEnabledLavaCommands
                 };
 
@@ -647,7 +646,7 @@ namespace Rock.WebStartup
                 // Initialize Lava extensions.
                 var engine = LavaEngine.CurrentEngine;
 
-                engine.RegisterFilters( typeof( Rock.Lava.RockFilters ) );
+                engine.RegisterFilters( typeof( Rock.Lava.LavaFilters ) );
 
                 InitializeLavaShortcodes( engine );
                 InitializeLavaBlocks( engine );
