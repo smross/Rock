@@ -764,7 +764,7 @@ TransactionAccountDetails: [
 
                 */
 
-                Response.Redirect( "/" );
+                Response.Redirect( "/", false );
                 Context.ApplicationInstance.CompleteRequest();
                 return;
             }
