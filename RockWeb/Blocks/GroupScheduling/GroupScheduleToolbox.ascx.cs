@@ -26,6 +26,7 @@ using System.Web.UI.WebControls;
 
 using Rock;
 using Rock.Attribute;
+using Rock.Communication;
 using Rock.Data;
 using Rock.Model;
 using Rock.Web.Cache;
@@ -35,7 +36,6 @@ using Rock.Web.UI.Controls;
 namespace RockWeb.Blocks.GroupScheduling
 {
     /// <summary>
-    /// A block for a person to use to manage their group scheduling. View schedule, change preferences, and sign-up for available needs
     /// </summary>
     [DisplayName( "Group Schedule Toolbox" )]
     [Category( "Group Scheduling" )]
@@ -85,7 +85,21 @@ namespace RockWeb.Blocks.GroupScheduling
         Description = "If the group type has enabled 'RequiresReasonIfDeclineSchedule' then specify the page to provide that reason here.",
         IsRequired = true,
         DefaultValue = Rock.SystemGuid.Page.SCHEDULE_CONFIRMATION,
-        Key = AttributeKey.DeclineReasonPage )]
+        Key = AttributeKey.DeclineReasonPage,
+        Order = 3 )]
+
+    [BooleanField( "Scheduler Receive Confirmation Emails",
+        Description = "If checked, the scheduler will receive an email response for each confirmation or decline.",
+        DefaultBooleanValue = false,
+        Order = 4,
+        Key = AttributeKey.SchedulerReceiveConfirmationEmails )]
+
+    [SystemCommunicationField( "Scheduling Response Email",
+        Description = "The system email that will be used for sending responses back to the scheduler.",
+        IsRequired = false,
+        DefaultSystemCommunicationGuid = Rock.SystemGuid.SystemCommunication.SCHEDULING_RESPONSE,
+        Key = AttributeKey.SchedulingResponseEmail,
+        Order = 5 )]
 
     public partial class GroupScheduleToolbox : RockBlock
     {
@@ -95,6 +109,8 @@ namespace RockWeb.Blocks.GroupScheduling
             public const string EnableSignup = "EnableSignup";
             public const string SignupInstructions = "SignupInstructions";
             public const string DeclineReasonPage = "DeclineReasonPage";
+            public const string SchedulerReceiveConfirmationEmails = "SchedulerReceiveConfirmationEmails";
+            public const string SchedulingResponseEmail = "SchedulingResponseEmail";
         }
 
         protected const string ALL_GROUPS_STRING = "All Groups";
@@ -522,6 +538,21 @@ $('#{0}').tooltip();
                 {
                     attendanceService.ScheduledPersonDecline( attendanceId.Value, null );
                     rockContext.SaveChanges();
+                    try
+                    {
+                        // The scheduler receives email add as a recipient for both Confirmation and Decline
+                        if ( GetAttributeValue( AttributeKey.SchedulerReceiveConfirmationEmails ).AsBoolean() )
+                        {
+                            attendanceService.SendScheduledPersonResponseEmailToScheduler( attendanceId.Value, GetAttributeValue( AttributeKey.SchedulingResponseEmail ).AsGuid() );
+                        }
+
+                        attendanceService.SendScheduledPersonDeclineEmail( attendanceId.Value, this.GetAttributeValue( AttributeKey.SchedulingResponseEmail ).AsGuidOrNull() );
+                    }
+                    catch ( SystemException ex )
+                    {
+                        // intentionally ignore exception
+                        ExceptionLogService.LogException( ex, Context, RockPage.PageId, RockPage.Site.Id, CurrentPersonAlias );
+                    }
                 }
             }
 
@@ -1645,6 +1676,14 @@ $('#{0}').tooltip();
             cbSignupSchedule.Checked = false;
             cbSignupSchedule.AutoPostBack = true;
             cbSignupSchedule.CheckedChanged += CbSignupSchedule_CheckedChanged;
+            cbSignupSchedule.Enabled = !personScheduleSignup.MaxScheduled;
+
+            if ( personScheduleSignup.MaxScheduled )
+            {
+                cbSignupSchedule.Text += " (filled)";
+                cbSignupSchedule.AddCssClass( "text-muted" );
+            }
+
             pnlCheckboxCol.Controls.Add( cbSignupSchedule );
 
             var locations = availableGroupLocationSchedules
@@ -1800,6 +1839,13 @@ $('#{0}').tooltip();
                 {
                     foreach ( var schedule in personGroupLocation.Schedules )
                     {
+                        //  find if this has max volunteers here
+                        int? maximumCapacitySetting = null;
+                        if ( personGroupLocation.GroupLocationScheduleConfigs.Any() )
+                        {
+                            maximumCapacitySetting = personGroupLocation.GroupLocationScheduleConfigs.Where( c => c.ScheduleId == schedule.Id ).FirstOrDefault().MaximumCapacity;
+                        }
+
                         var startDateTimeList = schedule.GetScheduledStartTimes( startDate, endDate );
                         foreach ( var startDateTime in startDateTimeList )
                         {
@@ -1822,6 +1868,15 @@ $('#{0}').tooltip();
                                 continue;
                             }
 
+                            // If there is a maximum Campacity then find out how many aleady RSVP with "Yes"
+                            var currentScheduled = maximumCapacitySetting != null
+                                ? attendanceService
+                                    .GetAttendances( startDateTime, personGroupLocation.LocationId, schedule.Id, Rock.Model.RSVP.Yes )
+                                    .Count()
+                                : 0;
+
+                            bool maxScheduled = maximumCapacitySetting != null && currentScheduled >= maximumCapacitySetting;
+
                             // Add to master list personScheduleSignups
                             personScheduleSignups.Add( new PersonScheduleSignup
                             {
@@ -1835,6 +1890,7 @@ $('#{0}').tooltip();
                                 ScheduleId = schedule.Id,
                                 ScheduleName = schedule.Name,
                                 ScheduledDateTime = startDateTime,
+                                MaxScheduled = maxScheduled
                             } );
                         }
                     }
@@ -1865,6 +1921,8 @@ $('#{0}').tooltip();
             public string LocationName { get; set; }
 
             public int LocationOrder { get; set; }
+
+            public bool MaxScheduled { get; set; }
         }
 
         #endregion Sign-up Tab
