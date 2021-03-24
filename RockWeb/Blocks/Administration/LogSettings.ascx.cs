@@ -15,8 +15,10 @@
 // </copyright>
 //
 using System;
+using System.Linq;
 using Rock;
 using Rock.Logging;
+using Rock.Model;
 using Rock.Security;
 using Rock.SystemKey;
 using Rock.Web.UI;
@@ -29,7 +31,7 @@ namespace RockWeb.Blocks.Administration
     /// </summary>
     [System.ComponentModel.DisplayName( "Log Settings" )]
     [System.ComponentModel.Category( "Administration" )]
-    [System.ComponentModel.Description( "Block to edit system log settings." )]
+    [System.ComponentModel.Description( "Block to edit rock log settings." )]
 
     public partial class LogSettings : RockBlock
     {
@@ -52,16 +54,22 @@ namespace RockWeb.Blocks.Administration
         {
             base.OnLoad( e );
 
-            if( !IsUserAuthorized( Authorization.EDIT ) )
+            if ( !IsUserAuthorized( Authorization.EDIT ) )
             {
                 btnEdit.Visible = false;
+            }
+
+            if ( !Page.IsPostBack )
+            {
+                ShowHideEditForm( false, null );
             }
         }
         #endregion
 
+        #region Control Events
         protected void btnLoggingSave_Click( object sender, EventArgs e )
         {
-            if ( !Page.IsValid )
+            if ( !Page.IsValid || !IsUserAuthorized( Authorization.EDIT ) )
             {
                 return;
             }
@@ -78,11 +86,15 @@ namespace RockWeb.Blocks.Administration
 
             Rock.Web.SystemSettings.SetValue( SystemSetting.ROCK_LOGGING_SETTINGS, logConfig.ToJson() );
 
-            Rock.Logging.RockLogger.Log.ReloadConfiguration();
+            RockLogger.Log.ReloadConfiguration();
+
+            ShowHideEditForm( false, logConfig );
 
             nbLoggingMessage.NotificationBoxType = NotificationBoxType.Success;
             nbLoggingMessage.Title = string.Empty;
             nbLoggingMessage.Text = "Setting saved successfully.";
+
+
         }
 
         protected void btnDeleteLog_Click( object sender, EventArgs e )
@@ -91,6 +103,8 @@ namespace RockWeb.Blocks.Administration
 
             RockLogger.Log.Delete();
 
+            ShowHideEditForm( false, null );
+
             nbLoggingMessage.NotificationBoxType = NotificationBoxType.Success;
             nbLoggingMessage.Title = string.Empty;
             nbLoggingMessage.Text = "The log files were successfully deleted.";
@@ -98,12 +112,71 @@ namespace RockWeb.Blocks.Administration
 
         protected void btnEdit_Click( object sender, EventArgs e )
         {
-            if ( IsUserAuthorized( Authorization.EDIT ) )
+            ShowHideEditForm( true, null );
+        }
+        #endregion
+
+        #region Internal Methods
+        private void BindLoggingSettingsEdit()
+        {
+            var logLevel = Enum.GetNames( typeof( RockLogLevel ) );
+            rblVerbosityLevel.DataSource = logLevel;
+            rblVerbosityLevel.DataBind();
+
+            var definedValues = new DefinedValueService( new Rock.Data.RockContext() ).GetByDefinedTypeGuid( Rock.SystemGuid.DefinedType.LOGGING_DOMAINS.AsGuid() );
+
+            cblDomainsToLog.DataSource = definedValues.ToList();
+            cblDomainsToLog.DataTextField = "Value";
+            cblDomainsToLog.DataValueField = "Value";
+            cblDomainsToLog.DataBind();
+
+            var rockConfig = Rock.Web.SystemSettings.GetValue( SystemSetting.ROCK_LOGGING_SETTINGS ).FromJsonOrNull<RockLogSystemSettings>();
+
+            if ( rockConfig == null )
+            {
+                return;
+            }
+
+            rblVerbosityLevel.SelectedValue = rockConfig.LogLevel.ToString();
+            txtFilesToRetain.Text = rockConfig.NumberOfLogFiles.ToString();
+            txtMaxFileSize.Text = rockConfig.MaxFileSize.ToString();
+
+            cblDomainsToLog.SetValues( rockConfig.DomainsToLog );
+        }
+
+        private void BindLoggingSettingsView( RockLogSystemSettings rockConfig )
+        {
+            if ( rockConfig == null )
+            {
+                rockConfig = Rock.Web.SystemSettings.GetValue( SystemSetting.ROCK_LOGGING_SETTINGS ).FromJsonOrNull<RockLogSystemSettings>();
+            }
+
+            if ( rockConfig == null )
+            {
+                return;
+            }
+
+            litVerbosityLevel.Text = rockConfig.LogLevel.ToString();
+            litDomains.Text = "<div class='col-sm-3'>" + rockConfig.DomainsToLog.JoinStrings( "</div><div class='col-sm-3'>" ) + "</div>";
+        }
+
+        private void ShowHideEditForm( bool showEditForm, RockLogSystemSettings rockConfig )
+        {
+            if ( showEditForm && IsUserAuthorized( Authorization.EDIT ) )
             {
                 pnlEditSettings.Visible = true;
                 pnlReadOnlySettings.Visible = false;
                 HideSecondaryBlocks( true );
+                BindLoggingSettingsEdit();
+            }
+            else
+            {
+                pnlEditSettings.Visible = false;
+                pnlReadOnlySettings.Visible = true;
+                HideSecondaryBlocks( false );
+                BindLoggingSettingsView( rockConfig );
             }
         }
+        #endregion
     }
 }
