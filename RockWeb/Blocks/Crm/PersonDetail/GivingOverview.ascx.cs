@@ -158,7 +158,7 @@ namespace RockWeb.Blocks.Crm.PersonDetail
 
             qry = qry.Where( t => t.Transaction.AuthorizedPersonAlias.Person.GivingId == Person.GivingId );
 
-            
+
             if ( qry.Any() )
             {
                 var inactiveGiverCutOffDate = RockDateTime.Now.AddDays( -GetAttributeValue( AttributeKey.InactiveGiverCutoff ).AsInteger() ).Date;
@@ -172,7 +172,7 @@ namespace RockWeb.Blocks.Crm.PersonDetail
                         .FirstOrDefault()
                         .ToShortDateString();
                 }
-                
+
             }
             else
             {
@@ -193,20 +193,31 @@ namespace RockWeb.Blocks.Crm.PersonDetail
             rptGivingByMonth.DataSource = contributionByMonths.OrderBy( a => a.Key );
             rptGivingByMonth.DataBind();
 
-            var givingPercentile = Person.GetAttributeValue( "GivingPercentile" ).AsInteger();
-            var percentileStage = 10 -  givingPercentile / 10;
-            if ( givingPercentile % 10 == 0 && givingPercentile != 0)
+            var givingPercentileAttribute = AttributeCache.Get( Rock.SystemGuid.Attribute.PERSON_GIVING_PERCENTILE );
+            if ( givingPercentileAttribute != null )
             {
-                percentileStage += 1;
-            }
-            lPercent.Text = givingPercentile.ToStringSafe();
-            lPercentStage.Text = percentileStage.ToString();
+                var givingPercentile = Person.GetAttributeValue( givingPercentileAttribute.Key ).AsInteger();
+                var percentileStage = 10 - givingPercentile / 10;
+                if ( givingPercentile % 10 == 0 && givingPercentile != 0 )
+                {
+                    percentileStage += 1;
+                }
+                lPercent.Text = givingPercentile.ToStringSafe();
 
-            var lStage =  pnlGiving.FindControl( "lStage" + percentileStage ) as HtmlGenericControl;
-            if ( lStage != null )
-            {
-                lStage.AddCssClass( "bg-primary" );
+                var lStage = pnlGiving.FindControl( "lStage" + percentileStage ) as HtmlGenericControl;
+                if ( lStage != null )
+                {
+                    lStage.AddCssClass( "bg-primary" );
+                }
             }
+
+            var givingBinAttribute = AttributeCache.Get( Rock.SystemGuid.Attribute.PERSON_GIVING_BIN );
+            if ( givingBinAttribute != null )
+            {
+                var givingBin = Person.GetAttributeValue( givingBinAttribute.Key ).AsInteger();
+                lGivingBin.Text = givingBin.ToString();
+            }
+            
 
             var mergeFields = Rock.Lava.LavaHelper.GetCommonMergeFields( null );
             var last12MonthStartDate = RockDateTime.Now.AddMonths( -12 ).StartOfMonth();
@@ -223,7 +234,7 @@ namespace RockWeb.Blocks.Crm.PersonDetail
                 growthPercent = 0;
             }
             else if ( baseGrowthContribution == 0 )
-            { 
+            {
                 growthPercent = 100;
             }
             else
@@ -235,13 +246,13 @@ namespace RockWeb.Blocks.Crm.PersonDetail
 
             string kpi = GetKpiShortCode(
                 "$ Last 12 Months",
-                contributionByMonths.Where( a => a.Key >= last12MonthStartDate ).Sum( a => a.Value ).FormatAsCurrency(),
+                FormatAsCurrency( contributionByMonths.Where( a => a.Key >= last12MonthStartDate ).Sum( a => a.Value ) ),
                 subValue: string.Format( "<span class=\"label label-warning \">{0}</span>", Person.GetAttributeValue( "core_EraFirstGave" ).AsDateTime().ToShortDateString() ) );
             kpi += GetKpiShortCode(
                 "$ Last 90 Days",
-                last90DaysContribution.FormatAsCurrency(),
+                FormatAsCurrency( last90DaysContribution ),
                 string.Format( "<span class=\"small text-{2}\"><i class=\"fa {1}\"></i> {0}%</span>", Math.Round( Math.Abs( growthPercent ), 2 ), isGrowthPositive ? "fa-arrow-up" : "fa-arrow-down", isGrowthPositive ? "success" : "danger" ) );
-            kpi += GetKpiShortCode( "Gifts Last 12 Months", last12MonthQry.Select(a=>a.TransactionId).Distinct().Count().ToStringSafe() );
+            kpi += GetKpiShortCode( "Gifts Last 12 Months", last12MonthQry.Select( a => a.TransactionId ).Distinct().Count().ToStringSafe() );
             kpi += GetKpiShortCode( "Gifts Last 90 Days", last90DaysQry.Select( a => a.TransactionId ).Distinct().Count().ToStringSafe() );
             lLastGiving.Text = string.Format( @"{{[kpis size:'xl' columnmin:'220px' columnminmd:'220px' columncount:'4' columncountmd:'3' columncountsm:'2']}}{0}{{[endkpis]}}", kpi ).ResolveMergeFields( mergeFields );
 
@@ -252,13 +263,13 @@ namespace RockWeb.Blocks.Crm.PersonDetail
 
         protected string GetGivingByMonthPercent( decimal amount )
         {
-            return string.Format("height: {0}%", MaxGiftAmount == 0 ? 0 : amount / MaxGiftAmount * 100);
+            return string.Format( "height: {0}%", MaxGiftAmount == 0 ? 0 : amount / MaxGiftAmount * 100 );
         }
 
         private void GetGivingAnalyticsKPI( RockContext rockContext )
         {
             var mergeFields = Rock.Lava.LavaHelper.GetCommonMergeFields( null );
-            var givingAnalytics = GetKpiShortCode( "Typical Gift", Person.GetAttributeValue( "GiftAmountMedian" ).AsDecimal().FormatAsCurrency(), Person.GetAttributeValue( "GiftAmountIQR" ).AsDecimal().FormatAsCurrency() + " σ", "fa-fw fa-money-bill", "left" );
+            var givingAnalytics = GetKpiShortCode( "Typical Gift", FormatAsCurrency( Person.GetAttributeValue( "GiftAmountMedian" ).AsDecimal() ), FormatAsCurrency( Person.GetAttributeValue( "GiftAmountIQR" ).AsDecimal() ) + " σ", "fa-fw fa-money-bill", "left" );
             givingAnalytics += GetKpiShortCode( "Typical Frequency", Person.GetAttributeValue( "GiftFrequencyDaysMean" ).AsInteger() + "d", Person.GetAttributeValue( "GiftFrequencyDaysStandardDeviation" ).AsInteger() + "d σ", "fa-fw fa-clock" );
             givingAnalytics += GetKpiShortCode( "% Scheduled", Person.GetAttributeValue( "PercentofGiftsScheduled" ).AsInteger() + "%", icon: "fa-fw fa-percent" );
             var givesAs = "Individual";
@@ -278,26 +289,48 @@ namespace RockWeb.Blocks.Crm.PersonDetail
                 givingAnalytics += GetKpiShortCode( "Frequency", frequencyLabel, icon: "fa-fw fa-calendar-alt", textAlign: "left" );
             }
 
-            var preferredCurrencyGuidValue = Person.GetAttributeValue( "PreferredCurrency" ).AsGuidOrNull();
-            if ( preferredCurrencyGuidValue.HasValue )
+            var currencyTypeIconCssClassAttr = AttributeCache.Get( Rock.SystemGuid.Attribute.DEFINED_TYPE_CURRENCY_TYPE_ICONCSSCLASS );
+            if ( currencyTypeIconCssClassAttr != null )
             {
-                var preferredCurrencyValue = DefinedValueCache.Get( preferredCurrencyGuidValue.Value );
-                givingAnalytics += GetKpiShortCode( "Preferred Currency", preferredCurrencyValue.Value, icon: "fa-fw " + preferredCurrencyValue.GetAttributeValue( "IconCssClass" ) );
-            }
-            else
-            {
-                givingAnalytics += GetKpiShortCode( "Preferred Currency", string.Empty );
+                var iconCssClass = currencyTypeIconCssClassAttr.DefaultValue;
+
+                var preferredCurrencyGuidValue = Person.GetAttributeValue( "PreferredCurrency" ).AsGuidOrNull();
+                if ( preferredCurrencyGuidValue.HasValue )
+                {
+                    var preferredCurrencyValue = DefinedValueCache.Get( preferredCurrencyGuidValue.Value );
+                    if ( preferredCurrencyValue.GetAttributeValue( "IconCssClass" ).IsNotNullOrWhiteSpace() )
+                    {
+                        iconCssClass = preferredCurrencyValue.GetAttributeValue( "IconCssClass" );
+                    }
+
+                    givingAnalytics += GetKpiShortCode( "Preferred Currency", preferredCurrencyValue.Value, icon: "fa-fw " + iconCssClass );
+                }
+                else
+                {
+                    givingAnalytics += GetKpiShortCode( "Preferred Currency", string.Empty, icon: "fa-fw " + iconCssClass );
+                }
             }
 
-            var preferredSourceGuidValue = Person.GetAttributeValue( "PreferredSource" ).AsGuidOrNull();
-            if ( preferredSourceGuidValue.HasValue )
+
+            var transactionSourceIconCssClassAttr = AttributeCache.Get( Rock.SystemGuid.Attribute.DEFINED_TYPE_TRANSACTION_SOURCE_ICONCSSCLASS );
+            if ( transactionSourceIconCssClassAttr != null )
             {
-                var preferredSourceValue = DefinedValueCache.Get( preferredSourceGuidValue.Value );
-                givingAnalytics += GetKpiShortCode( "Preferred Source", preferredSourceValue.Value, icon: preferredSourceValue.GetAttributeValue( "IconCssClass" ) );
-            }
-            else
-            {
-                givingAnalytics += GetKpiShortCode( "Preferred Source", string.Empty );
+                var iconCssClass = transactionSourceIconCssClassAttr.DefaultValue;
+                var preferredSourceGuidValue = Person.GetAttributeValue( "PreferredSource" ).AsGuidOrNull();
+                if ( preferredSourceGuidValue.HasValue )
+                {
+                    var preferredSourceValue = DefinedValueCache.Get( preferredSourceGuidValue.Value );
+                    if ( preferredSourceValue.GetAttributeValue( "IconCssClass" ).IsNotNullOrWhiteSpace() )
+                    {
+                        iconCssClass = preferredSourceValue.GetAttributeValue( "IconCssClass" );
+                    }
+
+                    givingAnalytics += GetKpiShortCode( "Preferred Source", preferredSourceValue.Value, icon: "fa-fw " + iconCssClass );
+                }
+                else
+                {
+                    givingAnalytics += GetKpiShortCode( "Preferred Source", string.Empty, icon: "fa-fw " + iconCssClass );
+                }
             }
 
             var financialTransactionAlertService = new FinancialTransactionAlertService( rockContext );
@@ -409,6 +442,12 @@ namespace RockWeb.Blocks.Crm.PersonDetail
                 rptYearSummary.DataSource = contributionSummaries;
                 rptYearSummary.DataBind();
             }
+        }
+
+        private string FormatAsCurrency( decimal value )
+        {
+            var currencySymbol = GlobalAttributesCache.Value( "CurrencySymbol" );
+            return string.Format( "{0}{1:N0}", currencySymbol, value );
         }
 
         #endregion Methods

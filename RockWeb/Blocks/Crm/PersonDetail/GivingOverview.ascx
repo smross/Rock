@@ -26,7 +26,7 @@
                             <div class="col-xs-6 col-sm-4 col-lg-3 percentile-giving">
                                 <div class="d-flex flex-row">
                                     <div class="pr-3">
-                                        <span class="stat-value-lg"><asp:Literal ID="lPercentStage" runat="server" /></span>
+                                        <span class="stat-value-lg"><asp:Literal ID="lGivingBin" runat="server" /></span>
                                         <span class="stat-label"><asp:Literal ID="lPercent" runat="server" /> %</span>
                                     </div>
                                     <div class="flex-fill">
@@ -48,6 +48,7 @@
                         </div>
                         <hr class="mb-4">
                         <asp:Literal ID="lGivingAnalytics" runat="server" />
+                        <small>Metrics are as of the last gift.</small>
                         <hr class="mt-4">
                         <h5>Yearly Summary</h5>
                         <div class="row d-flex flex-wrap">

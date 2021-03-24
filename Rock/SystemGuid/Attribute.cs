@@ -482,6 +482,16 @@ namespace Rock.SystemGuid
         /// </summary>
         public const string DEFINED_TYPE_TEMPLATE_ICON = "831403EB-262E-4BC5-8B5E-F16153493BF5";
 
+        /// <summary>
+        /// The Currency type DefinedType > IconCssClass DefinedValue Attribute Guid
+        /// </summary>
+        public const string DEFINED_TYPE_CURRENCY_TYPE_ICONCSSCLASS = "CB1E9401-E1FD-4DBB-B15F-4E6994602723";
+
+        /// <summary>
+        /// The Transaction Sourcee DefinedType > IconCssClass DefinedValue Attribute Guid
+        /// </summary>
+        public const string DEFINED_TYPE_TRANSACTION_SOURCE_ICONCSSCLASS = "9617D1DC-6561-4314-83EB-7F0ACBA2E259";
+
         #endregion
 
         #region Device Type Attributes
