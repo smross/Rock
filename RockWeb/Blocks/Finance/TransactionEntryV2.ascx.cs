@@ -3386,6 +3386,20 @@ mission. We are so grateful for your commitment.</p>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         protected void btnPersonalInformationNext_Click( object sender, EventArgs e )
         {
+            if ( tbRockFullName.Text.IsNotNullOrWhiteSpace() )
+            {
+                /* 03/22/2021 MDP
+
+                see https://app.asana.com/0/1121505495628584/1200018171012738/f on why this is done
+
+                */
+
+                nbRockFullName.Visible = true;
+                nbRockFullName.NotificationBoxType = NotificationBoxType.Validation;
+                nbRockFullName.Text = "Invalid Form Value";
+                return;
+            }
+
             ProcessTransaction();
         }
 

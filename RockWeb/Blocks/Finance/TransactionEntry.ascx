@@ -83,8 +83,8 @@
                                 </div>
                                 <div class="panel-body">
                                     <fieldset>
-                                        <%-- Special Rock Name Verify input with rock-name-verify class --%>
-                                        <Rock:RockTextBox ID="tbRockNameVerify" runat="server" CssClass="rock-name-verify" Placeholder="Please enter name (Required)" />
+                                        <%-- Special input with rock-fullname class --%>
+                                        <Rock:RockTextBox ID="tbRockFullName" runat="server" CssClass="rock-fullname" ValidationGroup="vgRockFullName" Placeholder="Please enter name (Required)" />
 
                                         <asp:PlaceHolder ID="phGiveAsPerson" runat="server">
                                             <Rock:RockLiteral ID="txtCurrentName" runat="server" Label="Name" Visible="false" />

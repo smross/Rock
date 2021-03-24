@@ -756,19 +756,6 @@ TransactionAccountDetails: [
         {
             base.OnLoad( e );
 
-            if ( tbRockNameVerify.Text.IsNotNullOrWhiteSpace() )
-            {
-                /* 03/22/2021 MDP
-
-                see https://app.asana.com/0/1121505495628584/1200018171012738/f on why this is done
-
-                */
-
-                Response.Redirect( "/", false );
-                Context.ApplicationInstance.CompleteRequest();
-                return;
-            }
-
             // Hide the messages on every postback
             nbMessage.Visible = false;
             nbSelectionMessage.Visible = false;
@@ -1111,6 +1098,18 @@ TransactionAccountDetails: [
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         protected void btnPaymentInfoNext_Click( object sender, EventArgs e )
         {
+            if ( tbRockFullName.Text.IsNotNullOrWhiteSpace() )
+            {
+                /* 03/22/2021 MDP
+
+                see https://app.asana.com/0/1121505495628584/1200018171012738/f on why this is done
+
+                */
+
+                ShowMessage( NotificationBoxType.Validation, "Validation", "Invalid Form Value" );
+                return;
+            }
+
             string errorMessage = string.Empty;
             if ( ProcessPaymentInfo( out errorMessage ) )
             {

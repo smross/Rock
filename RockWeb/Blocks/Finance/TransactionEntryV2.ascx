@@ -125,6 +125,10 @@
 
                             <Rock:Toggle ID="tglIndividualOrBusiness" runat="server" ButtonGroupCssClass="btn-group-justified" OnText="Business" OffText="Individual" OnCheckedChanged="tglIndividualOrBusiness_CheckedChanged" />
 
+                            <%-- Special input with rock-fullname class --%>
+                            <Rock:RockTextBox ID="tbRockFullName" runat="server" CssClass="rock-fullname" ValidationGroup="vgRockFullName" Placeholder="Please enter name (Required)" />
+                            <Rock:NotificationBox ID="nbRockFullName" runat="server" NotificationBoxType="Validation" />
+
                             <asp:Panel ID="pnlPersonInformationAsIndividual" runat="server">
                                 <asp:Panel ID="pnlLoggedInNameDisplay" runat="server">
                                     <div class="form-control-static">
