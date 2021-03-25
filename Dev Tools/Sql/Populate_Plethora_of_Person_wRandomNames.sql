@@ -12108,7 +12108,6 @@ BEGIN
             ,PersonId
             ,CountryCode
             ,Number
-            ,FullNumber
             ,NumberFormatted
             ,IsMessagingEnabled
             ,IsUnlisted
@@ -12120,7 +12119,6 @@ BEGIN
             ,@personId
             ,@countryCode
             ,@phoneNumber
-            ,concat(@countryCode, @phoneNumber)
             ,@phoneNumberFormatted
             ,0
             ,0
@@ -12136,7 +12134,6 @@ BEGIN
             ,PersonId
             ,CountryCode
             ,Number
-            ,FullNumber
             ,NumberFormatted
             ,IsMessagingEnabled
             ,IsUnlisted
@@ -12148,7 +12145,6 @@ BEGIN
             ,@personId
             ,@countryCode
             ,@phoneNumber
-            ,concat(@countryCode, @phoneNumber)
             ,@phoneNumberFormatted
             ,1
             ,0
@@ -12241,7 +12237,6 @@ BEGIN
             ,PersonId
             ,CountryCode
             ,Number
-            ,FullNumber
             ,NumberFormatted
             ,IsMessagingEnabled
             ,IsUnlisted
@@ -12253,7 +12248,6 @@ BEGIN
             ,@spousePersonId
             ,@countryCode
             ,@phoneNumber
-            ,concat(@countryCode, @phoneNumber)
             ,@phoneNumberFormatted
             ,0
             ,0
@@ -12270,7 +12264,6 @@ BEGIN
             ,PersonId
             ,CountryCode
             ,Number
-            ,FullNumber
             ,NumberFormatted
             ,IsMessagingEnabled
             ,IsUnlisted
@@ -12282,7 +12275,6 @@ BEGIN
             ,@spousePersonId
             ,@countryCode
             ,@phoneNumber
-            ,concat(@countryCode, @phoneNumber)
             ,@phoneNumberFormatted
             ,1
             ,0
