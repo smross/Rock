@@ -33,7 +33,7 @@ using Rock.Web.UI.Controls;
 namespace RockWeb.Blocks.Crm.PersonDetail
 {
     /// <summary>
-    /// 
+    ///
     /// </summary>
     [DisplayName( "Giving Configuration" )]
     [Category( "CRM > Person Detail" )]
@@ -202,7 +202,7 @@ namespace RockWeb.Blocks.Crm.PersonDetail
                 string yearStr = year.ToStringSafe();
                 if ( year == RockDateTime.Now.Year )
                 {
-                    yearStr = yearStr + "<small>YTD</small>";
+                    yearStr = yearStr + " <small>YTD</small>";
                 }
                 lbYear.Text = yearStr;
             }

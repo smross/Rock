@@ -33,7 +33,7 @@ using Rock.Web.Cache;
 namespace RockWeb.Blocks.Crm.PersonDetail
 {
     /// <summary>
-    /// 
+    ///
     /// </summary>
     [DisplayName( "Giving Overview" )]
     [Category( "CRM > Person Detail" )]
@@ -118,7 +118,7 @@ namespace RockWeb.Blocks.Crm.PersonDetail
             foreach ( var item in contributionSummary.SummaryRecords )
             {
                 accountsHtml += string.Format(
-                @"<tr><td>{0}</td><td class='text-right'>{1}</td></tr>",
+                @"<tr><td class='pr-4'>{0}</td><td class='text-right'>{1}</td></tr>",
                 item.AccountName,
                 item.TotalAmount.FormatAsCurrency() );
             }
@@ -217,7 +217,6 @@ namespace RockWeb.Blocks.Crm.PersonDetail
                 var givingBin = Person.GetAttributeValue( givingBinAttribute.Key ).AsInteger();
                 lGivingBin.Text = givingBin.ToString();
             }
-            
 
             var mergeFields = Rock.Lava.LavaHelper.GetCommonMergeFields( null );
             var last12MonthStartDate = RockDateTime.Now.AddMonths( -12 ).StartOfMonth();
@@ -247,7 +246,7 @@ namespace RockWeb.Blocks.Crm.PersonDetail
             string kpi = GetKpiShortCode(
                 "$ Last 12 Months",
                 FormatAsCurrency( contributionByMonths.Where( a => a.Key >= last12MonthStartDate ).Sum( a => a.Value ) ),
-                subValue: string.Format( "<span class=\"label label-warning \">{0}</span>", Person.GetAttributeValue( "core_EraFirstGave" ).AsDateTime().ToShortDateString() ) );
+                subValue: string.Format( "<div class=\"d-block\"><span class=\"badge badge-warning \">First Gave: {0}</span></div>", Person.GetAttributeValue( "core_EraFirstGave" ).AsDateTime().ToShortDateString() ) );
             kpi += GetKpiShortCode(
                 "$ Last 90 Days",
                 FormatAsCurrency( last90DaysContribution ),
@@ -271,7 +270,7 @@ namespace RockWeb.Blocks.Crm.PersonDetail
             var mergeFields = Rock.Lava.LavaHelper.GetCommonMergeFields( null );
             var givingAnalytics = GetKpiShortCode( "Typical Gift", FormatAsCurrency( Person.GetAttributeValue( "GiftAmountMedian" ).AsDecimal() ), FormatAsCurrency( Person.GetAttributeValue( "GiftAmountIQR" ).AsDecimal() ) + " σ", "fa-fw fa-money-bill", "left" );
             givingAnalytics += GetKpiShortCode( "Typical Frequency", Person.GetAttributeValue( "GiftFrequencyDaysMean" ).AsInteger() + "d", Person.GetAttributeValue( "GiftFrequencyDaysStandardDeviation" ).AsInteger() + "d σ", "fa-fw fa-clock" );
-            givingAnalytics += GetKpiShortCode( "% Scheduled", Person.GetAttributeValue( "PercentofGiftsScheduled" ).AsInteger() + "%", icon: "fa-fw fa-percent" );
+            givingAnalytics += GetKpiShortCode( "Percent Scheduled", Person.GetAttributeValue( "PercentofGiftsScheduled" ).AsInteger() + "%", icon: "fa-fw fa-percent" );
             var givesAs = "Individual";
             var givesAsIcon = "fa-fw fa-user";
             if ( Person.GivingGroupId.HasValue )
@@ -341,7 +340,7 @@ namespace RockWeb.Blocks.Crm.PersonDetail
             var financialTransactionFollowupCount = financialTransactionAlertQry.Where( a => a.FinancialTransactionAlertType.AlertType == AlertType.FollowUp ).Count();
             givingAnalytics += GetKpiShortCode(
                 "Giving Alerts",
-                string.Format( "<span class=\"badge bg-success\">{0}</span><span class=\"badge bg-warning\">{1}</span>", financialTransactionGratitudeCount, financialTransactionFollowupCount ),
+                string.Format( "<span class=\"badge bg-success\">{0}</span> <span class=\"badge bg-warning\">{1}</span>", financialTransactionGratitudeCount, financialTransactionFollowupCount ),
                 icon: "fa-fw fa-comment-alt" );
 
             lGivingAnalytics.Text = string.Format( @"{{[kpis size:'lg' columnmin:'220px' iconbackground:'false' columnminmd:'220px' columncount:'4' columncountmd:'3' columncountsm:'2']}}{0}{{[endkpis]}}", givingAnalytics ).ResolveMergeFields( mergeFields );
@@ -381,7 +380,7 @@ namespace RockWeb.Blocks.Crm.PersonDetail
 
             if ( textAlign.IsNotNullOrWhiteSpace() )
             {
-                textAlign = string.Format( "textAlign:'{0}'", textAlign );
+                textAlign = string.Format( "textalign:'{0}'", textAlign );
             }
 
             var kpi = string.Format(
@@ -453,7 +452,7 @@ namespace RockWeb.Blocks.Crm.PersonDetail
         #endregion Methods
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         protected class SummaryRecord
         {
@@ -467,7 +466,7 @@ namespace RockWeb.Blocks.Crm.PersonDetail
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         protected class ContributionSummary
         {

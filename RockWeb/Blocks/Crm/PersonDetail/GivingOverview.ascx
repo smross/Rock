@@ -14,7 +14,7 @@
                         <div class="row d-flex flex-wrap align-items-end py-1">
                             <div class="col-xs-12 col-sm-8 col-lg-9 giving-by-month">
                                 <h5 class="mt-0">Giving by Month</h5>
-                                <ul class="attendance-chart" style="height: 70px;">
+                                <ul class="attendance-chart attendance-chart-gap" style="height: 70px;">
                                     <asp:Repeater ID="rptGivingByMonth" runat="server">
                                         <ItemTemplate>
                                             <li title="<%#( ( ( DateTime ) Eval( "key" ) ).ToString( "MMM yyyy" ) ) %>"><span style="<%#  GetGivingByMonthPercent ( (decimal)Eval( "value" ) ) %>"></span></li>
@@ -51,13 +51,13 @@
                         <small>Metrics are as of the last gift.</small>
                         <hr class="mt-4">
                         <h5>Yearly Summary</h5>
-                        <div class="row d-flex flex-wrap">
+                        <div class="row">
                             <asp:Repeater ID="rptYearSummary" runat="server" OnItemDataBound="rptYearSummary_ItemDataBound">
                                 <ItemTemplate>
                                     <div class="col-xs-12 col-sm-6">
-                                        <table class="table table-condensed my-2">
+                                        <table class="table table-condensed mb-4">
                                             <thead>
-                                                <th colspan="2"><%# Eval("Year") %></th>
+                                                <th class="bg-transparent" colspan="2"><%# Eval("Year") %></th>
                                             </thead>
                                             <tbody>
                                                 <asp:Literal ID="lAccount" runat="server" />
@@ -74,6 +74,12 @@
                                 </ItemTemplate>
                             </asp:Repeater>
 
+                        </div>
+
+                        <div class="text-center margin-v-sm">
+                            <a href="#" class="btn btn-xs btn-default js-accounts-showmore">
+                            <i class="fa fa-chevron-down"></i> Show More <i class="fa fa-chevron-down"></i>
+                            </a>
                         </div>
                     </asp:Panel>
                     <asp:Panel ID="pnlNoGiving" runat="server">
