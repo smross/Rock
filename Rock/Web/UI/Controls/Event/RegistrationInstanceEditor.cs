@@ -15,6 +15,7 @@
 // </copyright>
 //
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.UI;
 using System.Web.UI.WebControls;
@@ -53,6 +54,7 @@ namespace Rock.Web.UI.Controls
         HtmlEditor _htmlRegistrationInstructions;
         HtmlEditor _htmlAdditionalReminderDetails;
         HtmlEditor _htmlAdditionalConfirmationDetails;
+        List<RockDropDownList> _gatewayFields;
 
         /// <summary>
         /// Gets or sets a value indicating whether active checkbox should be displayed
