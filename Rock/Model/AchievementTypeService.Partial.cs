@@ -227,11 +227,36 @@ namespace Rock.Model
             var rockContext = Context as RockContext;
             var attemptService = new AchievementAttemptService( rockContext );
 
-            var attempts = attemptService.Queryable()
+            var attemptsQuery = attemptService.Queryable()
                 .AsNoTracking()
-                .Where( aa =>
-                    aa.AchievementTypeId == achievementTypeCache.Id &&
-                    aa.AchieverEntityId == achieverEntityId )
+                .Where( aa => aa.AchievementTypeId == achievementTypeCache.Id );
+
+            // If the achiever type is person alias we need to add all achievements of this type for that person.
+            if ( EntityTypeCache.Get<PersonAlias>().Id == achievementTypeCache.AchieverEntityTypeId )
+            {
+                var personAliasService = new PersonAliasService( rockContext );
+                var personId = personAliasService
+                    .Queryable()
+                    .AsNoTracking()
+                    .Where( pa => pa.Id == achieverEntityId )
+                    .Select( pa => pa.PersonId )
+                    .FirstOrDefault();
+
+                var personAliasQuery = personAliasService
+                    .Queryable()
+                    .AsNoTracking()
+                    .Where( pa => pa.PersonId == personId )
+                    .Select( pa => pa.Id );
+
+                attemptsQuery = attemptsQuery
+                    .Where( aa => personAliasQuery.Contains( aa.AchieverEntityId ) );
+            }
+            else
+            {
+                attemptsQuery = attemptsQuery.Where( aa => aa.AchieverEntityId == achieverEntityId );
+            }
+
+            var attempts = attemptsQuery
                 .OrderByDescending( saa => saa.AchievementAttemptStartDateTime )
                 .ToList();
 
@@ -320,7 +345,7 @@ namespace Rock.Model
     /// <summary>
     /// Statement of Progress for an Achievement Type
     /// </summary>
-    public class ProgressStatement: ILiquidizable
+    public class ProgressStatement : ILiquidizable
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ProgressStatement" /> class.
