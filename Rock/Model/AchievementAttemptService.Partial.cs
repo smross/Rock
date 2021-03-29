@@ -65,6 +65,8 @@ namespace Rock.Model
         /// <returns></returns>
         public List<AchievementAttempt> GetOrderedAchieverAttempts( IQueryable<AchievementAttempt> attemptsQuery, AchievementTypeCache achievementTypeCache, int achieverEntityId )
         {
+            attemptsQuery = attemptsQuery.Where( aa => aa.AchievementTypeId == achievementTypeCache.Id );
+
             // If the achiever type is person alias we need to add all achievements of this type for that person.
             if ( EntityTypeCache.Get<PersonAlias>().Id == achievementTypeCache.AchieverEntityTypeId )
             {
@@ -81,7 +83,8 @@ namespace Rock.Model
             }
             else
             {
-                attemptsQuery = attemptsQuery.Where( aa => aa.AchieverEntityId == achieverEntityId );
+                attemptsQuery = attemptsQuery
+                    .Where( aa => aa.AchieverEntityId == achieverEntityId );
             }
 
             return attemptsQuery
