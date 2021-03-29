@@ -269,14 +269,8 @@ namespace Rock.Achievement.Component
             // Get all of the attempts for this interaction and achievement combo, ordered by start date DESC so that
             // the most recent attempts can be found with FirstOrDefault
             var achievementAttemptService = new AchievementAttemptService( rockContext );
-            var attempts = achievementAttemptService.Queryable()
-                .Where( aa =>
-                    aa.AchievementTypeId == achievementTypeCache.Id &&
-                    aa.AchieverEntityId == interaction.PersonAliasId.Value )
-                .ToList()
-                .OrderByDescending( aa => aa.AchievementAttemptStartDateTime )
-                .ToList();
-
+            var attempts = achievementAttemptService.GetOrderedPersonAttempts( achievementAttemptService.Queryable(), achievementTypeCache, interaction.PersonAliasId.Value );
+            
             var mostRecentSuccess = attempts.FirstOrDefault( saa => saa.AchievementAttemptEndDateTime.HasValue && saa.IsSuccessful );
             var overachievementPossible = achievementTypeCache.AllowOverAchievement && mostRecentSuccess != null && !mostRecentSuccess.IsClosed;
             var successfulAttemptCount = attempts.Count( saa => saa.IsSuccessful );
