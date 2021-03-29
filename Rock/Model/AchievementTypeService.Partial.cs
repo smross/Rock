@@ -231,7 +231,7 @@ namespace Rock.Model
                 .AsNoTracking()
                 .Where( aa => aa.AchievementTypeId == achievementTypeCache.Id );
 
-            var attempts = attemptService.GetOrderedPersonAttempts( attemptsQuery, achievementTypeCache, achieverEntityId );
+            var attempts = attemptService.GetOrderedAchieverAttempts( attemptsQuery, achievementTypeCache, achieverEntityId );
             
             var progressStatement = new ProgressStatement( achievementTypeCache );
 
