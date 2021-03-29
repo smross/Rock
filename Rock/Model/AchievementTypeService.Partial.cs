@@ -231,29 +231,8 @@ namespace Rock.Model
                 .AsNoTracking()
                 .Where( aa => aa.AchievementTypeId == achievementTypeCache.Id );
 
-            // If the achiever type is person alias we need to add all achievements of this type for that person.
-            if ( EntityTypeCache.Get<PersonAlias>().Id == achievementTypeCache.AchieverEntityTypeId )
-            {
-                var personAliasService = new PersonAliasService( rockContext );
-                var personAliasQuery = personAliasService
-                    .Queryable()
-                    .AsNoTracking()
-                    .Where( pa => pa.Id == achieverEntityId )
-                    .SelectMany( pa => pa.Person.Aliases )
-                    .Select( pa => pa.Id );
-
-                attemptsQuery = attemptsQuery
-                    .Where( aa => personAliasQuery.Contains( aa.AchieverEntityId ) );
-            }
-            else
-            {
-                attemptsQuery = attemptsQuery.Where( aa => aa.AchieverEntityId == achieverEntityId );
-            }
-
-            var attempts = attemptsQuery
-                .OrderByDescending( saa => saa.AchievementAttemptStartDateTime )
-                .ToList();
-
+            var attempts = attemptService.GetOrderedPersonAttempts( attemptsQuery, achievementTypeCache, achieverEntityId );
+            
             var progressStatement = new ProgressStatement( achievementTypeCache );
 
             // If there are no attempts, no other information can be derived
