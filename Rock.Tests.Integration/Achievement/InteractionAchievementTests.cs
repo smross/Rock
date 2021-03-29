@@ -7,6 +7,7 @@ using Rock.Model;
 using Rock.Web.Cache;
 using Rock.Tests.Shared;
 using System;
+using System.Collections.Generic;
 
 namespace Rock.Tests.Integration.RockTests.Model
 {
@@ -22,8 +23,8 @@ namespace Rock.Tests.Integration.RockTests.Model
         private static AchievementTypeService _achievementTypeService { get; set; }
         private static InteractionService _interactionService { get; set; }
 
-        private static int _personAliasId { get; set; }
-        private static int _personId { get; set; }
+        private static List<int> _personAliasId { get; set; }
+        //private static int _personId { get; set; }
 
         private static int _achievementTypeId { get; set; }
         private static InteractionComponentCache _interactionComponent { get; set; }
@@ -40,14 +41,26 @@ namespace Rock.Tests.Integration.RockTests.Model
         private static void CreateInteractionData()
         {
             var tedDeckerGuid = TestGuids.TestPeople.TedDecker.AsGuid();
-            var personAlias = new PersonAliasService( _rockContext ).Queryable().First( pa => pa.Person.Guid == tedDeckerGuid );
-            _personAliasId = personAlias.Id;
-            _personId = personAlias.PersonId;
+
+            var personAliasService = new PersonAliasService( _rockContext );
+
+            var personService = new PersonService( _rockContext );
+            var tedDecker = personService.Get( tedDeckerGuid );
+            var aliasPersonId = personService.Queryable().Max( p => p.Id ) + 1;
+            personAliasService.DeleteRange( personAliasService.Queryable().Where( pa => pa.AliasPersonId == aliasPersonId ) );
+            _rockContext.SaveChanges();
+
+            personAliasService.Add( new PersonAlias { Person = tedDecker, AliasPersonGuid = Guid.NewGuid(), AliasPersonId = aliasPersonId } );
+            _rockContext.SaveChanges();
+
+            var personAlias = personAliasService.Queryable().Where( pa => pa.Person.Guid == tedDeckerGuid ).Take(2).Select(p => p.Id).ToList();
+            _personAliasId = personAlias;
+            //_personId = personAlias.PersonId;
 
             _interactionComponent = InteractionComponentCache.All().FirstOrDefault( i => i.InteractionChannel.Guid == SystemGuid.InteractionChannel.ROCK_RMS.AsGuid() );
 
             var existing = _interactionService.Queryable().Where( i =>
-                i.PersonAliasId == _personAliasId &&
+                _personAliasId.Contains( i.PersonAliasId.Value) &&
                 i.InteractionComponentId == _interactionComponent.Id
             );
 
@@ -58,7 +71,7 @@ namespace Rock.Tests.Integration.RockTests.Model
                 _interactionService.Add( new Interaction
                 {
                     InteractionComponentId = _interactionComponent.Id,
-                    PersonAliasId = _personAliasId,
+                    PersonAliasId = _personAliasId[i % 2],
                     InteractionDateTime = RockDateTime.Today,
                     ForeignKey = KEY,
                     ForeignId = i
@@ -153,7 +166,7 @@ namespace Rock.Tests.Integration.RockTests.Model
         {
             var attemptsQuery = new AchievementAttemptService( _rockContext ).Queryable()
                 .AsNoTracking()
-                .Where( saa => saa.AchievementTypeId == _achievementTypeId && saa.AchieverEntityId == _personAliasId )
+                .Where( saa => saa.AchievementTypeId == _achievementTypeId &&  _personAliasId.Contains( saa.AchieverEntityId) )
                 .OrderBy( saa => saa.AchievementAttemptStartDateTime );
 
             // There should be no attempts

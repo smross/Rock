@@ -406,7 +406,7 @@ namespace Rock.Achievement.Component
             var maxDate = CalculateMaxDateForAchievementAttempt( minDate, attributeMaxDate );
 
             // Get the interaction dates
-            var interactionDates = GetInteractionDates( achievementTypeCache, interaction.PersonAliasId.Value, minDate, maxDate );
+            var interactionDates = GetInteractionDatesByPerson( achievementTypeCache, interaction.PersonAliasId.Value, minDate, maxDate );
             var newCount = interactionDates.Count();
             var lastInteractionDate = interactionDates.LastOrDefault();
             var progress = CalculateProgress( newCount, numberToAccumulate );
@@ -447,7 +447,7 @@ namespace Rock.Achievement.Component
             ComputedStreak accumulation = null;
 
             // Get the interaction dates and begin calculating attempts
-            var interactionDates = GetInteractionDates( achievementTypeCache, interaction.PersonAliasId.Value, minDate, maxDate );
+            var interactionDates = GetInteractionDatesByPerson( achievementTypeCache, interaction.PersonAliasId.Value, minDate, maxDate );
 
             foreach ( var interactionDate in interactionDates )
             {
@@ -537,16 +537,25 @@ namespace Rock.Achievement.Component
         /// <param name="minDate">The minimum date.</param>
         /// <param name="maxDate">The maximum date.</param>
         /// <returns></returns>
-        private List<DateTime> GetInteractionDates( AchievementTypeCache achievementTypeCache, int personAliasId, DateTime minDate, DateTime maxDate )
+        private List<DateTime> GetInteractionDatesByPerson( AchievementTypeCache achievementTypeCache, int personAliasId, DateTime minDate, DateTime maxDate )
         {
             var rockContext = new RockContext();
             var query = GetSourceEntitiesQuery( achievementTypeCache, rockContext ) as IQueryable<Interaction>;
             var dayAfterMaxDate = maxDate.AddDays( 1 );
 
+            var personAliasService = new PersonAliasService( rockContext );
+            var personAliasQuery = personAliasService
+                .Queryable()
+                .AsNoTracking()
+                .Where( pa => pa.Id == personAliasId )
+                .SelectMany( pa => pa.Person.Aliases )
+                .Select( pa => pa.Id );
+
             return query
                 .AsNoTracking()
                 .Where( i =>
-                    i.PersonAliasId == personAliasId &&
+                    i.PersonAliasId.HasValue &&
+                    personAliasQuery.Contains(i.PersonAliasId.Value) &&
                     i.InteractionDateTime >= minDate &&
                     i.InteractionDateTime < dayAfterMaxDate )
                 .Select( i => i.InteractionDateTime )
