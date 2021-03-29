@@ -29,6 +29,7 @@ namespace Rock.Tests.Integration.RockTests.Model
         private static int _achievementTypeId { get; set; }
         private static InteractionComponentCache _interactionComponent { get; set; }
 
+        private const int NUMBER_OF_ALIASES = 5;
         private const int NUMBER_TO_ACHIEVE = 350;
         private const int COUNT = 321;
         private const string KEY = "InteractioneAchievementTests Interaction";
@@ -47,15 +48,18 @@ namespace Rock.Tests.Integration.RockTests.Model
             var personService = new PersonService( _rockContext );
             var tedDecker = personService.Get( tedDeckerGuid );
             var aliasPersonId = personService.Queryable().Max( p => p.Id ) + 1;
-            personAliasService.DeleteRange( personAliasService.Queryable().Where( pa => pa.AliasPersonId == aliasPersonId ) );
+            personAliasService.DeleteRange( personAliasService.Queryable().Where( pa => pa.AliasPersonId >= aliasPersonId ) );
             _rockContext.SaveChanges();
 
-            personAliasService.Add( new PersonAlias { Person = tedDecker, AliasPersonGuid = Guid.NewGuid(), AliasPersonId = aliasPersonId } );
+            for(var i = 0; i < NUMBER_OF_ALIASES; i++ )
+            {
+                personAliasService.Add( new PersonAlias { Person = tedDecker, AliasPersonGuid = Guid.NewGuid(), AliasPersonId = aliasPersonId + i } );
+            }
+            
             _rockContext.SaveChanges();
 
-            var personAlias = personAliasService.Queryable().Where( pa => pa.Person.Guid == tedDeckerGuid ).Take(2).Select(p => p.Id).ToList();
+            var personAlias = personAliasService.Queryable().Where( pa => pa.Person.Guid == tedDeckerGuid ).Take( NUMBER_OF_ALIASES ).Select(p => p.Id).ToList();
             _personAliasId = personAlias;
-            //_personId = personAlias.PersonId;
 
             _interactionComponent = InteractionComponentCache.All().FirstOrDefault( i => i.InteractionChannel.Guid == SystemGuid.InteractionChannel.ROCK_RMS.AsGuid() );
 
@@ -71,7 +75,7 @@ namespace Rock.Tests.Integration.RockTests.Model
                 _interactionService.Add( new Interaction
                 {
                     InteractionComponentId = _interactionComponent.Id,
-                    PersonAliasId = _personAliasId[i % 2],
+                    PersonAliasId = _personAliasId[i % NUMBER_OF_ALIASES],
                     InteractionDateTime = RockDateTime.Today,
                     ForeignKey = KEY,
                     ForeignId = i

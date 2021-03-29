@@ -10,7 +10,7 @@
 -- Parameters
 declare
     -- Set this value to the number of interactions that will be created.
-    @interactionsToAddCount int = 100000
+    @interactionsToAddCount int = 1000000
     -- Days of spread for the interaction to occur. 30 means 30 days ago until today
     ,@daySpread int = 365
     -- Set this value to place a tag in the ForeignKey field of the sample data records for easier identification.
@@ -58,6 +58,8 @@ BEGIN
         from InteractionComponent ic;
     END
 
+    DECLARE @interactionDateTime AS DATETIME = (SELECT DATEADD(DAY, -1 * FLOOR(RAND() * @daySpread + 1), GETDATE()))
+
     INSERT INTO Interaction (
         InteractionComponentId,
         PersonAliasId,
@@ -65,16 +67,18 @@ BEGIN
         Guid,
         ForeignKey,
         CreatedDateTime,
-        CreatedByPersonAliasId
+        CreatedByPersonAliasId,
+        InteractionDateKey
     )
     SELECT
         (SELECT TOP 1 Id FROM @componentIds),
         (SELECT TOP 1 Id FROM @personAliasIds),
-        (SELECT DATEADD(DAY, -1 * FLOOR(RAND() * @daySpread + 1), GETDATE())),
+        @interactionDateTime,
         NEWID(),
         @foreignKey,
         @createdDateTime,
-        @createdByPersonAliasId;
+        @createdByPersonAliasId,
+        CAST(DATEPART(yyyy, @interactionDateTime) AS VARCHAR(4)) + CAST(DATEPART(mm, @interactionDateTime) AS VARCHAR(2)) + CAST(DATEPART(dd, @interactionDateTime) AS VARCHAR(2));
 
     -- Delete top component
     WITH cte AS (
