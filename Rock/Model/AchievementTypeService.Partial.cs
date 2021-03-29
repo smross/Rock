@@ -235,17 +235,11 @@ namespace Rock.Model
             if ( EntityTypeCache.Get<PersonAlias>().Id == achievementTypeCache.AchieverEntityTypeId )
             {
                 var personAliasService = new PersonAliasService( rockContext );
-                var personId = personAliasService
-                    .Queryable()
-                    .AsNoTracking()
-                    .Where( pa => pa.Id == achieverEntityId )
-                    .Select( pa => pa.PersonId )
-                    .FirstOrDefault();
-
                 var personAliasQuery = personAliasService
                     .Queryable()
                     .AsNoTracking()
-                    .Where( pa => pa.PersonId == personId )
+                    .Where( pa => pa.Id == achieverEntityId )
+                    .SelectMany( pa => pa.Person.Aliases )
                     .Select( pa => pa.Id );
 
                 attemptsQuery = attemptsQuery
